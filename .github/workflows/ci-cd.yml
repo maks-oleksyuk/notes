@@ -1,4 +1,4 @@
-name: CD
+name: CI/CD
 
 on:
   push:
@@ -10,8 +10,8 @@ on:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
   pages: write
+  contents: read
   id-token: write
 
 concurrency:
@@ -38,34 +38,49 @@ jobs:
           save_period: 0
           save_min_runs_number: 0
 
-  build:
+  prettier:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
-    name: build (node - ${{ matrix.node-version }})
 
     steps:
       - name: 🛎️ Checkout
         uses: actions/checkout@v3
 
-      - name: ⚙️ Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: 🪄 Prettify code
+        uses: creyD/prettier_action@v4.3
         with:
-          node-version: ${{ matrix.node-version }}
+          dry: true
+          prettier_options: '-c ./ !pnpm-lock.yaml'
+
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node: [18.x, 20.x]
+
+    name: build (node - ${{ matrix.node }})
+
+    steps:
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v3
 
       - name: ⚙️ Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: latest
-          run_install: true
+
+      - name: ⚙️ Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v3
+        with:
+          cache: pnpm
+          node-version: ${{ matrix.node }}
+
+      - name: 📥 Install dependencies
+        run: pnpm i --frozen-lockfile
 
       - name: 🛠️ Build site with VitePress
         run: |
           pnpm notes:build
-          touch ./dist/.nojekyll
 
       - name: 📤 Upload artifact
         uses: actions/upload-pages-artifact@v2
