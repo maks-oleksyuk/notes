@@ -9,7 +9,7 @@ export default defineConfig({
   outDir: './dist',
   cleanUrls: true,
   lastUpdated: true,
-  head: [['link', { rel: 'icon', href: '/favicon.ico' }]],
+  head: [['link', { rel: 'icon', href: '/notes/favicon.ico' }]],
   themeConfig: {
     nav: [{ text: 'Drupal', link: '/drupal' }],
     socialLinks: [
@@ -24,7 +24,16 @@ export default defineConfig({
     },
     ua: {
       label: 'Українська',
-      lang: 'ua', // optional, will be added  as `lang` attribute on `html` tag
+      lang: 'uk',
+      themeConfig: {
+        outline: {
+          label: 'На цій сторінці',
+        },
+        lastUpdated: {
+          text: 'Востаннє оновлено',
+        },
+        darkModeSwitchLabel: 'Зовнішній вигляд',
+      },
     },
   },
   markdown: {

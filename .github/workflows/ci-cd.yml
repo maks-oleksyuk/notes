@@ -43,7 +43,7 @@ jobs:
 
     steps:
       - name: 🛎️ Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 🪄 Prettify code
         uses: creyD/prettier_action@v4.3
@@ -62,7 +62,7 @@ jobs:
 
     steps:
       - name: 🛎️ Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: ⚙️ Setup pnpm
         uses: pnpm/action-setup@v2
@@ -75,12 +75,11 @@ jobs:
           cache: pnpm
           node-version: ${{ matrix.node }}
 
-      - name: 📥 Install dependencies
+      - name: 📦 Install dependencies
         run: pnpm i --frozen-lockfile
 
-      - name: 🛠️ Build site with VitePress
-        run: |
-          pnpm notes:build
+      - name: 🏗 Build site with VitePress
+        run: pnpm notes:build
 
       - name: 📤 Upload artifact
         uses: actions/upload-pages-artifact@v2
