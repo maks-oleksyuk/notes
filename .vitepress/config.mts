@@ -26,13 +26,14 @@ export default defineConfig({
       label: 'Українська',
       lang: 'uk',
       themeConfig: {
+        darkModeSwitchLabel: 'Зовнішній вигляд',
+        returnToTopLabel: 'Повернутись до початку',
         outline: {
           label: 'На цій сторінці',
         },
         lastUpdated: {
           text: 'Востаннє оновлено',
         },
-        darkModeSwitchLabel: 'Зовнішній вигляд',
       },
     },
   },

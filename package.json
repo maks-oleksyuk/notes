@@ -1,18 +1,26 @@
 {
+  "homepage": "https://maks-oleksyuk.github.io/notes",
+  "license": "WTFPL",
+  "author": {
+    "name": "Maks Oleksyul",
+    "url": "https://github.com/maks-oleksyuk"
+  },
+  "scripts": {
+    "notes:dev": "vitepress dev",
+    "notes:build": "vitepress build",
+    "notes:preview": "vitepress preview",
+    "prt:check": "prettier -c ./ '!pnpm-lock.yaml'",
+    "prt:fix": "prettier -w ./ '!pnpm-lock.yaml'"
+  },
   "devDependencies": {
     "prettier": "^3.0.3",
-    "vitepress": "1.0.0-rc.12",
-    "vitepress-plugin-tabs": "^0.3.0",
+    "vitepress": "1.0.0-rc.14",
+    "vitepress-plugin-tabs": "^0.4.0",
     "vue": "^3.3.4"
   },
   "engines": {
     "node": ">=18",
     "pnpm": ">=8"
-  },
-  "scripts": {
-    "notes:dev": "vitepress dev",
-    "notes:build": "vitepress build",
-    "notes:preview": "vitepress preview"
   },
   "prettier": {
     "singleQuote": true,
