@@ -12,8 +12,8 @@ devDependencies:
     specifier: 1.0.0-rc.14
     version: 1.0.0-rc.14(@algolia/client-search@4.20.0)(search-insights@2.8.2)
   vitepress-plugin-tabs:
-    specifier: ^0.4.0
-    version: 0.4.0(vitepress@1.0.0-rc.14)(vue@3.3.4)
+    specifier: ^0.4.1
+    version: 0.4.1(vitepress@1.0.0-rc.14)(vue@3.3.4)
   vue:
     specifier: ^3.3.4
     version: 3.3.4
@@ -785,8 +785,8 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /vitepress-plugin-tabs@0.4.0(vitepress@1.0.0-rc.14)(vue@3.3.4):
-    resolution: {integrity: sha512-INHkt9xBLE/lNv+5e/l6PVWkvuEjwlTrp06bKjgGADbpC7z+lIvNYRcvQigGQs9EZYzcCgUJzBUZf0m1P+nBbw==}
+  /vitepress-plugin-tabs@0.4.1(vitepress@1.0.0-rc.14)(vue@3.3.4):
+    resolution: {integrity: sha512-hJFQmANgneLwy3/gcel5L4gj/bopPLj1pdoMwUhTAjd2pDNBPlWzOpuCXaVYnV0i0GrXbSuK9XZXt6M7ZHNbsg==}
     peerDependencies:
       vitepress: ^1.0.0-rc.14
       vue: ^3.3.4
