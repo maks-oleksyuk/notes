@@ -5,6 +5,7 @@
     "require": {
         "php": ">=8.2",
         "composer/installers": "^2.2",
+        "drupal-notes/theme": "@dev",
         "drupal/admin_toolbar": "^3.4",
         "drupal/core-composer-scaffold": "^10.1",
         "drupal/core-recommended": "^10.1",
@@ -12,8 +13,7 @@
         "drush/drush": "^12.2"
     },
     "require-dev": {
-        "chi-teck/drupal-coder-extension": "^2.0@beta",
-        "ergebnis/composer-normalize": "^2.37"
+        "chi-teck/drupal-coder-extension": "^2.0@beta"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -22,6 +22,10 @@
         {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
+        },
+        {
+            "type": "path",
+            "url": "themes/*"
         }
     ],
     "minimum-stability": "dev",
@@ -30,8 +34,7 @@
         "allow-plugins": {
             "composer/installers": true,
             "drupal/core-composer-scaffold": true,
-            "ergebnis/composer-normalize": true,
-            "dealerdirect/phpcodesniffer-composer-installer": false
+            "dealerdirect/phpcodesniffer-composer-installer": true
         },
         "sort-packages": true
     },
@@ -42,27 +45,13 @@
             }
         },
         "installer-paths": {
-            "web/core": [
-                "type:drupal-core"
-            ],
-            "web/libraries/{$name}": [
-                "type:drupal-library"
-            ],
-            "web/modules/contrib/{$name}": [
-                "type:drupal-module"
-            ],
-            "web/modules/custom/{$name}": [
-                "type:drupal-custom-module"
-            ],
-            "web/profiles/contrib/{$name}": [
-                "type:drupal-profile"
-            ],
-            "web/themes/contrib/{$name}": [
-                "type:drupal-theme"
-            ],
-            "web/themes/custom/{$name}": [
-                "type:drupal-custom-theme"
-            ]
+            "web/core": ["type:drupal-core"],
+            "web/libraries/{$name}": ["type:drupal-library"],
+            "web/modules/contrib/{$name}": ["type:drupal-module"],
+            "web/modules/custom/{$name}": ["type:drupal-custom-module"],
+            "web/profiles/contrib/{$name}": ["type:drupal-profile"],
+            "web/themes/contrib/{$name}": ["type:drupal-theme"],
+            "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
         }
     }
 }

@@ -1,0 +1,22 @@
+uuid: a413ef92-1c3d-43f4-aee1-3f0e5334fc95
+langcode: en
+status: true
+dependencies:
+  theme:
+    - notes
+_core:
+  default_config_hash: BCWhood0xXFQYqxFgL1spXdb9KeIuXH1YvTdjIEedDg
+id: notes_secondary_local_tasks
+theme: notes
+region: sidebar_first
+weight: 0
+provider: null
+plugin: local_tasks_block
+settings:
+  id: local_tasks_block
+  label: 'Secondary tabs'
+  label_display: '0'
+  provider: core
+  primary: false
+  secondary: true
+visibility: {  }

@@ -22,4 +22,7 @@ module:
 theme:
   claro: 0
   gin: 0
+  stable9: 0
+  starterkit_theme: 0
+  notes: 0
 profile: minimal

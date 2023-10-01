@@ -1,0 +1,20 @@
+uuid: 92e3af77-eb8d-4248-92f2-d0dcb205526d
+langcode: en
+status: true
+dependencies:
+  theme:
+    - notes
+_core:
+  default_config_hash: OQ9aJ-4qVwK1x00o9EOYK4eFDjQr_HLpbPiJaPSVZiQ
+id: notes_local_actions
+theme: notes
+region: content
+weight: -10
+provider: null
+plugin: local_actions_block
+settings:
+  id: local_actions_block
+  label: 'Primary admin actions'
+  label_display: '0'
+  provider: core
+visibility: {  }
