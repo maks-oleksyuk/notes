@@ -52,14 +52,13 @@ jobs:
           prettier_options: '-c ./ !pnpm-lock.yaml'
 
   build:
+    name: 🏗️ Build (node - ${{ matrix.node }})
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node: [18.x, 20.x]
-
-    name: build (node - ${{ matrix.node }})
-
+        node: [18.x, 20.x, 21.x]
+ 
     steps:
       - name: 🛎️ Checkout
         uses: actions/checkout@v4
@@ -76,7 +75,7 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: 📦 Install dependencies
-        run: pnpm i --frozen-lockfile
+        run: pnpm i --frozen-lockfile --color=always
 
       - name: 🏗 Build site with VitePress
         run: pnpm notes:build
@@ -87,11 +86,14 @@ jobs:
           path: ./dist
 
   deploy:
-    runs-on: ubuntu-latest
+    name: 🚀 Deploy
     needs: build
+    runs-on: ubuntu-latest   
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: 🚀 Deploy to GitHub Pages
         id: deployment
