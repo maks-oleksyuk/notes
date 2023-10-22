@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   cleanup:
+    name: 🧹 Clean up GitHub repository
     runs-on: ubuntu-latest
     permissions: write-all
 
@@ -38,7 +39,8 @@ jobs:
           save_period: 0
           save_min_runs_number: 0
 
-  prettier:
+  lint:
+    name: 🪄 Lint
     runs-on: ubuntu-latest
 
     steps:
@@ -58,7 +60,7 @@ jobs:
     strategy:
       matrix:
         node: [18.x, 20.x, 21.x]
- 
+
     steps:
       - name: 🛎️ Checkout
         uses: actions/checkout@v4
@@ -88,7 +90,7 @@ jobs:
   deploy:
     name: 🚀 Deploy
     needs: build
-    runs-on: ubuntu-latest   
+    runs-on: ubuntu-latest
 
     environment:
       name: github-pages
