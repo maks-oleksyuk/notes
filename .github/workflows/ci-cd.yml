@@ -72,7 +72,7 @@ jobs:
 
       - name: ⚙️ Setup Node.js ${{ matrix.node }}
         uses: actions/setup-node@v4
-        timeout-minutes: 1
+        timeout-minutes: 5
         with:
           cache: pnpm
           node-version: ${{ matrix.node }}
