@@ -16,7 +16,7 @@
     "prettier": "^3.0.3",
     "vitepress": "1.0.0-rc.22",
     "vitepress-plugin-tabs": "^0.4.1",
-    "vue": "^3.3.4"
+    "vue": "^3.3.6"
   },
   "engines": {
     "node": ">=18",
