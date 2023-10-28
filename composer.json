@@ -10,7 +10,7 @@
         "drupal/core-composer-scaffold": "^10.1",
         "drupal/core-recommended": "^10.1",
         "drupal/gin": "^3.0@RC",
-        "drush/drush": "^12.2"
+        "drush/drush": "^12.4"
     },
     "require-dev": {
         "chi-teck/drupal-coder-extension": "^2.0@beta"
