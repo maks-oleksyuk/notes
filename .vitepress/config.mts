@@ -9,7 +9,21 @@ export default defineConfig({
   outDir: './dist',
   cleanUrls: true,
   lastUpdated: true,
-  head: [['link', { rel: 'icon', href: '/notes/favicon.ico' }]],
+  head: [
+    ['link', { rel: 'icon', href: '/notes/favicon.ico' }],
+    [
+      'script',
+      {
+        async: '',
+        src: 'https://www.googletagmanager.com/gtag/js?id=G-L5YJQ5Q3TD',
+      },
+    ],
+    [
+      'script',
+      {},
+      "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', 'G-L5YJQ5Q3TD');",
+    ],
+  ],
   themeConfig: {
     nav: [{ text: 'Drupal', link: '/drupal' }],
     socialLinks: [
@@ -26,6 +40,7 @@ export default defineConfig({
       label: 'Українська',
       lang: 'uk',
       themeConfig: {
+        nav: [{ text: 'Buses', link: '/ua/other/bus' }],
         darkModeSwitchLabel: 'Зовнішній вигляд',
         returnToTopLabel: 'Повернутись до початку',
         outline: {

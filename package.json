@@ -2,7 +2,7 @@
   "homepage": "https://maks-oleksyuk.github.io/notes",
   "license": "WTFPL",
   "author": {
-    "name": "Maks Oleksyul",
+    "name": "Maks Oleksyuk",
     "url": "https://github.com/maks-oleksyuk"
   },
   "scripts": {
@@ -16,11 +16,11 @@
     "prettier": "^3.0.3",
     "vitepress": "1.0.0-rc.24",
     "vitepress-plugin-tabs": "^0.4.1",
-    "vue": "^3.3.6"
+    "vue": "^3.3.7"
   },
   "engines": {
-    "node": ">=18",
-    "pnpm": ">=8"
+    "pnpm": ">=8",
+    "node": ">=18"
   },
   "prettier": {
     "singleQuote": true,
