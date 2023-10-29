@@ -3,7 +3,17 @@ web
 vendor
 node_modules
 
+# Ignore directories used by Drupal.
+/themes
+/modules
+
+# Ignore final build files.
 dist
+
+# Ignore temporary files and cache directories.
 cache
-.idea
 .temp
+
+# Ignore development tool files.
+.idea
+.ddev

@@ -47,7 +47,7 @@ export default defineConfig({
           label: 'На цій сторінці',
         },
         lastUpdated: {
-          text: 'Востаннє оновлено',
+          text: 'Останнє оновлення',
         },
       },
     },
