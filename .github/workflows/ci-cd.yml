@@ -87,7 +87,7 @@ jobs:
           PNPM_FLAGS: --frozen-lockfile --color=always
         run: pnpm i ${{ env.PNPM_FLAGS }}
 
-      - name: 🏗 Build site with VitePress
+      - name: 🏗️ Build site with VitePress
         run: pnpm notes:build
 
       - name: 📤 Upload artifact
@@ -96,7 +96,7 @@ jobs:
           path: ./dist
 
   deploy:
-    name: 🚀 Deploy
+    name: 🌐 Deploy
     needs: build
     runs-on: ubuntu-latest
 
