@@ -1,15 +1,15 @@
-uuid: ef4a645e-0dba-4c26-aec3-684f63364621
+uuid: ca6d1fbd-66e3-468a-950e-9b74e48ca4eb
 langcode: en
 status: true
 dependencies:
   module:
     - system
   theme:
-    - notes
+    - nts_theme
 _core:
   default_config_hash: hBHXB7hC05XU7pDYzETt-GUcpFlogK1gkjyAsg0Ym58
-id: notes_content
-theme: notes
+id: nts_theme_content
+theme: nts_theme
 region: content
 weight: 0
 provider: null

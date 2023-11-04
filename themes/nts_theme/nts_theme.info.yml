@@ -1,4 +1,4 @@
-name: notes
+name: nts_theme
 type: theme
 base theme: starterkit_theme
 core_version_requirement: ^10 || ^11

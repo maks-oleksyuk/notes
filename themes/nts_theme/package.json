@@ -1,0 +1,55 @@
+{
+  "homepage": "https://maks-oleksyuk.github.io/notes",
+  "license": "WTFPL",
+  "author": {
+    "name": "Maks Oleksyuk",
+    "url": "https://github.com/maks-oleksyuk"
+  },
+  "scripts": {
+    "lint": "run-p lint:eslint lint:stylelint lint:prettier",
+    "lint:fix": "run-p lint:*:fix",
+    "lint:eslint": "eslint js --no-error-on-unmatched-pattern",
+    "lint:eslint:fix": "eslint js --no-error-on-unmatched-pattern --fix",
+    "lint:prettier": "prettier styles -c --cache --no-error-on-unmatched-pattern",
+    "lint:prettier:fix": "prettier styles -w --no-error-on-unmatched-pattern",
+    "lint:stylelint": "stylelint styles --aei",
+    "lint:stylelint:fix": "stylelint styles --aei --fix"
+  },
+  "devDependencies": {
+    "eslint": "^8.53.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-jquery": "^1.5.1",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-yml": "^1.10.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.0.3",
+    "stylelint": "^15.11.0",
+    "stylelint-config-standard-scss": "^11.1.0",
+    "stylelint-order": "^6.0.3",
+    "stylelint-scss": "^5.3.0"
+  },
+  "engines": {
+    "pnpm": ">=8",
+    "node": ">=18"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "bracketSameLine": true
+  },
+  "stylelint": {
+    "extends": [
+      "../../web/core/.stylelintrc.json",
+      "stylelint-config-standard-scss"
+    ],
+    "plugins": [
+      "stylelint-scss"
+    ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "../../web/core/.eslintrc.passing.json"
+    ]
+  }
+}
