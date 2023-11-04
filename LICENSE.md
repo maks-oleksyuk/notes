@@ -2,7 +2,7 @@
 
 Version 2, December 2004
 
-Copyright (C) 2023 Maks Oleksyuk [maks.oleksyuk@gmail.com](mailto:maks.oleksyuk@gmail.com)
+Copyright (C) 2023 Maks Oleksyuk
 
 Everyone is permitted to copy and distribute verbatim or modified copies of this
 license document, and changing it is allowed as long as the name is changed.

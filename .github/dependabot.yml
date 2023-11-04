@@ -1,5 +1,6 @@
 version: 2
 updates:
+  # gh-pages branch
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -15,5 +16,16 @@ updates:
       interval: monthly
     groups:
       pnpm-dependencies:
+        patterns:
+          - '*'
+
+  # Drupal branch
+  - package-ecosystem: npm
+    directory: /themes/nts_theme
+    schedule:
+      interval: monthly
+    target-branch: drupal
+    groups:
+      theme-dependencies:
         patterns:
           - '*'
