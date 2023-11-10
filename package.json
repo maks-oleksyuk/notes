@@ -14,9 +14,9 @@
   },
   "devDependencies": {
     "prettier": "^3.0.3",
-    "vitepress": "1.0.0-rc.24",
+    "vitepress": "1.0.0-rc.25",
     "vitepress-plugin-tabs": "^0.4.1",
-    "vue": "^3.3.7"
+    "vue": "^3.3.8"
   },
   "engines": {
     "pnpm": ">=8",
