@@ -73,4 +73,4 @@ jobs:
         uses: actions/upload-pages-artifact@v2
         with:
           name: artifact
-          path: artifact
+          path: ./dist

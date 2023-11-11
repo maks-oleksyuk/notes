@@ -40,7 +40,7 @@ jobs:
         with:
           workflow: ci.yml
           name: artifact
-          path: artifact
+          path: ./dist
       - name: Test
         run: cat artifact/sha | grep $GITHUB_SHA
 #  cleanup:
