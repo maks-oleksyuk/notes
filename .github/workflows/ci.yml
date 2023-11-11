@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - gh-pages
+      - feature/ci
+  pull_request:
+    branches:
+      - gh-pages
+      - feature/ci
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  lint:
+    name: 🪄 Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🪄 Prettify code
+        uses: creyD/prettier_action@v4.3
+        with:
+          dry: true
+          prettier_options: '-c ./ !pnpm-lock.yaml'
+
+  build:
+    name: 🏗️ Build (node - ${{ matrix.node }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node: [18.x, 20.x, 21.x]
+
+    steps:
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: ⚙️ Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: ⚙️ Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        timeout-minutes: 5
+        with:
+          cache: pnpm
+          node-version: ${{ matrix.node }}
+
+      - name: ⚙️ Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: 📦 Install dependencies
+        env:
+          PNPM_FLAGS: --frozen-lockfile --color=always
+        run: pnpm i ${{ env.PNPM_FLAGS }}
+
+      - name: 🏗️ Build site with VitePress
+        run: pnpm notes:build
+
+      - name: 📤 Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          name: artifact
+          path: artifact
