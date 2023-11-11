@@ -1,21 +1,23 @@
 {
   "homepage": "https://maks-oleksyuk.github.io/notes",
   "license": "WTFPL",
+  "type": "module",
   "author": {
     "name": "Maks Oleksyuk",
     "url": "https://github.com/maks-oleksyuk"
   },
   "scripts": {
-    "lint": "run-p lint:eslint lint:stylelint lint:prettier",
+    "lint": "run-p lint:js lint:style lint:format",
     "lint:fix": "run-p lint:*:fix",
-    "lint:eslint": "eslint js --no-error-on-unmatched-pattern",
-    "lint:eslint:fix": "eslint js --no-error-on-unmatched-pattern --fix",
-    "lint:prettier": "prettier styles -c --cache --no-error-on-unmatched-pattern",
-    "lint:prettier:fix": "prettier styles -w --no-error-on-unmatched-pattern",
-    "lint:stylelint": "stylelint styles --aei",
-    "lint:stylelint:fix": "stylelint styles --aei --fix"
+    "lint:js": "eslint js --no-error-on-unmatched-pattern",
+    "lint:js:fix": "eslint js --no-error-on-unmatched-pattern --fix",
+    "lint:style": "stylelint styles --aei",
+    "lint:style:fix": "stylelint styles --aei --fix",
+    "lint:format": "prettier styles -c --cache --no-error-on-unmatched-pattern",
+    "lint:format:fix": "prettier styles -w --no-error-on-unmatched-pattern"
   },
   "devDependencies": {
+    "css-loader": "^6.8.1",
     "eslint": "^8.53.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.0.0",
@@ -23,12 +25,18 @@
     "eslint-plugin-jquery": "^1.5.1",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-yml": "^1.10.0",
+    "mini-css-extract-plugin": "^2.7.6",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.0.3",
+    "sass": "^1.69.5",
+    "sass-loader": "^13.3.2",
     "stylelint": "^15.11.0",
     "stylelint-config-standard-scss": "^11.1.0",
     "stylelint-order": "^6.0.3",
-    "stylelint-scss": "^5.3.0"
+    "stylelint-scss": "^5.3.1",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-remove-empty-scripts": "^1.0.4"
   },
   "engines": {
     "pnpm": ">=8",
