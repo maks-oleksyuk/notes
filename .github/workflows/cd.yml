@@ -55,7 +55,7 @@ jobs:
         with:
           workflow: ci.yml
           name: dist
-          path: ./dist
+          path: ./
 
       - name: 🚀 Deploy to GitHub Pages
         id: deployment
