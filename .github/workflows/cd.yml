@@ -61,10 +61,11 @@ jobs:
       - name: ⚙️ Setup Pages
         uses: actions/configure-pages@v3
 
-      - name: 📥 Upload artifact
+      - name: 📤 Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: ./
+          name: github-pages
+          path: artifact.tar
 
       - name: 🚀 Deploy to GitHub Pages
         id: deployment
