@@ -39,7 +39,7 @@ jobs:
 
   deploy:
     name: 🌐 Deploy
-    needs: build
+    needs: cleanup
     runs-on: ubuntu-latest
 
     environment:
