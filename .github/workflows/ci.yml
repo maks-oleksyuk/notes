@@ -1,5 +1,6 @@
 name: CI
 
+# test comment to check workflow
 on:
   push:
     branches:
