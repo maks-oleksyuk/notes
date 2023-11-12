@@ -54,8 +54,15 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: ci.yml
+          workflow_conclusion: completed
           name: dist
           path: ./
+
+      - name: Unzip artifacts
+        run: |
+          rm -rf ./dist
+          unzip artifacts.zip
+          rm -f artifacts.zip
 
       - name: 🚀 Deploy to GitHub Pages
         id: deployment
