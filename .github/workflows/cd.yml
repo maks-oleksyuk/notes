@@ -1,9 +1,9 @@
-name: CD
+name: cd
 
 on:
   workflow_run:
     workflows:
-      - CI
+      - ci
     types:
       - completed
     branches:
@@ -24,48 +24,39 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  wait:
+  cleanup:
+    name: 🧹 Clean up GitHub deployment
     runs-on: ubuntu-latest
+    permissions: write-all
+
     steps:
-      - name: Wait
-        run: sleep 1
-  download-latest:
+      - name: 🗑 Delete deployment
+        uses: strumwolf/delete-deployment-environment@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: github-pages
+          onlyRemoveDeployments: true
+
+  deploy:
+    name: 🌐 Deploy
+    needs: build
     runs-on: ubuntu-latest
-    needs: wait
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
-      - name: Checkout
+      - name: 🛎️ Checkout
         uses: actions/checkout@v4
-      - name: Download
+
+      - name: Download artifacts
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: ci.yml
-          name: artifact
+          name: dist
           path: ./dist
-      - name: Test
-        run: ls; cd dist; ls;
-#  cleanup:
-#    name: 🧹 Clean up GitHub repository
-#
-#    permissions: write-all
-#
-#    steps:
-#      - name: 🗑 Delete deployment
-#        uses: strumwolf/delete-deployment-environment@v2
-#        with:
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#          environment: github-pages
-#          onlyRemoveDeployments: true
-#
-#  deploy:
-#    name: 🌐 Deploy
-#    needs: build
-#    runs-on: ubuntu-latest
-#
-#    environment:
-#      name: github-pages
-#      url: ${{ steps.deployment.outputs.page_url }}
-#
-#    steps:
-#      - name: 🚀 Deploy to GitHub Pages
-#        id: deployment
-#        uses: actions/deploy-pages@v2
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
