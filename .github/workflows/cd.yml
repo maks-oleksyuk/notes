@@ -65,7 +65,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: github-pages
-          path: artifact.tar
+          path: ./artifact.tar
 
       - name: 🚀 Deploy to GitHub Pages
         id: deployment
