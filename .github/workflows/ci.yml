@@ -1,18 +1,15 @@
-name: CI/CD
+name: CI
 
 on:
   push:
     branches:
       - gh-pages
+  pull_request:
+    branches:
+      - gh-pages
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  pages: write
-  contents: read
-  id-token: write
 
 concurrency:
   group: pages
@@ -25,18 +22,11 @@ jobs:
     permissions: write-all
 
     steps:
-      - name: 🗑 Delete deployment
-        uses: strumwolf/delete-deployment-environment@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          environment: github-pages
-          onlyRemoveDeployments: true
-
       - name: 🗑 Delete workflow runs
         uses: dmvict/clean-workflow-runs@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          save_period: 0
+          save_period: 7
           save_min_runs_number: 0
 
   lint:
@@ -79,9 +69,6 @@ jobs:
           cache: pnpm
           node-version: ${{ matrix.node }}
 
-      - name: ⚙️ Setup Pages
-        uses: actions/configure-pages@v3
-
       - name: 📦 Install dependencies
         env:
           PNPM_FLAGS: --frozen-lockfile --color=always
@@ -93,18 +80,5 @@ jobs:
       - name: 📤 Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
+          name: dist
           path: ./dist
-
-  deploy:
-    name: 🌐 Deploy
-    needs: build
-    runs-on: ubuntu-latest
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - name: 🚀 Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
