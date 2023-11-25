@@ -5,7 +5,7 @@
     "require": {
         "php": ">=8.2",
         "composer/installers": "^2.2",
-        "drupal-notes/theme": "@dev",
+        "drupal-notes/nts_theme": "@dev",
         "drupal/admin_toolbar": "^3.4",
         "drupal/core-composer-scaffold": "^10.1",
         "drupal/core-recommended": "^10.1",

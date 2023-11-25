@@ -7,27 +7,29 @@
     "url": "https://github.com/maks-oleksyuk"
   },
   "scripts": {
-    "lint": "run-p lint:js lint:style lint:format",
-    "lint:fix": "run-p lint:*:fix",
-    "lint:js": "eslint js --no-error-on-unmatched-pattern",
+    "lint": "run-p -cls lint:js lint:style lint:format",
+    "lint:fix": "run-p -cls lint:*:fix",
+    "lint:js": "eslint js --no-error-on-unmatched-pattern --color",
     "lint:js:fix": "eslint js --no-error-on-unmatched-pattern --fix",
-    "lint:style": "stylelint styles --aei",
-    "lint:style:fix": "stylelint styles --aei --fix",
-    "lint:format": "prettier styles -c --cache --no-error-on-unmatched-pattern",
-    "lint:format:fix": "prettier styles -w --no-error-on-unmatched-pattern"
+    "lint:style": "stylelint styles --aei --cache --cache-location node_modules/.cache/stylelint/ --color",
+    "lint:style:fix": "stylelint styles --aei --cache --fix",
+    "lint:format": "prettier styles js -c --cache --no-error-on-unmatched-pattern --color",
+    "lint:format:fix": "prettier styles js -wl --cache --no-error-on-unmatched-pattern",
+    "postinstall": "sed -i '/\"airbnb-base\",/d;/^ *$/d' ../../web/core/.eslintrc.json"
   },
   "devDependencies": {
     "css-loader": "^6.8.1",
-    "eslint": "^8.53.0",
+    "eslint": "^8.54.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.29.0",
     "eslint-plugin-jquery": "^1.5.1",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-yml": "^1.10.0",
+    "glob": "^10.3.10",
     "mini-css-extract-plugin": "^2.7.6",
     "npm-run-all": "^4.1.5",
-    "prettier": "^3.0.3",
+    "prettier": "^3.1.0",
     "sass": "^1.69.5",
     "sass-loader": "^13.3.2",
     "stylelint": "^15.11.0",
@@ -38,9 +40,16 @@
     "webpack-cli": "^5.1.4",
     "webpack-remove-empty-scripts": "^1.0.4"
   },
+  "packageManager": "pnpm@8.11.0+",
   "engines": {
     "pnpm": ">=8",
     "node": ">=18"
+  },
+  "eslintConfig": {
+    "extends": [
+      "../../web/core/.eslintrc.passing.json",
+      "airbnb-base"
+    ]
   },
   "prettier": {
     "singleQuote": true,
@@ -53,11 +62,6 @@
     ],
     "plugins": [
       "stylelint-scss"
-    ]
-  },
-  "eslintConfig": {
-    "extends": [
-      "../../web/core/.eslintrc.passing.json"
     ]
   }
 }

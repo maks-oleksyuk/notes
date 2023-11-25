@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9a3ba3fcbf2bcf1559ed7313f75755ea",
+    "content-hash": "313491af404e313a43805ba5fc530e5f",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1141,12 +1141,12 @@
             "time": "2022-12-14T08:49:07+00:00"
         },
         {
-            "name": "drupal-notes/theme",
+            "name": "drupal-notes/nts_theme",
             "version": "dev-drupal",
             "dist": {
                 "type": "path",
                 "url": "themes/nts_theme",
-                "reference": "3172ca06b01ffc75b36ca0367c7b4e23c712ee72"
+                "reference": "3355a495e8c6a087bd9a56cfbbd80ae99109e2a3"
             },
             "type": "drupal-custom-theme",
             "transport-options": {
@@ -1648,16 +1648,16 @@
         },
         {
             "name": "drush/drush",
-            "version": "12.4.2",
+            "version": "12.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drush-ops/drush.git",
-                "reference": "dbc97d7073fc08d06b2fc1208ac9d5e3d037875b"
+                "reference": "8245acede57ecc62a90aa0f19ff3b29e5f11f971"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drush-ops/drush/zipball/dbc97d7073fc08d06b2fc1208ac9d5e3d037875b",
-                "reference": "dbc97d7073fc08d06b2fc1208ac9d5e3d037875b",
+                "url": "https://api.github.com/repos/drush-ops/drush/zipball/8245acede57ecc62a90aa0f19ff3b29e5f11f971",
+                "reference": "8245acede57ecc62a90aa0f19ff3b29e5f11f971",
                 "shasum": ""
             },
             "require": {
@@ -1780,7 +1780,7 @@
                 "issues": "https://github.com/drush-ops/drush/issues",
                 "security": "https://github.com/drush-ops/drush/security/advisories",
                 "slack": "https://drupal.slack.com/messages/C62H9CWQM",
-                "source": "https://github.com/drush-ops/drush/tree/12.4.2"
+                "source": "https://github.com/drush-ops/drush/tree/12.4.3"
             },
             "funding": [
                 {
@@ -1788,7 +1788,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-10-31T14:18:28+00:00"
+            "time": "2023-11-16T22:57:24+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -6354,16 +6354,16 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "1.24.2",
+            "version": "1.24.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "bcad8d995980440892759db0c32acae7c8e79442"
+                "reference": "12f01d214f1c73b9c91fdb3b1c415e4c70652083"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/bcad8d995980440892759db0c32acae7c8e79442",
-                "reference": "bcad8d995980440892759db0c32acae7c8e79442",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/12f01d214f1c73b9c91fdb3b1c415e4c70652083",
+                "reference": "12f01d214f1c73b9c91fdb3b1c415e4c70652083",
                 "shasum": ""
             },
             "require": {
@@ -6395,9 +6395,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.24.2"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.24.3"
             },
-            "time": "2023-09-26T12:28:12+00:00"
+            "time": "2023-11-18T20:15:32+00:00"
         },
         {
             "name": "sirbrillig/phpcs-variable-analysis",
@@ -6583,7 +6583,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "drupal-notes/theme": 20,
+        "drupal-notes/nts_theme": 20,
         "drupal/gin": 5,
         "chi-teck/drupal-coder-extension": 10
     },
