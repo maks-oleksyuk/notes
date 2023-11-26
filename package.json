@@ -9,15 +9,16 @@
     "notes:dev": "vitepress dev",
     "notes:build": "vitepress build",
     "notes:preview": "vitepress preview",
-    "prt:check": "prettier -c ./ '!pnpm-lock.yaml'",
-    "prt:fix": "prettier -w ./ '!pnpm-lock.yaml'"
+    "prt:check": "prettier -c ./ '!pnpm-lock.yaml' --cache",
+    "prt:fix": "prettier -wl ./ '!pnpm-lock.yaml' --cache"
   },
   "devDependencies": {
-    "prettier": "^3.0.3",
-    "vitepress": "1.0.0-rc.25",
-    "vitepress-plugin-tabs": "^0.4.1",
-    "vue": "^3.3.8"
+    "prettier": "^3.1.0",
+    "vitepress": "1.0.0-rc.31",
+    "vitepress-plugin-tabs": "^0.5.0",
+    "vue": "^3.3.9"
   },
+  "packageManager": "pnpm@8.11.0+",
   "engines": {
     "pnpm": ">=8",
     "node": ">=18"
