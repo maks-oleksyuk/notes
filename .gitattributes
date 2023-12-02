@@ -1,2 +1,5 @@
+# Linguist overrides
 *.md linguist-detectable=true
 *.md linguist-documentation=false
+README.md  linguist-detectable=false
+LICENSE.md linguist-detectable=false
