@@ -64,3 +64,35 @@
 .DocSearch {
   --docsearch-primary-color: var(--vp-c-brand-1) !important;
 }
+
+/**
+ * Component: Back to top
+ * -------------------------------------------------------------------------- */
+
+.go-to-top {
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  padding: 0;
+  text-align: center;
+  border-radius: 50%;
+  background-color: var(--vp-c-bg-soft);
+  box-shadow: 0 2px 12px var(--vp-c-green-soft);
+  cursor: pointer;
+  position: fixed;
+  bottom: 2rem;
+  right: 2.5rem;
+  transition: opacity 0.3s;
+
+  &:hover {
+    background-color: var(--vp-input-switch-bg-color);
+  }
+
+  & .icon-top {
+    width: 1em;
+    height: 1em;
+    font-size: 14px;
+    display: inline-block;
+    color: var(--vp-c-brand-1);
+  }
+}

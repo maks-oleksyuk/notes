@@ -9,14 +9,15 @@
     "notes:dev": "vitepress dev",
     "notes:build": "vitepress build",
     "notes:preview": "vitepress preview",
-    "prt:check": "prettier -c ./ '!pnpm-lock.yaml' --cache",
-    "prt:fix": "prettier -wl ./ '!pnpm-lock.yaml' --cache"
+    "lint:format": "prettier -c ./ '!pnpm-lock.yaml' --cache",
+    "lint:format:fix": "prettier -wl ./ '!pnpm-lock.yaml' --cache"
   },
   "devDependencies": {
     "prettier": "^3.1.0",
     "vitepress": "1.0.0-rc.31",
+    "vitepress-plugin-back-to-top": "^1.0.1",
     "vitepress-plugin-tabs": "^0.5.0",
-    "vue": "^3.3.9"
+    "vue": "^3.3.10"
   },
   "packageManager": "pnpm@8.11.0+",
   "engines": {
