@@ -1,0 +1,12 @@
+.translations {
+  text-align: center;
+
+  & .title,
+  & .trans-title {
+    padding: 0 12px;
+  }
+}
+
+.item.social-links {
+  justify-content: center;
+}
