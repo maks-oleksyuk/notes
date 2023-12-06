@@ -9,21 +9,7 @@ export default defineConfig({
   outDir: './dist',
   cleanUrls: true,
   lastUpdated: true,
-  head: [
-    ['link', { rel: 'icon', href: '/notes/favicon.ico' }],
-    // [
-    //   'script',
-    //   {
-    //     async: '',
-    //     src: 'https://www.googletagmanager.com/gtag/js?id=G-L5YJQ5Q3TD',
-    //   },
-    // ],
-    // [
-    //   'script',
-    //   {},
-    //   "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', 'G-L5YJQ5Q3TD');",
-    // ],
-  ],
+  head: [['link', { rel: 'icon', href: '/notes/favicon.ico' }]],
   themeConfig: {
     nav: [{ text: 'Drupal', link: '/drupal' }],
     socialLinks: [
