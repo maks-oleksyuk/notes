@@ -1,8 +1,10 @@
-import path from 'path';
+import autoprefixer from 'autoprefixer';
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import { glob } from 'glob';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import path from 'path';
+import postcssRTLCSS from 'postcss-rtlcss';
 import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts';
-import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
 const dirname = process.cwd();
 const isDev = process.env.NODE_ENV !== 'production';
@@ -30,17 +32,55 @@ export default {
     pathinfo: false,
     publicPath: '../../',
   },
+  devtool: 'source-map',
   module: {
     rules: [
       {
         test: /\.(css|scss)$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+        use: [
+          MiniCssExtractPlugin.loader, 
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: isDev,
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              sourceMap: isDev,
+              postcssOptions: {
+                plugins: [
+                  autoprefixer(),
+                  postcssRTLCSS(),
+                  ['postcss-perfectionist', {
+                    format: 'expanded',
+                    indentSize: 2,
+                    trimLeadingZero: true,
+                    zeroLengthNoUnit: false,
+                    maxAtRuleLength: false,
+                    maxSelectorLength: false,
+                    maxValueLength: false,
+                  }]
+                ],
+              },
+            },
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: isDev,
+            },
+          },
+        ],
       },
     ],
   },
   plugins: [
     new RemoveEmptyScriptsPlugin(),
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin({
+      cleanStaleWebpackAssets: false
+    }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].css',
     }),
