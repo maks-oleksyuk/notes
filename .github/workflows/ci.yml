@@ -55,7 +55,7 @@ jobs:
 
     strategy:
       matrix:
-        node: [18.x, 20.x, 21.x]
+        node: [20.x, 21.x]
 
     steps:
       - name: 🛎️ Checkout
@@ -84,7 +84,7 @@ jobs:
         run: pnpm notes:build
 
       - name: 📤 Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: dist
+          name: dist-${{ matrix.node }}
           path: ./dist
