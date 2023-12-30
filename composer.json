@@ -1,9 +1,10 @@
 {
     "name": "maks-oleksyuk/drupal-notes",
+    "description": "Project for my notes and tests.",
     "license": "GPL-3.0-or-later",
     "type": "project",
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.3",
         "composer/installers": "^2.2",
         "drupal-notes/nts_theme": "@dev",
         "drupal/admin_toolbar": "^3.4",
@@ -26,7 +27,7 @@
         },
         {
             "type": "path",
-            "url": "themes/*"
+            "url": "app/**/*"
         }
     ],
     "minimum-stability": "dev",

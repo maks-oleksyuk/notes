@@ -9,11 +9,12 @@ import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts';
 const dirname = process.cwd();
 const isDev = process.env.NODE_ENV !== 'production';
 
-const getEntries = () =>
-  glob
+const getEntries = () => {
+  return glob
     .sync('./styles/**/*.scss')
     .filter((file) => !path.basename(file).startsWith('_'))
-    .reduce((entries, file) => {
+    .reduce((acc, file) => {
+      const entries = { ...acc };
       const key = path
         .relative('./styles', file)
         .replace(/\.(scss|css)$/, '')
@@ -21,6 +22,7 @@ const getEntries = () =>
       entries[key.startsWith('style') ? `base/${key}` : key] = `./${file}`;
       return entries;
     }, {});
+};
 
 // mode: production development
 export default {
@@ -36,13 +38,33 @@ export default {
   module: {
     rules: [
       {
+        test: /\.(png|jpe?g|gif|svg)$/,
+        type: 'javascript/auto',
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              esModule: false,
+              name: '[path][name].[ext]',
+              // todo: fix public path.
+              // publicPath: (url, resourcePath, context) => {
+              //   const relativePath = path.relative(context, resourcePath);
+              //   return `./${relativePath.replace(/^\/+/, '')}`;
+              // },
+              outputPath: '../',
+            },
+          },
+        ],
+      },
+      {
         test: /\.(css|scss)$/,
         use: [
-          MiniCssExtractPlugin.loader, 
+          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
               sourceMap: isDev,
+              importLoaders: 2,
             },
           },
           {
@@ -53,15 +75,18 @@ export default {
                 plugins: [
                   autoprefixer(),
                   postcssRTLCSS(),
-                  ['postcss-perfectionist', {
-                    format: 'expanded',
-                    indentSize: 2,
-                    trimLeadingZero: true,
-                    zeroLengthNoUnit: false,
-                    maxAtRuleLength: false,
-                    maxSelectorLength: false,
-                    maxValueLength: false,
-                  }]
+                  [
+                    'postcss-perfectionist',
+                    {
+                      format: 'expanded',
+                      indentSize: 2,
+                      trimLeadingZero: true,
+                      zeroLengthNoUnit: false,
+                      maxAtRuleLength: false,
+                      maxSelectorLength: false,
+                      maxValueLength: false,
+                    },
+                  ],
                 ],
               },
             },
@@ -76,10 +101,17 @@ export default {
       },
     ],
   },
+  resolve: {
+    alias: {
+      media: path.join(dirname, 'media'),
+      images: path.join(dirname, 'media/images'),
+      // font: path.join(__dirname, 'media/font'),
+    },
+  },
   plugins: [
     new RemoveEmptyScriptsPlugin(),
     new CleanWebpackPlugin({
-      cleanStaleWebpackAssets: false
+      cleanStaleWebpackAssets: false,
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].css',
