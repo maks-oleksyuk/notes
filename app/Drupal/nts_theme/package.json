@@ -30,7 +30,6 @@
     "eslint-plugin-jquery": "^1.5.1",
     "eslint-plugin-prettier": "^5.1.2",
     "eslint-plugin-yml": "^1.11.0",
-    "file-loader": "^6.2.0",
     "glob": "^10.3.10",
     "mini-css-extract-plugin": "^2.7.6",
     "npm-run-all": "^4.1.5",
@@ -65,8 +64,8 @@
   },
   "stylelint": {
     "extends": [
-      "../../../web/core/.stylelintrc.json",
-      "stylelint-config-standard-scss"
+      "stylelint-config-standard-scss",
+      "../../../web/core/.stylelintrc.json"
     ],
     "plugins": [
       "stylelint-scss"

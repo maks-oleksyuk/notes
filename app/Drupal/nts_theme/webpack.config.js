@@ -39,22 +39,16 @@ export default {
     rules: [
       {
         test: /\.(png|jpe?g|gif|svg)$/,
-        type: 'javascript/auto',
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              esModule: false,
-              name: '[path][name].[ext]',
-              // todo: fix public path.
-              // publicPath: (url, resourcePath, context) => {
-              //   const relativePath = path.relative(context, resourcePath);
-              //   return `./${relativePath.replace(/^\/+/, '')}`;
-              // },
-              outputPath: '../',
-            },
-          },
-        ],
+        type: 'asset/resource',
+        generator: {
+          // todo: fix public path.
+          // publicPath: (url, resourcePath, context) => {
+          //   const relativePath = path.relative(context, resourcePath);
+          //   return `../../../${relativePath}`;
+          // },
+          outputPath: '../',
+          filename: '[path][name][ext]',
+        },
       },
       {
         test: /\.(css|scss)$/,

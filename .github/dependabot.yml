@@ -1,7 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: /themes/nts_theme
+    directory: /app/Drupal/nts_theme
     schedule:
       interval: monthly
     groups:
