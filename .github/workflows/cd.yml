@@ -1,9 +1,9 @@
-name: CD
+name: 🚀 CD
 
 on:
   workflow_run:
     workflows:
-      - CI
+      - 🏗️ CI
     types:
       - completed
     branches:

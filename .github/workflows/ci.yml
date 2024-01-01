@@ -1,4 +1,4 @@
-name: CI
+name: 🏗️ CI
 
 on:
   push:
@@ -68,7 +68,7 @@ jobs:
         with:
           version: latest
 
-      - name: ⚙️ Setup Node.js ${{ matrix.node }}
+      - name: ⬡  Setup Node.js ${{ matrix.node }}
         uses: actions/setup-node@v4
         timeout-minutes: 5
         with:
@@ -80,7 +80,7 @@ jobs:
           PNPM_FLAGS: --frozen-lockfile --color=always
         run: pnpm i ${{ env.PNPM_FLAGS }}
 
-      - name: 🏗️ Build site with VitePress
+      - name: ⚡️ Build site with VitePress
         run: pnpm notes:build
 
       - name: 📤 Upload artifact

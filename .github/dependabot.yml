@@ -21,7 +21,7 @@ updates:
 
   # Drupal branch
   - package-ecosystem: npm
-    directory: /themes/nts_theme
+    directory: /app/Drupal/nts_theme
     schedule:
       interval: monthly
     target-branch: drupal
