@@ -1,0 +1,20 @@
+uuid: ae031f51-d0cb-440a-9058-df70898e292e
+langcode: en
+status: true
+dependencies:
+  theme:
+    - nts_theme
+_core:
+  default_config_hash: OQ9aJ-4qVwK1x00o9EOYK4eFDjQr_HLpbPiJaPSVZiQ
+id: nts_theme_local_actions
+theme: nts_theme
+region: content
+weight: -10
+provider: null
+plugin: local_actions_block
+settings:
+  id: local_actions_block
+  label: 'Primary admin actions'
+  label_display: '0'
+  provider: core
+visibility: {  }

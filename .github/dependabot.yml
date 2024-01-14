@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /app/Drupal/nts_theme
+    schedule:
+      interval: monthly
+    groups:
+      theme-dependencies:
+        patterns:
+          - '*'

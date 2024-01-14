@@ -1,0 +1,22 @@
+uuid: ca6d1fbd-66e3-468a-950e-9b74e48ca4eb
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - nts_theme
+_core:
+  default_config_hash: hBHXB7hC05XU7pDYzETt-GUcpFlogK1gkjyAsg0Ym58
+id: nts_theme_content
+theme: nts_theme
+region: content
+weight: 0
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Main page content'
+  label_display: '0'
+  provider: system
+visibility: {  }

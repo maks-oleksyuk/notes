@@ -1,0 +1,22 @@
+uuid: 073f20a2-51b7-4676-86b2-1b4269041b25
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - nts_theme
+_core:
+  default_config_hash: y9X3xgCsO59pQyzNLzY1D3SDJJxCHILLWkpPnmuTJ2E
+id: nts_theme_breadcrumbs
+theme: nts_theme
+region: breadcrumb
+weight: 0
+provider: null
+plugin: system_breadcrumb_block
+settings:
+  id: system_breadcrumb_block
+  label: Breadcrumbs
+  label_display: '0'
+  provider: system
+visibility: {  }

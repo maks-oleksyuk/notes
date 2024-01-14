@@ -1,0 +1,59 @@
+{
+    "name": "maks-oleksyuk/drupal-notes",
+    "description": "Project for my notes and tests.",
+    "license": "GPL-3.0-or-later",
+    "type": "project",
+    "require": {
+        "php": ">=8.3",
+        "composer/installers": "^2.2",
+        "drupal-notes/nts_theme": "@dev",
+        "drupal/admin_toolbar": "^3.4",
+        "drupal/core-composer-scaffold": "^10.2",
+        "drupal/core-recommended": "^10.2",
+        "drupal/gin": "^3.0@RC",
+        "drupal/gin_login": "^2.0",
+        "drush/drush": "^12.4"
+    },
+    "require-dev": {
+        "chi-teck/drupal-coder-extension": "^2.0@beta"
+    },
+    "conflict": {
+        "drupal/drupal": "*"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        },
+        {
+            "type": "path",
+            "url": "app/**/*"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true,
+            "drupal/core-composer-scaffold": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "drupal-scaffold": {
+            "locations": {
+                "web-root": "web/"
+            }
+        },
+        "installer-paths": {
+            "web/core": ["type:drupal-core"],
+            "web/libraries/{$name}": ["type:drupal-library"],
+            "web/modules/contrib/{$name}": ["type:drupal-module"],
+            "web/modules/custom/{$name}": ["type:drupal-custom-module"],
+            "web/profiles/contrib/{$name}": ["type:drupal-profile"],
+            "web/themes/contrib/{$name}": ["type:drupal-theme"],
+            "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
+        }
+    }
+}
