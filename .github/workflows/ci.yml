@@ -63,12 +63,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: ⚙️ Setup pnpm
+      - name: 🟧 Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: latest
 
-      - name: ⬡  Setup Node.js ${{ matrix.node }}
+      - name: ❇️ Setup Node.js ${{ matrix.node }}
         uses: actions/setup-node@v4
         timeout-minutes: 5
         with:

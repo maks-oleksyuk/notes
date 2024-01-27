@@ -4,8 +4,7 @@ vendor
 node_modules
 
 # Ignore directories used by Drupal.
-/themes
-/modules
+/app
 
 # Ignore final build files.
 dist
