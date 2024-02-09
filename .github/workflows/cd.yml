@@ -1,13 +1,12 @@
 name: 🚀 CD
 
 on:
-  workflow_run:
-    workflows:
-      - 🏗️ CI
-    types:
-      - completed
+  push:
     branches:
       - gh-pages
+    paths-ignore:
+      - README.md
+      - LICENSE.md
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -15,7 +14,7 @@ on:
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   pages: write
-  contents: read
+  contents: write
   id-token: write
 
 concurrency:
@@ -24,21 +23,62 @@ concurrency:
 
 jobs:
   cleanup:
-    name: 🧹 Clean up GitHub deployment
+    name: 🧹 Clean up GitHub repo
     runs-on: ubuntu-latest
     permissions: write-all
 
     steps:
       - name: 🗑 Delete deployment
-        uses: strumwolf/delete-deployment-environment@v2
+        uses: strumwolf/delete-deployment-environment@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: github-pages
           onlyRemoveDeployments: true
 
+      - name: 🗑 Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          retain_days: 7
+          keep_minimum_runs: 0
+
+  build:
+    name: 🏗️ Build
+    needs: cleanup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 🟧 Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      - name: ❇️ Setup Node.js
+        uses: actions/setup-node@v4
+        timeout-minutes: 5
+        with:
+          cache: pnpm
+          node-version: 20.x
+
+      - name: 📦 Install dependencies
+        env:
+          PNPM_FLAGS: --frozen-lockfile --color=always
+        run: pnpm i ${{ env.PNPM_FLAGS }}
+
+      - name: ⚡️ Build site with VitePress
+        run: pnpm notes:build
+
+      - name: 📤 Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+          name: dist
+
   deploy:
     name: 🌐 Deploy
-    needs: cleanup
+    needs: build
     runs-on: ubuntu-latest
 
     environment:
@@ -46,26 +86,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: 🛎️ Checkout
-        uses: actions/checkout@v4
-
-      - name: 📥 Download artifacts
-        uses: dawidd6/action-download-artifact@v3
-        with:
-          workflow: ci.yml
-          workflow_conclusion: completed
-          name: dist-20.x
-          path: ./
-
-      - name: ⚙️ Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: 📤 Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: github-pages
-          path: ./artifact.tar
-
       - name: 🚀 Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: dist

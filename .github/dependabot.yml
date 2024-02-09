@@ -5,6 +5,8 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    commit-message:
+      prefix: '⬆️ '
     groups:
       actions-dependencies:
         patterns:
@@ -14,6 +16,8 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    commit-message:
+      prefix: '⬆️ '
     groups:
       pnpm-dependencies:
         patterns:
@@ -24,6 +28,8 @@ updates:
     directory: /app/Drupal/nts_theme
     schedule:
       interval: monthly
+    commit-message:
+      prefix: '⬆️ '
     target-branch: drupal
     groups:
       theme-dependencies:

@@ -22,19 +22,6 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  cleanup:
-    name: 🧹 Clean up GitHub repository
-    runs-on: ubuntu-latest
-    permissions: write-all
-
-    steps:
-      - name: 🗑 Delete workflow runs
-        uses: dmvict/clean-workflow-runs@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          save_period: 7
-          save_min_runs_number: 0
-
   lint:
     name: 🪄 Lint
     runs-on: ubuntu-latest
@@ -64,7 +51,7 @@ jobs:
           fetch-depth: 0
 
       - name: 🟧 Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v3
         with:
           version: latest
 
@@ -82,9 +69,3 @@ jobs:
 
       - name: ⚡️ Build site with VitePress
         run: pnpm notes:build
-
-      - name: 📤 Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          name: dist-${{ matrix.node }}
-          path: ./dist

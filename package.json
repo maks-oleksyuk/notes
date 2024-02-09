@@ -13,17 +13,17 @@
     "lint:format:fix": "prettier -wl ./ '!pnpm-lock.yaml' --cache"
   },
   "devDependencies": {
-    "prettier": "^3.2.4",
-    "vitepress": "1.0.0-rc.41",
+    "prettier": "^3.2.5",
+    "vitepress": "1.0.0-rc.42",
     "vitepress-plugin-back-to-top": "^1.0.1",
     "vitepress-plugin-google-analytics": "^1.0.2",
     "vitepress-plugin-tabs": "^0.5.0",
-    "vue": "^3.4.15"
+    "vue": "^3.4.18"
   },
   "packageManager": "pnpm@8.15.1",
   "engines": {
     "pnpm": ">=8",
-    "node": ">=18"
+    "node": ">=20"
   },
   "prettier": {
     "singleQuote": true,
