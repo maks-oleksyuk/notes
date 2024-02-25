@@ -18,3 +18,8 @@ dist
 
 # Ignore .env files as they are personal.
 .env
+
+# Ignore database folder and archives.
+db
+*.sql
+*.gz

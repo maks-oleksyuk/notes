@@ -36,8 +36,8 @@
     "config": {
         "allow-plugins": {
             "composer/installers": true,
-            "drupal/core-composer-scaffold": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "drupal/core-composer-scaffold": true
         },
         "sort-packages": true
     },
@@ -48,17 +48,37 @@
             }
         },
         "installer-paths": {
-            "web/core": ["type:drupal-core"],
-            "web/libraries/{$name}": ["type:drupal-library"],
-            "web/modules/contrib/{$name}": ["type:drupal-module"],
-            "web/modules/custom/{$name}": ["type:drupal-custom-module"],
-            "web/profiles/contrib/{$name}": ["type:drupal-profile"],
-            "web/themes/contrib/{$name}": ["type:drupal-theme"],
-            "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
+            "web/core": [
+                "type:drupal-core"
+            ],
+            "web/libraries/{$name}": [
+                "type:drupal-library"
+            ],
+            "web/modules/contrib/{$name}": [
+                "type:drupal-module"
+            ],
+            "web/modules/custom/{$name}": [
+                "type:drupal-custom-module"
+            ],
+            "web/profiles/contrib/{$name}": [
+                "type:drupal-profile"
+            ],
+            "web/themes/contrib/{$name}": [
+                "type:drupal-theme"
+            ],
+            "web/themes/custom/{$name}": [
+                "type:drupal-custom-theme"
+            ]
         }
     },
     "scripts": {
+        "db:dump": "mkdir -p db; drush sql:dump > db/db_$(date +%Y.%m.%d).sql.gz --gzip",
         "lint:twig": "twig-cs-fixer lint --config=config/.twig-cs-fixer.php ./app/Drupal",
         "lint:twig:fix": "twig-cs-fixer lint --config=config/.twig-cs-fixer.php ./app/Drupal --fix"
+    },
+    "scripts-descriptions": {
+        "db:dump": "Dump database using Drush in db directory",
+        "lint:twig": "Check twig files for code style",
+        "lint:twig:fix": "Fix twig files code style"
     }
 }
