@@ -6,7 +6,7 @@
     "require": {
         "php": ">=8.3",
         "composer/installers": "^2.2",
-        "drupal-notes/nts_theme": "@dev",
+        "drupal-notes/nts_theme": "^1.0@dev",
         "drupal/admin_toolbar": "^3.4",
         "drupal/core-composer-scaffold": "^10.2",
         "drupal/core-recommended": "^10.2",
@@ -15,7 +15,8 @@
         "drush/drush": "^12.4"
     },
     "require-dev": {
-        "chi-teck/drupal-coder-extension": "^2.0@beta"
+        "chi-teck/drupal-coder-extension": "^2.0@beta",
+        "vincentlanglet/twig-cs-fixer": "^2.5"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -55,5 +56,9 @@
             "web/themes/contrib/{$name}": ["type:drupal-theme"],
             "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
         }
+    },
+    "scripts": {
+        "lint:twig": "twig-cs-fixer lint --config=config/.twig-cs-fixer.php ./app/Drupal",
+        "lint:twig:fix": "twig-cs-fixer lint --config=config/.twig-cs-fixer.php ./app/Drupal --fix"
     }
 }

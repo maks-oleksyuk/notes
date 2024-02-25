@@ -5,7 +5,9 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path';
 import postcssRTLCSS from 'postcss-rtlcss';
 import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts';
+import webpack from 'webpack';
 
+const { SourceMapDevToolPlugin } = webpack;
 const dirname = process.cwd();
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -34,7 +36,6 @@ export default {
     pathinfo: false,
     publicPath: '../../',
   },
-  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -114,6 +115,9 @@ export default {
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].css',
+    }),
+    new SourceMapDevToolPlugin({
+      filename: '[file].map',
     }),
   ],
   stats: {

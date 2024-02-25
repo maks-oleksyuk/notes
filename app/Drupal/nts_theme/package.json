@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "dev": "webpack --progress --watch",
-    "build": "webpack --progress",
+    "build": "webpack --progress --mode=production",
     "lint": "run-p -cls lint:js lint:style lint:format",
     "lint:fix": "run-p -cls lint:*:fix",
     "lint:js": "eslint js --no-error-on-unmatched-pattern --color",
@@ -23,7 +23,7 @@
     "autoprefixer": "^10.4.17",
     "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.10.0",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
@@ -37,20 +37,20 @@
     "postcss-perfectionist": "^2.3.9",
     "postcss-rtlcss": "^5.1.0",
     "prettier": "^3.2.5",
-    "sass": "^1.70.0",
-    "sass-loader": "^14.1.0",
+    "sass": "^1.71.1",
+    "sass-loader": "^14.1.1",
     "stylelint": "^16.2.1",
     "stylelint-config-standard-scss": "^13.0.0",
     "stylelint-order": "^6.0.4",
     "stylelint-scss": "^6.1.0",
-    "webpack": "^5.90.1",
+    "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4",
     "webpack-remove-empty-scripts": "^1.0.4"
   },
-  "packageManager": "pnpm@8.15.1",
+  "packageManager": "pnpm@8.15.4",
   "engines": {
     "pnpm": ">=8",
-    "node": ">=18"
+    "node": ">=20"
   },
   "eslintConfig": {
     "extends": [

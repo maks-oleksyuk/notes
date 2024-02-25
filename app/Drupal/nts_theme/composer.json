@@ -1,4 +1,5 @@
 {
     "name": "drupal-notes/nts_theme",
-    "type": "drupal-custom-theme"
+    "type": "drupal-custom-theme",
+    "version": "1.0.0-dev"
 }

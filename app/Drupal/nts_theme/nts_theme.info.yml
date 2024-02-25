@@ -1,4 +1,22 @@
 name: Notes
 type: theme
+package: Notes
+description: 'A theme for the notes and for experiments.'
 base theme: starterkit_theme
 core_version_requirement: ^10 || ^11
+
+regions:
+  banner: 'Banner'
+  header: 'Header'
+  nav_main: 'Primary menu'
+  nav_additional: 'Secondary menu'
+  hero: 'Hero (full width)'
+  breadcrumb: 'Breadcrumb'
+  messages: 'Messages'
+  content_above: 'Content Above'
+  content: 'Content'
+  content_below: 'Content Below'
+  footer: 'Footer'
+
+libraries:
+  - nts_theme/base

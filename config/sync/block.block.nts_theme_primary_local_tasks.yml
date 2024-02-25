@@ -8,7 +8,7 @@ _core:
   default_config_hash: Hh01DLj9k7UnNdPpOQXHZHW7GHf2OPNDQyCJF7_R9ac
 id: nts_theme_primary_local_tasks
 theme: nts_theme
-region: header
+region: content_above
 weight: 0
 provider: null
 plugin: local_tasks_block

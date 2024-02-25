@@ -1,0 +1,4 @@
+base:
+  css:
+    base:
+      dist/css/base/style.css: {}
