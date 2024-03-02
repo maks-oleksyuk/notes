@@ -1,0 +1,6 @@
+nts_core.admin:
+  title: 'Notes'
+  route_name: nts_core.admin
+  parent: 'system.admin'
+  description: 'Administer and configure Notes.'
+  weight: 15

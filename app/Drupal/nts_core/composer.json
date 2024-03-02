@@ -1,0 +1,6 @@
+{
+    "name": "drupal-notes/nts_core",
+    "description": "Custom main module for Notes site",
+    "license": "GPL-3.0-or-later",
+    "type": "drupal-custom-module"
+}

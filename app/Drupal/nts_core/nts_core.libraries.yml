@@ -1,0 +1,5 @@
+admin.toolbar:
+  version: VERSION
+  css:
+    theme:
+      assets/css/nts_core.toolbar.css: {}

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9ff42c8d4a9d63fe436932d5b6daeae8",
+    "content-hash": "9c56bd26b8440137494c3602a8c314c5",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1141,14 +1141,35 @@
             "time": "2024-02-05T11:35:39+00:00"
         },
         {
+            "name": "drupal-notes/nts_core",
+            "version": "dev-drupal",
+            "dist": {
+                "type": "path",
+                "url": "app/Drupal/nts_core",
+                "reference": "f6e8b9fac8eccb1bfda03009916ff9b149540c9b"
+            },
+            "type": "drupal-custom-module",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "description": "Custom main module for Notes site",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "drupal-notes/nts_theme",
-            "version": "1.0.0-dev",
+            "version": "dev-drupal",
             "dist": {
                 "type": "path",
                 "url": "app/Drupal/nts_theme",
-                "reference": "03c2926b559cd4a5041866bec61ec85403dcb58e"
+                "reference": "7a720802d93bac7348bd956f8abefe7036e2e164"
             },
             "type": "drupal-custom-theme",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "description": "Custom theme for Notes site",
             "transport-options": {
                 "relative": true
             }
@@ -6894,6 +6915,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "drupal-notes/nts_core": 20,
         "drupal-notes/nts_theme": 20,
         "drupal/gin": 5,
         "chi-teck/drupal-coder-extension": 10

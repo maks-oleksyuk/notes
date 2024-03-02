@@ -19,9 +19,9 @@
   --nts-clr-blue-400: color-mix(in oklab, var(--nts-clr-blue), var(--white) 20%);
   --nts-clr-blue-500: var(--nts-clr-blue);
   --nts-clr-blue-600: color-mix(in oklab, var(--nts-clr-blue), var(--black) 20%);
-  --nts-clr-blue-700: color-mix(in oklab, var(--nts-clr-blue), var(--black) 30%);
-  --nts-clr-blue-800: color-mix(in oklab, var(--nts-clr-blue), var(--black) 40%);
-  --nts-clr-blue-900: color-mix(in oklab, var(--nts-clr-blue), var(--black) 50%);
+  --nts-clr-blue-700: color-mix(in oklab, var(--nts-clr-blue), var(--black) 40%);
+  --nts-clr-blue-800: color-mix(in oklab, var(--nts-clr-blue), var(--black) 60%);
+  --nts-clr-blue-900: color-mix(in oklab, var(--nts-clr-blue), var(--black) 80%);
 
   // Green color variation.
   --nts-clr-green-100: color-mix(in oklab, var(--nts-clr-green), var(--white) 80%);
@@ -30,9 +30,9 @@
   --nts-clr-green-400: color-mix(in oklab, var(--nts-clr-green), var(--white) 20%);
   --nts-clr-green-500: var(--nts-clr-green);
   --nts-clr-green-600: color-mix(in oklab, var(--nts-clr-green), var(--black) 20%);
-  --nts-clr-green-700: color-mix(in oklab, var(--nts-clr-green), var(--black) 30%);
-  --nts-clr-green-800: color-mix(in oklab, var(--nts-clr-green), var(--black) 40%);
-  --nts-clr-green-900: color-mix(in oklab, var(--nts-clr-green), var(--black) 50%);
+  --nts-clr-green-700: color-mix(in oklab, var(--nts-clr-green), var(--black) 40%);
+  --nts-clr-green-800: color-mix(in oklab, var(--nts-clr-green), var(--black) 60%);
+  --nts-clr-green-900: color-mix(in oklab, var(--nts-clr-green), var(--black) 80%);
 
   // Red color variation.
   --nts-clr-red-100: color-mix(in oklab, var(--nts-clr-red), var(--white) 80%);
@@ -41,9 +41,9 @@
   --nts-clr-red-400: color-mix(in oklab, var(--nts-clr-red), var(--white) 20%);
   --nts-clr-red-500: var(--nts-clr-red);
   --nts-clr-red-600: color-mix(in oklab, var(--nts-clr-red), var(--black) 20%);
-  --nts-clr-red-700: color-mix(in oklab, var(--nts-clr-red), var(--black) 30%);
-  --nts-clr-red-800: color-mix(in oklab, var(--nts-clr-red), var(--black) 40%);
-  --nts-clr-red-900: color-mix(in oklab, var(--nts-clr-red), var(--black) 50%);
+  --nts-clr-red-700: color-mix(in oklab, var(--nts-clr-red), var(--black) 40%);
+  --nts-clr-red-800: color-mix(in oklab, var(--nts-clr-red), var(--black) 60%);
+  --nts-clr-red-900: color-mix(in oklab, var(--nts-clr-red), var(--black) 80%);
 
   // Yellow color variation.
   --nts-clr-yellow-100: color-mix(in oklab, var(--nts-clr-yellow), var(--white) 80%);
@@ -52,9 +52,9 @@
   --nts-clr-yellow-400: color-mix(in oklab, var(--nts-clr-yellow), var(--white) 20%);
   --nts-clr-yellow-500: var(--nts-clr-yellow);
   --nts-clr-yellow-600: color-mix(in oklab, var(--nts-clr-yellow), var(--black) 20%);
-  --nts-clr-yellow-700: color-mix(in oklab, var(--nts-clr-yellow), var(--black) 30%);
-  --nts-clr-yellow-800: color-mix(in oklab, var(--nts-clr-yellow), var(--black) 40%);
-  --nts-clr-yellow-900: color-mix(in oklab, var(--nts-clr-yellow), var(--black) 50%);
+  --nts-clr-yellow-700: color-mix(in oklab, var(--nts-clr-yellow), var(--black) 40%);
+  --nts-clr-yellow-800: color-mix(in oklab, var(--nts-clr-yellow), var(--black) 60%);
+  --nts-clr-yellow-900: color-mix(in oklab, var(--nts-clr-yellow), var(--black) 80%);
 
   // Cyan color variation.
   --nts-clr-cyan-100: color-mix(in oklab, var(--nts-clr-cyan), var(--white) 80%);
@@ -63,9 +63,9 @@
   --nts-clr-cyan-400: color-mix(in oklab, var(--nts-clr-cyan), var(--white) 20%);
   --nts-clr-cyan-500: var(--nts-clr-cyan);
   --nts-clr-cyan-600: color-mix(in oklab, var(--nts-clr-cyan), var(--black) 20%);
-  --nts-clr-cyan-700: color-mix(in oklab, var(--nts-clr-cyan), var(--black) 30%);
-  --nts-clr-cyan-800: color-mix(in oklab, var(--nts-clr-cyan), var(--black) 40%);
-  --nts-clr-cyan-900: color-mix(in oklab, var(--nts-clr-cyan), var(--black) 50%);
+  --nts-clr-cyan-700: color-mix(in oklab, var(--nts-clr-cyan), var(--black) 40%);
+  --nts-clr-cyan-800: color-mix(in oklab, var(--nts-clr-cyan), var(--black) 60%);
+  --nts-clr-cyan-900: color-mix(in oklab, var(--nts-clr-cyan), var(--black) 80%);
 
   // Gray color variation.
   --nts-clr-gray-100: color-mix(in oklab, var(--nts-clr-gray), var(--white) 80%);
@@ -74,9 +74,9 @@
   --nts-clr-gray-400: color-mix(in oklab, var(--nts-clr-gray), var(--white) 20%);
   --nts-clr-gray-500: var(--nts-clr-gray);
   --nts-clr-gray-600: color-mix(in oklab, var(--nts-clr-gray), var(--black) 20%);
-  --nts-clr-gray-700: color-mix(in oklab, var(--nts-clr-gray), var(--black) 30%);
-  --nts-clr-gray-800: color-mix(in oklab, var(--nts-clr-gray), var(--black) 40%);
-  --nts-clr-gray-900: color-mix(in oklab, var(--nts-clr-gray), var(--black) 50%);
+  --nts-clr-gray-700: color-mix(in oklab, var(--nts-clr-gray), var(--black) 40%);
+  --nts-clr-gray-800: color-mix(in oklab, var(--nts-clr-gray), var(--black) 60%);
+  --nts-clr-gray-900: color-mix(in oklab, var(--nts-clr-gray), var(--black) 80%);
 
   // Theme colors.
   --nts-clr-primary:   var(--nts-clr-blue);

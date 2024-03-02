@@ -1,7 +1,7 @@
-name: Notes
+name: 'Notes Theme'
+description: 'A theme for the notes and for experiments.'
 type: theme
 package: Notes
-description: 'A theme for the notes and for experiments.'
 base theme: starterkit_theme
 core_version_requirement: ^10 || ^11
 
