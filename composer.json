@@ -72,12 +72,14 @@
         }
     },
     "scripts": {
-        "db:dump": "mkdir -p db; drush sql:dump > db/db_$(date +%Y.%m.%d).sql.gz --gzip",
+        "dump:db": "mkdir -p dump; drush sql:dump > dump/db_$(date +%Y.%m.%d).sql.gz --gzip",
+        "dump:files": "mkdir -p dump; drush ard --files --destination=../dump/files_$(date +%Y.%m.%d).tar.gz",
         "lint:twig": "twig-cs-fixer lint --config=config/.twig-cs-fixer.php ./app/Drupal",
         "lint:twig:fix": "twig-cs-fixer lint --config=config/.twig-cs-fixer.php ./app/Drupal --fix"
     },
     "scripts-descriptions": {
-        "db:dump": "Dump database using Drush in db directory",
+        "dump:db": "Dump database using Drush in dump directory",
+        "dump:files": "Archive public files using Drush in dump directory",
         "lint:twig": "Check twig files for code style",
         "lint:twig:fix": "Fix twig files code style"
     }

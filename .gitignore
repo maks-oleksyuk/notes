@@ -19,7 +19,7 @@ dist
 # Ignore .env files as they are personal.
 .env
 
-# Ignore database folder and archives.
-db
+# Ignore dump folder and archives.
+dump
 *.sql
 *.gz
