@@ -13,7 +13,8 @@
         "drupal/core-recommended": "^10.2",
         "drupal/gin": "^3.0@RC",
         "drupal/gin_login": "^2.0",
-        "drush/drush": "^12.4"
+        "drush/drush": "^12.4",
+        "skilldlabs/drupal-cleanup": "^1.4"
     },
     "require-dev": {
         "chi-teck/drupal-coder-extension": "^2.0@beta",
@@ -38,11 +39,30 @@
         "allow-plugins": {
             "composer/installers": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "drupal/core-composer-scaffold": true
+            "drupal/core-composer-scaffold": true,
+            "skilldlabs/drupal-cleanup": true
         },
         "sort-packages": true
     },
     "extra": {
+        "drupal-cleanup": {
+            "drupal-core": [
+                "tests",
+                "modules/*/tests",
+                "modules/*/src/Tests",
+                "profiles/demo_umami",
+                "profiles/*test*",
+                "profiles/*/tests"
+            ],
+            "drupal-module": [
+                "tests",
+                "src/Tests"
+            ],
+            "drupal-theme": [
+                "tests",
+                "src/Tests"
+            ]
+        },
         "drupal-scaffold": {
             "locations": {
                 "web-root": "web/"

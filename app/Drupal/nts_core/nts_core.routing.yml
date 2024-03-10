@@ -1,7 +1,8 @@
 nts_core.admin:
   path: '/admin/notes'
   defaults:
-    _title: 'Notes'
+    _title: 'Notes Admin panel'
     _controller: '\Drupal\system\Controller\SystemController::overview'
+    link_id: 'nts_core.admin'
   requirements:
     _permission: 'access administration pages'
