@@ -15,17 +15,6 @@
 }
 
 /**
- * Colors: Background
- * -------------------------------------------------------------------------- */
-
-.dark {
-  --vp-c-bg: #000000;
-  --vp-c-bg-alt: #161618;
-  --vp-c-bg-elv: #0d0d0d;
-  --vp-c-bg-soft: #0d0d0d;
-}
-
-/**
  * Colors: Borders
  * -------------------------------------------------------------------------- */
 
@@ -64,12 +53,4 @@
   :root {
     --vp-home-hero-image-filter: blur(72px);
   }
-}
-
-/**
- * Component: Algolia
- * -------------------------------------------------------------------------- */
-
-.DocSearch {
-  --docsearch-primary-color: var(--vp-c-brand-1) !important;
 }

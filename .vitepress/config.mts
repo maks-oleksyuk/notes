@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress';
+import { generateSidebar } from 'vitepress-sidebar';
 import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs';
 
 export default defineConfig({
@@ -11,11 +12,22 @@ export default defineConfig({
   lastUpdated: true,
   head: [['link', { rel: 'icon', href: '/notes/favicon.ico' }]],
   themeConfig: {
-    nav: [{ text: 'Drupal', link: '/drupal' }],
+    nav: [{ text: 'Drupal', link: '/en/drupal/' }],
     socialLinks: [
       { icon: 'github', link: '//github.com/maks-oleksyuk/notes' },
       { icon: 'linkedin', link: '//linkedin.com/in/maks-oleksyuk' },
     ],
+    sidebar: generateSidebar([
+      {
+        documentRootPath: 'src',
+        scanStartPath: 'en/drupal',
+        resolvePath: '/en/drupal/',
+        useTitleFromFrontmatter: true,
+        useFolderTitleFromIndexFile: true,
+        collapsed: true,
+        includeFolderIndexFile: true,
+      },
+    ]),
   },
   locales: {
     root: {
