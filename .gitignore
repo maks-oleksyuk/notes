@@ -23,3 +23,7 @@ dist
 dump
 *.sql
 *.gz
+
+# Ignore temporary files and cache directories.
+cache
+.temp

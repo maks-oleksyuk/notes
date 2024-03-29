@@ -1,8 +1,42 @@
+# Base admin routes.
+
 nts_core.admin:
   path: '/admin/notes'
   defaults:
     _title: 'Notes Admin panel'
     _controller: '\Drupal\system\Controller\SystemController::overview'
-    link_id: 'nts_core.admin'
+    link_id: nts_core.admin
+  requirements:
+    _permission: 'access administration pages'
+
+nts_core.admin.add:
+  path: '/admin/notes/add'
+  defaults:
+    _title: 'Add'
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+  requirements:
+    _permission: 'access administration pages'
+
+nts_core.admin.content:
+  path: '/admin/notes/content'
+  defaults:
+    _title: 'Content'
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+  requirements:
+    _permission: 'access administration pages'
+
+nts_core.admin.structure:
+  path: '/admin/notes/structure'
+  defaults:
+    _title: 'Structure'
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+  requirements:
+    _permission: 'access administration pages'
+
+nts_core.admin.settings:
+  path: '/admin/notes/settings'
+  defaults:
+    _title: 'Settings'
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
   requirements:
     _permission: 'access administration pages'

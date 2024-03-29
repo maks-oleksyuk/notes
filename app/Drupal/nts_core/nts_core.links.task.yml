@@ -1,30 +1,17 @@
-nts_core.admin:
-  title: 'Notes'
-  description: 'Administer and configure Notes.'
-  route_name: nts_core.admin
-  parent: system.admin
-  weight: -15
-
+# Base admin tabs.
 nts_core.admin.add:
   title: 'Add'
   route_name: nts_core.admin.add
-  parent: nts_core.admin
-  weight: 0
-
+  base_route: nts_core.admin
 nts_core.admin.content:
   title: 'Content'
   route_name: nts_core.admin.content
-  parent: nts_core.admin
-  weight: 1
-
+  base_route: nts_core.admin
 nts_core.admin.structure:
   title: 'Structure'
   route_name: nts_core.admin.structure
-  parent: nts_core.admin
-  weight: 2
-
+  base_route: nts_core.admin
 nts_core.admin.settings:
   title: 'Settings'
   route_name: nts_core.admin.settings
-  parent: nts_core.admin
-  weight: 3
+  base_route: nts_core.admin

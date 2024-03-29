@@ -6,14 +6,14 @@
     "require": {
         "php": ">=8.3",
         "composer/installers": "^2.2",
-        "drupal-notes/nts_core": "^1.0",
-        "drupal-notes/nts_theme": "^1.0",
+        "drupal-notes/nts_core": "^1.0@dev",
+        "drupal-notes/nts_theme": "^1.0@dev",
         "drupal/admin_toolbar": "^3.4",
         "drupal/core-composer-scaffold": "^10.2",
         "drupal/core-recommended": "^10.2",
         "drupal/gin": "^3.0@RC",
         "drupal/gin_login": "^2.0",
-        "drush/drush": "^12.4",
+        "drush/drush": "^12.5",
         "skilldlabs/drupal-cleanup": "^1.4"
     },
     "require-dev": {
@@ -93,7 +93,7 @@
         }
     },
     "scripts": {
-        "dump:db": "mkdir -p dump; drush sql:dump > dump/db_$(date +%Y.%m.%d).sql.gz --gzip",
+        "dump:db": "mkdir -p dump; drush sql:dump --structure-tables-list=cache,cache_*,search_index,watchdog > dump/db_$(date +%Y.%m.%d).sql.gz --gzip",
         "dump:files": "mkdir -p dump; drush ard --files --destination=../dump/files_$(date +%Y.%m.%d).tar.gz",
         "lint:twig": "twig-cs-fixer lint --config=config/.twig-cs-fixer.php ./app/Drupal",
         "lint:twig:fix": "twig-cs-fixer lint --config=config/.twig-cs-fixer.php ./app/Drupal --fix"
