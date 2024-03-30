@@ -22,10 +22,10 @@ export default defineConfig({
         documentRootPath: 'src',
         scanStartPath: 'en/drupal',
         resolvePath: '/en/drupal/',
-        useTitleFromFrontmatter: true,
-        useFolderTitleFromIndexFile: true,
         collapsed: true,
-        includeFolderIndexFile: true,
+        useTitleFromFrontmatter: true,
+        useFolderLinkFromIndexFile: true,
+        useFolderTitleFromIndexFile: true,
       },
     ]),
   },
@@ -53,6 +53,11 @@ export default defineConfig({
   markdown: {
     config(md) {
       md.use(tabsMarkdownPlugin);
+    },
+  },
+  vite: {
+    ssr: {
+      noExternal: ['@nolebase/vitepress-plugin-enhanced-readabilities'],
     },
   },
 });

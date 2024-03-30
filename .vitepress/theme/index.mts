@@ -1,17 +1,21 @@
 import { h } from 'vue';
-import Theme from 'vitepress/theme';
+import DefaultTheme from 'vitepress/theme';
 import { enhanceAppWithTabs } from 'vitepress-plugin-tabs/client';
 import vitepressBackToTop from 'vitepress-plugin-back-to-top';
 import googleAnalytics from 'vitepress-plugin-google-analytics';
+import { NolebaseEnhancedReadabilitiesMenu } from '@nolebase/vitepress-plugin-enhanced-readabilities';
 
 import './styles/vars.css';
 import './styles/base.css';
 import './styles/components/back-to-top.css';
+import '@nolebase/vitepress-plugin-enhanced-readabilities/dist/style.css';
 
 export default {
-  extends: Theme,
+  extends: DefaultTheme,
   Layout: () => {
-    return h(Theme.Layout, null, {});
+    return h(DefaultTheme.Layout, null, {
+      'nav-bar-content-after': () => h(NolebaseEnhancedReadabilitiesMenu),
+    });
   },
   enhanceApp({ app }) {
     enhanceAppWithTabs(app);
