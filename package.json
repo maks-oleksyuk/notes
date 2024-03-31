@@ -28,7 +28,8 @@
     "node": ">=20"
   },
   "prettier": {
-    "singleQuote": true,
-    "bracketSameLine": true
+    "bracketSameLine": true,
+    "proseWrap": "always",
+    "singleQuote": true
   }
 }

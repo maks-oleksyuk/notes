@@ -10,3 +10,7 @@
 .item.social-links {
   justify-content: center;
 }
+
+.vp-doc p {
+  text-align: justify;
+}
