@@ -1,9 +1,13 @@
+# Basic admin toolbar item.
+
 nts_core.admin:
   title: 'Notes'
   description: 'Administer and configure Notes.'
   route_name: nts_core.admin
   parent: system.admin
   weight: -15
+
+# Basic categories.
 
 nts_core.admin.add:
   title: 'Add'

@@ -1,4 +1,5 @@
-# Base admin tabs.
+# Base admin tabs for toolbar item.
+
 nts_core.admin.add:
   title: 'Add'
   route_name: nts_core.admin.add

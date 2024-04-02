@@ -1,4 +1,4 @@
-# Base admin routes.
+# Basic admin route for toolbar item.
 
 nts_core.admin:
   path: '/admin/notes'
@@ -8,6 +8,8 @@ nts_core.admin:
     link_id: nts_core.admin
   requirements:
     _permission: 'access administration pages'
+
+# Basic admin routes for categories.
 
 nts_core.admin.add:
   path: '/admin/notes/add'

@@ -18,7 +18,7 @@
     },
     "require-dev": {
         "chi-teck/drupal-coder-extension": "^2.0@beta",
-        "vincentlanglet/twig-cs-fixer": "^2.5"
+        "vincentlanglet/twig-cs-fixer": "^2.6"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -50,6 +50,8 @@
                 "tests",
                 "modules/*/tests",
                 "modules/*/src/Tests",
+                "themes/*/tests",
+                "themes/*/src/Tests",
                 "profiles/demo_umami",
                 "profiles/*test*",
                 "profiles/*/tests"
@@ -64,6 +66,9 @@
             ]
         },
         "drupal-scaffold": {
+            "file-mapping": {
+                "[web-root]/sites/default/settings.php": "assets/scaffold/settings.php"
+            },
             "locations": {
                 "web-root": "web/"
             }
