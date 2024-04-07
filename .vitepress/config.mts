@@ -12,7 +12,7 @@ export default defineConfig({
   lastUpdated: true,
   head: [['link', { rel: 'icon', href: '/notes/favicon.ico' }]],
   themeConfig: {
-    nav: [{ text: 'Drupal', link: '/en/drupal/' }],
+    nav: [{ text: 'Drupal', link: '/drupal/' }],
     socialLinks: [
       { icon: 'github', link: '//github.com/maks-oleksyuk/notes' },
       { icon: 'linkedin', link: '//linkedin.com/in/maks-oleksyuk' },
@@ -20,8 +20,8 @@ export default defineConfig({
     sidebar: generateSidebar([
       {
         documentRootPath: 'src',
-        scanStartPath: 'en/drupal',
-        resolvePath: '/en/drupal/',
+        scanStartPath: 'drupal',
+        resolvePath: '/drupal/',
         collapsed: true,
         useTitleFromFrontmatter: true,
         useFolderLinkFromIndexFile: true,

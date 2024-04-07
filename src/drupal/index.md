@@ -8,5 +8,5 @@ hero:
 features:
   - icon: ☰
     title: Menu API
-    link: /en/drupal/menu/
+    link: /drupal/menu/
 ---

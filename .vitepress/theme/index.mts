@@ -7,6 +7,7 @@ import { NolebaseEnhancedReadabilitiesMenu } from '@nolebase/vitepress-plugin-en
 
 import './styles/vars.css';
 import './styles/base.css';
+import './styles/components/vp-doc.css';
 import './styles/components/back-to-top.css';
 import '@nolebase/vitepress-plugin-enhanced-readabilities/dist/style.css';
 
