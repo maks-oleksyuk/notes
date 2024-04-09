@@ -13,9 +13,9 @@
     "lint:format:fix": "prettier -wl ./ '!pnpm-lock.yaml' --cache"
   },
   "devDependencies": {
-    "@nolebase/vitepress-plugin-enhanced-readabilities": "^1.27.2",
+    "@nolebase/vitepress-plugin-enhanced-readabilities": "^1.28.0",
     "prettier": "^3.2.5",
-    "vitepress": "^1.0.2",
+    "vitepress": "^1.1.0",
     "vitepress-plugin-back-to-top": "^1.0.1",
     "vitepress-plugin-google-analytics": "^1.0.2",
     "vitepress-plugin-tabs": "^0.5.0",
