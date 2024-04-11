@@ -13,20 +13,23 @@
     "lint:format:fix": "prettier -wl ./ '!pnpm-lock.yaml' --cache"
   },
   "devDependencies": {
+    "@nolebase/vitepress-plugin-enhanced-readabilities": "^1.28.0",
     "prettier": "^3.2.5",
-    "vitepress": "1.0.2",
+    "vitepress": "^1.1.0",
     "vitepress-plugin-back-to-top": "^1.0.1",
     "vitepress-plugin-google-analytics": "^1.0.2",
     "vitepress-plugin-tabs": "^0.5.0",
+    "vitepress-sidebar": "^1.22.0",
     "vue": "^3.4.21"
   },
-  "packageManager": "pnpm@8.15.4",
+  "packageManager": "pnpm@8.15.6",
   "engines": {
     "pnpm": ">=8",
     "node": ">=20"
   },
   "prettier": {
-    "singleQuote": true,
-    "bracketSameLine": true
+    "bracketSameLine": true,
+    "proseWrap": "always",
+    "singleQuote": true
   }
 }

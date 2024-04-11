@@ -16,3 +16,6 @@ cache
 # Ignore development tool files.
 .idea
 .ddev
+
+# Ignore .env files as they are personal.
+.env
