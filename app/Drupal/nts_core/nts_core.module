@@ -5,6 +5,8 @@
  * Primary module hooks for nts_core module.
  */
 
+declare(strict_types=1);
+
 /**
  * Implements hook_preprocess_HOOK().
  */

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Drupal\Core\Template\TwigTransTokenParser;
 use TwigCsFixer\Config\Config;
 use TwigCsFixer\File\Finder;

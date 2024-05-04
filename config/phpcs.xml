@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<ruleset name="My Notes Website"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../vendor/squizlabs/php_codesniffer/phpcs.xsd">
+  <description>PHP Code Sniffer configuration for Notes site.</description>
+  <arg name="colors"/>
+  <arg name="extensions" value="php,inc,install,module,theme"/>
+
+  <!-- Paths to scan for problems recursively. -->
+  <file>../app</file>
+
+  <!-- Exclude. -->
+  <exclude-pattern>node_modules</exclude-pattern>
+  <exclude-pattern>*\.(css|js)</exclude-pattern>
+
+  <rule ref="DrupalExtended"/>
+</ruleset>

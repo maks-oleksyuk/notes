@@ -18,7 +18,8 @@
     },
     "require-dev": {
         "chi-teck/drupal-coder-extension": "^2.0@beta",
-        "vincentlanglet/twig-cs-fixer": "^2.6"
+        "mglaman/drupal-check": "^1.4",
+        "vincentlanglet/twig-cs-fixer": "^2.9"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -40,7 +41,8 @@
             "composer/installers": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
-            "skilldlabs/drupal-cleanup": true
+            "skilldlabs/drupal-cleanup": true,
+            "phpstan/extension-installer": true
         },
         "sort-packages": true
     },
@@ -100,12 +102,17 @@
     "scripts": {
         "dump:db": "mkdir -p dump; drush sql:dump --structure-tables-list=cache,cache_*,search_index,watchdog > dump/db_$(date +%Y.%m.%d).sql.gz --gzip",
         "dump:files": "mkdir -p dump; drush ard --files --destination=../dump/files_$(date +%Y.%m.%d).tar.gz",
-        "lint:twig": "twig-cs-fixer lint --config=config/.twig-cs-fixer.php ./app/Drupal",
+        "php:cs": "phpcs -ps --standard=config/phpcs.xml",
+        "php:cbf": "phpcbf -ps --standard=config/phpcs.xml",
+        "phpstan": "phpstan --configuration=config/phpstan.neon",
+        "lint:twig": "twig-cs-fixer lint --config=config/.twig-cs-fixer.php ./app/Drupal --ansi",
         "lint:twig:fix": "twig-cs-fixer lint --config=config/.twig-cs-fixer.php ./app/Drupal --fix"
     },
     "scripts-descriptions": {
         "dump:db": "Dump database using Drush in dump directory",
         "dump:files": "Archive public files using Drush in dump directory",
+        "php:cs": "Check php for Drupal code style",
+        "php:cbf": "Fix php Drupal code style",
         "lint:twig": "Check twig files for code style",
         "lint:twig:fix": "Fix twig files code style"
     }
