@@ -11,12 +11,9 @@
  * @see template_preprocess_region()
  */
 #}
-{% set classes = [
-  'region',
-  'region-' ~ region|clean_class,
-] %}
+{% set classes = ['footer'] %}
 {% if content %}
-  <section {{ attributes.addClass(classes) }} >
+  <footer {{ attributes.addClass(classes) }} role="contentinfo">
     {{ content }}
-  </section>
+  </footer>
 {% endif %}

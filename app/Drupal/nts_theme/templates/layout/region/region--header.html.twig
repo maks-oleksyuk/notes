@@ -11,12 +11,9 @@
  * @see template_preprocess_region()
  */
 #}
-{% set classes = [
-  'region',
-  'region-' ~ region|clean_class,
-] %}
+{% set classes = ['header'] %}
 {% if content %}
-  <section {{ attributes.addClass(classes) }} >
+  <header {{ attributes.addClass(classes) }} >
     {{ content }}
-  </section>
+  </header>
 {% endif %}

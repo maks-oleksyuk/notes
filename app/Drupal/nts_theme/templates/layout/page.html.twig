@@ -33,7 +33,7 @@
  * - page.nav_additional: Items for the secondary menu region.
  * - page.hero: Items for the hero region.
  * - page.breadcrumb: Items for the breadcrumb region.
- * - page.messages: Items for the breamessagesdcrumb content region.
+ * - page.messages: Items for the messages content region.
  * - page.content_above: The content above of the current page.
  * - page.content: The main content of the current page.
  * - page.content_below: The content below of the current page.
@@ -44,11 +44,11 @@
  */
 #}
 
-{{ page.banner }}
+{% if page.banner %}
+  {{ page.banner }}
+{% endif %}
 
-<header role="banner">
-  {{ page.header }}
-</header>
+{{ page.header }}
 
 {% if page.nav_main or page.nav_additional %}
   <nav class="navbar">
@@ -87,7 +87,5 @@
 </main>
 
 {% if page.footer %}
-  <footer role="contentinfo">
-    {{ page.footer }}
-  </footer>
+  {{ page.footer }}
 {% endif %}

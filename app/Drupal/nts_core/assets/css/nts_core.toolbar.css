@@ -1,10 +1,10 @@
 /* For Claro admin theme */
-.toolbar-icon.toolbar-icon-nts-core-admin:before {
+.toolbar-icon.toolbar-icon-nts-core-admin::before {
   background-image: url(../icons/787878/notes.svg);
 }
 
 /* For Gin admin theme */
-.toolbar .toolbar-bar .toolbar-icon.toolbar-icon-nts-core-admin:before,
-.toolbar-link--has-icon.toolbar-link--nts-core-admin:before {
+.toolbar .toolbar-bar .toolbar-icon.toolbar-icon-nts-core-admin::before,
+.toolbar-link--has-icon.toolbar-link--nts-core-admin::before {
   mask-image: url(../icons/787878/notes.svg);
 }
