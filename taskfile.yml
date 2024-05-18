@@ -51,9 +51,14 @@ tasks:
     desc: 'Runs `phpstan` command.'
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan --configuration={{.CONFIG_DIR}}/phpstan.neon {{.CLI_ARGS}}'
 
+  twigcs:
+    label: 'TWIGCS'
+    desc: 'Runs `twig-cs-fixer` command.'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/twig-cs-fixer lint --config={{.CONFIG_DIR}}/.twig-cs-fixer.php ./app/Drupal --ansi {{.CLI_ARGS}}'
+
   pnpm:
     label: 'pnpm'
-    desc: 'Runs `pnmp` command.'
+    desc: 'Runs `pnpm` command.'
     internal: true
     cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
 
@@ -65,12 +70,17 @@ tasks:
   stylelint:
     label: 'Stylelint'
     desc: 'Runs `stylelint` command.'
-    cmd: '{{.NODEJS_BIN_DIR}}/stylelint {{.CLI_ARGS}}'
+    cmd: '{{.NODEJS_BIN_DIR}}/stylelint -c {{.CONFIG_DIR}}/.stylelintrc.json {{.CLI_ARGS}}'
 
   cspell:
     label: 'CSPell'
     desc: 'Runs `cspell` command.'
     cmd: '{{.NODEJS_BIN_DIR}}/cspell {{.CLI_ARGS}}'
+
+  prettier:
+    label: 'Prettier'
+    desc: 'Runs `prettier` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}} --config={{.CONFIG_DIR}}/.prettierrc.json --ignore-path={{.CONFIG_DIR}}/.prettierignore'
 
   install:
     desc: 'Install website.'
@@ -84,8 +94,8 @@ tasks:
         vars: { CLI_ARGS: 'install' }
       - task: drush
         vars: { CLI_ARGS: 'site:install -y --existing-config' }
-#      - task: drush
-#        vars: {CLI_ARGS: 'pm:install nts_dev -y'}
+      # - task: drush
+      #   vars: {CLI_ARGS: 'pm:install nts_dev -y'}
       - task: drush
         vars: { CLI_ARGS: 'deploy:mark-complete -y' }
       - task: phpstorm-meta
@@ -96,15 +106,17 @@ tasks:
     label: 'Project lint'
     desc: 'Validates project files.'
     cmds:
-#      - task: lint/composer
-      - task: lint/phpcs
-      - task: lint/phpstan
-      - task: lint/js
-      - task: lint/css
-      - task: lint/spellcheck
-      - task: lint/yml
+      - task: lint:composer
+      - task: lint:phpcs
+      - task: lint:phpstan
+      - task: lint:spellcheck
+      - task: lint:js
+      - task: lint:css
+      - task: lint:yml
+      - task: lint:twig
+      - task: lint:prettier
 
-  lint/composer:
+  lint:composer:
     label: 'Composer validation'
     desc: 'Validates composer.json file and checks platform requirements.'
     cmds:
@@ -113,20 +125,20 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: 'check-platform-req' }
 
-  lint/phpcs:
-    label: PHPCS validation
-    desc: Validate PHP for code style.
+  lint:phpcs:
+    label: 'PHPCS validation'
+    desc: 'Validate PHP for code style.'
     cmds:
       - task: phpcs
 
-  lint/phpstan:
-    label: PHPStan analyze
-    desc: Analyze PHP code for bugs and errors.
+  lint:phpstan:
+    label: 'PHPStan analyze'
+    desc: 'Analyze PHP code for bugs and errors.'
     cmds:
       - task: phpstan
         vars: { CLI_ARGS: 'analyze' }
 
-  lint/js:
+  lint:js:
     label: 'JavaScript linter'
     desc: 'Lints JavaScript files.'
     aliases:
@@ -135,74 +147,110 @@ tasks:
       - task: eslint
         vars: { CLI_ARGS: '-c {{.CONFIG_DIR}}/.eslintrc.json {{.CLI_ARGS}}' }
 
-  lint/css:
+  lint:css:
     label: 'CSS linter'
     desc: 'Lints CSS files.'
     aliases:
-      - 'csslint'
+      - csslint
+      - lint:style
     cmds:
       - task: stylelint
         vars: { CLI_ARGS: 'app/**/*.css {{.CLI_ARGS}}' }
 
-  lint/yml:
+  lint:yml:
     label: 'YML linter'
     desc: 'Lints Y(A)ML files.'
     aliases:
       - ymllint
       - yamllint
-      - lint:yml
       - lint:yaml
     cmds:
       - task: eslint
         vars: { CLI_ARGS: '-c {{.CONFIG_DIR}}/.eslintrc.json --ext .yml --ext .yaml {{.CLI_ARGS}}' }
 
-  lint/spellcheck:
-    label: Spellcheck
-    desc: Checks for common spelling issues.
+  lint:twig:
+    label: 'Twig linter'
+    desc: 'Lints TWIG files.'
     aliases:
-      - 'spellcheck'
+      - twiglint
+    cmds:
+      - task: twigcs
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
+
+  lint:spellcheck:
+    label: 'Spellcheck'
+    desc: 'Checks for common spelling issues.'
+    aliases:
+      - spellcheck
     cmds:
       - task: cspell
         vars: { CLI_ARGS: '--config {{.CONFIG_DIR}}/.cspell.json --no-progress "**" {{.CLI_ARGS}}' }
 
-  fix:
-    label: Fixing found issues
-    desc: Trying for automated fixes for found problems.
+  lint:prettier:
+    label: 'Prettier'
+    desc: 'Checks for common format issues with prettier.'
+    aliases:
+      - format
+      - lint:format
     cmds:
-      - task: fix/phpcs
-      - task: fix/js
-      - task: fix/css
-      - task: fix/yml
+      - task: prettier
+        vars: { CLI_ARGS: '-c app' }
 
-  fix/phpcs:
-    label: PHPCS
-    desc: Fix PHPCS issues.
+  fix:
+    label: 'Fixing found issues'
+    desc: 'Trying for automated fixes for found problems.'
+    cmds:
+      - task: fix:phpcs
+      - task: fix:js
+      - task: fix:css
+      - task: fix:yml
+      - task: fix:twig
+      - task: fix:prettier
+
+  fix:phpcs:
+    label: 'PHPCS'
+    desc: 'Fix PHPCS issues.'
     cmds:
       - task: phpcbf
 
-  fix/js:
-    label: JavaScript
-    desc: Fix JavaScript issues.
+  fix:js:
+    label: 'JavaScript'
+    desc: 'Fix JavaScript issues.'
     cmds:
-      - task: validate/js
+      - task: lint:js
         vars: { CLI_ARGS: '--fix' }
 
-  fix/css:
+  fix:css:
     label: 'CSS'
     desc: 'Fix CSS issues.'
     cmds:
-      - task: validate/css
+      - task: lint:css
         vars: { CLI_ARGS: '--fix' }
 
-  fix/yml:
+  fix:yml:
     label: 'Y(A)ML'
     desc: 'Fix Y(A)ML issues.'
     aliases:
-      - fix/yaml
-      - fix:yml
+      - fix:yaml
     cmds:
-      - task: validate/yml
+      - task: lint:yml
         vars: { CLI_ARGS: '--fix' }
+
+  fix:twig:
+    label: 'TWIG'
+    desc: 'Fix TWIG issues.'
+    cmds:
+      - task: lint:twig
+        vars: { CLI_ARGS: '--fix' }
+
+  fix:prettier:
+    label: 'Prettier'
+    desc: 'Fix TWIG issues.'
+    aliases:
+      - fix:format
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-wl app' }
 
   build-dictionary:
     label: 'Builds dictionary'

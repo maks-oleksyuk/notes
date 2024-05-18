@@ -30,7 +30,7 @@ jobs:
         with:
           retain_days: 7
           keep_minimum_runs: 0
-          delete_workflow_pattern: ci.yml
+          delete_workflow_pattern: ci-drupal.yml
 
   lint:
     name: 🪄 Lint | ${{ matrix.command.name }}
@@ -39,15 +39,15 @@ jobs:
     strategy:
       matrix:
         command:
-          - { name: '📦 Composer', type: 'composer', command: 'validate' }
-          - { name: '📝 Cspell', type: 'pnpm', command: 'spellcheck' }
-          - { name: '☕️ JS', type: 'pnpm', command: 'lint:js' }
-          - { name: '🐘 PHPCS', type: 'composer', command: 'php:cs' }
-          - { name: '🔍 PHPStan', type: 'composer', command: 'phpstan' }
-          - { name: '🅿 Prettier', type: 'pnpm', command: 'lint:format' }
-          - { name: '👔 Stylelint', type: 'pnpm', command: 'lint:style' }
-          - { name: '🌿 Twig', type: 'composer', command: 'lint:twig' }
-          - { name: '📄 YML', type: 'pnpm', command: 'lint:yml' }
+          - { name: '📦 Composer',  command: 'lint:composer' }
+          - { name: '📝 Cspell',    command: 'lint:spellcheck' }
+          - { name: '☕️ JS',        command: 'lint:js' }
+          - { name: '🐘 PHPCS',     command: 'lint:phpcs' }
+          - { name: '🔍 PHPStan',   command: 'lint:phpstan' }
+          - { name: '🅿 Prettier',  command: 'lint:format' }
+          - { name: '👔 Stylelint', command: 'lint:style' }
+          - { name: '🌿 Twig',      command: 'lint:twig' }
+          - { name: '📄 YML',       command: 'lint:yml' }
 
     steps:
       - name: 🛎 Checkout
@@ -57,4 +57,4 @@ jobs:
         uses: ./.github/actions/setup-validation
 
       - name: ${{ matrix.command.name }} validate
-        run: "${{ matrix.command.type }} ${{ matrix.command.command }}"
+        run: "task ${{ matrix.command.command }}"

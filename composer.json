@@ -19,7 +19,7 @@
     "require-dev": {
         "chi-teck/drupal-coder-extension": "^2.0@beta",
         "mglaman/drupal-check": "^1.4",
-        "vincentlanglet/twig-cs-fixer": "^2.9"
+        "vincentlanglet/twig-cs-fixer": "^2.10"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -100,8 +100,8 @@
         }
     },
     "scripts": {
-        "dump:db": "mkdir -p dump; drush sql:dump --structure-tables-list=cache,cache_*,search_index,watchdog > dump/db_$(date +%Y.%m.%d).sql.gz --gzip",
-        "dump:files": "mkdir -p dump; drush ard --files --destination=../dump/files_$(date +%Y.%m.%d).tar.gz",
+        "dump:db": "mkdir -p dump; drush sql:dump --structure-tables-list=cache,cache_*,search_index,watchdog > dump/db_$(date +%Y.%m.%d_%H:%M_%:::z).sql.gz --gzip",
+        "dump:files": "mkdir -p dump; drush ard --files --destination=../dump/files_$(date +%Y.%m.%d_%H:%M_%:::z).tar.gz",
         "php:cs": "phpcs -ps --standard=config/phpcs.xml",
         "php:cbf": "phpcbf -ps --standard=config/phpcs.xml",
         "phpstan": "phpstan --configuration=config/phpstan.neon",
