@@ -62,13 +62,13 @@ the `module_name.toolbar.css` file with the following content:
 
 ```css
 /* For Claro admin theme */
-.toolbar-icon.toolbar-icon-modeule-name-admin:before {
+.toolbar-icon.toolbar-icon-modeule-name-admin::before {
   background-image: url(../icons/787878/icon-name.svg);
 }
 
 /* For Gin admin theme */
-.toolbar .toolbar-bar .toolbar-icon.toolbar-icon-modeule-name-admin:before,
-.toolbar-link--has-icon.toolbar-link--modeule-name-admin:before {
+.toolbar .toolbar-bar .toolbar-icon.toolbar-icon-modeule-name-admin::before,
+.toolbar-link--has-icon.toolbar-link--modeule-name-admin::before {
   mask-image: url(../icons/787878/icon-name.svg);
 }
 ```
@@ -95,7 +95,7 @@ After declaring the library, you need to connect it to the toolbar using
 /**
  * Implements hook_preprocess_HOOK().
  */
-function module_name_preprocess_toolbar(&$variables) {
+function module_name_preprocess_toolbar(&$variables): void {
   $variables['#attached']['library'][] = 'module_name/admin.toolbar';
 }
 ```

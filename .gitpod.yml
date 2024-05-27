@@ -1,2 +1,4 @@
 tasks:
-  - init: pnpm i
+  - init: |
+      corepack enable
+      pnpm i

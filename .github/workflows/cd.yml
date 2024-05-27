@@ -36,10 +36,12 @@ jobs:
           onlyRemoveDeployments: true
 
       - name: 🗑 Delete workflow runs
-        uses: Mattraks/delete-workflow-runs@v2
+        uses: dmvict/clean-workflow-runs@v1
         with:
-          retain_days: 7
-          keep_minimum_runs: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          save_period: 7
+          save_min_runs_number: 1
+          branch: gh-pages
 
   build:
     name: 🏗️ Build
@@ -49,6 +51,8 @@ jobs:
     steps:
       - name: 🛎️ Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: 🟧 Setup pnpm
         uses: pnpm/action-setup@v3
