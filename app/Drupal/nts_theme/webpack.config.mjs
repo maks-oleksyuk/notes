@@ -99,14 +99,24 @@ export default {
           },
         ],
       },
+      {
+        test: /\.(woff(2))(\?v=\d+\.\d+\.\d+)?$/,
+        type: 'asset/resource',
+        generator: {
+          outputPath: '../',
+          filename: '[path][name][ext]',
+        },
+      },
     ],
   },
   resolve: {
     alias: {
       media: path.join(dirname, 'media'),
+      icons: path.join(dirname, 'media/icons'),
       images: path.join(dirname, 'media/images'),
-      // font: path.join(__dirname, 'media/font'),
+      fonts: path.join(dirname, 'media/fonts'),
     },
+    modules: [path.join(dirname, 'node_modules')],
   },
   plugins: [
     new RemoveEmptyScriptsPlugin(),
@@ -121,19 +131,8 @@ export default {
     }),
   ],
   stats: {
-    colors: true,
-    hash: false,
-    version: true,
-    timings: true,
+    preset: 'minimal',
     assets: false,
-    chunks: false,
     modules: false,
-    reasons: false,
-    children: false,
-    source: true,
-    errors: true,
-    errorDetails: true,
-    warnings: true,
-    publicPath: false,
   },
 };
