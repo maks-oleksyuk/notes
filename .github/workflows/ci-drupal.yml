@@ -29,7 +29,7 @@ jobs:
         uses: Mattraks/delete-workflow-runs@v2
         with:
           retain_days: 7
-          keep_minimum_runs: 0
+          keep_minimum_runs: 1
           delete_workflow_pattern: ci-drupal.yml
 
   lint:
@@ -45,6 +45,7 @@ jobs:
           - { name: '🐘 PHPCS',     command: 'lint:phpcs' }
           - { name: '🔍 PHPStan',   command: 'lint:phpstan' }
           - { name: '🅿 Prettier',  command: 'lint:format' }
+          - { name: '🏠 Rector',    command: 'lint:rector' }
           - { name: '👔 Stylelint', command: 'lint:style' }
           - { name: '🌿 Twig',      command: 'lint:twig' }
           - { name: '📄 YML',       command: 'lint:yml' }

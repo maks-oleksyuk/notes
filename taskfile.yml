@@ -82,6 +82,11 @@ tasks:
     desc: 'Runs `prettier` command.'
     cmd: '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}} --config={{.CONFIG_DIR}}/.prettierrc.json --ignore-path={{.CONFIG_DIR}}/.prettierignore'
 
+  rector:
+    label: 'Rector'
+    desc: 'Runs `rector` command.'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector process --config={{.CONFIG_DIR}}/rector.php app --ansi {{.CLI_ARGS}}'
+
   install:
     desc: 'Install website.'
     summary: 'Installs a website with a demo content for development and testing.'
@@ -196,6 +201,13 @@ tasks:
       - task: prettier
         vars: { CLI_ARGS: '-c app' }
 
+  lint:rector:
+    label: 'Rector check'
+    desc: 'Check Rector issues.'
+    cmds:
+      - task: rector        
+        vars: { CLI_ARGS: '--dry-run' }
+
   fix:
     label: 'Fixing found issues'
     desc: 'Trying for automated fixes for found problems.'
@@ -251,6 +263,12 @@ tasks:
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '-wl app' }
+
+  fix:rector:
+    label: 'Rector'
+    desc: 'Fix Rector issues.'
+    cmds:
+      - task: rector
 
   build-dictionary:
     label: 'Builds dictionary'

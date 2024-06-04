@@ -19,6 +19,7 @@
     "require-dev": {
         "chi-teck/drupal-coder-extension": "^2.0@beta",
         "mglaman/drupal-check": "^1.4",
+        "palantirnet/drupal-rector": "^0.20",
         "vincentlanglet/twig-cs-fixer": "^2.10"
     },
     "conflict": {
@@ -105,6 +106,8 @@
         "php:cs": "phpcs -ps --standard=config/phpcs.xml",
         "php:cbf": "phpcbf -ps --standard=config/phpcs.xml",
         "phpstan": "phpstan --configuration=config/phpstan.neon",
+        "rector": "rector process app --dry-run",
+        "rector:fix": "rector process app",
         "lint:twig": "twig-cs-fixer lint --config=config/.twig-cs-fixer.php ./app/Drupal --ansi",
         "lint:twig:fix": "twig-cs-fixer lint --config=config/.twig-cs-fixer.php ./app/Drupal --fix"
     },
