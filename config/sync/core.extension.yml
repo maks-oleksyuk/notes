@@ -5,13 +5,18 @@ module:
   admin_toolbar_tools: 0
   block: 0
   breakpoint: 0
+  contextual: 0
   dblog: 0
   dynamic_page_cache: 0
   field: 0
+  file: 0
   filter: 0
   gin_login: 0
   gin_toolbar: 0
+  layout_builder: 0
+  layout_discovery: 0
   mysql: 0
+  navigation: 0
   node: 0
   nts_core: 0
   page_cache: 0

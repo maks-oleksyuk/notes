@@ -126,9 +126,9 @@ tasks:
     desc: 'Validates composer.json file and checks platform requirements.'
     cmds:
       - task: composer
-        vars: { CLI_ARGS: 'validate --strict' }
+        vars: { CLI_ARGS: 'validate --strict --ansi' }
       - task: composer
-        vars: { CLI_ARGS: 'check-platform-req' }
+        vars: { CLI_ARGS: 'check-platform-req --ansi' }
 
   lint:phpcs:
     label: 'PHPCS validation'
@@ -205,7 +205,7 @@ tasks:
     label: 'Rector check'
     desc: 'Check Rector issues.'
     cmds:
-      - task: rector        
+      - task: rector
         vars: { CLI_ARGS: '--dry-run' }
 
   fix:
