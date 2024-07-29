@@ -21,7 +21,7 @@
         "drupal/core-dev": "^10.3",
         "mglaman/drupal-check": "^1.4",
         "palantirnet/drupal-rector": "^0.20",
-        "vincentlanglet/twig-cs-fixer": "^2.11"
+        "vincentlanglet/twig-cs-fixer": "^2.12"
     },
     "conflict": {
         "drupal/drupal": "*"

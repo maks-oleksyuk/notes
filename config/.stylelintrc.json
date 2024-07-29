@@ -4,6 +4,7 @@
   ],
   "ignoreFiles": [
     "*/node_modules/**/*",
+    "../**/dist/**/*",
     "../vendor/**/*",
     "../web/**/*"
   ]

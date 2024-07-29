@@ -8,3 +8,13 @@ database:
   type: mariadb
   version: '10.11'
 nodejs_version: '20'
+hooks:
+  pre-start:
+    - exec-host: |
+        if ! ddev get --installed | grep -q 'envsa/ddev-pnpm'; then
+          ddev get envsa/ddev-pnpm
+        else
+          echo "Installed ddev-pnpm from envsa/ddev-pnpm"
+        fi
+
+    # - exec-host: 'ddev get gebruederheitz/ddev-taskfile'
