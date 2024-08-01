@@ -1,0 +1,10 @@
+name: typo3
+type: typo3
+docroot: web
+database:
+  type: mariadb
+  version: '10.11'
+php_version: '8.3'
+nodejs_version: '20'
+webserver_type: nginx-fpm
+xdebug_enabled: false
