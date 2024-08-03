@@ -1,8 +1,7 @@
 <?php
 return [
     'BE' => [
-        'debug' => true,
-        'entryPoint' => '/admin',
+        'debug' => false,
         'fileadminDir' => 'files',
         'installToolPassword' => false,
         'passwordHashing' => [

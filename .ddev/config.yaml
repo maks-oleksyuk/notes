@@ -4,7 +4,9 @@ docroot: web
 database:
   type: mariadb
   version: '10.11'
-php_version: '8.3'
+php_version: '8.2'
 nodejs_version: '20'
 webserver_type: nginx-fpm
 xdebug_enabled: false
+web_environment:
+  - 'TYPO3_CONTEXT=Development/DDEV'
