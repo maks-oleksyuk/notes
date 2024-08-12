@@ -1,0 +1,57 @@
+name: 'Setup environment'
+description: 'Setups environment for validation tasks.'
+
+inputs:
+  php:
+    description: 'PHP version to install'
+    required: true
+    default: '8.3'
+
+  node:
+    description: 'Node.js version to install'
+    required: true
+    default: '20.x'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 📋 Install Task
+      shell: bash
+      run: sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+
+    - name: 🐘 Setup PHP ${{ inputs.php }}
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php }}
+        coverage: none
+
+    - name: 🗃 Get composer cache directory
+      id: composer-cache
+      shell: bash
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - name: 💽 Cache composer dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}"
+        restore-keys: ${{ runner.os }}-composer-
+
+    - name: 📦 Install composer dependencies
+      shell: bash
+      run: composer i --quiet --no-progress --no-scripts --ansi;
+
+    - name: 🟧 Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+
+#    - name: ❇️ Setup Node.js ${{ inputs.node }}
+#      uses: actions/setup-node@v4
+#      with:
+#        cache: pnpm
+#        node-version: ${{ inputs.node }}
+#
+#    - name: 📦 Install pnpm dependencies
+#      shell: bash
+#      run: pnpm i -sD --frozen-lockfile --color=always
