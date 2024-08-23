@@ -3,8 +3,9 @@ web
 vendor
 node_modules
 
-# Ignore temporary files and cache directories.
+# Ignore temporary/cache files and folders.
 var
+.php-cs-fixer.cache
 
 # Ignore .env files as they are personal.
 .env

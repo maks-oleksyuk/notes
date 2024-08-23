@@ -1,0 +1,12 @@
+languages:
+  - title: Ukrainian
+    enabled: true
+    locale: uk_UA.utf-8
+    hreflang: uk
+    base: /ua/
+    websiteTitle: ''
+    navigationTitle: Українська
+    fallbackType: strict
+    fallbacks: ''
+    flag: ua
+    languageId: 1058

@@ -1,0 +1,11 @@
+base: /
+baseVariants:
+  - base: 'https://typo3.ddev.site/'
+    condition: 'applicationContext == "Development/DDEV"'
+
+imports:
+  - { resource: './../../languages/_english.yaml' }
+  - { resource: './../../languages/_ukrainian-ua-1058.yaml' }
+
+rootPageId: 1
+websiteTitle: 'Notes Main'

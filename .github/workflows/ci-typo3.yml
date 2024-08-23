@@ -39,7 +39,10 @@ jobs:
     strategy:
       matrix:
         command:
-          - { name: '📦 Composer',  command: 'lint:composer' }
+          - { name: '📦 Composer',     command: 'lint:composer' }
+          - { name: '🪶 PHP CS Fixer', command: 'lint:php-cs-fixer' }
+          - { name: '🏠 Rector',       command: 'lint:rector' }
+          - { name: '📄 YML',          command: 'lint:yml' }
 
     steps:
       - name: 🛎 Checkout

@@ -1,0 +1,10 @@
+languages:
+  - title: English
+    enabled: true
+    languageId: 0
+    base: /
+    locale: en_US
+    navigationTitle: English
+    flag: us
+    hreflang: ''
+    websiteTitle: ''
