@@ -6,6 +6,7 @@
 	"require": {
 		"php": "^8.3",
 		"helhum/typo3-console": "^8.1",
+		"typo3-notes/nts_site": "^1.0@dev",
 		"typo3/cms-backend": "^12.4",
 		"typo3/cms-belog": "^12.4",
 		"typo3/cms-beuser": "^12.4",
@@ -22,6 +23,7 @@
 		"typo3/cms-lowlevel": "^12.4",
 		"typo3/cms-reports": "^12.4",
 		"typo3/cms-rte-ckeditor": "^12.4",
+		"typo3/cms-scheduler": "^12.4",
 		"typo3/cms-seo": "^12.4",
 		"typo3/cms-setup": "^12.4",
 		"typo3/cms-sys-note": "^12.4",
@@ -29,6 +31,8 @@
 		"typo3/cms-tstemplate": "^12.4"
 	},
 	"require-dev": {
+		"b13/make": "^0.1.8",
+		"lolli/dbdoctor": "^0.6.2",
 		"ssch/typo3-rector": "^2.6",
 		"typo3/coding-standards": "^0.8"
 	},

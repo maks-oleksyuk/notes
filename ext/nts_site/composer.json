@@ -1,0 +1,21 @@
+{
+	"name": "typo3-notes/nts_site",
+	"description": "Custom main module for Notes site",
+	"license": "GPL-3.0-or-later",
+	"type": "typo3-cms-extension",
+	"version": "1.0-dev",
+	"require": {
+		"typo3/cms-core": "^12.4",
+		"typo3/cms-scheduler": "^12.4"
+	},
+	"autoload": {
+		"psr-4": {
+			"Typo3Notes\\NtsSite\\": "Classes/"
+		}
+	},
+	"extra": {
+		"typo3/cms": {
+			"extension-key": "nts_site"
+		}
+	}
+}

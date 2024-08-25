@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c45b54d8714ea5d53f2a1742f41d48e4",
+    "content-hash": "047602339e5de079dab75923fe7603b4",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -5287,6 +5287,37 @@
             "time": "2024-05-31T14:57:53+00:00"
         },
         {
+            "name": "typo3-notes/nts_site",
+            "version": "1.0-dev",
+            "dist": {
+                "type": "path",
+                "url": "ext/nts_site",
+                "reference": "4524ec247dc46a520b2c40f6515b23d8ff6129b9"
+            },
+            "require": {
+                "typo3/cms-core": "^12.4",
+                "typo3/cms-scheduler": "^12.4"
+            },
+            "type": "typo3-cms-extension",
+            "extra": {
+                "typo3/cms": {
+                    "extension-key": "nts_site"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Typo3Notes\\NtsSite\\": "Classes/"
+                }
+            },
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "description": "Custom main module for Notes site",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "typo3/class-alias-loader",
             "version": "v1.1.4",
             "source": {
@@ -6546,6 +6577,61 @@
             "time": "2024-08-15T13:22:49+00:00"
         },
         {
+            "name": "typo3/cms-scheduler",
+            "version": "v12.4.19",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TYPO3-CMS/scheduler.git",
+                "reference": "148328b228388040ca67d7fbca052144196ad01b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TYPO3-CMS/scheduler/zipball/148328b228388040ca67d7fbca052144196ad01b",
+                "reference": "148328b228388040ca67d7fbca052144196ad01b",
+                "shasum": ""
+            },
+            "require": {
+                "typo3/cms-core": "12.4.19"
+            },
+            "conflict": {
+                "typo3/cms": "*"
+            },
+            "type": "typo3-cms-framework",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "12.4.x-dev"
+                },
+                "typo3/cms": {
+                    "extension-key": "scheduler"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TYPO3\\CMS\\Scheduler\\": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "TYPO3 Core Team",
+                    "email": "typo3cms@typo3.org",
+                    "role": "Developer"
+                }
+            ],
+            "description": "TYPO3 CMS Scheduler - Schedule tasks to run once or periodically at a specific time.",
+            "homepage": "https://typo3.org",
+            "support": {
+                "chat": "https://typo3.org/help",
+                "docs": "https://docs.typo3.org/c/typo3/cms-scheduler/main/en-us",
+                "issues": "https://forge.typo3.org",
+                "source": "https://github.com/typo3/typo3"
+            },
+            "time": "2024-08-15T13:22:49+00:00"
+        },
+        {
             "name": "typo3/cms-seo",
             "version": "v12.4.19",
             "source": {
@@ -7004,6 +7090,67 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "b13/make",
+            "version": "0.1.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b13/make.git",
+                "reference": "d7f302a0211aeab90ac15825bf49fdf914d79ed9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b13/make/zipball/d7f302a0211aeab90ac15825bf49fdf914d79ed9",
+                "reference": "d7f302a0211aeab90ac15825bf49fdf914d79ed9",
+                "shasum": ""
+            },
+            "require": {
+                "typo3/cms-core": "^10.0 || ^11.0 || ^12.0 || ^13.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.4",
+                "typo3/cms-core": "^11.5",
+                "typo3/coding-standards": "^0.5",
+                "typo3/tailor": "^1.4",
+                "typo3/testing-framework": "^7.0"
+            },
+            "type": "typo3-cms-extension",
+            "extra": {
+                "typo3/cms": {
+                    "extension-key": "make",
+                    "cms-package-dir": "{$vendor-dir}/typo3/cms",
+                    "web-dir": ".Build/Web"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "B13\\Make\\": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Bartsch",
+                    "email": "oliver.bartsch@b13.com"
+                }
+            ],
+            "description": "Kickstarter CLI tool for various TYPO3 functionalities",
+            "homepage": "https://b13.com",
+            "keywords": [
+                "cli",
+                "extensions",
+                "kickstarter",
+                "typo3"
+            ],
+            "support": {
+                "issues": "https://github.com/b13/make/issues",
+                "source": "https://github.com/b13/make/tree/0.1.8"
+            },
+            "time": "2024-08-05T08:25:45+00:00"
+        },
         {
             "name": "clue/ndjson-react",
             "version": "v1.3.0",
@@ -7740,6 +7887,73 @@
                 }
             ],
             "time": "2024-01-28T23:22:08+00:00"
+        },
+        {
+            "name": "lolli/dbdoctor",
+            "version": "0.6.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lolli42/dbdoctor.git",
+                "reference": "c049f5ca2fc7b0d326b3a8ddda6957cf19e2e904"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lolli42/dbdoctor/zipball/c049f5ca2fc7b0d326b3a8ddda6957cf19e2e904",
+                "reference": "c049f5ca2fc7b0d326b3a8ddda6957cf19e2e904",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 || ^8.0",
+                "typo3/cms-core": "^11.5 || ^12.4"
+            },
+            "require-dev": {
+                "bnf/phpstan-psr-container": "^1.0",
+                "codeception/codeception": "^4.1 || ^5.0.0",
+                "codeception/module-asserts": "^2.0 || ^3.0.0",
+                "codeception/module-cli": "^1.1 || ^2.0.0",
+                "friendsofphp/php-cs-fixer": "^3.52.0",
+                "friendsoftypo3/phpstan-typo3": "^0.9.0",
+                "phpstan/phpstan": "^1.4.6",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpunit/phpunit": "^9",
+                "typo3/cms-impexp": "^11.5 || ^12.4",
+                "typo3/cms-redirects": "^11.5 || ^12.4",
+                "typo3/cms-workspaces": "^11.5 || ^12.4",
+                "typo3/testing-framework": "^7.0.2"
+            },
+            "type": "typo3-cms-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "0.x-dev"
+                },
+                "typo3/cms": {
+                    "app-dir": ".Build",
+                    "web-dir": ".Build/Web",
+                    "extension-key": "dbdoctor"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Lolli\\Dbdoctor\\": "Classes/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Christian Kuhn",
+                    "role": "Developer"
+                }
+            ],
+            "description": "TYPO3 Database doctor - Find and fix TYPO3 database inconsistencies",
+            "homepage": "https://github.com/lolli42/dbdoctor",
+            "support": {
+                "issues": "https://github.com/lolli42/dbdoctor/issues",
+                "source": "https://github.com/lolli42/dbdoctor/tree/0.6.2"
+            },
+            "time": "2024-03-19T13:18:15+00:00"
         },
         {
             "name": "nette/utils",
@@ -8961,7 +9175,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "typo3-notes/nts_site": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

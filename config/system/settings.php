@@ -31,6 +31,9 @@ return [
             'automaticInstallation' => '1',
             'offlineMode' => '0',
         ],
+        'scheduler' => [
+            'maxLifetime' => '1440',
+        ],
     ],
     'FE' => [
         'debug' => true,
