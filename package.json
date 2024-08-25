@@ -19,7 +19,7 @@
     "lint:format:fix": "prettier app !**/pnpm-lock.yaml -wl --cache --no-error-on-unmatched-pattern"
   },
   "devDependencies": {
-    "cspell": "^8.12.1",
+    "cspell": "^8.14.2",
     "eslint": "8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.1.0",
@@ -28,12 +28,12 @@
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-yml": "^1.14.0",
     "prettier": "^3.3.3",
-    "stylelint": "^16.8.0",
+    "stylelint": "^16.8.2",
     "stylelint-config-standard": "^36.0.1",
     "stylelint-order": "^6.0.4",
     "stylelint-prettier": "^5.0.2"
   },
-  "packageManager": "pnpm@9.6.0",
+  "packageManager": "pnpm@9.8.0",
   "engines": {
     "pnpm": ">=9",
     "node": ">=20"

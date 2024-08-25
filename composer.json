@@ -4,24 +4,24 @@
     "license": "GPL-3.0-or-later",
     "type": "project",
     "require": {
-        "php": ">=8.3",
-        "composer/installers": "^2.2",
+        "php": "^8.3",
+        "composer/installers": "^2.3",
         "drupal-notes/nts_core": "^1.0@dev",
         "drupal-notes/nts_theme": "^1.0@dev",
-        "drupal/admin_toolbar": "^3.4",
-        "drupal/core-composer-scaffold": "^10.3",
-        "drupal/core-recommended": "^10.3",
+        "drupal/admin_toolbar": "^3.5",
+        "drupal/core-composer-scaffold": "^11.0",
+        "drupal/core-recommended": "^11.0",
         "drupal/gin": "^3.0@RC",
         "drupal/gin_login": "^2.1",
-        "drush/drush": "^12.5",
+        "drush/drush": "^13.0",
         "skilldlabs/drupal-cleanup": "^1.4"
     },
     "require-dev": {
         "chi-teck/drupal-coder-extension": "^2.0@beta",
-        "drupal/core-dev": "^10.3",
-        "mglaman/drupal-check": "^1.4",
+        "drupal/core-dev": "^11.0",
+        "mglaman/drupal-check": "^1.5",
         "palantirnet/drupal-rector": "^0.20",
-        "vincentlanglet/twig-cs-fixer": "^2.12"
+        "vincentlanglet/twig-cs-fixer": "^3.0"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -46,6 +46,9 @@
             "skilldlabs/drupal-cleanup": true,
             "phpstan/extension-installer": true,
             "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.3"
         },
         "sort-packages": true
     },
