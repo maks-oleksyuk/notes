@@ -5,6 +5,7 @@ database:
   type: mariadb
   version: '10.11'
 php_version: '8.3'
+host_db_port: '17903'
 nodejs_version: '20'
 webserver_type: nginx-fpm
 xdebug_enabled: false

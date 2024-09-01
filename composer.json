@@ -56,5 +56,10 @@
 		"typo3/cms": {
 			"web-dir": "web"
 		}
+	},
+	"scripts": {
+		"post-autoload-dump": [
+			"typo3 install:fixfolderstructure"
+		]
 	}
 }

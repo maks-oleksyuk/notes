@@ -15,6 +15,8 @@ tasks:
   default:
     cmd: 'task --list-all'
 
+  # Staff.
+
   typo3:
     label: 'Typo3'
     desc: 'Runs `typo3` command.'
@@ -23,27 +25,18 @@ tasks:
         - COMPOSER_BIN_DIR
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/typo3 {{.CLI_ARGS}}'
 
-  cache:clear:
-    label: 'Clear Cache'
-    desc: 'Clear all cache in typo3'
-    aliases:
-      - c
-      - cc
-      - cr
-      - cf
-    cmds:
-      - task: typo3
-        vars: { CLI_ARGS: 'cache:flush' }
-
   composer:
     label: 'Composer'
     desc: 'Runs `composer` command.'
     internal: true
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}}'
 
-  php-cs-fixer:
+  php:cs-fixer:
     label: 'PHP CS Fixer'
     desc: 'Runs `php-cs-fixer` command.'
+    aliases:
+      - cs-fixer
+      - php-cs-fixer
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/php-cs-fixer fix -v --ansi --config {{.CONFIG_DIR}}/.php-cs-fixer.php {{.CLI_ARGS}}'
 
   yaml-lint:
@@ -56,12 +49,46 @@ tasks:
     desc: 'Runs `rector` command.'
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector process --config={{.CONFIG_DIR}}/rector.php --ansi {{.CLI_ARGS}}'
 
+  # Work commands.
+
+  cache:clear:
+    label: 'Clear Cache'
+    desc: 'Clear all cache in typo3'
+    aliases:
+      - c
+      - cc
+      - cr
+      - cf
+      - cache:flush
+    cmds:
+      - task: typo3
+        vars: { CLI_ARGS: 'cache:flush' }
+
+  cleanup:
+    label: 'Cleanup content'
+    desc: 'Cleanup all content in typo3'
+    aliases:
+      - clean
+    cmds:
+      - task: typo3
+        vars: { CLI_ARGS: 'cleanup:deletedrecords' }
+      - task: typo3
+        vars: { CLI_ARGS: 'cleanup:flexforms' }
+      - task: typo3
+        vars: { CLI_ARGS: 'cleanup:localprocessedfiles' }
+      - task: typo3
+        vars: { CLI_ARGS: 'cleanup:missingrelations -n' }
+      - task: typo3
+        vars: { CLI_ARGS: 'cleanup:orphanrecords' }
+
+  # Linters.
+
   lint:
     label: 'Project lint'
     desc: 'Validates project files.'
     cmds:
       - task: lint:composer
-      - task: lint:php-cs-fixer
+      - task: lint:php:cs-fixer
       - task: lint:rector
       - task: lint:yml
 
@@ -74,13 +101,14 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: 'check-platform-req --ansi' }
 
-  lint:php-cs-fixer:
+  lint:php:cs-fixer:
     label: 'PHP CS Fixer validation'
     desc: 'Lint php files.'
     aliases:
       - lint:php
+      - lint:php-cs-fixer
     cmds:
-      - task: php-cs-fixer
+      - task: php:cs-fixer
         vars: { CLI_ARGS: '--dry-run --diff' }
 
   lint:yml:
@@ -101,18 +129,23 @@ tasks:
       - task: rector
         vars: { CLI_ARGS: '--dry-run' }
 
+  # Fixing.
+
   fix:
     label: 'Fixing found issues'
     desc: 'Trying for automated fixes for found problems.'
     cmds:
-      - task: fix:php-cs-fixer
+      - task: fix:php:cs-fixer
       - task: fix:rector
 
-  fix:php-cs-fixer:
+  fix:php:cs-fixer:
     label: 'PHP CS Fixer'
     desc: 'Fix PHP CS Fixer issues.'
+    aliases:
+      - fix:php
+      - fix:php-cs-fixer
     cmds:
-      - task: php-cs-fixer
+      - task: php:cs-fixer
 
   fix:rector:
     label: 'Rector'
