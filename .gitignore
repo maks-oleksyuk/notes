@@ -15,5 +15,9 @@ var
 .idea
 .vscode
 
+# Ignore dump folder, archives.
+dump
+*.gz
+
 # Ignore OS files.
 .DS_Store

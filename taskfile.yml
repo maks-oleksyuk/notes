@@ -81,6 +81,22 @@ tasks:
       - task: typo3
         vars: { CLI_ARGS: 'cleanup:orphanrecords' }
 
+  dump:db:
+    desc: 'Create a backup of the database with Typo3.'
+    vars:
+      BACKUP_NAME:
+        sh: 'echo db_$(date +%Y.%m.%d_%H:%M_%:::z)'
+    aliases:
+      - ddb
+      - dbd
+      - db:dump
+    cmds:
+      - 'mkdir -p ./dump'
+      - task: typo3
+        vars: { CLI_ARGS: "database:export -c Default -e 'cf_*' -e 'cache_*' -e '[bf]e_sessions' -e sys_log -e sys_history > {{.BACKUP_NAME}}.sql" }
+      - 'tar -czvf ./dump/{{.BACKUP_NAME}}.tar.gz {{.BACKUP_NAME}}.sql'
+      - 'rm {{.BACKUP_NAME}}.sql'
+
   # Linters.
 
   lint:
