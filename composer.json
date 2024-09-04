@@ -60,6 +60,10 @@
 	"scripts": {
 		"post-autoload-dump": [
 			"typo3 install:fixfolderstructure"
-		]
+		],
+		"dump:db": "BACKUP_NAME=db_$(date +%Y.%m.%d_%H:%M_%:::z) && mkdir -p ./../dump && typo3cms database:export -c Default -e 'cf_*' -e 'cache_*' -e '[bf]e_sessions' -e sys_log -e sys_history > ${BACKUP_NAME}.sql && tar -czvf ./../dump/${BACKUP_NAME}.tar.gz ${BACKUP_NAME}.sql && rm ${BACKUP_NAME}.sql"
+	},
+	"scripts-descriptions": {
+		"dump:db": "Dump database to arhive using Typo3 in dump directory"
 	}
 }
