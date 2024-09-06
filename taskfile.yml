@@ -31,23 +31,46 @@ tasks:
     internal: true
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}}'
 
-  php:cs-fixer:
+  pnpm:
+    label: 'pnpm'
+    desc: 'Runs `pnpm` command.'
+    internal: true
+    cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
+
+  php-cs-fixer:
     label: 'PHP CS Fixer'
     desc: 'Runs `php-cs-fixer` command.'
     aliases:
       - cs-fixer
-      - php-cs-fixer
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/php-cs-fixer fix -v --ansi --config {{.CONFIG_DIR}}/.php-cs-fixer.php {{.CLI_ARGS}}'
+      - php:cs-fixer
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/php-cs-fixer fix --config {{.CONFIG_DIR}}/.php-cs-fixer.php --ansi -v {{.CLI_ARGS}}'
+
+  phpstan:
+    label: 'PHPStan'
+    desc: 'Runs `phpstan` command.'
+    aliases:
+      - php:stan
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan --configuration={{.CONFIG_DIR}}/phpstan.neon --ansi {{.CLI_ARGS}}'
+
+  rector:
+    label: 'Rector'
+    desc: 'Runs `rector` command.'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector process --config={{.CONFIG_DIR}}/rector.php --ansi {{.CLI_ARGS}}'
+
+  typoscript-lint:
+    label: 'TypoScript lint'
+    desc: 'Runs `typescript-lint` command.'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/typoscript-lint -c {{.CONFIG_DIR}}/typoscript-lint.yml --fail-on-warnings -n --ansi {{.CLI_ARGS}}'
 
   yaml-lint:
     label: 'Yaml lint'
     desc: 'Runs `yaml-lint` command.'
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/yaml-lint --ansi {{.CLI_ARGS}}'
 
-  rector:
-    label: 'Rector'
-    desc: 'Runs `rector` command.'
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector process --config={{.CONFIG_DIR}}/rector.php --ansi {{.CLI_ARGS}}'
+  prettier:
+    label: 'Prettier'
+    desc: 'Runs `prettier` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}} --config={{.CONFIG_DIR}}/.prettierrc.json --ignore-path={{.CONFIG_DIR}}/.prettierignore'
 
   # Work commands.
 
@@ -105,8 +128,21 @@ tasks:
     cmds:
       - task: lint:composer
       - task: lint:php:cs-fixer
+      - task: lint:php:stan
       - task: lint:rector
       - task: lint:yml
+      - task: lint:typoscript
+      - task: lint:prettier
+
+  lint:prettier:
+    label: 'Prettier'
+    desc: 'Checks for common format issues with prettier.'
+    aliases:
+      - format
+      - lint:format
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-c config ext' }
 
   lint:composer:
     label: 'Composer validation'
@@ -124,8 +160,24 @@ tasks:
       - lint:php
       - lint:php-cs-fixer
     cmds:
-      - task: php:cs-fixer
+      - task: php-cs-fixer
         vars: { CLI_ARGS: '--dry-run --diff' }
+
+  lint:php:stan:
+    label: 'PHPStan analyze'
+    desc: 'Analyze PHP code for bugs and errors.'
+    aliases:
+      - lint:phpstan
+    cmds:
+      - task: phpstan
+        vars: { CLI_ARGS: 'analyze' }
+
+  lint:rector:
+    label: 'Rector check'
+    desc: 'Check Rector issues.'
+    cmds:
+      - task: rector
+        vars: { CLI_ARGS: '--dry-run' }
 
   lint:yml:
     label: 'YML linter'
@@ -136,14 +188,13 @@ tasks:
       - lint:yaml
     cmds:
       - task: yaml-lint
-        vars: { CLI_ARGS: 'config ext {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: 'ext {{.CLI_ARGS}}' }
 
-  lint:rector:
-    label: 'Rector check'
-    desc: 'Check Rector issues.'
+  lint:typoscript:
+    label: 'TypoScript linter'
+    desc: 'Lints typoscript files.'
     cmds:
-      - task: rector
-        vars: { CLI_ARGS: '--dry-run' }
+      - task: typoscript-lint
 
   # Fixing.
 
@@ -153,6 +204,7 @@ tasks:
     cmds:
       - task: fix:php:cs-fixer
       - task: fix:rector
+      - task: fix:prettier
 
   fix:php:cs-fixer:
     label: 'PHP CS Fixer'
@@ -168,3 +220,13 @@ tasks:
     desc: 'Fix Rector issues.'
     cmds:
       - task: rector
+
+  fix:prettier:
+    label: 'Prettier'
+    desc: 'Fix format issues.'
+    aliases:
+      - fix:format
+      - format:fix
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-wl ext' }

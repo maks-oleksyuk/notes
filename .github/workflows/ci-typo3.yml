@@ -40,8 +40,11 @@ jobs:
       matrix:
         command:
           - { name: '📦 Composer',     command: 'lint:composer' }
+          - { name: '🔍 PHPStan',      command: 'lint:php:stan' }
           - { name: '🪶 PHP CS Fixer', command: 'lint:php:cs-fixer' }
+          - { name: '🅿️ Prettier',     command: 'lint:prettier' }
           - { name: '🏠 Rector',       command: 'lint:rector' }
+          - { name: '🔸 TypoScript',   command: 'lint:typoscript' }
           - { name: '📄 YML',          command: 'lint:yml' }
 
     steps:

@@ -28,11 +28,14 @@
 		"typo3/cms-setup": "^12.4",
 		"typo3/cms-sys-note": "^12.4",
 		"typo3/cms-t3editor": "^12.4",
-		"typo3/cms-tstemplate": "^12.4"
+		"typo3/cms-tstemplate": "^12.4",
+		"typo3fluid/fluid": "^2.15"
 	},
 	"require-dev": {
 		"b13/make": "^0.1.8",
+		"helmich/typo3-typoscript-lint": "^3.2",
 		"lolli/dbdoctor": "^0.6.2",
+		"saschaegerer/phpstan-typo3": "^1.10",
 		"ssch/typo3-rector": "^2.6",
 		"typo3/coding-standards": "^0.8"
 	},
