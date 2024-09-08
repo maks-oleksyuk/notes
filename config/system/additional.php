@@ -1,5 +1,12 @@
 <?php
 
+use TYPO3\CMS\Core\Core\Environment;
+
+$currentApplicationContext = Environment::getContext();
+if (!$currentApplicationContext->isProduction()) {
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'] .= " ($currentApplicationContext)";
+}
+
 if (getenv('IS_DDEV_PROJECT') == 'true') {
     $GLOBALS['TYPO3_CONF_VARS'] = array_replace_recursive(
         $GLOBALS['TYPO3_CONF_VARS'],

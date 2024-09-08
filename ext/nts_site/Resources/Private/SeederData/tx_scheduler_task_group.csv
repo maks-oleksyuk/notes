@@ -1,0 +1,4 @@
+uid,hidden,sorting,groupName
+1,0,64,System
+2,1,128,Solr | Index
+3,1,256,Solr | Optimize

@@ -19,13 +19,13 @@ return [
     ],
     'EXTENSIONS' => [
         'backend' => [
-            'backendFavicon' => '',
-            'backendLogo' => '',
-            'loginBackgroundImage' => '',
+            'backendFavicon' => 'EXT:nts_site/Resources/Public/Icons/backend/favicon.ico',
+            'backendLogo' => 'EXT:nts_site/Resources/Public/Icons/backend/logo.svg',
+            'loginBackgroundImage' => 'https://picsum.photos/1920/1080',
             'loginFootnote' => '',
-            'loginHighlightColor' => '',
+            'loginHighlightColor' => '#138808',
             'loginLogo' => '',
-            'loginLogoAlt' => '',
+            'loginLogoAlt' => 'Typo3 Notes',
         ],
         'extensionmanager' => [
             'automaticInstallation' => '1',
@@ -64,6 +64,8 @@ return [
         ],
     ],
     'MAIL' => [
+        'defaultMailFromAddress' => 'noreply@typo3notes.site',
+        'defaultMailFromName' => 'Typo3 Notes',
         'transport' => 'sendmail',
         'transport_sendmail_command' => '/usr/local/bin/mailpit sendmail -t --smtp-addr 127.0.0.1:1025',
         'transport_smtp_encrypt' => '',
@@ -99,6 +101,7 @@ return [
             'security.usePasswordPolicyForFrontendUsers' => true,
         ],
         'sitename' => 'Notes',
+        'systemLocale' => 'en_US.UTF-8',
         'trustedHostsPattern' => '.*.*',
     ],
 ];

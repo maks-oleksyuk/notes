@@ -188,7 +188,7 @@ tasks:
       - lint:yaml
     cmds:
       - task: yaml-lint
-        vars: { CLI_ARGS: 'ext {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: 'config ext {{.CLI_ARGS}}' }
 
   lint:typoscript:
     label: 'TypoScript linter'

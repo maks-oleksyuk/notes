@@ -5,8 +5,13 @@
 	"type": "typo3-cms-extension",
 	"version": "1.0-dev",
 	"require": {
-		"typo3/cms-core": "^12.4",
-		"typo3/cms-scheduler": "^12.4"
+		"typo3/cms-core": "^12.4"
+	},
+	"require-dev": {
+		"pagemachine/typo3-phinx": "^1.1"
+	},
+	"suggest": {
+		"typo3/cms-scheduler": "Provides a seeder for creating default scheduler tasks and groups"
 	},
 	"autoload": {
 		"psr-4": {

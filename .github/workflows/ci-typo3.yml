@@ -55,4 +55,4 @@ jobs:
         uses: ./.github/actions/setup-validation
 
       - name: ${{ matrix.command.name }} validate
-        run: "task ${{ matrix.command.command }}"
+        run: 'task ${{ matrix.command.command }}'
