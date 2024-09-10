@@ -7,7 +7,9 @@ tasks:
       ddev start -y
       ddev composer install
       ddev typo3 database:updateschema
+      ddev typo3 upgrade:run -n
       ddev typo3 backend:createadmin admin Admin_123
+      ddev typo3 cache:flush
     command: |
       ddev start -y
       gp ports await 8080 && gp preview $(gp url 8080)/typo3
