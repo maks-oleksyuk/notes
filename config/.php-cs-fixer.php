@@ -8,4 +8,5 @@ use TYPO3\CodingStandards\CsFixerConfig;
 $config = CsFixerConfig::create();
 $config->setParallelConfig(ParallelConfigFactory::detect());
 $config->getFinder()->in(__DIR__ . '/../ext');
+$config->getFinder()->in(__DIR__ . '/../config');
 return $config;

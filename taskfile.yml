@@ -134,16 +134,6 @@ tasks:
       - task: lint:typoscript
       - task: lint:prettier
 
-  lint:prettier:
-    label: 'Prettier'
-    desc: 'Checks for common format issues with prettier.'
-    aliases:
-      - format
-      - lint:format
-    cmds:
-      - task: prettier
-        vars: { CLI_ARGS: '-c config ext' }
-
   lint:composer:
     label: 'Composer validation'
     desc: 'Validates composer.json file and checks platform requirements.'
@@ -195,6 +185,16 @@ tasks:
     desc: 'Lints typoscript files.'
     cmds:
       - task: typoscript-lint
+
+  lint:prettier:
+    label: 'Prettier'
+    desc: 'Checks for common format issues with prettier.'
+    aliases:
+      - format
+      - lint:format
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-c config ext' }
 
   # Fixing.
 

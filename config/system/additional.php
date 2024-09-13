@@ -2,44 +2,51 @@
 
 use TYPO3\CMS\Core\Core\Environment;
 
-$currentApplicationContext = Environment::getContext();
-if (!$currentApplicationContext->isProduction()) {
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'] .= " ($currentApplicationContext)";
+class AdditionalConfiguration
+{
+    /**
+     * Append TYPO3_CONTEXT to site name in the TYPO3 backend.
+     */
+    public function appendContextToSiteName(): self
+    {
+        $currentContext = Environment::getContext();
+
+        if (!$currentContext->isProduction()) {
+            $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'] .= " ($currentContext)";
+        }
+
+        return $this;
+    }
+
+    /**
+     * Include additional configurations by TYPO3_CONTEXT server variable.
+     */
+    public function loadContextDependentConfigurations(): self
+    {
+        $currentContext = Environment::getContext();
+        $configPath = Environment::getConfigPath();
+
+        do {
+            $orderedListOfContextNames[] = (string)$currentContext;
+        } while (($currentContext = $currentContext->getParent()));
+        $orderedListOfContextNames = array_reverse($orderedListOfContextNames ?? []);
+
+        foreach ($orderedListOfContextNames as $contextName) {
+            foreach ([
+                "$configPath/environment/$contextName/$contextName.php",
+                "$configPath/environment/$contextName.php",
+            ] as $filePath) {
+                if (file_exists($filePath)) {
+                    require $filePath;
+                }
+            }
+        }
+
+        return $this;
+    }
 }
 
-if (getenv('IS_DDEV_PROJECT') == 'true') {
-    $GLOBALS['TYPO3_CONF_VARS'] = array_replace_recursive(
-        $GLOBALS['TYPO3_CONF_VARS'],
-        [
-            'DB' => [
-                'Connections' => [
-                    'Default' => [
-                        'dbname' => 'db',
-                        'driver' => 'mysqli',
-                        'host' => 'db',
-                        'password' => 'db',
-                        'port' => '3306',
-                        'user' => 'db',
-                    ],
-                ],
-            ],
-            // This GFX configuration allows processing by installed ImageMagick 6
-            'GFX' => [
-                'processor' => 'ImageMagick',
-                'processor_path' => '/usr/bin/',
-                'processor_path_lzw' => '/usr/bin/',
-            ],
-            // This mail configuration sends all emails to mailpit
-            'MAIL' => [
-                'transport' => 'smtp',
-                'transport_smtp_encrypt' => false,
-                'transport_smtp_server' => 'localhost:1025',
-            ],
-            'SYS' => [
-                'trustedHostsPattern' => '.*.*',
-                'devIPmask' => '*',
-                'displayErrors' => 1,
-            ],
-        ]
-    );
-}
+$additionalConfiguration = new AdditionalConfiguration();
+$additionalConfiguration
+    ->appendContextToSiteName()
+    ->loadContextDependentConfigurations();
