@@ -13,6 +13,7 @@ vars:
 
 tasks:
   default:
+    desc: 'List all command.'
     cmd: 'task --list-all'
 
   # Staff.
@@ -72,6 +73,11 @@ tasks:
     desc: 'Runs `prettier` command.'
     cmd: '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}} --config={{.CONFIG_DIR}}/.prettierrc.json --ignore-path={{.CONFIG_DIR}}/.prettierignore'
 
+  cspell:
+    label: 'CSPell'
+    desc: 'Runs `cspell` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/cspell {{.CLI_ARGS}}'
+
   # Work commands.
 
   cache:clear:
@@ -125,10 +131,13 @@ tasks:
   lint:
     label: 'Project lint'
     desc: 'Validates project files.'
+    aliases:
+      - l
     cmds:
       - task: lint:composer
       - task: lint:php:cs-fixer
       - task: lint:php:stan
+      - task: lint:spellcheck
       - task: lint:rector
       - task: lint:yml
       - task: lint:typoscript
@@ -196,11 +205,24 @@ tasks:
       - task: prettier
         vars: { CLI_ARGS: '-c config ext' }
 
+  lint:spellcheck:
+    label: 'Spellcheck'
+    desc: 'Checks for common spelling issues.'
+    aliases:
+      - spellcheck
+      - lint:cspell
+    cmds:
+      - 'find ./config/cspell -name "*.dic" -exec sort {} -o {} \;'
+      - task: cspell
+        vars: { CLI_ARGS: '--config {{.CONFIG_DIR}}/.cspell.json --no-progress "**" {{.CLI_ARGS}}' }
+
   # Fixing.
 
   fix:
     label: 'Fixing found issues'
     desc: 'Trying for automated fixes for found problems.'
+    aliases:
+      - f
     cmds:
       - task: fix:php:cs-fixer
       - task: fix:rector
@@ -229,4 +251,4 @@ tasks:
       - format:fix
     cmds:
       - task: prettier
-        vars: { CLI_ARGS: '-wl ext' }
+        vars: { CLI_ARGS: '-wl config ext' }

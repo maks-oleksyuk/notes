@@ -1,0 +1,49 @@
+{
+	"language": "en",
+	"dictionaries": [
+		"companies",
+		"fonts",
+		"html",
+		"languages",
+		"misc",
+		"php",
+		"project",
+		"softwareTerms",
+		"typo3"
+	],
+	"dictionaryDefinitions": [
+		{
+			"name": "project",
+			"path": "./cspell/dictionary.dic",
+			"addWords": true
+		},
+		{
+			"name": "languages",
+			"path": "./cspell/languages.dic",
+			"addWords": true
+		},
+		{
+			"name": "typo3",
+			"path": "./cspell/typo3.dic",
+			"addWords": true
+		}
+	],
+	"ignorePaths": [
+		"**/*.sql",
+		"**/*/composer.json",
+		"**/*/composer.lock",
+		"**/*/package.json",
+		"**/*/pnpm-lock.yaml",
+		"../LICENSE.md",
+		"../config/cspell/**",
+		"../config/rector.php",
+		"../dist/**",
+		"../dump/**",
+		"../taskfile.yml",
+		"../var/**",
+		"../vendor/**",
+		"../web/**",
+		"node_modules",
+		"phpstan*"
+	]
+}
