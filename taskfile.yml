@@ -1,0 +1,83 @@
+version: '3'
+
+env:
+  PHP_BIN: '{{.PHP_BIN | default "$(which php)"}}'
+  NODE_BIN: '{{.NODE_BIN | default "$(which node)"}}'
+  PNPM_BIN: '{{.PNPM_BIN | default "$(which pnpm)"}}'
+  COMPOSER_BIN: '{{.COMPOSER_BIN | default "$(which composer)"}}'
+
+vars:
+  CONFIG_DIR: '{{.TASKFILE_DIR}}/config'
+  NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
+  COMPOSER_BIN_DIR: '{{.TASKFILE_DIR}}/vendor/bin'
+
+tasks:
+  default:
+    desc: 'List all command.'
+    cmd: 'task --list-all'
+
+  # Staff.
+
+  composer:
+    label: 'Composer'
+    desc: 'Runs `composer` command.'
+    internal: true
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}}'
+
+  pnpm:
+    label: 'pnpm'
+    desc: 'Runs `pnpm` command.'
+    internal: true
+    cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
+
+  # Work commands.
+
+  # Linters.
+
+  lint:
+    label: 'Project lint'
+    desc: 'Validates project files.'
+    aliases:
+      - l
+    cmds:
+      - task: lint:composer
+      - task: lint:prettier
+
+  lint:composer:
+    label: 'Composer validation'
+    desc: 'Validates composer.json file and checks platform requirements.'
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: 'validate --strict --ansi' }
+      - task: composer
+        vars: { CLI_ARGS: 'check-platform-req --ansi' }
+
+  lint:prettier:
+    label: 'Prettier'
+    desc: 'Checks for common format issues with prettier.'
+    aliases:
+      - format
+      - lint:format
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-c config ext' }
+
+  # Fixing.
+
+  fix:
+    label: 'Fixing found issues'
+    desc: 'Trying for automated fixes for found problems.'
+    aliases:
+      - f
+    cmds:
+      - task: fix:prettier
+
+  fix:prettier:
+    label: 'Prettier'
+    desc: 'Fix format issues.'
+    aliases:
+      - fix:format
+      - format:fix
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-wl config ext' }
