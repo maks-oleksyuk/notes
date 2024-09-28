@@ -32,13 +32,9 @@ class AdditionalConfiguration
         $orderedListOfContextNames = array_reverse($orderedListOfContextNames ?? []);
 
         foreach ($orderedListOfContextNames as $contextName) {
-            foreach ([
-                "$configPath/environment/$contextName/$contextName.php",
-                "$configPath/environment/$contextName.php",
-            ] as $filePath) {
-                if (file_exists($filePath)) {
-                    require $filePath;
-                }
+            $filePath = "$configPath/environment/$contextName.php";
+            if (file_exists($filePath)) {
+                require $filePath;
             }
         }
 

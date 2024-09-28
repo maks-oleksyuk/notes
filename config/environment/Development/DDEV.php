@@ -31,7 +31,6 @@ if (getenv('IS_DDEV_PROJECT') == 'true') {
             'SYS' => [
                 'trustedHostsPattern' => '.*.*',
                 'devIPmask' => '*',
-                'displayErrors' => 1,
             ],
         ]
     );

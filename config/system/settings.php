@@ -37,7 +37,7 @@ return [
         ],
     ],
     'FE' => [
-        'debug' => true,
+        'debug' => false,
         'passwordHashing' => [
             'className' => 'TYPO3\\CMS\\Core\\Crypto\\PasswordHashing\\Argon2iPasswordHash',
             'options' => [],
@@ -95,7 +95,7 @@ return [
             ],
         ],
         'devIPmask' => '*',
-        'displayErrors' => 1,
+        'displayErrors' => 0,
         'encryptionKey' => 'bdba01a10945c558e01e5099f37c1db78af184fcb95528d26de2e0da7f3a1df67cb100e92c3eb872db63d1f944d25702',
         'exceptionalErrors' => 12290,
         'features' => [
