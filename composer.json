@@ -5,13 +5,15 @@
 	"type": "project",
 	"require": {
 		"php": "^8.3",
-		"laravel/framework": "^11.23"
+		"laravel/framework": "^11.25",
+		"maks-oleksyuk/laravel-composer-scaffold": "0.0.1"
 	},
 	"require-dev": {
-		"laravel/pint": "^1.17"
+		"laravel/pint": "^1.18"
 	},
 	"config": {
 		"allow-plugins": {
+			"maks-oleksyuk/laravel-composer-scaffold": true,
 			"pestphp/pest-plugin": true,
 			"php-http/discovery": true
 		},
@@ -31,14 +33,6 @@
 		"post-autoload-dump": [
 			"Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
 			"@php artisan package:discover --ansi"
-		],
-		"post-root-package-install": [
-			"@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-		],
-		"post-create-project-cmd": [
-			"@php artisan key:generate --ansi",
-			"@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-			"@php artisan migrate --graceful --ansi"
 		]
 	}
 }
