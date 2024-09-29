@@ -12,7 +12,10 @@ export default defineConfig({
   lastUpdated: true,
   head: [['link', { rel: 'icon', href: '/notes/favicon.ico' }]],
   themeConfig: {
-    nav: [{ text: 'Drupal', link: '/drupal/' }],
+    nav: [
+      { text: 'Drupal', link: '/drupal/' },
+      { text: 'Laravel', link: '/laravel/' },
+    ],
     socialLinks: [
       { icon: 'github', link: '//github.com/maks-oleksyuk/notes' },
       { icon: 'linkedin', link: '//linkedin.com/in/maks-oleksyuk' },
@@ -22,6 +25,15 @@ export default defineConfig({
         documentRootPath: 'src',
         scanStartPath: 'drupal',
         resolvePath: '/drupal/',
+        collapsed: true,
+        useTitleFromFrontmatter: true,
+        useFolderLinkFromIndexFile: true,
+        useFolderTitleFromIndexFile: true,
+      },
+      {
+        documentRootPath: 'src',
+        scanStartPath: 'laravel',
+        resolvePath: '/laravel/',
         collapsed: true,
         useTitleFromFrontmatter: true,
         useFolderLinkFromIndexFile: true,
