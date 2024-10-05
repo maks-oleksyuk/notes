@@ -14,7 +14,16 @@ return [
         'Connections' => [
             'Default' => [
                 'charset' => 'utf8',
+                'dbname' => getenv('DB_NAME'),
                 'driver' => 'mysqli',
+                'host' => getenv('DB_HOST'),
+                'password' => getenv('DB_PASS'),
+                'port' => (int)getenv('DB_PASS'),
+                'tableoptions' => [
+                    'charset' => 'utf8mb4',
+                    'collate' => 'utf8mb4_unicode_ci',
+                ],
+                'user' => getenv('DB_USER'),
             ],
         ],
     ],
@@ -22,7 +31,7 @@ return [
         'backend' => [
             'backendFavicon' => 'EXT:nts_site/Resources/Public/Icons/backend/favicon.ico',
             'backendLogo' => 'EXT:nts_site/Resources/Public/Icons/backend/logo.svg',
-            'loginBackgroundImage' => 'https://picsum.photos/1920/1080',
+            'loginBackgroundImage' => 'https://picsum.photos/2560/1440',
             'loginFootnote' => '',
             'loginHighlightColor' => '#138808',
             'loginLogo' => '',

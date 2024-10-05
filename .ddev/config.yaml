@@ -17,3 +17,5 @@ hooks:
     - exec-host: |
         ddev get --installed | grep -q 'envsa/ddev-pnpm' || ddev get envsa/ddev-pnpm &>/dev/null
         ddev get --installed | grep -q 'gebruederheitz/ddev-taskfile' || ddev get gebruederheitz/ddev-taskfile &>/dev/null
+  post-start:
+    - composer: install

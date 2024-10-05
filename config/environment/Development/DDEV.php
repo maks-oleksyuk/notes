@@ -11,7 +11,7 @@ if (getenv('IS_DDEV_PROJECT') == 'true') {
                         'driver' => 'mysqli',
                         'host' => 'db',
                         'password' => 'db',
-                        'port' => '3306',
+                        'port' => 3306,
                         'user' => 'db',
                     ],
                 ],

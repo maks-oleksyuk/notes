@@ -5,6 +5,7 @@
 	"type": "project",
 	"require": {
 		"php": "^8.3",
+		"helhum/dotenv-connector": "^3.1",
 		"helhum/typo3-console": "^8.1",
 		"typo3-notes/nts_site": "^1.0@dev",
 		"typo3/cms-backend": "^12.4",
@@ -32,12 +33,12 @@
 		"typo3fluid/fluid": "^2.15"
 	},
 	"require-dev": {
-		"b13/make": "^0.1.8",
+		"b13/make": "^0.1",
 		"helmich/typo3-typoscript-lint": "^3.2",
-		"lolli/dbdoctor": "^0.6.2",
+		"lolli/dbdoctor": "^0.6",
 		"pagemachine/typo3-phinx": "^1.1",
 		"saschaegerer/phpstan-typo3": "^1.10",
-		"ssch/typo3-rector": "^2.6",
+		"ssch/typo3-rector": "^2.9",
 		"typo3/coding-standards": "^0.8"
 	},
 	"repositories": {
@@ -48,6 +49,7 @@
 	},
 	"config": {
 		"allow-plugins": {
+			"helhum/dotenv-connector": true,
 			"typo3/class-alias-loader": true,
 			"typo3/cms-composer-installers": true
 		},
