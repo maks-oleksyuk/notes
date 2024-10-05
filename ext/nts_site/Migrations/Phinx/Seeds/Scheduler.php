@@ -73,15 +73,14 @@ final class Scheduler extends AbstractSeed
         $schedulerTaskRepository->add($task);
 
         // Update reference index.
-        $task = new ExecuteSchedulableCommandTask();
-        $task->setTaskGroup(1);
-        $task->setCommandIdentifier('referenceindex:update');
-        $task->registerRecurringExecution(
-            start: $this->getNextCronExecution('0 3 1 * *'),
-            interval: 0,
-            cron_cmd: '0 3 1 * *',
-        );
-        $schedulerTaskRepository->add($task);
+        $this->addCommandTask($schedulerTaskRepository, 'referenceindex:update', 1, '0 3 1 * *');
+
+        // Cleanup commands.
+        $this->addCommandTask($schedulerTaskRepository, 'cleanup:flexforms', 2, '0 5 1 * *');
+        $this->addCommandTask($schedulerTaskRepository, 'cleanup:localprocessedfiles', 2, '0 5 1 * *');
+        $this->addCommandTask($schedulerTaskRepository, 'cleanup:deletedrecords', 2, '0 5 1 * *');
+        $this->addCommandTask($schedulerTaskRepository, 'cleanup:missingrelations', 2, '0 5 1 * *');
+        $this->addCommandTask($schedulerTaskRepository, 'cleanup:orphanrecords', 2, '0 5 1 * *');
     }
 
     public function getNextCronExecution(string $cronCommand): int
@@ -89,5 +88,18 @@ final class Scheduler extends AbstractSeed
         $cronCmd = GeneralUtility::makeInstance(CronCommand::class, $cronCommand);
         $cronCmd->calculateNextValue();
         return $cronCmd->getTimestamp();
+    }
+
+    private function addCommandTask(SchedulerTaskRepository $schedulerTaskRepository, string $command, int $group, string $cron_cmd): void
+    {
+        $task = new ExecuteSchedulableCommandTask();
+        $task->setTaskGroup($group);
+        $task->setCommandIdentifier($command);
+        $task->registerRecurringExecution(
+            start: $this->getNextCronExecution($cron_cmd),
+            interval: 0,
+            cron_cmd: $cron_cmd,
+        );
+        $schedulerTaskRepository->add($task);
     }
 }

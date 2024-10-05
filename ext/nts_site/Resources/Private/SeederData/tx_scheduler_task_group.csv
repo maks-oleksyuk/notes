@@ -1,4 +1,5 @@
 uid,hidden,sorting,groupName
-1,0,64,System
-2,1,128,Solr | Index
-3,1,256,Solr | Optimize
+1,0,0,⚙️ System
+2,0,5,🧹 Cleanup
+3,1,10,🔍 Solr | 📨 Index
+4,1,15,🔍 Solr | 📈 Optimize

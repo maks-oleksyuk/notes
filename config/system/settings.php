@@ -13,7 +13,7 @@ return [
     'DB' => [
         'Connections' => [
             'Default' => [
-                'charset' => 'utf8',
+                'charset' => 'utf8mb4',
                 'dbname' => getenv('DB_NAME'),
                 'driver' => 'mysqli',
                 'host' => getenv('DB_HOST'),
