@@ -7,3 +7,7 @@ services:
   Typo3Notes\NtsSite\:
     resource: '../Classes/*'
     exclude: '../Classes/Domain/Model/*'
+
+  # Disable "Help Toolbar Item"
+  TYPO3\CMS\Backend\Backend\ToolbarItems\HelpToolbarItem:
+    autoconfigure: false

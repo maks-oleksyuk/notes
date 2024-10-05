@@ -1,0 +1,7 @@
+options {
+  enableBookmarks = 0
+
+  pageTree {
+    showPageIdWithTitle = 1
+  }
+}
