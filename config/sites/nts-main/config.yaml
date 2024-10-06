@@ -6,6 +6,7 @@ baseVariants:
 imports:
   - { resource: './../../languages/_english.yaml' }
   - { resource: './../../languages/_ukrainian-ua-1058.yaml' }
+  - { resource: './../../solr/solr.yaml' }
 
 rootPageId: 1
 websiteTitle: 'Notes Main'

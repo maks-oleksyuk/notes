@@ -11,11 +11,16 @@ webserver_type: nginx-fpm
 xdebug_enabled: false
 web_environment:
   - 'TYPO3_CONTEXT=Development/DDEV'
+  - 'SOLR_SCHEME=http'
+  - 'SOLR_HOST=typo3-solr'
+  - 'SOLR_PORT=8983'
 hooks:
   pre-start:
-    # Add pnpm and task to ddev if not already installed.
+    # Add pnpm, task and solr to ddev if not already installed.
     - exec-host: |
         ddev get --installed | grep -q 'envsa/ddev-pnpm' || ddev get envsa/ddev-pnpm &>/dev/null
         ddev get --installed | grep -q 'gebruederheitz/ddev-taskfile' || ddev get gebruederheitz/ddev-taskfile &>/dev/null
+        ddev get --installed | grep -q 'ddev/ddev-typo3-solr' || ddev get ddev/ddev-typo3-solr &>/dev/null
   post-start:
     - composer: install
+    - exec-host: ddev solrctl apply

@@ -8,3 +8,4 @@ languages:
     flag: us
     hreflang: ''
     websiteTitle: ''
+    solr_core_read: 'core_en'

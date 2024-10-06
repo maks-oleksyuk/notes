@@ -5,6 +5,31 @@ use TYPO3\CMS\Core\Core\Environment;
 class AdditionalConfiguration
 {
     /**
+     * Connect to database using env values.
+     */
+    public function databaseConnection(): self
+    {
+        $GLOBALS['TYPO3_CONF_VARS'] = array_replace_recursive(
+            $GLOBALS['TYPO3_CONF_VARS'],
+            [
+                'DB' => [
+                    'Connections' => [
+                        'Default' => [
+                            'dbname' => getenv('DB_NAME'),
+                            'host' =>  getenv('DB_HOST'),
+                            'password' =>  getenv('DB_PASS'),
+                            'port' => (int)getenv('DB_PORT'),
+                            'user' =>  getenv('DB_USER'),
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        return $this;
+    }
+
+    /**
      * Append TYPO3_CONTEXT to site name in the TYPO3 backend.
      */
     public function appendContextToSiteName(): self
@@ -44,5 +69,6 @@ class AdditionalConfiguration
 
 $additionalConfiguration = new AdditionalConfiguration();
 $additionalConfiguration
+    ->databaseConnection()
     ->appendContextToSiteName()
     ->loadContextDependentConfigurations();

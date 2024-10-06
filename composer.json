@@ -5,8 +5,10 @@
 	"type": "project",
 	"require": {
 		"php": "^8.3",
+		"apache-solr-for-typo3/solr": "^12.0",
 		"helhum/dotenv-connector": "^3.1",
 		"helhum/typo3-console": "^8.1",
+		"networkteam/solr-commands": "dev-master",
 		"typo3-notes/nts_site": "^1.0@dev",
 		"typo3/cms-backend": "^12.4",
 		"typo3/cms-belog": "^12.4",

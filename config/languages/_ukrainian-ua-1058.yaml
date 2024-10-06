@@ -10,3 +10,4 @@ languages:
     fallbacks: ''
     flag: ua
     languageId: 1058
+    solr_core_read: 'core_uk'

@@ -14,16 +14,11 @@ return [
         'Connections' => [
             'Default' => [
                 'charset' => 'utf8mb4',
-                'dbname' => getenv('DB_NAME'),
                 'driver' => 'mysqli',
-                'host' => getenv('DB_HOST'),
-                'password' => getenv('DB_PASS'),
-                'port' => (int)getenv('DB_PASS'),
                 'tableoptions' => [
                     'charset' => 'utf8mb4',
                     'collate' => 'utf8mb4_unicode_ci',
                 ],
-                'user' => getenv('DB_USER'),
             ],
         ],
     ],
@@ -43,6 +38,16 @@ return [
         ],
         'scheduler' => [
             'maxLifetime' => '1440',
+        ],
+        'solr' => [
+            'allowSelfSignedCertificates' => '0',
+            'enableRouteEnhancer' => '0',
+            'includeGlobalQParameterInCacheHash' => '0',
+            'monitoringType' => '0',
+            'pluginNamespaces' => 'tx_solr',
+            'useConfigurationFromClosestTemplate' => '1',
+            'useConfigurationMonitorTables' => '',
+            'useConfigurationTrackRecordsOutsideSiteroot' => '1',
         ],
     ],
     'FE' => [
