@@ -40,7 +40,7 @@
 		"lolli/dbdoctor": "^0.6",
 		"pagemachine/typo3-phinx": "^1.1",
 		"saschaegerer/phpstan-typo3": "^1.10",
-		"ssch/typo3-rector": "^2.9",
+		"ssch/typo3-rector": "^2.10",
 		"typo3/coding-standards": "^0.8"
 	},
 	"repositories": {

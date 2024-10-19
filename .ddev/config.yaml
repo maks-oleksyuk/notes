@@ -18,9 +18,10 @@ hooks:
   pre-start:
     # Add pnpm, task and solr to ddev if not already installed.
     - exec-host: |
-        ddev get --installed | grep -q 'envsa/ddev-pnpm' || ddev get envsa/ddev-pnpm &>/dev/null
-        ddev get --installed | grep -q 'gebruederheitz/ddev-taskfile' || ddev get gebruederheitz/ddev-taskfile &>/dev/null
-        ddev get --installed | grep -q 'ddev/ddev-typo3-solr' || ddev get ddev/ddev-typo3-solr &>/dev/null
+        ddev add-on list --installed | grep -q 'envsa/ddev-pnpm' || ddev add-on get envsa/ddev-pnpm &>/dev/null
+        ddev add-on list --installed | grep -q 'gebruederheitz/ddev-taskfile' || ddev add-on get gebruederheitz/ddev-taskfile &>/dev/null
+        ddev add-on list --installed | grep -q 'ddev/ddev-typo3-solr' || ddev add-on get ddev/ddev-typo3-solr &>/dev/null
   post-start:
     - composer: install
+    - exec-host: ddev pnpm install
     - exec-host: ddev solrctl apply

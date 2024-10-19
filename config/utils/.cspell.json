@@ -14,17 +14,17 @@
 	"dictionaryDefinitions": [
 		{
 			"name": "project",
-			"path": "./cspell/dictionary.dic",
+			"path": "./../cspell/dictionary.dic",
 			"addWords": true
 		},
 		{
 			"name": "languages",
-			"path": "./cspell/languages.dic",
+			"path": "./../cspell/languages.dic",
 			"addWords": true
 		},
 		{
 			"name": "typo3",
-			"path": "./cspell/typo3.dic",
+			"path": "./../cspell/typo3.dic",
 			"addWords": true
 		}
 	],
@@ -34,15 +34,15 @@
 		"**/*/composer.lock",
 		"**/*/package.json",
 		"**/*/pnpm-lock.yaml",
-		"../LICENSE.md",
-		"../config/cspell/**",
-		"../config/rector.php",
-		"../dist/**",
-		"../dump/**",
-		"../taskfile.yml",
-		"../var/**",
-		"../vendor/**",
-		"../web/**",
+		"**/*/vendor/**",
+		"../../LICENSE.md",
+		"../../config/cspell/**",
+		"../../config/utils/rector.php",
+		"../../dist/**",
+		"../../dump/**",
+		"../../taskfile.yml",
+		"../../var/**",
+		"../../web/**",
 		"node_modules",
 		"phpstan*"
 	]

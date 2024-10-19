@@ -16,10 +16,10 @@ class AdditionalConfiguration
                     'Connections' => [
                         'Default' => [
                             'dbname' => getenv('DB_NAME'),
-                            'host' =>  getenv('DB_HOST'),
-                            'password' =>  getenv('DB_PASS'),
+                            'host' => getenv('DB_HOST'),
+                            'password' => getenv('DB_PASS'),
                             'port' => (int)getenv('DB_PORT'),
-                            'user' =>  getenv('DB_USER'),
+                            'user' => getenv('DB_USER'),
                         ],
                     ],
                 ],
@@ -54,7 +54,7 @@ class AdditionalConfiguration
         do {
             $orderedListOfContextNames[] = (string)$currentContext;
         } while (($currentContext = $currentContext->getParent()));
-        $orderedListOfContextNames = array_reverse($orderedListOfContextNames ?? []);
+        $orderedListOfContextNames = array_reverse($orderedListOfContextNames);
 
         foreach ($orderedListOfContextNames as $contextName) {
             $filePath = "$configPath/environment/$contextName.php";

@@ -1,0 +1,10 @@
+includes:
+	- ../../vendor/saschaegerer/phpstan-typo3/extension.neon
+
+parameters:
+  level: 9
+  paths:
+    - ../../ext
+    - ../../config/system
+  excludePaths:
+    - ../../ext/*/vendor/*

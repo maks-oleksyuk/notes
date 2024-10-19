@@ -1,10 +1,11 @@
-image: ddev/ddev-gitpod-base:20240923
+image: ddev/ddev-gitpod-base:latest
 
 # ddev and composer are running as part of the prebuild
 # when starting a workspace all docker images are ready
 tasks:
   - init: |
       ddev start -y
+      ddev pnpm install
       ddev composer install
       ddev typo3 database:updateschema
       ddev typo3 upgrade:run -n

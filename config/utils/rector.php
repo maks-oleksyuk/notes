@@ -14,7 +14,7 @@ use Ssch\TYPO3Rector\Set\Typo3SetList;
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__ . '/../ext',
+        __DIR__ . '/../../ext',
     ])
     // uncomment to reach your current PHP version
     // ->withPhpSets()
@@ -39,8 +39,9 @@ return RectorConfig::configure()
     ])
     // If you use withImportNames(), you should consider excluding some TYPO3 files.
     ->withSkip([
+        __DIR__ . '/../../ext/*/vendor/*',
         // @see https://github.com/sabbelasichon/typo3-rector/issues/2536
-        __DIR__ . '/**/Configuration/ExtensionBuilder/*',
+        __DIR__ . '/../../ext/*/Configuration/ExtensionBuilder/*',
         NameImportingPostRector::class => [
             'ext_localconf.php', // This line can be removed since TYPO3 11.4, see https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/11.4/Important-94280-MoveContentsOfExtPhpIntoLocalScopes.html
             'ext_tables.php', // This line can be removed since TYPO3 11.4, see https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/11.4/Important-94280-MoveContentsOfExtPhpIntoLocalScopes.html
