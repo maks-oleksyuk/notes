@@ -68,6 +68,7 @@ export default defineConfig({
     },
   },
   vite: {
+    envDir: './../',
     ssr: {
       noExternal: ['@nolebase/vitepress-plugin-enhanced-readabilities'],
     },

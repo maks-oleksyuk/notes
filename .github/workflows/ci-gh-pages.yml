@@ -1,4 +1,4 @@
-name: 🔁 CI | ⚡️ VitePress
+name: 🔄 CI | ⚡️ VitePress
 
 on:
   push:
@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: pages
+  group: ci
   cancel-in-progress: false
 
 jobs:

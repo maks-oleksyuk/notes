@@ -21,6 +21,6 @@ export default {
   enhanceApp({ app }) {
     enhanceAppWithTabs(app);
     vitepressBackToTop({ threshold: 300 });
-    googleAnalytics({ id: 'G-L5YJQ5Q3TD' });
+    googleAnalytics({ id: import.meta.env.VITE_GTAG });
   },
 };
