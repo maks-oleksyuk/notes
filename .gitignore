@@ -5,9 +5,9 @@ node_modules
 
 # Ignore temporary/cache files and folders.
 var
+bootstrap/cache
 .pnpm-store
 .php-cs-fixer.cache
-bootstrap/cache
 
 # Ignore .env files as they are personal.
 .env

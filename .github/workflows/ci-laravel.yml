@@ -32,23 +32,23 @@ jobs:
           keep_minimum_runs: 1
           delete_workflow_pattern: ci-laravel.yml
 
-#  lint:
-#    name: 🪄 Lint | ${{ matrix.command.name }}
-#    runs-on: ubuntu-latest
-#
-#    strategy:
-#      matrix:
-#        command:
-#          - { name: '📦 Composer',     command: 'lint:composer' }
-#          - { name: '🅿️ Prettier',     command: 'lint:prettier' }
-#          - { name: '🏠 Rector',       command: 'lint:rector' }
-#
-#    steps:
-#      - name: 🛎 Checkout
-#        uses: actions/checkout@v4
-#
-#      - name: ⚙️ Prepare environment
-#        uses: ./.github/actions/setup-validation
-#
-#      - name: ${{ matrix.command.name }} validate
-#        run: 'task ${{ matrix.command.command }}'
+  lint:
+    name: 🪄 Lint | ${{ matrix.command.name }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        command:
+          - { name: '📦 Composer', command: 'lint:composer' }
+          - { name: '🧽 Laravel Pint',     command: 'lint:pint' }
+          - { name: '🅿️ Prettier', command: 'lint:prettier' }
+
+    steps:
+      - name: 🛎 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Prepare environment
+        uses: ./.github/actions/setup-validation
+
+      - name: ${{ matrix.command.name }} validate
+        run: 'task ${{ matrix.command.command }}'

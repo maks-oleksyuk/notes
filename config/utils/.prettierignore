@@ -1,0 +1,10 @@
+.ddev
+.github
+LICENSE.md
+composer.lock
+dist
+dump
+vendor
+var
+web
+pnpm-lock.yaml

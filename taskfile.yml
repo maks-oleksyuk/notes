@@ -7,7 +7,7 @@ env:
   COMPOSER_BIN: '{{.COMPOSER_BIN | default "$(which composer)"}}'
 
 vars:
-  CONFIG_DIR: '{{.TASKFILE_DIR}}/config'
+  CONFIG_DIR: '{{.TASKFILE_DIR}}/config/utils'
   NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
   COMPOSER_BIN_DIR: '{{.TASKFILE_DIR}}/vendor/bin'
 
@@ -16,19 +16,32 @@ tasks:
     desc: 'List all command.'
     cmd: 'task --list-all'
 
-  # Staff.
+  # Utils.
 
   composer:
     label: 'Composer'
     desc: 'Runs `composer` command.'
     internal: true
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}}'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}} --ansi'
 
   pnpm:
     label: 'pnpm'
     desc: 'Runs `pnpm` command.'
     internal: true
     cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
+
+  pint:
+    label: 'Laravel Pint'
+    desc: 'Runs `pint` command.'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/pint {{.CLI_ARGS}} --ansi'
+
+  prettier:
+    label: 'Prettier'
+    desc: 'Runs `prettier` command.'
+    cmd:
+      '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
+      --config={{.CONFIG_DIR}}/.prettierrc.json
+      --ignore-path={{.CONFIG_DIR}}/.prettierignore'
 
   # Work commands.
 
@@ -41,6 +54,7 @@ tasks:
       - l
     cmds:
       - task: lint:composer
+      - task: lint:pint
       - task: lint:prettier
 
   lint:composer:
@@ -48,19 +62,35 @@ tasks:
     desc: 'Validates composer.json file and checks platform requirements.'
     cmds:
       - task: composer
-        vars: { CLI_ARGS: 'validate --strict --ansi' }
+        vars: { CLI_ARGS: '-V' }
       - task: composer
-        vars: { CLI_ARGS: 'check-platform-req --ansi' }
+        vars: { CLI_ARGS: 'validate --strict' }
+      - task: composer
+        vars: { CLI_ARGS: 'check-platform-req' }
+
+  lint:pint:
+    label: 'Laravel Pint validation'
+    desc: 'Validate PHP for code style.'
+    aliases:
+      - l:pint
+    cmds:
+      - task: pint
+        vars: { CLI_ARGS: '-V' }
+      - task: pint
+        vars: { CLI_ARGS: '. --test --config={{.CONFIG_DIR}}/pint.json' }
 
   lint:prettier:
     label: 'Prettier'
     desc: 'Checks for common format issues with prettier.'
     aliases:
       - format
+      - l:format
       - lint:format
     cmds:
       - task: prettier
-        vars: { CLI_ARGS: '-c config ext' }
+        vars: { CLI_ARGS: '-v' }
+      - task: prettier
+        vars: { CLI_ARGS: '-c .' }
 
   # Fixing.
 
@@ -70,14 +100,27 @@ tasks:
     aliases:
       - f
     cmds:
+      - task: fix:pint
       - task: fix:prettier
+
+  fix:pint:
+    label: 'Laravel Pint'
+    desc: 'Fix php format issues.'
+    aliases:
+      - f:pint
+      - pint:f
+      - pint:fix
+    cmds:
+      - task: pint
+        vars: { CLI_ARGS: '. --config={{.CONFIG_DIR}}/pint.json' }
 
   fix:prettier:
     label: 'Prettier'
     desc: 'Fix format issues.'
     aliases:
+      - f:format
       - fix:format
       - format:fix
     cmds:
       - task: prettier
-        vars: { CLI_ARGS: '-wl config ext' }
+        vars: { CLI_ARGS: '-wl .' }
