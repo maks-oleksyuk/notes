@@ -5,7 +5,8 @@ image: ddev/ddev-gitpod-base:latest
 tasks:
   - init: |
       ddev start -y
-      ddev composer install
+      ddev artisan key:generate --ansi
+      ddev artisan migrate --schema-path=database/schema/mariadb-schema.sql
     command: |
       ddev start -y
       gp ports await 8080 && gp preview $(gp url 8080)
