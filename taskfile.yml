@@ -43,6 +43,13 @@ tasks:
       --config={{.CONFIG_DIR}}/.prettierrc.json
       --ignore-path={{.CONFIG_DIR}}/.prettierignore'
 
+  rector:
+    label: 'Rector'
+    desc: 'Runs `rector` command.'
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector process
+      --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
+
   phpstan:
     label: 'PHPStan'
     desc: 'Runs `phpstan` command.'
@@ -67,6 +74,7 @@ tasks:
       - task: lint:pint
       - task: lint:prettier
       - task: lint:phpstan
+      - task: lint:rector
 
   lint:composer:
     label: 'Composer validation'
@@ -117,6 +125,15 @@ tasks:
       - task: phpstan
         vars: { CLI_ARGS: 'analyze' }
 
+  lint:rector:
+    label: 'Rector check'
+    desc: 'Check Rector issues.'
+    aliases:
+      - l:rector
+    cmds:
+      - task: rector
+        vars: { CLI_ARGS: '--dry-run' }
+
   # Fixing.
 
   fix:
@@ -127,6 +144,7 @@ tasks:
     cmds:
       - task: fix:pint
       - task: fix:prettier
+      - task: fix:rector
 
   fix:pint:
     label: 'Laravel Pint'
@@ -149,3 +167,11 @@ tasks:
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '-wl .' }
+
+  fix:rector:
+    label: 'Rector'
+    desc: 'Fix Rector issues.'
+    aliases:
+      - f:rector
+    cmds:
+      - task: rector

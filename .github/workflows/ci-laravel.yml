@@ -43,6 +43,7 @@ jobs:
           - { name: '🧽 Laravel Pint', command: 'lint:pint' }
           - { name: '🔍 PHPStan',      command: 'lint:php:stan' }
           - { name: '🅿️ Prettier',     command: 'lint:prettier' }
+          - { name: '🏠 Rector',       command: 'lint:rector' }
 
     steps:
       - name: 🛎 Checkout

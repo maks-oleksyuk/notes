@@ -9,6 +9,7 @@
         "maks-oleksyuk/laravel-composer-scaffold": "0.0.1"
     },
     "require-dev": {
+        "driftingly/rector-laravel": "^1.2",
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^2.9",
         "laravel/pint": "^1.18"
