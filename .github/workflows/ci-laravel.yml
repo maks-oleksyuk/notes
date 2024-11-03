@@ -39,9 +39,10 @@ jobs:
     strategy:
       matrix:
         command:
-          - { name: '📦 Composer', command: 'lint:composer' }
-          - { name: '🧽 Laravel Pint',     command: 'lint:pint' }
-          - { name: '🅿️ Prettier', command: 'lint:prettier' }
+          - { name: '📦 Composer',     command: 'lint:composer' }
+          - { name: '🧽 Laravel Pint', command: 'lint:pint' }
+          - { name: '🔍 PHPStan',      command: 'lint:php:stan' }
+          - { name: '🅿️ Prettier',     command: 'lint:prettier' }
 
     steps:
       - name: 🛎 Checkout

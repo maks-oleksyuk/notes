@@ -43,6 +43,16 @@ tasks:
       --config={{.CONFIG_DIR}}/.prettierrc.json
       --ignore-path={{.CONFIG_DIR}}/.prettierignore'
 
+  phpstan:
+    label: 'PHPStan'
+    desc: 'Runs `phpstan` command.'
+    aliases:
+      - phpstan
+      - php:stan
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan
+      --configuration={{.CONFIG_DIR}}/phpstan.neon {{.CLI_ARGS}} --ansi'
+
   # Work commands.
 
   # Linters.
@@ -56,6 +66,7 @@ tasks:
       - task: lint:composer
       - task: lint:pint
       - task: lint:prettier
+      - task: lint:phpstan
 
   lint:composer:
     label: 'Composer validation'
@@ -91,6 +102,20 @@ tasks:
         vars: { CLI_ARGS: '-v' }
       - task: prettier
         vars: { CLI_ARGS: '-c .' }
+
+  lint:phpstan:
+    label: 'PHPStan analyze'
+    desc: 'Analyze PHP code for bugs and errors.'
+    aliases:
+      - l:stan
+      - l:phpstan
+      - l:php:stan
+      - lint:stan
+      - lint:phpstan
+      - lint:php:stan
+    cmds:
+      - task: phpstan
+        vars: { CLI_ARGS: 'analyze' }
 
   # Fixing.
 
