@@ -10,6 +10,7 @@ vars:
   CONFIG_DIR: '{{.TASKFILE_DIR}}/config/utils'
   NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
   COMPOSER_BIN_DIR: '{{.TASKFILE_DIR}}/vendor/bin'
+  DB_SCHEMA_PATH: 'database/schema/mariadb-schema.sql'
 
 tasks:
   default:
@@ -30,10 +31,18 @@ tasks:
     internal: true
     cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
 
+  artisan:
+    label: 'artisan'
+    desc: 'Runs `artisan` command.'
+    internal: true
+    cmd: '{{.PHP_BIN}} artisan {{.CLI_ARGS}} --ansi'
+
   pint:
     label: 'Laravel Pint'
     desc: 'Runs `pint` command.'
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/pint {{.CLI_ARGS}} --ansi'
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/pint
+      --config={{.CONFIG_DIR}}/pint.json {{.CLI_ARGS}} --ansi'
 
   prettier:
     label: 'Prettier'
@@ -54,13 +63,24 @@ tasks:
     label: 'PHPStan'
     desc: 'Runs `phpstan` command.'
     aliases:
-      - phpstan
       - php:stan
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan
       --configuration={{.CONFIG_DIR}}/phpstan.neon {{.CLI_ARGS}} --ansi'
 
   # Work commands.
+
+  db:fresh:
+    label: 'Refresh database'
+    desc: 'Drop all tables and re-run all migrations'
+    aliases:
+      - m:f
+      - db:f
+      - db:rf
+      - db:refresh
+    cmds:
+      - task: artisan
+        vars: { CLI_ARGS: 'migrate:fresh --schema-path={{.DB_SCHEMA_PATH}} --seed --force' }
 
   # Linters.
 
@@ -96,7 +116,7 @@ tasks:
       - task: pint
         vars: { CLI_ARGS: '-V' }
       - task: pint
-        vars: { CLI_ARGS: '. --test --config={{.CONFIG_DIR}}/pint.json' }
+        vars: { CLI_ARGS: '. --test' }
 
   lint:prettier:
     label: 'Prettier'
@@ -155,7 +175,7 @@ tasks:
       - pint:fix
     cmds:
       - task: pint
-        vars: { CLI_ARGS: '. --config={{.CONFIG_DIR}}/pint.json' }
+        vars: { CLI_ARGS: '.' }
 
   fix:prettier:
     label: 'Prettier'

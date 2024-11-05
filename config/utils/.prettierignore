@@ -4,7 +4,8 @@ LICENSE.md
 composer.lock
 dist
 dump
-vendor
-var
-web
 pnpm-lock.yaml
+taskfile.yml
+var
+vendor
+web

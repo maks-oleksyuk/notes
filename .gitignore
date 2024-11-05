@@ -3,6 +3,12 @@ web
 vendor
 node_modules
 
+# Ignore Laravel files.
+public
+storage
+artisan
+.editorconfig
+
 # Ignore temporary/cache files and folders.
 var
 bootstrap/cache
@@ -17,15 +23,9 @@ bootstrap/cache
 .idea
 .vscode
 
-# Ignore dump folder, archives.
-dump
+# Ignore local folder and archives.
+local
 *.gz
 
 # Ignore OS files.
 .DS_Store
-
-# Ignore Laravel files.
-public
-storage
-artisan
-.editorconfig

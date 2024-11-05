@@ -1,4 +1,7 @@
 {
     "preset": "laravel",
-    "exclude": ["dump", "var", "web"]
+    "rules": {
+        "declare_strict_types": true
+    },
+    "exclude": ["dump", "local", "public", "var", "web"]
 }
