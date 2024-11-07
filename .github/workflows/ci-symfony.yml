@@ -1,0 +1,56 @@
+name: '🔄 CI | ♦️ Symfony'
+
+on:
+  push:
+    branches:
+      - laravel
+    paths-ignore:
+      - README.md
+      - LICENSE.md
+  pull_request:
+    branches:
+      - laravel
+    paths-ignore:
+      - README.md
+      - LICENSE.md
+
+  # Allows to run this workflow manually from the Actions tab.
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    name: '🧹 Clean up GitHub repo'
+    runs-on: ubuntu-latest
+    permissions: write-all
+    if: github.event_name != 'pull_request'
+
+    steps:
+      - name: '🗑 Delete workflow runs'
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          retain_days: 7
+          keep_minimum_runs: 1
+          delete_workflow_pattern: ci-symfony.yml
+
+#  lint:
+#    name: '🪄 Lint | ${{ matrix.command.name }}'
+#    runs-on: ubuntu-latest
+#
+#    strategy:
+#      matrix:
+#        command:
+#          - { name: '📦 Composer',     command: 'lint:composer' }
+#          - { name: '🧽 Laravel Pint', command: 'lint:pint' }
+#          - { name: '🔍 PHPStan',      command: 'lint:php:stan' }
+#          - { name: '🅿️ Prettier',     command: 'lint:prettier' }
+#          - { name: '🏠 Rector',       command: 'lint:rector' }
+#
+#    steps:
+#      - name: '🛎 Checkout'
+#        uses: actions/checkout@v4
+#
+#      - name: '⚙️ Prepare environment'
+#        uses: ./.github/actions/setup-validation
+#
+#      - name: '${{ matrix.command.name }} validate'
+#        run: task ${{ matrix.command.command }}
