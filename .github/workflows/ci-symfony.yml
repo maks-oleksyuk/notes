@@ -1,9 +1,9 @@
-name: '🔄 CI | ♦️ Symfony'
+name: '🔄 CI | ⚜️ Symfony'
 
 on:
   push:
     branches:
-      - laravel
+      - symfony
     paths-ignore:
       - README.md
       - LICENSE.md
@@ -32,25 +32,24 @@ jobs:
           keep_minimum_runs: 1
           delete_workflow_pattern: ci-symfony.yml
 
-#  lint:
-#    name: '🪄 Lint | ${{ matrix.command.name }}'
-#    runs-on: ubuntu-latest
-#
-#    strategy:
-#      matrix:
-#        command:
-#          - { name: '📦 Composer',     command: 'lint:composer' }
-#          - { name: '🧽 Laravel Pint', command: 'lint:pint' }
+  lint:
+    name: '🪄 Lint | ${{ matrix.command.name }}'
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        command:
+          - { name: '📦 Composer',     command: 'lint:composer' }
 #          - { name: '🔍 PHPStan',      command: 'lint:php:stan' }
 #          - { name: '🅿️ Prettier',     command: 'lint:prettier' }
 #          - { name: '🏠 Rector',       command: 'lint:rector' }
-#
-#    steps:
-#      - name: '🛎 Checkout'
-#        uses: actions/checkout@v4
-#
-#      - name: '⚙️ Prepare environment'
-#        uses: ./.github/actions/setup-validation
-#
-#      - name: '${{ matrix.command.name }} validate'
-#        run: task ${{ matrix.command.command }}
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@v4
+
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-validation
+
+      - name: '${{ matrix.command.name }} validate'
+        run: task ${{ matrix.command.command }}

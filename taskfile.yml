@@ -24,6 +24,16 @@ tasks:
     internal: true
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}} --ansi'
 
+  bin/console:
+    label: 'Symfony console'
+    desc: 'Runs Symfony `bin/console` command.'
+    aliases:
+      - sf
+      - console
+      - symfony
+      - sf:console
+    cmd: '{{.PHP_BIN}} bin/console {{.CLI_ARGS}} --ansi'
+
   pnpm:
     label: 'pnpm'
     desc: 'Runs `pnpm` command.'
@@ -72,6 +82,8 @@ tasks:
   lint:composer:
     label: 'Composer validation'
     desc: 'Validates composer.json file and checks platform requirements.'
+    aliases:
+      - l:composer
     cmds:
       - task: composer
         vars: { CLI_ARGS: '-V' }

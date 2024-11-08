@@ -5,8 +5,6 @@ image: ddev/ddev-gitpod-base:latest
 tasks:
   - init: |
       ddev start -y
-      ddev artisan key:generate --ansi
-      ddev task db:fresh
     command: |
       ddev start -y
       gp ports await 8080 && gp preview $(gp url 8080)
