@@ -40,6 +40,16 @@ tasks:
       - sf:console
     cmd: '{{.PHP_BIN}} bin/console {{.CLI_ARGS}} --ansi'
 
+  php-cs-fixer:
+    label: 'PHP CS Fixer'
+    desc: 'Runs `php-cs-fixer` command.'
+    aliases:
+      - cs-fixer
+      - php:cs-fixer
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/php-cs-fixer fix
+      --config {{.CONFIG_DIR}}/.php-cs-fixer.php -v {{.CLI_ARGS}} --ansi'
+
   prettier:
     label: 'Prettier'
     desc: 'Runs `prettier` command.'
@@ -75,8 +85,9 @@ tasks:
       - l
     cmds:
       - task: lint:composer
+      - task: lint:php:cs-fixer
       - task: lint:prettier
-      - task: lint:phpstan
+      - task: lint:php:stan
       - task: lint:rector
 
   lint:composer:
@@ -129,6 +140,18 @@ tasks:
       - task: rector
         vars: { CLI_ARGS: '--dry-run' }
 
+  lint:php:cs-fixer:
+    label: 'PHP CS Fixer validation'
+    desc: 'Lint php files.'
+    aliases:
+      - l:php
+      - lint:php
+      - l:php-cs-fixer
+      - lint:php-cs-fixer
+    cmds:
+      - task: php-cs-fixer
+        vars: { CLI_ARGS: '--dry-run --diff' }
+
   # Fixing.
 
   fix:
@@ -151,6 +174,17 @@ tasks:
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '-wl .' }
+
+  fix:php:cs-fixer:
+    label: 'PHP CS Fixer'
+    desc: 'Fix PHP CS Fixer issues.'
+    aliases:
+      - f:php
+      - fix:php
+      - f:php-cs-fixer
+      - fix:php-cs-fixer
+    cmds:
+      - task: php:cs-fixer
 
   fix:rector:
     label: 'Rector'
