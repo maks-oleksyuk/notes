@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
-use Rector\ValueObject\PhpVersion;
-use RectorLaravel\Set\LaravelLevelSetList;
+use Rector\Symfony\Set\SymfonySetList;
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__.'/../../app',
-        __DIR__.'/../../database',
+        __DIR__.'/../../config',
+        __DIR__.'/../../src',
     ])
-    ->withPhpVersion(PhpVersion::PHP_83)
     ->withSets([
-        LaravelLevelSetList::UP_TO_LARAVEL_110,
+        SymfonySetList::SYMFONY_71,
+        SymfonySetList::SYMFONY_CODE_QUALITY,
+        SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION,
     ]);

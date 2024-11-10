@@ -9,7 +9,7 @@ on:
       - LICENSE.md
   pull_request:
     branches:
-      - laravel
+      - symfony
     paths-ignore:
       - README.md
       - LICENSE.md
@@ -39,10 +39,10 @@ jobs:
     strategy:
       matrix:
         command:
-          - { name: '📦 Composer',     command: 'lint:composer' }
-#          - { name: '🔍 PHPStan',      command: 'lint:php:stan' }
-#          - { name: '🅿️ Prettier',     command: 'lint:prettier' }
-#          - { name: '🏠 Rector',       command: 'lint:rector' }
+          - { name: '📦 Composer', command: 'lint:composer' }
+          - { name: '🔍 PHPStan',  command: 'lint:php:stan' }
+          - { name: '🅿️ Prettier', command: 'lint:prettier' }
+          - { name: '🏠 Rector',   command: 'lint:rector' }
 
     steps:
       - name: '🛎 Checkout'

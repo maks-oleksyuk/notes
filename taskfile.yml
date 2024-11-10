@@ -24,6 +24,12 @@ tasks:
     internal: true
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}} --ansi'
 
+  pnpm:
+    label: 'pnpm'
+    desc: 'Runs `pnpm` command.'
+    internal: true
+    cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
+
   bin/console:
     label: 'Symfony console'
     desc: 'Runs Symfony `bin/console` command.'
@@ -33,12 +39,6 @@ tasks:
       - symfony
       - sf:console
     cmd: '{{.PHP_BIN}} bin/console {{.CLI_ARGS}} --ansi'
-
-  pnpm:
-    label: 'pnpm'
-    desc: 'Runs `pnpm` command.'
-    internal: true
-    cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
 
   prettier:
     label: 'Prettier'
@@ -98,6 +98,7 @@ tasks:
     aliases:
       - format
       - l:format
+      - l:prettier
       - lint:format
     cmds:
       - task: prettier
@@ -144,6 +145,7 @@ tasks:
     desc: 'Fix format issues.'
     aliases:
       - f:format
+      - f:prettier
       - fix:format
       - format:fix
     cmds:
