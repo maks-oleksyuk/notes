@@ -149,6 +149,7 @@ tasks:
     label: 'Rector check'
     desc: 'Check Rector issues.'
     aliases:
+      - l:r
       - l:rector
     cmds:
       - task: rector
@@ -192,6 +193,7 @@ tasks:
     label: 'Rector'
     desc: 'Fix Rector issues.'
     aliases:
+      - f:r
       - f:rector
     cmds:
       - task: rector

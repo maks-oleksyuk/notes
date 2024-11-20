@@ -1,7 +1,8 @@
 {
     "preset": "laravel",
     "rules": {
-        "declare_strict_types": true
+        "declare_strict_types": true,
+        "single_line_comment_spacing": true
     },
-    "exclude": ["dump", "local", "public", "var", "web"]
+    "exclude": ["local", "public", "var", "web"]
 }

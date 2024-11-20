@@ -3,7 +3,7 @@
 LICENSE.md
 composer.lock
 dist
-dump
+local
 pnpm-lock.yaml
 taskfile.yml
 var
