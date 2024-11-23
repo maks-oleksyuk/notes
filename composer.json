@@ -13,7 +13,7 @@
         "drupal/core-recommended": "^11.0",
         "drupal/gin": "^3.0@RC",
         "drupal/gin_login": "^2.1",
-        "drush/drush": "^13.0",
+        "drush/drush": "^13.3",
         "skilldlabs/drupal-cleanup": "^1.4"
     },
     "require-dev": {
@@ -21,7 +21,7 @@
         "drupal/core-dev": "^11.0",
         "mglaman/drupal-check": "^1.5",
         "palantirnet/drupal-rector": "^0.20",
-        "vincentlanglet/twig-cs-fixer": "^3.0"
+        "vincentlanglet/twig-cs-fixer": "^3.3"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -43,9 +43,10 @@
             "composer/installers": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
-            "skilldlabs/drupal-cleanup": true,
+            "php-http/discovery": true,
             "phpstan/extension-installer": true,
-            "php-http/discovery": true
+            "skilldlabs/drupal-cleanup": true,
+            "tbachert/spi": true
         },
         "platform": {
             "php": "8.3"
