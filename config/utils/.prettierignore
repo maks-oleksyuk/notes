@@ -5,6 +5,7 @@ composer.lock
 dist
 local
 pnpm-lock.yaml
+public
 taskfile.yml
 var
 vendor

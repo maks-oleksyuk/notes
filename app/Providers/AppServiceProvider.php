@@ -10,5 +10,10 @@ final class AppServiceProvider extends ServiceProvider
 {
     public function register(): void {}
 
-    public function boot(): void {}
+    public function boot(): void
+    {
+        $this->publishes([
+            __DIR__.'/../../resources/icons/favicon.ico' => public_path('favicon.ico'),
+        ], 'public');
+    }
 }

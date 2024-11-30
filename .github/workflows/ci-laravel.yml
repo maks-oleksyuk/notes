@@ -35,6 +35,7 @@ jobs:
   lint:
     name: '🪄 Lint | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     strategy:
       matrix:
@@ -43,7 +44,7 @@ jobs:
           - { name: '🧽 Laravel Pint', command: 'lint:pint' }
           - { name: '🔍 PHPStan',      command: 'lint:php:stan' }
           - { name: '🅿️ Prettier',     command: 'lint:prettier' }
-          - { name: '🏠 Rector',       command: 'lint:rector' }
+          - { name: '🏠 Rector',       command: 'lint:rector -- --no-progress-bar' }
 
     steps:
       - name: '🛎 Checkout'

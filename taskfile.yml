@@ -15,7 +15,7 @@ vars:
 tasks:
   default:
     desc: 'List all command.'
-    cmd: 'task --list-all'
+    cmd: 'task -l'
 
   # Utils.
 
@@ -42,6 +42,7 @@ tasks:
     desc: 'Runs `pint` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/pint
+      --cache-file=var/cache/pint/pint.cache
       --config={{.CONFIG_DIR}}/pint.json {{.CLI_ARGS}} --ansi'
 
   prettier:
@@ -90,11 +91,11 @@ tasks:
     aliases:
       - l
     cmds:
-      - task: lint:composer
-      - task: lint:pint
-      - task: lint:prettier
-      - task: lint:phpstan
-      - task: lint:rector
+      - defer: { task: lint:prettier }
+      - defer: { task: lint:rector }
+      - defer: { task: lint:phpstan }
+      - defer: { task: lint:pint }
+      - defer: { task: lint:composer }
 
   lint:composer:
     label: 'Composer validation'
@@ -116,7 +117,7 @@ tasks:
       - task: pint
         vars: { CLI_ARGS: '-V' }
       - task: pint
-        vars: { CLI_ARGS: '. --test' }
+        vars: { CLI_ARGS: '. --test {{.CLI_ARGS}}' }
 
   lint:prettier:
     label: 'Prettier'
@@ -153,7 +154,7 @@ tasks:
       - l:rector
     cmds:
       - task: rector
-        vars: { CLI_ARGS: '--dry-run' }
+        vars: { CLI_ARGS: '--dry-run {{.CLI_ARGS}}' }
 
   # Fixing.
 
@@ -163,9 +164,9 @@ tasks:
     aliases:
       - f
     cmds:
-      - task: fix:pint
-      - task: fix:prettier
-      - task: fix:rector
+      - defer: { task: fix:prettier }
+      - defer: { task: fix:rector }
+      - defer: { task: fix:pint }
 
   fix:pint:
     label: 'Laravel Pint'

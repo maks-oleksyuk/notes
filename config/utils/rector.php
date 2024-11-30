@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\ValueObject\PhpVersion;
 use RectorLaravel\Set\LaravelLevelSetList;
@@ -30,4 +31,9 @@ return RectorConfig::configure()
         LaravelSetList::LARAVEL_IF_HELPERS,
         LaravelSetList::LARAVEL_LEGACY_FACTORIES_TO_CLASSES,
         LaravelSetList::LARAVEL_STATIC_TO_INJECTION,
-    ]);
+    ])
+    ->withParallel(100, 4, 25)
+    ->withCache(
+        __DIR__.'/../../var/cache/rector',
+        FileCacheStorage::class
+    );

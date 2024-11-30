@@ -6,7 +6,7 @@ database:
   version: '10.11'
 php_version: '8.3'
 host_db_port: '14674'
-nodejs_version: '20'
+nodejs_version: '22'
 webserver_type: nginx-fpm
 xdebug_enabled: false
 hooks:
