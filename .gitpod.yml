@@ -2,3 +2,8 @@ tasks:
   - init: |
       corepack enable
       pnpm i
+
+vscode:
+  extensions:
+    - Vue.volar
+    - esbenp.prettier-vscode

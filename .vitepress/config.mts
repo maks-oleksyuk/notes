@@ -19,6 +19,7 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: '//github.com/maks-oleksyuk/notes' },
       { icon: 'linkedin', link: '//linkedin.com/in/maks-oleksyuk' },
+      { icon: 'telegram', link: '//t.me/maks_oleksyuk' },
     ],
     sidebar: generateSidebar([
       {

@@ -11,6 +11,8 @@ import './styles/components/vp-doc.css';
 import './styles/components/back-to-top.css';
 import '@nolebase/vitepress-plugin-enhanced-readabilities/client/style.css';
 
+import InteractiveSQL from './components/InteractiveSQL.vue';
+
 export default {
   extends: DefaultTheme,
   Layout: () => {
@@ -22,5 +24,6 @@ export default {
     enhanceAppWithTabs(app);
     vitepressBackToTop({ threshold: 300 });
     googleAnalytics({ id: import.meta.env.VITE_GTAG });
+    app.component('InteractiveSQL', InteractiveSQL);
   },
 };

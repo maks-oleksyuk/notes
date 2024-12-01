@@ -51,6 +51,16 @@ using the [`menu_links_discovered_alter()`] hook.
 | `menu_name`           | The machine name of the menu to which the menu item should be added (default = `administration`)                                |
 | `options`             | A series of options to be used when rendering the menu link. (see [`\Drupal\Core\Url::fromUri()`])                              |
 
+<InteractiveSQL/>
+
+```sql
+CREATE DATABASE ;
+CREATE USER ''@'localhost' IDENTIFIED BY '';
+GRANT ALL PRIVILEGES ON .* TO ''@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
 ```yml
 entity.menu.collection:
   title: Menus
