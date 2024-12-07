@@ -144,7 +144,7 @@ tasks:
       - lint:php:stan
     cmds:
       - task: phpstan
-        vars: { CLI_ARGS: 'analyze' }
+        vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}}' }
 
   lint:rector:
     label: 'Rector check'

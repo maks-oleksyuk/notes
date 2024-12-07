@@ -10,8 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @template TModel of Model
- *
- * @mixin Model
  */
 trait FilterBetweenDatesScope
 {

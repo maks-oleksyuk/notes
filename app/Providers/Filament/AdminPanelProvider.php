@@ -11,9 +11,8 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Widgets;
-use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -24,13 +23,8 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 final class AdminPanelProvider extends PanelProvider
 {
-    /**
-     * @throws BindingResolutionException
-     */
     public function panel(Panel $panel): Panel
     {
-        $urlGenerator = $this->app->make(UrlGenerator::class);
-
         return $panel
             ->default()
             ->id('admin')
@@ -39,8 +33,10 @@ final class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Green,
             ])
-            ->favicon($urlGenerator->asset('favicon.ico'))
+            ->favicon(asset('favicon.ico'))
+            ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
+            ->maxContentWidth(MaxWidth::Full)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([

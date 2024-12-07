@@ -10,7 +10,7 @@ inputs:
   node:
     description: 'Node.js version to install'
     required: true
-    default: '20.x'
+    default: '22.x'
 
 runs:
   using: composite

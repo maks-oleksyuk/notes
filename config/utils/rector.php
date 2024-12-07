@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
+use Rector\Transform\Rector\StaticCall\StaticCallToMethodCallRector;
 use Rector\ValueObject\PhpVersion;
+use RectorLaravel\Rector\FuncCall\ArgumentFuncCallToMethodCallRector;
 use RectorLaravel\Set\LaravelLevelSetList;
 use RectorLaravel\Set\LaravelSetList;
 
@@ -31,6 +33,15 @@ return RectorConfig::configure()
         LaravelSetList::LARAVEL_IF_HELPERS,
         LaravelSetList::LARAVEL_LEGACY_FACTORIES_TO_CLASSES,
         LaravelSetList::LARAVEL_STATIC_TO_INJECTION,
+    ])
+    ->withSkip([
+        StaticCallToMethodCallRector::class => [
+            __DIR__.'/../../app/Providers',
+            __DIR__.'/../../database',
+        ],
+        ArgumentFuncCallToMethodCallRector::class => [
+            __DIR__.'/../../app/Providers/Filament',
+        ],
     ])
     ->withParallel(100, 4, 25)
     ->withCache(

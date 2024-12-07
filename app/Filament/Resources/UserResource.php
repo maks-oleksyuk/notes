@@ -61,7 +61,7 @@ final class UserResource extends Resource
                     ])
                     ->query(
                         fn (Builder $query, array $data) => isset($data['name'])
-                            ? $query->where('name', 'like', "%{$data['name']}%")
+                            ? $query->whereLike('name', "%{$data['name']}%")
                             : $query
                     ),
                 Filter::make('email')
@@ -72,7 +72,7 @@ final class UserResource extends Resource
                     ])
                     ->query(
                         fn (Builder $query, array $data) => isset($data['email'])
-                            ? $query->where('email', 'like', "%{$data['email']}%")
+                            ? $query->whereLike('email', "%{$data['email']}%")
                             : $query
                     ),
             ], layout: FiltersLayout::AboveContent)
