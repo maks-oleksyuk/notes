@@ -6,13 +6,13 @@
     "require": {
         "php": "^8.3",
         "filament/filament": "^3.2",
-        "laravel/framework": "^11.34",
+        "laravel/framework": "^11.35",
         "maks-oleksyuk/laravel-composer-scaffold": "0.0.1"
     },
     "require-dev": {
-        "driftingly/rector-laravel": "^1.2",
+        "driftingly/rector-laravel": "^2.0",
         "fakerphp/faker": "^1.24",
-        "larastan/larastan": "^2.9",
+        "larastan/larastan": "^3.0",
         "laravel/pint": "^1.18"
     },
     "autoload": {
