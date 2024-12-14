@@ -5,8 +5,7 @@ image: ddev/ddev-gitpod-base:latest
 tasks:
   - init: |
       ddev start -y
-      ddev pnpm install
-      ddev composer install
+      ddev solrctl apply
       ddev typo3 database:updateschema
       ddev typo3 upgrade:run -n
       ddev typo3 backend:createadmin admin Admin_123

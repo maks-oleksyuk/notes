@@ -16,8 +16,8 @@ var
 .idea
 .vscode
 
-# Ignore dump folder, archives.
-dump
+# Ignore local folder and archives.
+local
 *.gz
 
 # Ignore OS files.

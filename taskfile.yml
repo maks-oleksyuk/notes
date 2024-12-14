@@ -73,11 +73,6 @@ tasks:
     desc: 'Runs `prettier` command.'
     cmd: '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}} --config={{.CONFIG_DIR}}/.prettierrc.json --ignore-path={{.CONFIG_DIR}}/.prettierignore'
 
-  cspell:
-    label: 'CSPell'
-    desc: 'Runs `cspell` command.'
-    cmd: '{{.NODEJS_BIN_DIR}}/cspell {{.CLI_ARGS}}'
-
   # Work commands.
 
   cache:clear:
@@ -134,14 +129,13 @@ tasks:
     aliases:
       - l
     cmds:
-      - task: lint:composer
-      - task: lint:php:cs-fixer
-      - task: lint:php:stan
-      - task: lint:spellcheck
-      - task: lint:rector
-      - task: lint:yml
-      - task: lint:typoscript
-      - task: lint:prettier
+      - defer: { task: lint:prettier }
+      - defer: { task: lint:yml }
+      - defer: { task: lint:typoscript }
+      - defer: { task: lint:rector }
+      - defer: { task: lint:php:stan }
+      - defer: { task: lint:php:cs-fixer }
+      - defer: { task: lint:composer }
 
   lint:composer:
     label: 'Composer validation'
@@ -156,6 +150,8 @@ tasks:
     label: 'PHP CS Fixer validation'
     desc: 'Lint php files.'
     aliases:
+      - l:php
+      - l:php-cs-fixer
       - lint:php
       - lint:php-cs-fixer
     cmds:
@@ -166,7 +162,11 @@ tasks:
     label: 'PHPStan analyze'
     desc: 'Analyze PHP code for bugs and errors.'
     aliases:
+      - l:stan
+      - l:phpstan
+      - lint:stan
       - lint:phpstan
+      - l:php:stan
     cmds:
       - task: phpstan
         vars: { CLI_ARGS: 'analyze' }
@@ -182,6 +182,7 @@ tasks:
     label: 'YML linter'
     desc: 'Lints Y(A)ML files.'
     aliases:
+      - l:yml
       - ymllint
       - yamllint
       - lint:yaml
@@ -204,17 +205,6 @@ tasks:
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '-c config ext' }
-
-  lint:spellcheck:
-    label: 'Spellcheck'
-    desc: 'Checks for common spelling issues.'
-    aliases:
-      - spellcheck
-      - lint:cspell
-    cmds:
-      - 'find ./config/cspell -name "*.dic" -exec sort {} -o {} \;'
-      - task: cspell
-        vars: { CLI_ARGS: '--config {{.CONFIG_DIR}}/.cspell.json --no-progress "**" {{.CLI_ARGS}}' }
 
   # Fixing.
 

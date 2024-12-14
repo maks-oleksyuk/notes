@@ -34,10 +34,13 @@ class AdditionalConfiguration
      */
     public function appendContextToSiteName(): self
     {
-        $currentContext = Environment::getContext();
+        $currentContext = (string)Environment::getContext();
 
-        if (!$currentContext->isProduction()) {
-            $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'] .= " ($currentContext)";
+        if ($currentContext !== 'Production') {
+            $contextString = str_starts_with($currentContext, 'Production/') ? substr($currentContext, 11) : $currentContext;
+            if ($contextString) {
+                $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'] .= " ($contextString)";
+            }
         }
 
         return $this;

@@ -1,4 +1,4 @@
-name: 🔄 CI | 🔶 Typo3
+name: '🔄 CI | 🔶 Typo3'
 
 on:
   push:
@@ -19,13 +19,13 @@ on:
 
 jobs:
   cleanup:
-    name: 🧹 Clean up GitHub repo
+    name: '🧹 Clean up GitHub repo'
     runs-on: ubuntu-latest
     permissions: write-all
     if: github.event_name != 'pull_request'
 
     steps:
-      - name: 🗑 Delete workflow runs
+      - name: '🗑 Delete workflow runs'
         uses: Mattraks/delete-workflow-runs@v2
         with:
           retain_days: 7
@@ -33,14 +33,13 @@ jobs:
           delete_workflow_pattern: ci-typo3.yml
 
   lint:
-    name: 🪄 Lint | ${{ matrix.command.name }}
+    name: '🪄 Lint | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         command:
           - { name: '📦 Composer',     command: 'lint:composer' }
-          - { name: '📝 Cspell',       command: 'lint:spellcheck' }
           - { name: '🔍 PHPStan',      command: 'lint:php:stan' }
           - { name: '🪶 PHP CS Fixer', command: 'lint:php:cs-fixer' }
           - { name: '🅿️ Prettier',     command: 'lint:prettier' }
@@ -49,11 +48,11 @@ jobs:
           - { name: '📄 YML',          command: 'lint:yml' }
 
     steps:
-      - name: 🛎 Checkout
+      - name: '🛎 Checkout'
         uses: actions/checkout@v4
 
-      - name: ⚙️ Prepare environment
+      - name: '⚙️ Prepare environment'
         uses: ./.github/actions/setup-validation
 
-      - name: ${{ matrix.command.name }} validate
-        run: 'task ${{ matrix.command.command }}'
+      - name: '${{ matrix.command.name }} validate'
+        run: task ${{ matrix.command.command }}

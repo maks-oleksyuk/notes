@@ -8,7 +8,7 @@
 		"apache-solr-for-typo3/solr": "^12.0",
 		"helhum/dotenv-connector": "^3.1",
 		"helhum/typo3-console": "^8.1",
-		"networkteam/solr-commands": "dev-master",
+		"networkteam/solr-commands": "dev-typo3-12",
 		"typo3-notes/nts_site": "^1.0@dev",
 		"typo3/cms-backend": "^12.4",
 		"typo3/cms-belog": "^12.4",
@@ -37,10 +37,9 @@
 	"require-dev": {
 		"b13/make": "^0.1",
 		"helmich/typo3-typoscript-lint": "^3.2",
-		"lolli/dbdoctor": "^0.6",
 		"pagemachine/typo3-phinx": "^1.1",
 		"saschaegerer/phpstan-typo3": "^1.10",
-		"ssch/typo3-rector": "^2.10",
+		"ssch/typo3-rector": "^2.12",
 		"typo3/coding-standards": "^0.8"
 	},
 	"repositories": {
