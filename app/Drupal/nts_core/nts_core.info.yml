@@ -2,4 +2,4 @@ name: 'Notes Core'
 description: 'Main functionality for Notes site'
 type: module
 package: Notes
-core_version_requirement: ^10 || ^11
+core_version_requirement: ^11

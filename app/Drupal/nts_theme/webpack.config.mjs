@@ -3,9 +3,10 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import { glob } from 'glob';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path';
-import postcssRTLCSS from 'postcss-rtlcss';
+// import postcssRTLCSS from 'postcss-rtlcss';
 import RemoveEmptyScriptsPlugin from 'webpack-remove-empty-scripts';
 import webpack from 'webpack';
+import postcssRtlLogicalProperties from 'postcss-rtl-logical-properties';
 
 const { SourceMapDevToolPlugin } = webpack;
 const dirname = process.cwd();
@@ -74,7 +75,11 @@ export default {
               postcssOptions: {
                 plugins: [
                   autoprefixer(),
-                  postcssRTLCSS(),
+                  postcssRtlLogicalProperties(),
+                  // todo: setup
+                  // postcssRTLCSS({
+                  //   blacklist: postcssRtlLogicalProperties.ignoreDeclarationList
+                  // }),
                   [
                     'postcss-perfectionist',
                     {

@@ -9,16 +9,16 @@
         "drupal-notes/nts_core": "^1.0@dev",
         "drupal-notes/nts_theme": "^1.0@dev",
         "drupal/admin_toolbar": "^3.5",
-        "drupal/core-composer-scaffold": "^11.0",
-        "drupal/core-recommended": "^11.0",
-        "drupal/gin": "^3.0@RC",
+        "drupal/core-composer-scaffold": "^11.1",
+        "drupal/core-recommended": "^11.1",
+        "drupal/gin": "^4.0",
         "drupal/gin_login": "^2.1",
         "drush/drush": "^13.3",
         "skilldlabs/drupal-cleanup": "^1.4"
     },
     "require-dev": {
         "chi-teck/drupal-coder-extension": "^2.0@beta",
-        "drupal/core-dev": "^11.0",
+        "drupal/core-dev": "^11.1",
         "mglaman/drupal-check": "^1.5",
         "palantirnet/drupal-rector": "^0.20",
         "vincentlanglet/twig-cs-fixer": "^3.3"

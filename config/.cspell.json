@@ -17,6 +17,7 @@
     "../dist/**",
     "../local/**",
     "../private/**",
+    "../public/**",
     "../var/**",
     "../vendor/**",
     "../web/**",

@@ -110,16 +110,18 @@ tasks:
   lint:
     label: 'Project lint'
     desc: 'Validates project files.'
+    aliases:
+      - l
     cmds:
-      - task: lint:composer
-      - task: lint:phpcs
-      - task: lint:phpstan
-      - task: lint:spellcheck
-      - task: lint:js
-      - task: lint:css
-      - task: lint:yml
-      - task: lint:twig
-      - task: lint:prettier
+      - defer: { task: lint:spellcheck }
+      - defer: { task: lint:prettier }
+      - defer: { task: lint:js }
+      - defer: { task: lint:css }
+      - defer: { task: lint:yml }
+      - defer: { task: lint:twig }
+      - defer: { task: lint:phpstan }
+      - defer: { task: lint:phpcs }
+      - defer: { task: lint:composer }
 
   lint:composer:
     label: 'Composer validation'
