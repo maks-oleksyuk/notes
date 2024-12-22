@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models\Traits\DynamicScopes;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @template TModel of Model
@@ -20,11 +20,11 @@ trait FilterBetweenDatesScope
     public function scopeFilterBetweenDates(
         Builder $query,
         string $column,
-        string $start_date,
-        string $end_date,
+        Carbon $startDate,
+        Carbon $endDate,
     ): Builder {
         return $query
-            ->where($column, '>=', Carbon::parse($start_date)->startOfDay())
-            ->where($column, '<=', Carbon::parse($end_date)->endOfDay());
+            ->where($column, '>=', $startDate->startOfDay())
+            ->where($column, '<=', $endDate->endOfDay());
     }
 }
