@@ -128,6 +128,59 @@ CREATE TABLE `password_reset_tokens` (
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `pulse_aggregates`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pulse_aggregates` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `bucket` int(10) unsigned NOT NULL,
+  `period` mediumint(8) unsigned NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `key` mediumtext NOT NULL,
+  `key_hash` binary(16) GENERATED ALWAYS AS (unhex(md5(`key`))) VIRTUAL,
+  `aggregate` varchar(255) NOT NULL,
+  `value` decimal(20,2) NOT NULL,
+  `count` int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `pulse_aggregates_bucket_period_type_aggregate_key_hash_unique` (`bucket`,`period`,`type`,`aggregate`,`key_hash`),
+  KEY `pulse_aggregates_period_bucket_index` (`period`,`bucket`),
+  KEY `pulse_aggregates_type_index` (`type`),
+  KEY `pulse_aggregates_period_type_aggregate_bucket_index` (`period`,`type`,`aggregate`,`bucket`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `pulse_entries`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pulse_entries` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `timestamp` int(10) unsigned NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `key` mediumtext NOT NULL,
+  `key_hash` binary(16) GENERATED ALWAYS AS (unhex(md5(`key`))) VIRTUAL,
+  `value` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `pulse_entries_timestamp_index` (`timestamp`),
+  KEY `pulse_entries_type_index` (`type`),
+  KEY `pulse_entries_key_hash_index` (`key_hash`),
+  KEY `pulse_entries_timestamp_type_key_hash_value_index` (`timestamp`,`type`,`key_hash`,`value`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `pulse_values`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pulse_values` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `timestamp` int(10) unsigned NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `key` mediumtext NOT NULL,
+  `key_hash` binary(16) GENERATED ALWAYS AS (unhex(md5(`key`))) VIRTUAL,
+  `value` mediumtext NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `pulse_values_type_key_hash_unique` (`type`,`key_hash`),
+  KEY `pulse_values_timestamp_index` (`timestamp`),
+  KEY `pulse_values_type_index` (`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `sessions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

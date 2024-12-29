@@ -1,4 +1,4 @@
-version: '3'
+version: 3
 
 env:
   PHP_BIN: '{{.PHP_BIN | default "$(which php)"}}'
@@ -17,7 +17,7 @@ tasks:
     desc: 'List all command.'
     cmd: 'task -l'
 
-  # Utils.
+  # Utils:
 
   composer:
     label: 'Composer'
@@ -45,21 +45,6 @@ tasks:
       --cache-file=var/cache/pint/pint.cache
       --config={{.CONFIG_DIR}}/pint.json {{.CLI_ARGS}} --ansi'
 
-  prettier:
-    label: 'Prettier'
-    desc: 'Runs `prettier` command.'
-    cmd:
-      '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
-      --config={{.CONFIG_DIR}}/.prettierrc.json
-      --ignore-path={{.CONFIG_DIR}}/.prettierignore'
-
-  rector:
-    label: 'Rector'
-    desc: 'Runs `rector` command.'
-    cmd:
-      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector process
-      --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
-
   phpstan:
     label: 'PHPStan'
     desc: 'Runs `phpstan` command.'
@@ -69,7 +54,39 @@ tasks:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan
       --configuration={{.CONFIG_DIR}}/phpstan.neon {{.CLI_ARGS}} --ansi'
 
-  # Work commands.
+  rector:
+    label: 'Rector'
+    desc: 'Runs `rector` command.'
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector process
+      --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
+
+  prettier:
+    label: 'Prettier'
+    desc: 'Runs `prettier` command.'
+    cmd:
+      '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
+      --config={{.CONFIG_DIR}}/.prettierrc.json
+      --ignore-path={{.CONFIG_DIR}}/.prettierignore'
+
+  # Work commands:
+
+  cache:clear:
+    label: 'Cache clear'
+    desc: 'Clear all Laravel caches'
+    aliases:
+      - cc
+      - cr
+    cmds:
+      - task: artisan
+        vars: { CLI_ARGS: 'cache:clear ' }
+        silent: true
+      - task: artisan
+        vars: { CLI_ARGS: 'route:cache' }
+        silent: true
+      - task: artisan
+        vars: { CLI_ARGS: 'view:cache' }
+        silent: true
 
   db:fresh:
     label: 'Refresh database'
@@ -83,7 +100,16 @@ tasks:
       - task: artisan
         vars: { CLI_ARGS: 'migrate:fresh --schema-path={{.DB_SCHEMA_PATH}} --seed --force' }
 
-  # Linters.
+  db:schema:dump:
+    label: 'Dum database schema'
+    desc: 'Dump the given database schema and delete all existing migration files'
+    aliases:
+      - db:s:d
+    cmds:
+      - task: artisan
+        vars: { CLI_ARGS: 'schema:dump --path={{.DB_SCHEMA_PATH}} --prune' }
+
+  # Linters:
 
   lint:
     label: 'Project lint'
@@ -119,19 +145,6 @@ tasks:
       - task: pint
         vars: { CLI_ARGS: '. --test {{.CLI_ARGS}}' }
 
-  lint:prettier:
-    label: 'Prettier'
-    desc: 'Checks for common format issues with prettier.'
-    aliases:
-      - format
-      - l:format
-      - lint:format
-    cmds:
-      - task: prettier
-        vars: { CLI_ARGS: '-v' }
-      - task: prettier
-        vars: { CLI_ARGS: '-c .' }
-
   lint:phpstan:
     label: 'PHPStan analyze'
     desc: 'Analyze PHP code for bugs and errors.'
@@ -156,7 +169,20 @@ tasks:
       - task: rector
         vars: { CLI_ARGS: '--dry-run {{.CLI_ARGS}}' }
 
-  # Fixing.
+  lint:prettier:
+    label: 'Prettier'
+    desc: 'Checks for common format issues with prettier.'
+    aliases:
+      - format
+      - l:format
+      - lint:format
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-v' }
+      - task: prettier
+        vars: { CLI_ARGS: '-c .' }
+
+  # Fixing:
 
   fix:
     label: 'Fixing found issues'
@@ -179,6 +205,15 @@ tasks:
       - task: pint
         vars: { CLI_ARGS: '.' }
 
+  fix:rector:
+    label: 'Rector'
+    desc: 'Fix Rector issues.'
+    aliases:
+      - f:r
+      - f:rector
+    cmds:
+      - task: rector
+
   fix:prettier:
     label: 'Prettier'
     desc: 'Fix format issues.'
@@ -189,12 +224,3 @@ tasks:
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '-wl .' }
-
-  fix:rector:
-    label: 'Rector'
-    desc: 'Fix Rector issues.'
-    aliases:
-      - f:r
-      - f:rector
-    cmds:
-      - task: rector

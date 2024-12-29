@@ -4,22 +4,27 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Data\Filters\Contracts\FiltersData;
+use App\Data\Filters\Models\UserFilters;
 use App\Models\User;
-use App\Repositories\Contracts\BaseRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
+use App\Repositories\Contracts\BaseRepository;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
- * @implements BaseRepositoryInterface<User>
+ * @extends BaseRepository<User>
  */
-final readonly class UserRepository implements BaseRepositoryInterface
+final readonly class UserRepository extends BaseRepository
 {
-    public function all(): Collection
+    /**
+     * @param  UserFilters  $filters
+     */
+    public function getFilteredQuery(UserFilters|FiltersData $filters, array $order = []): Builder
     {
-        return User::all();
-    }
+        $query = $this->query()
+            ->when($filters->ids,
+                fn ($query) => $query->whereIn('id', $filters->ids)
+            );
 
-    public function find(int|string $id): User
-    {
-        return User::query()->findOrFail($id);
+        return $this->addQueryOrder($query, $order);
     }
 }
