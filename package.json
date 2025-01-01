@@ -13,13 +13,13 @@
     "lint:format:fix": "prettier -wl ./ '!pnpm-lock.yaml' --cache"
   },
   "devDependencies": {
-    "@nolebase/vitepress-plugin-enhanced-readabilities": "2.11.1",
-    "prettier": "^3.4.1",
+    "@nolebase/vitepress-plugin-enhanced-readabilities": "2.12.0",
+    "prettier": "^3.4.2",
     "vitepress": "^1.5.0",
     "vitepress-plugin-back-to-top": "^1.0.1",
     "vitepress-plugin-google-analytics": "^1.0.2",
     "vitepress-plugin-tabs": "^0.5.0",
-    "vitepress-sidebar": "^1.29.0",
+    "vitepress-sidebar": "^1.30.2",
     "vue": "^3.5.13"
   },
   "packageManager": "pnpm@9.12.2",
