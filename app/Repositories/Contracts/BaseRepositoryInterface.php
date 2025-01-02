@@ -16,25 +16,25 @@ use Illuminate\Database\Eloquent\Model;
 interface BaseRepositoryInterface
 {
     /**
-     * @return Builder<TModel|Model>
+     * @return Builder<TModel>
      */
     public function query(): Builder;
 
     /**
-     * @return TModel|Model
+     * @return TModel
      */
     public function find(int|string $id): ?Model;
 
     /**
-     * @return Collection<int, TModel|Model>|LengthAwarePaginator<TModel|Model>
+     * @return Collection<int, TModel>|LengthAwarePaginator<TModel>
      */
-    public function getAll(int $perPage = -1, int $page = 1): Collection|LengthAwarePaginator;
+    public function findAll(int $perPage = -1, int $page = 1): Collection|LengthAwarePaginator;
 
     /**
      * @param  array<int|string, string>  $order
-     * @return Collection<int, TModel|Model>|LengthAwarePaginator<TModel|Model>
+     * @return Collection<int, TModel>|LengthAwarePaginator<TModel>
      */
-    public function getFiltered(
+    public function findBy(
         FiltersData $filters,
         array $order = [],
         int $perPage = -1,
@@ -43,7 +43,7 @@ interface BaseRepositoryInterface
 
     /**
      * @param  array<int|string, string>  $order
-     * @return Builder<TModel|Model>
+     * @return Builder<TModel>
      */
     public function getFilteredQuery(FiltersData $filters, array $order = []): Builder;
 }

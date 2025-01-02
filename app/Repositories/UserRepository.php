@@ -8,12 +8,13 @@ use App\Data\Filters\Contracts\FiltersData;
 use App\Data\Filters\Models\UserFilters;
 use App\Models\User;
 use App\Repositories\Contracts\BaseRepository;
+use App\Repositories\Contracts\Models\UserRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
  * @extends BaseRepository<User>
  */
-final readonly class UserRepository extends BaseRepository
+final readonly class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
     /**
      * @param  UserFilters  $filters

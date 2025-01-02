@@ -193,6 +193,18 @@ tasks:
       - defer: { task: fix:prettier }
       - defer: { task: fix:rector }
       - defer: { task: fix:pint }
+      - defer: { task: fix:composer }
+
+  fix:composer:
+    label: 'Composer fix'
+    desc: 'Try to fix composer errors.'
+    aliases:
+      - f:composer
+      - composer:f
+      - composer:fix
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: 'u --lock --no-scripts --no-autoloader' }
 
   fix:pint:
     label: 'Laravel Pint'

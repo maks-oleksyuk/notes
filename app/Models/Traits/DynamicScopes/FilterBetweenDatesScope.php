@@ -23,8 +23,6 @@ trait FilterBetweenDatesScope
         Carbon $startDate,
         Carbon $endDate,
     ): Builder {
-        return $query
-            ->where($column, '>=', $startDate->startOfDay())
-            ->where($column, '<=', $endDate->endOfDay());
+        return $query->whereBetween($column, [$startDate->startOfDay(), $endDate->endOfDay()]);
     }
 }

@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 abstract readonly class BaseRepository implements BaseRepositoryInterface
 {
     public function __construct(
+        /** @var TModel */
         protected Model $model,
     ) {}
 
@@ -28,17 +29,18 @@ abstract readonly class BaseRepository implements BaseRepositoryInterface
 
     public function find(int|string $id): ?Model
     {
+        /** @var TModel|null */
         return $this->query()->findOrFail($id);
     }
 
-    public function getAll(int $perPage = -1, int $page = 1): Collection|LengthAwarePaginator
+    public function findAll(int $perPage = -1, int $page = 1): Collection|LengthAwarePaginator
     {
         return $perPage === -1
             ? $this->query()->get()
             : $this->query()->paginate(perPage: $perPage, page: $page);
     }
 
-    public function getFiltered(FiltersData $filters, array $order = [], int $perPage = -1, int $page = 1): Collection|LengthAwarePaginator
+    public function findBy(FiltersData $filters, array $order = [], int $perPage = -1, int $page = 1): Collection|LengthAwarePaginator
     {
         $query = $this->getFilteredQuery($filters, $order);
 
@@ -48,9 +50,9 @@ abstract readonly class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
-     * @param  Builder<TModel|Model>  $query
+     * @param  Builder<TModel>  $query
      * @param  array<int|string, string>  $order
-     * @return Builder<TModel|Model>
+     * @return Builder<TModel>
      */
     protected function addQueryOrder(Builder $query, array $order): Builder
     {

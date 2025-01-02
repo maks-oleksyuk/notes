@@ -2,7 +2,6 @@
     "preset": "laravel",
     "rules": {
         "declare_strict_types": true,
-        "single_line_comment_spacing": true,
         "trailing_comma_in_multiline": {
             "elements": ["arrays", "parameters"]
         }
