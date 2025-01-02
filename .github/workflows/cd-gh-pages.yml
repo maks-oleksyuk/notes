@@ -62,7 +62,7 @@ jobs:
         timeout-minutes: 5
         with:
           cache: pnpm
-          node-version: 20.x
+          node-version: 22.x
 
       - name: 📦 Install dependencies
         env:
@@ -70,7 +70,7 @@ jobs:
         run: pnpm i ${{ env.PNPM_FLAGS }}
 
       - name: ⚡️ Build site with VitePress
-        run: pnpm notes:build
+        run: pnpm build
         env:
           VITE_GTAG: ${{ vars.VITE_GTAG }}
 

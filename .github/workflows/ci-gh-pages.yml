@@ -42,7 +42,7 @@ jobs:
 
     strategy:
       matrix:
-        node: [20.x, 21.x]
+        node: [22.x, 23.x]
 
     steps:
       - name: 🛎️ Checkout
@@ -64,4 +64,4 @@ jobs:
         run: pnpm i ${{ env.PNPM_FLAGS }}
 
       - name: ⚡️ Build site with VitePress
-        run: pnpm notes:build
+        run: pnpm build
