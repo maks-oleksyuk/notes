@@ -10,7 +10,7 @@ vars:
   CONFIG_DIR: '{{.TASKFILE_DIR}}/config/utils'
   NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
   COMPOSER_BIN_DIR: '{{.TASKFILE_DIR}}/vendor/bin'
-  DB_SCHEMA_PATH: 'database/schema/mariadb-schema.sql'
+  DB_SCHEMA_PATH: 'database/schema/postgres-schema.sql'
 
 tasks:
   default:
