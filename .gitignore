@@ -7,7 +7,6 @@ node_modules
 public
 storage
 artisan
-.editorconfig
 
 # Ignore temporary/cache files and folders.
 var

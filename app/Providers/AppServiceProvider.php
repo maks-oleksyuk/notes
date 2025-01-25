@@ -32,6 +32,9 @@ final class AppServiceProvider extends ServiceProvider
     protected function configureModels(): void
     {
         Model::shouldBeStrict();
+        Model::preventLazyLoading();
+        Model::preventAccessingMissingAttributes();
+        Model::preventSilentlyDiscardingAttributes();
     }
 
     protected function configureUrls(): void

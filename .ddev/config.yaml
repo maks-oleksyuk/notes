@@ -3,7 +3,7 @@ type: laravel
 docroot: public
 database:
   type: postgres
-  version: 17
+  version: '17'
 php_version: '8.3'
 host_db_port: '14674'
 nodejs_version: '22'

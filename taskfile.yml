@@ -58,7 +58,7 @@ tasks:
     label: 'Rector'
     desc: 'Runs `rector` command.'
     cmd:
-      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector process
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector
       --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
 
   prettier:
@@ -126,13 +126,18 @@ tasks:
   lint:composer:
     label: 'Composer validation'
     desc: 'Validates composer.json file and checks platform requirements.'
+    aliases:
+      - l:composer
     cmds:
       - task: composer
         vars: { CLI_ARGS: '-V' }
+        silent: true
       - task: composer
         vars: { CLI_ARGS: 'validate --strict' }
+        silent: true
       - task: composer
         vars: { CLI_ARGS: 'check-platform-req' }
+        silent: true
 
   lint:pint:
     label: 'Laravel Pint validation'
@@ -142,8 +147,10 @@ tasks:
     cmds:
       - task: pint
         vars: { CLI_ARGS: '-V' }
+        silent: true
       - task: pint
         vars: { CLI_ARGS: '. --test {{.CLI_ARGS}}' }
+        silent: true
 
   lint:phpstan:
     label: 'PHPStan analyze'
@@ -157,7 +164,11 @@ tasks:
       - lint:php:stan
     cmds:
       - task: phpstan
+        vars: { CLI_ARGS: '-V' }
+        silent: true
+      - task: phpstan
         vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}}' }
+        silent: true
 
   lint:rector:
     label: 'Rector check'
@@ -167,7 +178,11 @@ tasks:
       - l:rector
     cmds:
       - task: rector
-        vars: { CLI_ARGS: '--dry-run {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '-V' }
+        silent: true
+      - task: rector
+        vars: { CLI_ARGS: 'process --dry-run {{.CLI_ARGS}}' }
+        silent: true
 
   lint:prettier:
     label: 'Prettier'
@@ -175,12 +190,17 @@ tasks:
     aliases:
       - format
       - l:format
+      - l:prettier
       - lint:format
+      - prettier:l
+      - prettier:lint
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '-v' }
+        silent: true
       - task: prettier
-        vars: { CLI_ARGS: '-c .' }
+        vars: { CLI_ARGS: '. -c' }
+        silent: true
 
   # Fixing:
 
@@ -225,14 +245,17 @@ tasks:
       - f:rector
     cmds:
       - task: rector
+        vars: { CLI_ARGS: 'process {{.CLI_ARGS}}' }
 
   fix:prettier:
     label: 'Prettier'
     desc: 'Fix format issues.'
     aliases:
       - f:format
+      - f:prettier
       - fix:format
       - format:fix
+      - prettier:fix
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '-wl .' }

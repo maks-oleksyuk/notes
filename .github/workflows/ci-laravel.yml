@@ -1,4 +1,4 @@
-name: '🔄 CI | ♦️ Laravel'
+name: '🔄 CI | 🧰 Laravel'
 
 on:
   push:
@@ -40,11 +40,36 @@ jobs:
     strategy:
       matrix:
         command:
-          - { name: '📦 Composer',     command: 'lint:composer' }
-          - { name: '🧽 Laravel Pint', command: 'lint:pint' }
-          - { name: '🔍 PHPStan',      command: 'lint:php:stan -- --no-progress --error-format=github' }
-          - { name: '🅿️ Prettier',     command: 'lint:prettier' }
-          - { name: '🏠 Rector',       command: 'lint:rector -- --no-progress-bar' }
+          - {
+              name: '📦 Composer',
+              command: 'lint:composer',
+              php: true,
+              node: false,
+            }
+          - {
+              name: '🧽 Laravel Pint',
+              command: 'lint:pint',
+              php: true,
+              node: false,
+            }
+          - {
+              name: '🔍 PHPStan',
+              command: 'lint:php:stan -- --no-progress --error-format=github',
+              php: true,
+              node: false,
+            }
+          - {
+              name: '🅿️ Prettier',
+              command: 'lint:prettier',
+              php: false,
+              node: true,
+            }
+          - {
+              name: '🏠 Rector',
+              command: 'lint:rector -- --no-progress-bar',
+              php: true,
+              node: false,
+            }
 
     steps:
       - name: '🛎 Checkout'
@@ -52,6 +77,9 @@ jobs:
 
       - name: '⚙️ Prepare environment'
         uses: ./.github/actions/setup-validation
+        with:
+          use-php: ${{ matrix.command.php }}
+          use-node: ${{ matrix.command.node }}
 
       - name: '${{ matrix.command.name }} validate'
         run: task ${{ matrix.command.command }}
