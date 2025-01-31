@@ -8,10 +8,12 @@ use App\Models\Traits\DynamicScopes\FilterBetweenDatesScope;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+#[UseFactory(UserFactory::class)]
 final class User extends Authenticatable implements FilamentUser
 {
     /** @use FilterBetweenDatesScope<User> */

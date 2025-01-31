@@ -10,7 +10,7 @@ vars:
   CONFIG_DIR: '{{.TASKFILE_DIR}}/config/utils'
   NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
   COMPOSER_BIN_DIR: '{{.TASKFILE_DIR}}/vendor/bin'
-  DB_SCHEMA_PATH: 'database/schema/postgres-schema.sql'
+  DB_SCHEMA_PATH: 'database/schema/pgsql-schema.sql'
 
 tasks:
   default:
@@ -24,6 +24,7 @@ tasks:
     desc: 'Runs `composer` command.'
     internal: true
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}} --ansi'
+    silent: true
 
   pnpm:
     label: 'pnpm'
@@ -36,14 +37,26 @@ tasks:
     desc: 'Runs `artisan` command.'
     internal: true
     cmd: '{{.PHP_BIN}} artisan {{.CLI_ARGS}} --ansi'
+    silent: true
+
+  artisan:test:
+    label: 'artisan test'
+    desc: 'Runs `artisan test` command.'
+    internal: true
+    cmds:
+      - task: artisan
+        vars:
+          { CLI_ARGS: 'test --configuration={{.CONFIG_DIR}}/phpunit.xml --parallel --processes=4 {{.CLI_ARGS}}' }
+        silent: true
 
   pint:
     label: 'Laravel Pint'
     desc: 'Runs `pint` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/pint
-      --cache-file=var/cache/pint/pint.cache
-      --config={{.CONFIG_DIR}}/pint.json {{.CLI_ARGS}} --ansi'
+      --cache-file=var/cache/pint/pint.cache --config={{.CONFIG_DIR}}/pint.json
+      {{.CLI_ARGS}} --ansi'
+    silent: true
 
   phpstan:
     label: 'PHPStan'
@@ -53,6 +66,7 @@ tasks:
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan
       --configuration={{.CONFIG_DIR}}/phpstan.neon {{.CLI_ARGS}} --ansi'
+    silent: true
 
   rector:
     label: 'Rector'
@@ -60,6 +74,7 @@ tasks:
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector
       --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
+    silent: true
 
   prettier:
     label: 'Prettier'
@@ -68,6 +83,7 @@ tasks:
       '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
       --config={{.CONFIG_DIR}}/.prettierrc.json
       --ignore-path={{.CONFIG_DIR}}/.prettierignore'
+    silent: true
 
   # Work commands:
 
@@ -79,14 +95,13 @@ tasks:
       - cr
     cmds:
       - task: artisan
-        vars: { CLI_ARGS: 'cache:clear ' }
-        silent: true
+        vars: { CLI_ARGS: 'cache:clear' }
+      - task: artisan
+        vars: { CLI_ARGS: 'config:clear' }
       - task: artisan
         vars: { CLI_ARGS: 'route:cache' }
-        silent: true
       - task: artisan
         vars: { CLI_ARGS: 'view:cache' }
-        silent: true
 
   db:fresh:
     label: 'Refresh database'
@@ -102,7 +117,7 @@ tasks:
 
   db:schema:dump:
     label: 'Dum database schema'
-    desc: 'Dump the given database schema and delete all existing migration files'
+    desc: 'Dump the given db schema and delete all existing migration'
     aliases:
       - db:s:d
     cmds:
@@ -131,13 +146,10 @@ tasks:
     cmds:
       - task: composer
         vars: { CLI_ARGS: '-V' }
-        silent: true
       - task: composer
         vars: { CLI_ARGS: 'validate --strict' }
-        silent: true
       - task: composer
         vars: { CLI_ARGS: 'check-platform-req' }
-        silent: true
 
   lint:pint:
     label: 'Laravel Pint validation'
@@ -147,10 +159,8 @@ tasks:
     cmds:
       - task: pint
         vars: { CLI_ARGS: '-V' }
-        silent: true
       - task: pint
         vars: { CLI_ARGS: '. --test {{.CLI_ARGS}}' }
-        silent: true
 
   lint:phpstan:
     label: 'PHPStan analyze'
@@ -165,10 +175,8 @@ tasks:
     cmds:
       - task: phpstan
         vars: { CLI_ARGS: '-V' }
-        silent: true
       - task: phpstan
         vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}}' }
-        silent: true
 
   lint:rector:
     label: 'Rector check'
@@ -179,10 +187,8 @@ tasks:
     cmds:
       - task: rector
         vars: { CLI_ARGS: '-V' }
-        silent: true
       - task: rector
         vars: { CLI_ARGS: 'process --dry-run {{.CLI_ARGS}}' }
-        silent: true
 
   lint:prettier:
     label: 'Prettier'
@@ -197,10 +203,8 @@ tasks:
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '-v' }
-        silent: true
       - task: prettier
         vars: { CLI_ARGS: '. -c' }
-        silent: true
 
   # Fixing:
 
@@ -259,3 +263,37 @@ tasks:
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '-wl .' }
+
+  # Testing:
+
+  test:
+    label: 'Project test'
+    desc: 'Run project test.'
+    aliases:
+      - t
+      - qa
+    cmds:
+      - defer: { task: test:unit }
+      - defer: { task: test:feature }
+
+  test:feature:
+    label: 'Feature test'
+    desc: 'Run feature test.'
+    aliases:
+      - t:feature
+      - qa:f
+      - qa:feature
+    cmds:
+      - task: artisan:test
+        vars: { CLI_ARGS: '--testsuite=Feature' }
+
+  test:unit:
+    label: 'Unit test'
+    desc: 'Run unit tests.'
+    aliases:
+      - t:unit
+      - qa:u
+      - qa:unit
+    cmds:
+      - task: artisan:test
+        vars: { CLI_ARGS: '--testsuite=Unit' }
