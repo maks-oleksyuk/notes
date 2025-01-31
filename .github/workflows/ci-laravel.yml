@@ -90,7 +90,7 @@ jobs:
     continue-on-error: true
 
     services:
-      db:
+      postgres:
         image: postgres:17
         ports:
           - 5432:5432
@@ -107,28 +107,20 @@ jobs:
     strategy:
       matrix:
         command:
-          - {
-            name: '🗜 Feature',
-            command: 'test:feature',
-            php: true,
-            node: false,
-          }
-          - {
-            name: '🔬 Unit',
-            command: 'test:unit',
-            php: true,
-            node: false,
-          }
+          - { name: '🧬 Feature', command: 'test:feature' }
+          - { name: '🔬 Unit',    command: 'test:unit' }
 
     steps:
       - name: '🛎 Checkout'
         uses: actions/checkout@v4
 
       - name: '⚙️ Prepare environment'
-        uses: ./.github/actions/setup-validation
-        with:
-          use-php: ${{ matrix.command.php }}
-          use-node: ${{ matrix.command.node }}
+        uses: ./.github/actions/setup-testing
 
       - name: '${{ matrix.command.name }} tests'
         run: task ${{ matrix.command.command }}
+        env:
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: testing
+          DB_USERNAME: db
+          DB_PASSWORD: db
