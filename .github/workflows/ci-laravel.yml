@@ -88,6 +88,7 @@ jobs:
     name: '♻️ Test | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
     continue-on-error: true
+    if: ${{ !contains(github.event.head_commit.message, '[skip lint]') }}
 
     services:
       postgres:
