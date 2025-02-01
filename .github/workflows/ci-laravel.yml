@@ -88,7 +88,6 @@ jobs:
     name: '♻️ Test | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
     continue-on-error: true
-    if: ${{ !contains(github.event.head_commit.message, '[skip lint]') }}
 
     services:
       postgres:
@@ -125,3 +124,16 @@ jobs:
           DB_DATABASE: testing
           DB_USERNAME: db
           DB_PASSWORD: db
+
+      - name: '☂️ Upload results to Codecov'
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: maks-oleksyuk/notes
+          flags: ${{ matrix.command.name }}
+
+      - name: '☂️ Upload test results to Codecov'
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.command.name }}

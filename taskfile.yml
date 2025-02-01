@@ -285,7 +285,7 @@ tasks:
       - qa:feature
     cmds:
       - task: artisan:test
-        vars: { CLI_ARGS: '--testsuite=Feature' }
+        vars: { CLI_ARGS: '--testsuite=Feature {{.CLI_ARGS}}' }
 
   test:unit:
     label: 'Unit test'
@@ -296,4 +296,4 @@ tasks:
       - qa:unit
     cmds:
       - task: artisan:test
-        vars: { CLI_ARGS: '--testsuite=Unit' }
+        vars: { CLI_ARGS: '--testsuite=Unit {{.CLI_ARGS}}' }
