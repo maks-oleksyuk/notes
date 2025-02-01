@@ -16,9 +16,10 @@ final readonly class RequestHelper
      */
     public static function parseStringIntoArray(string $inputString): array
     {
-        return array_filter(
-            array_map('trim', explode(',', $inputString)),
-            static fn ($item) => $item !== ''
+        return array_values(
+            array_filter(
+                array_map('trim', explode(',', $inputString))
+            )
         );
     }
 
@@ -27,11 +28,10 @@ final readonly class RequestHelper
      */
     public static function parseStringIntoIntArray(string $inputString): array
     {
-        return array_map(
-            'intval',
-            array_filter(
-                self::parseStringIntoArray($inputString),
-                static fn ($item) => is_numeric($item)
+        return array_values(
+            array_map(
+                'intval',
+                array_filter(self::parseStringIntoArray($inputString), 'is_numeric')
             )
         );
     }
