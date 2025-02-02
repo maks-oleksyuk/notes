@@ -46,4 +46,6 @@ runs:
 
     - name: '🧰 Set up Laravel'
       shell: bash
-      run: cp .env.example .env.testing
+      run: |
+        cp .env.example .env.testing
+        php artisan key:generate --env=testing --ansi

@@ -30,6 +30,7 @@
     </php>
     <coverage>
         <report>
+            <html outputDirectory="../../var/coverage"/>
             <clover outputFile="../../coverage.xml"/>
         </report>
     </coverage>
