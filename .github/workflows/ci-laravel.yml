@@ -131,9 +131,11 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: maks-oleksyuk/notes
           flags: ${{ matrix.command.name }}
+          directory: ./var/report
 
       - name: '☂️ Upload test results to Codecov'
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ matrix.command.name }}
+          directory: ./var/report

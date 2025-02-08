@@ -228,7 +228,7 @@ tasks:
       - composer:fix
     cmds:
       - task: composer
-        vars: { CLI_ARGS: 'u --lock --no-scripts --no-autoloader' }
+        vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
 
   fix:pint:
     label: 'Laravel Pint'

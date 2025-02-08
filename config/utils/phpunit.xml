@@ -31,10 +31,10 @@
     <coverage>
         <report>
             <html outputDirectory="../../var/coverage"/>
-            <clover outputFile="../../coverage.xml"/>
+            <clover outputFile="../../var/report/coverage.xml"/>
         </report>
     </coverage>
     <logging>
-        <junit outputFile="../../junit.xml"/>
+        <junit outputFile="../../var/report/junit.xml"/>
     </logging>
 </phpunit>

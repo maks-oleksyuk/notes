@@ -18,7 +18,7 @@ runs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ inputs.php }}
-        coverage: pcov
+        coverage: xdebug
         extensions: pdo, pdo_pgsql
 
     - name: '🗃 Get composer cache directory'
