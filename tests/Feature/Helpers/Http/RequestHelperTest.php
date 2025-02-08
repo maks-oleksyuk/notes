@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Helpers\Http\RequestHelper;
 
+covers(RequestHelper::class);
+
 it('converts truthy values to boolean true', function () {
     expect(RequestHelper::toBoolean('true'))->toBeTrue()
         ->and(RequestHelper::toBoolean(1))->toBeTrue()

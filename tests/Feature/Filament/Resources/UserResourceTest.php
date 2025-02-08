@@ -55,33 +55,31 @@ it('renders valid table configuration', function () {
         ->assertTableBulkActionExists('delete');
 });
 
-// todo: Finish it.
-// it('applies the `name` filter correctly', function () {
-//    $users = User::factory(5)->create();
-//    $filteredUser = $users->first();
-//    $nonFilteredUsers = $users->reject(fn($user) => $user->name === $filteredUser->name);
-//
-//    livewire(ListUsers::class)
-//        ->assertCanSeeTableRecords($users)
-//        ->filterTable('name', $filteredUser->name)
-//        ->assertCanSeeTableRecords($users->where('name', $filteredUser))
-//        // ->assertCanNotSeeTableRecords($users->where('name', '!=', $filteredUser))
-//        ->assertCountTableRecords(1);
-//    // ->assertCanNotSeeTableRecords($nonFilteredUsers); //Other users should not be visible
-// });
+it('applies the `name` filter correctly', function () {
+    $users = User::factory(5)->create();
+    $filteredUser = $users->first();
+    $nonFilteredUsers = $users->reject(fn ($user) => $user->name === $filteredUser->name);
 
-// it('applies the email filter correctly', function () {
-//    User::factory()->create(['email' => 'alice@example.com']);
-//    User::factory()->create(['email' => 'bob@example.com']);
-//    User::factory()->create(['email' => 'charlie@example.com']);
-//
-//    livewire(ListUsers::class)
-//        ->filterTable('email', 'example')
-//        ->assertTableCount(3)
-//        ->call('resetTableFilters')
-//        ->setTableFilter('email', 'bob')
-//        ->assertTableCount(1);
-// });
+    livewire(ListUsers::class)
+        ->assertCanSeeTableRecords($users)
+        ->filterTable('name', ['name' => $filteredUser->name])
+        ->assertCountTableRecords(1)
+        ->assertCanSeeTableRecords([$filteredUser])
+        ->assertCanNotSeeTableRecords($nonFilteredUsers);
+});
+
+it('applies the `email` filter correctly', function () {
+    $users = User::factory(5)->create();
+    $filteredUser = $users->first();
+    $nonFilteredUsers = $users->reject(fn ($user) => $user->email === $filteredUser->email);
+
+    livewire(ListUsers::class)
+        ->assertCanSeeTableRecords($users)
+        ->filterTable('email', ['email' => $filteredUser->email])
+        ->assertCountTableRecords(1)
+        ->assertCanSeeTableRecords([$filteredUser])
+        ->assertCanNotSeeTableRecords($nonFilteredUsers);
+});
 
 it('returns valid pages routes', function () {
     $pages = UserResource::getPages();

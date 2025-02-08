@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+covers([UserRepository::class, UserFilters::class]);
 uses(RefreshDatabase::class);
 
 beforeEach(fn () => $this->repository = new UserRepository(new User));

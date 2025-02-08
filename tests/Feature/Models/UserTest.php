@@ -6,6 +6,7 @@ use App\Models\User;
 use Filament\Panel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+covers(User::class);
 uses(RefreshDatabase::class);
 
 it('can create a user', function () {
