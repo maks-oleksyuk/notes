@@ -26,6 +26,26 @@ it('can create a user', function () {
     ]);
 });
 
+it('has correct fillable attributes', function () {
+    $user = User::factory()->make();
+
+    expect($user->getFillable())->toBe([
+        'name',
+        'email',
+        'password',
+    ]);
+});
+
+it('has correct casts attributes', function () {
+    $user = User::factory()->make();
+
+    expect($user->getCasts())->toBe([
+        'id' => 'int',
+        'password' => 'hashed',
+        'email_verified_at' => 'datetime',
+    ]);
+});
+
 it('hashes the password', function () {
     $user = User::factory()->create(['password' => 'plain-text-password']);
 

@@ -55,6 +55,22 @@ it('renders valid table configuration', function () {
         ->assertTableBulkActionExists('delete');
 });
 
+it('has correct filters configuration', function () {
+    livewire(ListUsers::class)
+        ->assertTableFilterExists('name', fn ($filter) => $filter->getFormSchema()[0]->getLabel() === 'Name' &&
+            $filter->getFormSchema()[0]->getPlaceholder() === 'Enter name to filter'
+        )
+        ->assertTableFilterExists('email', fn ($filter) => $filter->getFormSchema()[0]->getLabel() === 'Email' &&
+            $filter->getFormSchema()[0]->getPlaceholder() === 'Enter email to filter'
+        );
+});
+
+it('has view and delete actions with empty labels', function () {
+    livewire(ListUsers::class)
+        ->assertTableActionExists('view', fn ($action) => $action->getLabel() === '')
+        ->assertTableActionExists('delete', fn ($action) => $action->getLabel() === '');
+});
+
 it('applies the `name` filter correctly', function () {
     $users = User::factory(5)->create();
     $filteredUser = $users->first();
@@ -65,7 +81,10 @@ it('applies the `name` filter correctly', function () {
         ->filterTable('name', ['name' => $filteredUser->name])
         ->assertCountTableRecords(1)
         ->assertCanSeeTableRecords([$filteredUser])
-        ->assertCanNotSeeTableRecords($nonFilteredUsers);
+        ->assertCanNotSeeTableRecords($nonFilteredUsers)
+        ->resetTableFilters()
+        ->filterTable('name', ['name' => ''])
+        ->assertCanSeeTableRecords($users);
 });
 
 it('applies the `email` filter correctly', function () {
@@ -78,7 +97,10 @@ it('applies the `email` filter correctly', function () {
         ->filterTable('email', ['email' => $filteredUser->email])
         ->assertCountTableRecords(1)
         ->assertCanSeeTableRecords([$filteredUser])
-        ->assertCanNotSeeTableRecords($nonFilteredUsers);
+        ->assertCanNotSeeTableRecords($nonFilteredUsers)
+        ->resetTableFilters()
+        ->filterTable('email', ['email' => ''])
+        ->assertCanSeeTableRecords($users);
 });
 
 it('returns valid pages routes', function () {

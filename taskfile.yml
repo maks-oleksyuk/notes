@@ -297,3 +297,14 @@ tasks:
     cmds:
       - task: artisan:test
         vars: { CLI_ARGS: '--testsuite=Unit {{.CLI_ARGS}}' }
+
+  test:mutate:
+    label: 'Mutate test'
+    desc: 'Run mutate tests.'
+    aliases:
+      - t:mutate
+      - qa:m
+      - qa:mutate
+    cmds:
+      - task: artisan:test
+        vars: { CLI_ARGS: '--mutate --covered-only {{.CLI_ARGS}}' }
