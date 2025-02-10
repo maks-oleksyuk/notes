@@ -85,6 +85,14 @@ tasks:
       --ignore-path={{.CONFIG_DIR}}/.prettierignore'
     silent: true
 
+  pest:
+    label: 'Pest'
+    desc: 'Runs `pest` command.'
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/pest
+      {{.CLI_ARGS}} --colors=always'
+    silent: true
+
   # Work commands:
 
   cache:clear:
@@ -273,6 +281,7 @@ tasks:
       - t
       - qa
     cmds:
+      - defer: { task: test:mutate }
       - defer: { task: test:unit }
       - defer: { task: test:feature }
 
@@ -284,6 +293,8 @@ tasks:
       - qa:f
       - qa:feature
     cmds:
+      - task: pest
+        vars: { CLI_ARGS: '--version' }
       - task: artisan:test
         vars: { CLI_ARGS: '--testsuite=Feature {{.CLI_ARGS}}' }
 
@@ -295,6 +306,8 @@ tasks:
       - qa:u
       - qa:unit
     cmds:
+      - task: pest
+        vars: { CLI_ARGS: '--version' }
       - task: artisan:test
         vars: { CLI_ARGS: '--testsuite=Unit {{.CLI_ARGS}}' }
 
@@ -306,5 +319,7 @@ tasks:
       - qa:m
       - qa:mutate
     cmds:
+      - task: pest
+        vars: { CLI_ARGS: '--version' }
       - task: artisan:test
         vars: { CLI_ARGS: '--mutate --covered-only {{.CLI_ARGS}}' }
