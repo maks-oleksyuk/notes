@@ -7,10 +7,9 @@ use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Feature\Filament\Fixtures\FilamentForm;
 
 use function Pest\Livewire\livewire;
 
@@ -26,13 +25,8 @@ it('disallows editing users', function () {
     expect(UserResource::canEdit($user))->toBeFalse();
 });
 
-class DummyFormComponent implements HasForms
-{
-    use InteractsWithForms;
-}
-
 it('returns a valid form schema', function () {
-    $form = UserResource::form(Form::make(new DummyFormComponent));
+    $form = UserResource::form(Form::make(FilamentForm::make()));
     $schema = $form->getComponents();
 
     expect($schema)
