@@ -7,8 +7,13 @@ tasks:
       ddev start -y
       ddev artisan key:generate --ansi
       ddev task db:fresh
+
+      cp .env.example .env.testing
+      ddev artisan key:generate --env=testing --ansi
+      ddev psql -U db -d db -c "CREATE DATABASE testing;"
+      ddev psql -U db -d db -c "GRANT ALL PRIVILEGES ON DATABASE testing TO db;"
     command: |
-      ddev start -y
+      ddev describe >/dev/null 2>&1 || ddev start -y
       gp ports await 8080 && gp preview $(gp url 8080)
 
 # VScode xdebug extension
