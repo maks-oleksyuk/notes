@@ -60,7 +60,7 @@ final class UserResource extends Resource
                             ->label('Name'),
                     ])
                     ->query(
-                        fn (Builder $query, array $data) => isset($data['name']) && is_string($data['name'])
+                        fn (Builder $query, array $data): Builder => is_string($data['name'] ?? null)
                             ? $query->whereLike('name', "%{$data['name']}%")
                             : $query
                     ),
@@ -71,7 +71,7 @@ final class UserResource extends Resource
                             ->label('Email'),
                     ])
                     ->query(
-                        fn (Builder $query, array $data) => isset($data['email']) && is_string($data['email'])
+                        fn (Builder $query, array $data): Builder => is_string($data['email'] ?? null)
                             ? $query->whereLike('email', "%{$data['email']}%")
                             : $query
                     ),
@@ -90,9 +90,7 @@ final class UserResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

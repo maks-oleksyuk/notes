@@ -19,24 +19,24 @@ final class ListUsers extends ListRecords
     {
         return [
             Actions\ExportAction::make('export_csv')
+                ->label('Export CSV')
                 ->exporter(UserExporter::class)
-                ->columnMapping(false)
+                ->icon('heroicon-m-document-arrow-down')
                 ->formats([ExportFormat::Csv])
+                ->columnMapping(false)
                 ->color(Color::Sky)
                 ->modal(false)
-                ->outlined()
-                ->icon('heroicon-m-document-arrow-down')
-                ->label('Export CSV'),
+                ->outlined(),
 
             Actions\ExportAction::make('export_xls')
+                ->label('Export XLSX')
                 ->exporter(UserExporter::class)
-                ->columnMapping(false)
+                ->icon('heroicon-m-document-arrow-down')
                 ->formats([ExportFormat::Xlsx])
+                ->columnMapping(false)
                 ->color(Color::Green)
                 ->modal(false)
-                ->outlined()
-                ->icon('heroicon-m-document-arrow-down')
-                ->label('Export XLSX'),
+                ->outlined(),
         ];
     }
 }

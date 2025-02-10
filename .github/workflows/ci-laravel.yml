@@ -54,7 +54,7 @@ jobs:
             }
           - {
               name: '🔍 PHPStan',
-              command: 'lint:php:stan -- --no-progress --error-format=github',
+              command: 'lint:php:stan -- --no-progress',
               php: true,
               node: false,
             }
@@ -83,3 +83,60 @@ jobs:
 
       - name: '${{ matrix.command.name }} validate'
         run: task ${{ matrix.command.command }}
+
+  test:
+    name: '♻️ Test | ${{ matrix.command.name }}'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    services:
+      postgres:
+        image: postgres:17
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: db
+          POSTGRES_PASSWORD: db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    strategy:
+      matrix:
+        command:
+          - { name: '🧬 Feature', command: 'test:feature' }
+          - { name: '🔬 Unit',    command: 'test:unit' }
+          - { name: '🦠 Mutate',  command: 'test:mutate' }
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@v4
+
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-testing
+
+      - name: '${{ matrix.command.name }} tests'
+        run: task ${{ matrix.command.command }}
+        env:
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: testing
+          DB_USERNAME: db
+          DB_PASSWORD: db
+
+      - name: '☂️ Upload results to Codecov'
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: maks-oleksyuk/notes
+          flags: ${{ matrix.command.name }}
+          directory: ./var/report
+
+      - name: '☂️ Upload test results to Codecov'
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.command.name }}
+          directory: ./var/report
