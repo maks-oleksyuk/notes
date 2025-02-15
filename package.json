@@ -1,0 +1,13 @@
+{
+	"license": "GPL-3.0-or-later",
+	"type": "module",
+	"private": true,
+	"devDependencies": {
+		"prettier": "^3.5.1"
+	},
+	"packageManager": "pnpm@10.4.0",
+	"engines": {
+		"pnpm": ">=10",
+		"node": ">=22"
+	}
+}

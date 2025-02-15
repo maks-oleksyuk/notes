@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<ruleset
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/PHPCSStandards/PHP_CodeSniffer/master/phpcs.xsd">
+
+	<file>./../../src/</file>
+	<arg name="extensions" value="php"/>
+
+	<!-- Check up to 8 files simultaneously. -->
+	<arg name="parallel" value="8"/>
+
+	<!-- Include the WordPress-Extra standard. -->
+	<rule ref="WordPress-Extra"/>
+
+	<!-- Let's also check that everything is properly documented. -->
+	<!-- <rule ref="WordPress-Docs"/>  -->
+
+	<!-- Check for PHP cross-version compatibility. -->
+	<config name="testVersion" value="8.4-"/>
+	<rule ref="PHPCompatibilityWP">
+		<include-pattern>*\.php</include-pattern>
+	</rule>
+
+	<config name="minimum_wp_version" value="6.7"/>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="nts"/>
+			</property>
+		</properties>
+	</rule>
+
+</ruleset>

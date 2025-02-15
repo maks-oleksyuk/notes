@@ -1,0 +1,13 @@
+.ddev
+.github
+.pnpm-store
+LICENSE.md
+composer.lock
+dist
+local
+pnpm-lock.yaml
+public
+taskfile.yml
+var
+vendor
+web

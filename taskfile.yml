@@ -1,0 +1,171 @@
+version: 3
+
+env:
+  WP_BIN: '{{.WP_BIN | default "$(which wp)"}}'
+  PHP_BIN: '{{.PHP_BIN | default "$(which php)"}}'
+  NODE_BIN: '{{.NODE_BIN | default "$(which node)"}}'
+  PNPM_BIN: '{{.PNPM_BIN | default "$(which pnpm)"}}'
+  COMPOSER_BIN: '{{.COMPOSER_BIN | default "$(which composer)"}}'
+
+vars:
+  CONFIG_DIR: '{{.TASKFILE_DIR}}/config/utils'
+  NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
+  COMPOSER_BIN_DIR: '{{.TASKFILE_DIR}}/vendor/bin'
+
+tasks:
+  default:
+    desc: 'List all command.'
+    cmd: 'task -l'
+
+  # Utils:
+
+  composer:
+    label: 'Composer'
+    desc: 'Runs `composer` command.'
+    internal: true
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}} --ansi'
+    silent: true
+
+  pnpm:
+    label: 'pnpm'
+    desc: 'Runs `pnpm` command.'
+    internal: true
+    cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
+
+  wp:
+    label: 'wp'
+    desc: 'Runs `wp` command.'
+    cmd: '{{.WP_BIN}} {{.CLI_ARGS}}'
+    silent: true
+
+  phpcs:
+    label: 'PHPCS'
+    desc: 'Runs `phpcs` command.'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcs -ps --colors --standard={{.CONFIG_DIR}}/phpcs.xml {{.CLI_ARGS}}'
+    internal: true
+    silent: true
+
+  phpcbf:
+    label: 'PHPCBF'
+    desc: 'Runs `phpcbf` command.'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcbf -ps --colors --standard={{.CONFIG_DIR}}/phpcs.xml {{.CLI_ARGS}}'
+    internal: true
+    silent: true
+
+  prettier:
+    label: 'Prettier'
+    desc: 'Runs `prettier` command.'
+    cmd:
+      '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
+      --config={{.CONFIG_DIR}}/.prettierrc.json
+      --ignore-path={{.CONFIG_DIR}}/.prettierignore'
+    silent: true
+
+  # Work commands:
+
+  cache:clear:
+    label: 'Cache clear'
+    desc: 'Clear WP cache'
+    aliases:
+      - cc
+      - cf
+      - cr
+      - cache:flush
+    cmds:
+      - task: wp
+        vars: { CLI_ARGS: 'cache flush' }
+
+  # Linters:
+
+  lint:
+    label: 'Project lint'
+    desc: 'Validates project files.'
+    aliases:
+      - l
+    cmds:
+      - defer: { task: lint:prettier }
+      - defer: { task: lint:phpcs }
+      - defer: { task: lint:composer }
+
+  lint:composer:
+    label: 'Composer validation'
+    desc: 'Validates composer.json file and checks platform requirements.'
+    aliases:
+      - l:composer
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: '-V' }
+      - task: composer
+        vars: { CLI_ARGS: 'validate --strict' }
+      - task: composer
+        vars: { CLI_ARGS: 'check-platform-req' }
+
+  lint:phpcs:
+    label: 'PHPCS validation'
+    desc: 'Validate PHP for code style.'
+    aliases:
+      - l:php
+    cmds:
+      - task: phpcs
+
+  lint:prettier:
+    label: 'Prettier'
+    desc: 'Checks for common format issues with prettier.'
+    aliases:
+      - format
+      - l:format
+      - l:prettier
+      - lint:format
+      - prettier:l
+      - prettier:lint
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-v' }
+      - task: prettier
+        vars: { CLI_ARGS: '. -c' }
+
+  # Fixing:
+
+  fix:
+    label: 'Fixing found issues'
+    desc: 'Trying for automated fixes for found problems.'
+    aliases:
+      - f
+    cmds:
+      - defer: { task: fix:prettier }
+      - defer: { task: fix:phpcs }
+      - defer: { task: fix:composer }
+
+  fix:composer:
+    label: 'Composer fix'
+    desc: 'Try to fix composer errors.'
+    aliases:
+      - f:composer
+      - composer:f
+      - composer:fix
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
+
+  fix:phpcs:
+    label: 'PHPCS'
+    desc: 'Fix PHPCS issues.'
+    aliases:
+      - f:php
+    cmds:
+      - task: phpcbf
+
+  fix:prettier:
+    label: 'Prettier'
+    desc: 'Fix format issues.'
+    aliases:
+      - f:format
+      - f:prettier
+      - fix:format
+      - format:fix
+      - prettier:fix
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-wl .' }
+
+  # Testing:
