@@ -13,11 +13,11 @@
 		"roots/wp-config": "^1.0",
 		"roots/wp-password-bcrypt": "^1.2",
 		"vlucas/phpdotenv": "^5.6",
+		"wordpress-notes/nts_site": "^1.0@dev",
 		"wpackagist-plugin/uipress-lite": "^3.5",
 		"wpackagist-theme/twentytwentyfive": "^1.1"
 	},
 	"require-dev": {
-		"ergebnis/composer-normalize": "^2.45",
 		"phpcompatibility/phpcompatibility-wp": "^2.1",
 		"wp-coding-standards/wpcs": "^3.1"
 	},
@@ -41,7 +41,6 @@
 		"allow-plugins": {
 			"composer/installers": true,
 			"dealerdirect/phpcodesniffer-composer-installer": true,
-			"ergebnis/composer-normalize": true,
 			"roots/wordpress-core-installer": true
 		},
 		"optimize-autoloader": true,
