@@ -19,7 +19,7 @@ return RectorConfig::configure()
         __DIR__.'/../../app',
         __DIR__.'/../../database',
     ])
-    ->withPhpVersion(PhpVersion::PHP_83)
+    ->withPhpVersion(PhpVersion::PHP_84)
     ->withSets([
         LaravelLevelSetList::UP_TO_LARAVEL_110,
         LaravelSetList::LARAVEL_110,
