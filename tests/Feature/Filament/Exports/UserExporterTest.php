@@ -26,7 +26,7 @@ describe('Filament | User Exporter', function () {
     it('generates a correct success notification without failed rows', function () {
         $user = User::factory()->create();
 
-        $export = Export::create([
+        $export = Export::query()->create([
             'user_id' => $user->id,
             'successful_rows' => 5,
             'total_rows' => 5,
@@ -43,7 +43,7 @@ describe('Filament | User Exporter', function () {
     it('generates a correct success notification with failed rows', function () {
         $user = User::factory()->create();
 
-        $export = Export::create([
+        $export = Export::query()->create([
             'user_id' => $user->id,
             'successful_rows' => 5,
             'total_rows' => 7,

@@ -11,6 +11,7 @@
         "spatie/laravel-data": "^4.13"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.5",
         "driftingly/rector-laravel": "^2.0",
         "fakerphp/faker": "^1.24",
         "larastan/larastan": "^3.1",
@@ -47,13 +48,10 @@
         }
     },
     "scripts": {
-        "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --tag=public --force --ansi"
-        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
-            "@php artisan filament:upgrade"
+            "@php artisan app:setup --ansi"
         ]
     }
 }

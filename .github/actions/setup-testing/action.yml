@@ -42,7 +42,7 @@ runs:
 
     - name: '📦 Install composer dependencies'
       shell: bash
-      run: composer i --quiet --no-progress --no-scripts --ansi;
+      run: composer i --no-progress --no-scripts --prefer-dist --optimize-autoloader -n -q --ansi;
 
     - name: '🧰 Set up Laravel'
       shell: bash

@@ -6,6 +6,7 @@ use App\Data\Filters\Models\UserFilters;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 
 covers([UserRepository::class, UserFilters::class]);
 uses(RefreshDatabase::class);
@@ -41,7 +42,7 @@ describe('User Repository', function () {
     });
 
     it('sorts users correctly', function () {
-        $users = collect([
+        $users = new Collection([
             User::factory()->create(['name' => 'Charlie']),
             User::factory()->create(['name' => 'Alice']),
             User::factory()->create(['name' => 'Bob']),

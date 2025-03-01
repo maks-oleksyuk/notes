@@ -12,9 +12,9 @@ covers(ListUsers::class);
 
 describe('Filament | User List', function () {
     it('renders export actions with correct configuration', function () {
-        $actions = (new ReflectionMethod(
+        $actions = new ReflectionMethod(
             ListUsers::class,
-            'getHeaderActions')
+            'getHeaderActions',
         )->invoke(new ListUsers);
 
         expect($actions)->toHaveCount(2);

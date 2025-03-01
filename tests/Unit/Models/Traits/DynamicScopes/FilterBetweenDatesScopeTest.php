@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Models\Traits\DynamicScopes\FilterBetweenDatesScope;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 
+covers(FilterBetweenDatesScope::class);
 uses(RefreshDatabase::class);
 
 describe('Between Dates Scope ', function () {
