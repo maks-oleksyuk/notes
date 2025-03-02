@@ -35,6 +35,7 @@ runs:
       with:
         php-version: ${{ inputs.php }}
         coverage: none
+        tools: cs2pr
 
     - name: '🗃 Get composer cache directory'
       if: ${{ inputs.use-php == 'true' }}
