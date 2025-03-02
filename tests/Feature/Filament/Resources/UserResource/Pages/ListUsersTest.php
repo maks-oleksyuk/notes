@@ -10,8 +10,8 @@ use Filament\Support\Colors\Color;
 
 covers(ListUsers::class);
 
-describe('Filament | User List', function () {
-    it('renders export actions with correct configuration', function () {
+describe('Filament | User List', function (): void {
+    it('renders export actions with correct configuration', function (): void {
         $actions = new ReflectionMethod(
             ListUsers::class,
             'getHeaderActions',

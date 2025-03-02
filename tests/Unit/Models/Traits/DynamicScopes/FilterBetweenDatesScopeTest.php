@@ -10,8 +10,8 @@ use Illuminate\Support\Carbon;
 covers(FilterBetweenDatesScope::class);
 uses(RefreshDatabase::class);
 
-describe('Between Dates Scope ', function () {
-    it('filters models between dates', function () {
+describe('Between Dates Scope ', function (): void {
+    it('filters models between dates', function (): void {
         $startDate = Carbon::parse('2025-01-01');
         $endDate = Carbon::parse('2025-01-31');
 
@@ -30,7 +30,7 @@ describe('Between Dates Scope ', function () {
             ->not->toContain($out->id);
     });
 
-    it('filters models for a single day range', function () {
+    it('filters models for a single day range', function (): void {
         $date = Carbon::parse('2025-01-01');
 
         $in = User::factory()->create(['created_at' => '2025-01-01 12:00:00']);

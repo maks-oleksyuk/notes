@@ -9,12 +9,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-describe('Filament | User Exporter', function () {
-    it('returns the correct model', function () {
+describe('Filament | User Exporter', function (): void {
+    it('returns the correct model', function (): void {
         expect(UserExporter::getModel())->toBe(User::class);
     });
 
-    it('returns the correct columns', function () {
+    it('returns the correct columns', function (): void {
         $columns = UserExporter::getColumns();
 
         expect($columns)
@@ -23,7 +23,7 @@ describe('Filament | User Exporter', function () {
             ->and($columns[1]->getName())->toBe('email');
     });
 
-    it('generates a correct success notification without failed rows', function () {
+    it('generates a correct success notification without failed rows', function (): void {
         $user = User::factory()->create();
 
         $export = Export::query()->create([
@@ -40,7 +40,7 @@ describe('Filament | User Exporter', function () {
         expect($message)->toBe('Your user export has completed and 5 rows exported.');
     });
 
-    it('generates a correct success notification with failed rows', function () {
+    it('generates a correct success notification with failed rows', function (): void {
         $user = User::factory()->create();
 
         $export = Export::query()->create([

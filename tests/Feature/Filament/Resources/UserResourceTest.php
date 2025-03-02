@@ -9,6 +9,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Pest\Expectation;
 use Tests\Feature\Filament\Fixtures\FilamentForm;
 
 use function Pest\Livewire\livewire;
@@ -16,17 +17,17 @@ use function Pest\Livewire\livewire;
 covers(UserResource::class);
 uses(RefreshDatabase::class);
 
-describe('Filament | User Resource', function () {
+describe('Filament | User Resource', function (): void {
     it('allows creating users',
-        fn () => expect(UserResource::canCreate())->toBeTrue()
+        fn (): Expectation => expect(UserResource::canCreate())->toBeTrue()
     );
 
-    it('disallows editing users', function () {
+    it('disallows editing users', function (): void {
         $user = User::factory()->create();
         expect(UserResource::canEdit($user))->toBeFalse();
     });
 
-    it('returns a valid form schema', function () {
+    it('returns a valid form schema', function (): void {
         $form = UserResource::form(Form::make(FilamentForm::make()));
         $schema = $form->getComponents();
 
@@ -38,7 +39,7 @@ describe('Filament | User Resource', function () {
             ->and($schema[3])->toBeInstanceOf(DateTimePicker::class);
     });
 
-    it('renders valid table configuration', function () {
+    it('renders valid table configuration', function (): void {
         livewire(ListUsers::class)
             ->assertTableColumnExists('name')
             ->assertTableColumnExists('email')
@@ -50,26 +51,26 @@ describe('Filament | User Resource', function () {
             ->assertTableBulkActionExists('delete');
     });
 
-    it('has correct filters configuration', function () {
+    it('has correct filters configuration', function (): void {
         livewire(ListUsers::class)
-            ->assertTableFilterExists('name', fn ($filter) => $filter->getFormSchema()[0]->getLabel() === 'Name' &&
+            ->assertTableFilterExists('name', fn ($filter): bool => $filter->getFormSchema()[0]->getLabel() === 'Name' &&
                 $filter->getFormSchema()[0]->getPlaceholder() === 'Enter name to filter'
             )
-            ->assertTableFilterExists('email', fn ($filter) => $filter->getFormSchema()[0]->getLabel() === 'Email' &&
+            ->assertTableFilterExists('email', fn ($filter): bool => $filter->getFormSchema()[0]->getLabel() === 'Email' &&
                 $filter->getFormSchema()[0]->getPlaceholder() === 'Enter email to filter'
             );
     });
 
-    it('has view and delete actions with empty labels', function () {
+    it('has view and delete actions with empty labels', function (): void {
         livewire(ListUsers::class)
-            ->assertTableActionExists('view', fn ($action) => $action->getLabel() === '')
-            ->assertTableActionExists('delete', fn ($action) => $action->getLabel() === '');
+            ->assertTableActionExists('view', fn ($action): bool => $action->getLabel() === '')
+            ->assertTableActionExists('delete', fn ($action): bool => $action->getLabel() === '');
     });
 
-    it('applies the `name` filter correctly', function () {
+    it('applies the `name` filter correctly', function (): void {
         $users = User::factory(5)->create();
         $filteredUser = $users->first();
-        $nonFilteredUsers = $users->reject(fn ($user) => $user->name === $filteredUser->name);
+        $nonFilteredUsers = $users->reject(fn ($user): bool => $user->name === $filteredUser->name);
 
         livewire(ListUsers::class)
             ->assertCanSeeTableRecords($users)
@@ -82,10 +83,10 @@ describe('Filament | User Resource', function () {
             ->assertCanSeeTableRecords($users);
     });
 
-    it('applies the `email` filter correctly', function () {
+    it('applies the `email` filter correctly', function (): void {
         $users = User::factory(5)->create();
         $filteredUser = $users->first();
-        $nonFilteredUsers = $users->reject(fn ($user) => $user->email === $filteredUser->email);
+        $nonFilteredUsers = $users->reject(fn ($user): bool => $user->email === $filteredUser->email);
 
         livewire(ListUsers::class)
             ->assertCanSeeTableRecords($users)
@@ -98,7 +99,7 @@ describe('Filament | User Resource', function () {
             ->assertCanSeeTableRecords($users);
     });
 
-    it('returns valid pages routes', function () {
+    it('returns valid pages routes', function (): void {
         $pages = UserResource::getPages();
         expect($pages)->toHaveKeys(['index', 'view']);
     });

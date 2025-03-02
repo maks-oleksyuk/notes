@@ -6,7 +6,7 @@ use App\Console\Commands\Setup;
 
 covers(Setup::class);
 
-describe('Setup Command', function () {
+describe('Setup Command', function (): void {
     it('executes setup command in `non-local` environment', function (string $env): void {
         $this->artisan('app:setup', ['--env' => $env])
             ->expectsOutputToContain('Filament upgrade')
