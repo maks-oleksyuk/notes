@@ -66,7 +66,7 @@ jobs:
             }
           - {
               name: '🏠 Rector',
-              command: 'lint:rector -- --no-progress-bar',
+              command: 'lint:rector -- --no-progress-bar --output-format=github',
               php: true,
               node: false,
             }

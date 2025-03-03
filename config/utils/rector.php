@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\LevelSetList;
-use Rector\Set\ValueObject\SetList;
 use Rector\Transform\Rector\StaticCall\StaticCallToMethodCallRector;
 use Rector\ValueObject\PhpVersion;
 use RectorLaravel\Rector\FuncCall\ArgumentFuncCallToMethodCallRector;
@@ -23,20 +22,21 @@ return RectorConfig::configure()
         __DIR__.'/../../tests',
     ])
     ->withPhpVersion(PhpVersion::PHP_84)
+    ->withPreparedSets(
+        deadCode: true,
+        codeQuality: true,
+        codingStyle: true,
+        typeDeclarations: true,
+        // naming: true, // todo: try it in future.
+        instanceOf: true,
+        earlyReturn: true,
+        strictBooleans: true,
+        carbon: true,
+    )
     ->withSets([
         // Project sets.
         LevelSetList::UP_TO_PHP_84,
         LaravelLevelSetList::UP_TO_LARAVEL_110,
-        // Rector sets.
-        SetList::CODE_QUALITY,
-        SetList::CODING_STYLE,
-        SetList::DEAD_CODE,
-        SetList::STRICT_BOOLEANS,
-        // SetList::NAMING, // todo: try it in future.
-        SetList::TYPE_DECLARATION,
-        SetList::EARLY_RETURN,
-        SetList::INSTANCEOF,
-        SetList::CARBON,
         // Laravel sets.
         LaravelSetList::LARAVEL_110,
         LaravelSetList::LARAVEL_ARRAYACCESS_TO_METHOD_CALL,
