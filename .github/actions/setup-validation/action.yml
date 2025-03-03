@@ -62,7 +62,7 @@ runs:
     - name: '📦 Install composer dependencies'
       if: ${{ inputs.use-php == 'true' }}
       shell: bash
-      run: composer i --no-progress --no-scripts --prefer-dist --optimize-autoloader -n -q --ansi;
+      run: composer i --no-progress --no-scripts --prefer-dist -qn --ansi;
 
     - name: '🟧 Setup pnpm'
       if: ${{ inputs.use-node == 'true' }}

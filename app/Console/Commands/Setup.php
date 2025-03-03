@@ -35,6 +35,8 @@ final class Setup extends Command
             });
         }
 
+        $this->newLine();
+
         return self::SUCCESS;
     }
 }
