@@ -11,20 +11,32 @@ use Symfony\Component\Console\Attribute\AsCommand;
 #[AsCommand(name: 'app:setup', description: 'Setup application')]
 final class Setup extends Command
 {
+    /**
+     * @var list<string>
+     */
+    private array $vendorTags = [
+        'laravel-assets',
+        'public',
+    ];
+
     public function handle(): int
     {
         $env = $this->option('env') ?: $this->laravel->environment();
+
+        $this->components->info('Setup application');
 
         $this->components->task('Filament upgrade',
             fn () => $this->callSilently('filament:upgrade')
         );
 
-        $this->components->task('Vendor publish',
-            fn () => $this->callSilently('vendor:publish', [
-                '--tag' => ['laravel-assets', 'public'],
-                '--force' => true,
-            ])
-        );
+        foreach ($this->vendorTags as $vendorTag) {
+            $this->components->task(sprintf('Publishing assets for tag: [%s]', $vendorTag),
+                fn () => $this->callSilently('vendor:publish', [
+                    '--tag' => $vendorTag,
+                    '--force' => true,
+                ])
+            );
+        }
 
         if ($env === 'local' && class_exists(LaravelIdeHelperGenerator::class)) {
             $this->components->task('Generating IDE helper files', function (): void {
