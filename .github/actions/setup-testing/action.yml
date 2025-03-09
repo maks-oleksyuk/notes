@@ -49,3 +49,5 @@ runs:
       run: |
         cp .env.example .env.testing
         php artisan key:generate --env=testing --ansi
+        sed -i '/^APP_BASE_PATH=/d' .env.testing
+        echo "APP_BASE_PATH=${{ github.workspace }}" >> .env.testing

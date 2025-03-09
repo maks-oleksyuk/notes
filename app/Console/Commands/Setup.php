@@ -15,8 +15,9 @@ final class Setup extends Command
      * @var list<string>
      */
     private array $vendorTags = [
-        'laravel-assets',
         'public',
+        'laravel-assets',
+        'log-viewer-assets',
     ];
 
     public function handle(): int

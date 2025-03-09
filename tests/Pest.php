@@ -39,7 +39,4 @@ expect()->extend('toBeOne', fn () => $this->toBe(1));
 |
 */
 
-function something(): void
-{
-    // ..
-}
+function something(): void {}

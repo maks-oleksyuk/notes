@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Laravel\Pulse\Http\Middleware\Authorize;
 use Laravel\Pulse\Pulse;
 use Laravel\Pulse\Recorders;
 use Olssonm\VeryBasicAuth\Http\Middleware\VeryBasicAuth;
@@ -125,7 +124,6 @@ return [
 
     'middleware' => [
         'web',
-        Authorize::class,
         VeryBasicAuth::class,
     ],
 
