@@ -42,12 +42,11 @@ runs:
 
     - name: '📦 Install composer dependencies'
       shell: bash
-      run: composer i --no-progress --no-scripts --prefer-dist -qn --ansi;
+      run: composer i --no-progress --no-scripts -qn --ansi;
 
     - name: '🧰 Set up Laravel'
       shell: bash
       run: |
         cp .env.example .env.testing
         php artisan key:generate --env=testing --ansi
-        sed -i '/^APP_BASE_PATH=/d' .env.testing
-        echo "APP_BASE_PATH=${{ github.workspace }}" >> .env.testing
+        php artisan app:setup

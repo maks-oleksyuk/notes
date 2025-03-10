@@ -10,7 +10,7 @@ use RectorLaravel\Rector\FuncCall\ArgumentFuncCallToMethodCallRector;
 use RectorLaravel\Set\LaravelLevelSetList;
 use RectorLaravel\Set\LaravelSetList;
 
-if (! class_exists(RectorConfig::class)) {
+if (env('APP_ENV') === 'testing' || ! class_exists(RectorConfig::class)) {
     return;
 }
 

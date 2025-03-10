@@ -119,7 +119,7 @@ jobs:
         uses: ./.github/actions/setup-testing
 
       - name: '${{ matrix.command.name }} tests'
-        run: task ${{ matrix.command.command }}
+        run: task ${{ matrix.command.command }} -- --ci
         env:
           DB_HOST: 127.0.0.1
           DB_DATABASE: testing

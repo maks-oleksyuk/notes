@@ -46,7 +46,7 @@ tasks:
     cmds:
       - task: artisan
         vars:
-          { CLI_ARGS: 'test --configuration={{.CONFIG_DIR}}/phpunit.xml --parallel --processes=4 {{.CLI_ARGS}}' }
+          { CLI_ARGS: 'test -c {{.CONFIG_DIR}}/phpunit.xml --parallel --colors=always {{.CLI_ARGS}}' }
         silent: true
 
   pint:
