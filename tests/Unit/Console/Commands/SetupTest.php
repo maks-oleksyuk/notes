@@ -15,7 +15,7 @@ describe('Setup Command', function (): void {
             ->expectsOutputToContain('Publishing assets for tag: [laravel-assets]')
             ->expectsOutputToContain('Publishing assets for tag: [log-viewer-assets]')
             ->doesntExpectOutput('Generating IDE helper files')
-            ->assertExitCode(0);
+            ->assertSuccessful();
     })->with([
         'production' => 'production',
         'staging' => 'staging',
@@ -30,6 +30,6 @@ describe('Setup Command', function (): void {
             ->expectsOutputToContain('Publishing assets for tag: [laravel-assets]')
             ->expectsOutputToContain('Publishing assets for tag: [log-viewer-assets]')
             ->expectsOutputToContain('Generating IDE helper files')
-            ->assertExitCode(0);
+            ->assertSuccessful();
     });
 });
