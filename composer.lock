@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6ba55e7e9c78c2099b7e07b2d7f61463",
+    "content-hash": "327de1fd8510f135de0333056c1b4d81",
     "packages": [
         {
             "name": "amphp/amp",
@@ -6310,16 +6310,16 @@
         },
         {
             "name": "spatie/laravel-data",
-            "version": "4.13.2",
+            "version": "4.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-data.git",
-                "reference": "bd060f6d47ad4a3fac1f92162d76bfd9975b10ca"
+                "reference": "3e1240353569e8fb64b5859eed01652d5df3358b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-data/zipball/bd060f6d47ad4a3fac1f92162d76bfd9975b10ca",
-                "reference": "bd060f6d47ad4a3fac1f92162d76bfd9975b10ca",
+                "url": "https://api.github.com/repos/spatie/laravel-data/zipball/3e1240353569e8fb64b5859eed01652d5df3358b",
+                "reference": "3e1240353569e8fb64b5859eed01652d5df3358b",
                 "shasum": ""
             },
             "require": {
@@ -6380,7 +6380,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-data/issues",
-                "source": "https://github.com/spatie/laravel-data/tree/4.13.2"
+                "source": "https://github.com/spatie/laravel-data/tree/4.14.0"
             },
             "funding": [
                 {
@@ -6388,7 +6388,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-03-03T09:59:10+00:00"
+            "time": "2025-03-14T14:26:23+00:00"
         },
         {
             "name": "spatie/laravel-package-tools",

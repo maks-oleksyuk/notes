@@ -46,7 +46,7 @@ tasks:
     cmds:
       - task: artisan
         vars:
-          { CLI_ARGS: 'test -c {{.CONFIG_DIR}}/phpunit.xml --parallel --colors=always {{.CLI_ARGS}}' }
+          { CLI_ARGS: 'test -c {{.CONFIG_DIR}}/phpunit.xml --parallel {{.CLI_ARGS}} --colors=always' }
         silent: true
 
   pint:
@@ -150,7 +150,9 @@ tasks:
     label: 'Composer validation'
     desc: 'Validates composer.json file and checks platform requirements.'
     aliases:
+      - l:co
       - l:composer
+      - lint:co
     cmds:
       - task: composer
         vars: { CLI_ARGS: '-V' }
@@ -206,8 +208,6 @@ tasks:
       - l:format
       - l:prettier
       - lint:format
-      - prettier:l
-      - prettier:lint
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '-v' }
@@ -231,9 +231,9 @@ tasks:
     label: 'Composer fix'
     desc: 'Try to fix composer errors.'
     aliases:
+      - f:co
       - f:composer
-      - composer:f
-      - composer:fix
+      - fix:co
     cmds:
       - task: composer
         vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
@@ -243,8 +243,6 @@ tasks:
     desc: 'Fix php format issues.'
     aliases:
       - f:pint
-      - pint:f
-      - pint:fix
     cmds:
       - task: pint
         vars: { CLI_ARGS: '.' }
@@ -266,8 +264,6 @@ tasks:
       - f:format
       - f:prettier
       - fix:format
-      - format:fix
-      - prettier:fix
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '-wl .' }
@@ -289,6 +285,7 @@ tasks:
     label: 'Feature test'
     desc: 'Run feature test.'
     aliases:
+      - t:f
       - t:feature
       - qa:f
       - qa:feature
@@ -302,6 +299,7 @@ tasks:
     label: 'Unit test'
     desc: 'Run unit tests.'
     aliases:
+      - t:u
       - t:unit
       - qa:u
       - qa:unit
@@ -315,6 +313,7 @@ tasks:
     label: 'Mutate test'
     desc: 'Run mutate tests.'
     aliases:
+      - t:m
       - t:mutate
       - qa:m
       - qa:mutate
@@ -322,4 +321,4 @@ tasks:
       - task: pest
         vars: { CLI_ARGS: '--version' }
       - task: artisan:test
-        vars: { CLI_ARGS: '--mutate --covered-only {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '--mutate --min=100 --covered-only {{.CLI_ARGS}}' }

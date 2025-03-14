@@ -10,7 +10,7 @@
         "laravel/pulse": "^1.4",
         "olssonm/l5-very-basic-auth": "^7.2",
         "opcodesio/log-viewer": "^3.15",
-        "spatie/laravel-data": "^4.13"
+        "spatie/laravel-data": "^4.14"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.5",
