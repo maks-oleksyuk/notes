@@ -35,9 +35,9 @@ jobs:
   lint:
     name: '🪄 Lint | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     strategy:
+      fail-fast: false
       matrix:
         command:
           - {
@@ -87,7 +87,6 @@ jobs:
   test:
     name: '♻️ Test | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     services:
       postgres:
@@ -105,6 +104,7 @@ jobs:
           --health-retries 5
 
     strategy:
+      fail-fast: false
       matrix:
         command:
           - { name: '🧬 Feature', command: 'test:feature' }
@@ -119,7 +119,7 @@ jobs:
         uses: ./.github/actions/setup-testing
 
       - name: '${{ matrix.command.name }} tests'
-        run: task ${{ matrix.command.command }} -- --ci
+        run: task ${{ matrix.command.command }}
         env:
           DB_HOST: 127.0.0.1
           DB_DATABASE: testing

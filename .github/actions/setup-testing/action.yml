@@ -49,4 +49,4 @@ runs:
       run: |
         cp .env.example .env.testing
         php artisan key:generate --env=testing --ansi
-        php artisan app:setup
+        php artisan app:setup --env=testing --ansi

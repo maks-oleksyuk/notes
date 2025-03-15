@@ -7,5 +7,3 @@ parameters:
     - ../../app
     - ../../database
   tmpDir: ../../var/cache/phpstan
-  ignoreErrors:
-    - '#PHPDoc tag @mixin contains unknown class App\\Models#'

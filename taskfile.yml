@@ -46,7 +46,7 @@ tasks:
     cmds:
       - task: artisan
         vars:
-          { CLI_ARGS: 'test -c {{.CONFIG_DIR}}/phpunit.xml --parallel {{.CLI_ARGS}} --colors=always' }
+          { CLI_ARGS: 'test -c {{.CONFIG_DIR}}/phpunit.xml --parallel {{.CLI_ARGS}}' }
         silent: true
 
   pint:
@@ -90,6 +90,7 @@ tasks:
     desc: 'Runs `pest` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/pest
+      --configuration={{.CONFIG_DIR}}/phpunit.xml
       {{.CLI_ARGS}} --colors=always'
     silent: true
 
@@ -320,5 +321,5 @@ tasks:
     cmds:
       - task: pest
         vars: { CLI_ARGS: '--version' }
-      - task: artisan:test
-        vars: { CLI_ARGS: '--mutate --min=100 --covered-only {{.CLI_ARGS}}' }
+      - task: pest
+        vars: { CLI_ARGS: '--mutate --covered-only --parallel --min=100 {{.CLI_ARGS}}' }
