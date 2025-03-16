@@ -42,7 +42,8 @@ tasks:
   artisan:test:
     label: 'artisan test'
     desc: 'Runs `artisan test` command.'
-    internal: true
+    aliases:
+      - a:t
     cmds:
       - task: artisan
         vars:
