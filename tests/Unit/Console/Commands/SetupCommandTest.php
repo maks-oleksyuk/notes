@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-// use App\Console\Commands\Setup;
+// use App\Console\Commands\SetupCommand;
 // todo: Add mutate tests.
-// covers(Setup::class);
+// covers(SetupCommand::class);
 
 describe('Setup Command', function (): void {
     it('executes setup command in `:dataset` environment', function (string $env): void {

@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(name: 'app:setup', description: 'Setup application')]
-final class Setup extends Command
+final class SetupCommand extends Command
 {
     /**
      * @var list<string>
