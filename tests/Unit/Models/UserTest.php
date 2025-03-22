@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Filament\Panel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -62,7 +63,7 @@ describe('User Model', function (): void {
 
     it('casts email_verified_at as datetime', function (): void {
         $user = User::factory()->create(['email_verified_at' => now()]);
-        expect($user->email_verified_at)->toBeInstanceOf(DateTime::class);
+        expect($user->email_verified_at)->toBeInstanceOf(CarbonImmutable::class);
     });
 
     it('grants Filament access', function (): void {
