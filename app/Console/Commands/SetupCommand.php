@@ -28,9 +28,7 @@ final class SetupCommand extends Command
 
     public function handle(): int
     {
-        $env = $this->hasOption('env')
-            ? $this->option('env')
-            : $this->laravel->environment();
+        $env = $this->option('env') ?: $this->laravel->environment();
 
         $this->components->info('Setup application');
 

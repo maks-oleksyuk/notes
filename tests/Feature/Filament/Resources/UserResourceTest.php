@@ -53,11 +53,11 @@ describe('Filament | User Resource', function (): void {
 
     it('has correct filters configuration', function (): void {
         livewire(ListUsers::class)
-            ->assertTableFilterExists('name', fn ($filter): bool => $filter->getFormSchema()[0]->getLabel() === 'Name' &&
-                $filter->getFormSchema()[0]->getPlaceholder() === 'Enter name to filter'
+            ->assertTableFilterExists('name', fn ($filter): bool => $filter->getFormSchema()[0]->getLabel() === 'Name'
+                && $filter->getFormSchema()[0]->getPlaceholder() === 'Enter name to filter'
             )
-            ->assertTableFilterExists('email', fn ($filter): bool => $filter->getFormSchema()[0]->getLabel() === 'Email' &&
-                $filter->getFormSchema()[0]->getPlaceholder() === 'Enter email to filter'
+            ->assertTableFilterExists('email', fn ($filter): bool => $filter->getFormSchema()[0]->getLabel() === 'Email'
+                && $filter->getFormSchema()[0]->getPlaceholder() === 'Enter email to filter'
             );
     });
 
