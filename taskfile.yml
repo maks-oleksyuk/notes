@@ -105,6 +105,8 @@ tasks:
       - cr
     cmds:
       - task: artisan
+        vars: { CLI_ARGS: 'clear' }
+      - task: artisan
         vars: { CLI_ARGS: 'cache:clear' }
       - task: artisan
         vars: { CLI_ARGS: 'config:clear' }
