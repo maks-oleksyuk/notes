@@ -7,19 +7,24 @@ use Barryvdh\LaravelIdeHelper\Console\EloquentCommand as LaravelIdeHelperEloquen
 use Barryvdh\LaravelIdeHelper\Console\GeneratorCommand as LaravelIdeHelperGeneratorCommand;
 use Barryvdh\LaravelIdeHelper\Console\MetaCommand as LaravelIdeHelperMetaCommand;
 use Barryvdh\LaravelIdeHelper\Console\ModelsCommand as LaravelIdeHelperModelsCommand;
+use Barryvdh\LaravelIdeHelper\Generator as LaravelIdeHelperGenerator;
 use Filament\Support\Commands\UpgradeCommand as FilamentUpgradeCommand;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Foundation\Console\VendorPublishCommand;
 use Mockery as m;
+use phpmock\phpunit\PHPMock;
 use Symfony\Component\Console\Application as ConsoleApplication;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 covers(SetupCommand::class);
 
+uses(PHPMock::class);
+
 beforeEach(function (): void {
-    $this->vendorTag = ['public', 'laravel-assets', 'log-viewer-assets'];
+    $this->vendorTags = ['public', 'laravel-assets', 'log-viewer-assets'];
 
     $this->setupCommand = new SetupCommand;
     $this->setupCommand->getDefinition()->addOption(
@@ -47,83 +52,74 @@ beforeEach(function (): void {
     $this->setupCommand->setApplication($this->console);
 });
 
+dataset('envs', [
+    'production' => 'production',
+    'staging' => 'staging',
+    'development' => 'development',
+    'testing' => 'testing',
+    'local' => 'local',
+]);
+
+dataset('class existence', [
+    true,
+    false,
+]);
+
 describe('Setup Command', function (): void {
-    it('executes setup command in `:dataset` environment', function (string $env): void {
-        $this->filamentUpgradeMock->shouldReceive('run')->once()->andReturn(0);
+    it('executes setup command in `:dataset` environment', function (string $env, bool $classExists): void {
+        $this->getFunctionMock('App\Console\Commands', 'class_exists')
+            ->expects($this->any())
+            ->with(LaravelIdeHelperGenerator::class)
+            ->willReturn($classExists);
 
-        foreach ($this->vendorTag as $tag) {
+        $this->filamentUpgradeMock->shouldReceive('run')->once()->andReturn(Command::SUCCESS);
+
+        foreach ($this->vendorTags as $tag) {
             $this->vendorPublishMock->shouldReceive('run')
                 ->once()
                 ->with(
                     m::on(fn ($input): bool => str_contains((string) $input, '--tag='.$tag) && str_contains((string) $input, '--force=1')),
                     m::any()
                 )
-                ->andReturn(0);
+                ->andReturn(Command::SUCCESS);
         }
 
-        $this->ideHelperMetaMock->shouldNotHaveReceived('run');
-        $this->ideHelperGeneratorMock->shouldNotHaveReceived('run');
-        $this->ideHelperModelsMock->shouldNotHaveReceived('run');
-        $this->ideHelperEloquentMock->shouldNotHaveReceived('run');
-
-        $this->artisan(SetupCommand::class, ['--env' => $env])
+        $artisan = $this->artisan(SetupCommand::class, ['--env' => $env])
+            ->assertSuccessful()
             ->expectsOutputToContain('INFO  Setup application.')
             ->expectsOutputToContain('Filament upgrade')
             ->expectsOutputToContain('Publishing assets for tag: [public]')
             ->expectsOutputToContain('Publishing assets for tag: [laravel-assets]')
-            ->expectsOutputToContain('Publishing assets for tag: [log-viewer-assets]')
-            ->doesntExpectOutput('Generating IDE helper files')
-            ->assertSuccessful();
-    })->with([
-        'production' => 'production',
-        'staging' => 'staging',
-        'development' => 'development',
-        'testing' => 'testing',
-    ]);
+            ->expectsOutputToContain('Publishing assets for tag: [log-viewer-assets]');
 
-    it('executes setup command in `"local"` environment', function (): void {
-        $this->filamentUpgradeMock->shouldReceive('run')->once()->andReturn(0);
-
-        foreach ($this->vendorTag as $tag) {
-            $this->vendorPublishMock->shouldReceive('run')
+        if ($env === 'local' && $classExists) {
+            $this->ideHelperMetaMock->shouldReceive('run')->once()->andReturn(Command::SUCCESS);
+            $this->ideHelperGeneratorMock->shouldReceive('run')->once()->andReturn(Command::SUCCESS);
+            $this->ideHelperModelsMock->shouldReceive('run')
                 ->once()
-                ->with(
-                    m::on(fn ($input): bool => str_contains((string) $input, '--tag='.$tag) && str_contains((string) $input, '--force=1')),
-                    m::any()
-                )
-                ->andReturn(0);
+                ->with(m::on(fn ($input): bool => str_contains((string) $input, '--write-mixin=1')), m::any())
+                ->andReturn(Command::SUCCESS);
+            $this->ideHelperEloquentMock->shouldReceive('run')->once()->andReturn(Command::SUCCESS);
+
+            $artisan->expectsOutputToContain('Generating IDE helper files');
+        } else {
+            $this->ideHelperMetaMock->shouldNotReceive('run');
+            $this->ideHelperGeneratorMock->shouldNotReceive('run');
+            $this->ideHelperModelsMock->shouldNotReceive('run');
+            $this->ideHelperEloquentMock->shouldNotReceive('run');
+
+            $artisan->doesntExpectOutput('Generating IDE helper files');
         }
+    })->with('envs')->with('class existence');
 
-        $this->ideHelperMetaMock->shouldReceive('run')->once()->andReturn(0);
-        $this->ideHelperGeneratorMock->shouldReceive('run')->once()->andReturn(0);
-        $this->ideHelperModelsMock->shouldReceive('run')
-            ->once()
-            ->with(m::on(fn ($input): bool => str_contains((string) $input, '--write-mixin=1')), m::any())
-            ->andReturn(0);
-        $this->ideHelperEloquentMock->shouldReceive('run')->once()->andReturn(0);
-
-        $this->artisan(SetupCommand::class, ['--env' => 'local'])
-            ->expectsOutputToContain('INFO  Setup application.')
-            ->expectsOutputToContain('Filament upgrade')
-            ->expectsOutputToContain('Publishing assets for tag: [public]')
-            ->expectsOutputToContain('Publishing assets for tag: [laravel-assets]')
-            ->expectsOutputToContain('Publishing assets for tag: [log-viewer-assets]')
-            ->expectsOutputToContain('Generating IDE helper files')
-            ->assertSuccessful();
-    });
-
-    it('calls newLine method exactly once in `:dataset` environment', function (string $env): void {
-        $input = new ArrayInput(['--env' => $env]);
+    it('calls newLine method exactly once', function (string $env): void {
+        $input = new ArrayInput(['--env' => $env], $this->setupCommand->getDefinition());
         $bufferedOutput = new BufferedOutput;
         $outputStyle = new OutputStyle($input, $bufferedOutput);
         $outputSpy = m::spy($outputStyle);
         $this->setupCommand->run($input, $outputSpy);
         $outputSpy->shouldHaveReceived('newLine')->once();
-    })->with([
-        'production' => 'production',
-        'staging' => 'staging',
-        'development' => 'development',
-        'testing' => 'testing',
-        'local' => 'local',
-    ]);
+    })->with('envs');
 });
+
+afterEach(fn () => m::close());
