@@ -28,7 +28,6 @@ return RectorConfig::configure()
         codeQuality: true,
         codingStyle: true,
         typeDeclarations: true,
-        // naming: true, // todo: try it in future.
         instanceOf: true,
         earlyReturn: true,
         strictBooleans: true,

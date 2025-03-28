@@ -66,7 +66,7 @@ dataset('class existence', [
 ]);
 
 describe('Setup Command', function (): void {
-    it('executes setup command in `:dataset` environment', function (string $env, bool $classExists): void {
+    it('executes setup command', function (string $env, bool $classExists): void {
         $this->getFunctionMock('App\Console\Commands', 'class_exists')
             ->expects($this->any())
             ->with(LaravelIdeHelperGenerator::class)
@@ -87,10 +87,11 @@ describe('Setup Command', function (): void {
         $artisan = $this->artisan(SetupCommand::class, ['--env' => $env])
             ->assertSuccessful()
             ->expectsOutputToContain('INFO  Setup application.')
-            ->expectsOutputToContain('Filament upgrade')
-            ->expectsOutputToContain('Publishing assets for tag: [public]')
-            ->expectsOutputToContain('Publishing assets for tag: [laravel-assets]')
-            ->expectsOutputToContain('Publishing assets for tag: [log-viewer-assets]');
+            ->expectsOutputToContain('Filament upgrade');
+
+        foreach ($this->vendorTags as $tag) {
+            $artisan->expectsOutputToContain(sprintf('Publishing assets for tag: [%s]', $tag));
+        }
 
         if ($env === 'local' && $classExists) {
             $this->ideHelperMetaMock->shouldReceive('run')->once()->andReturn(Command::SUCCESS);
@@ -114,9 +115,7 @@ describe('Setup Command', function (): void {
 
     it('calls newLine method exactly once', function (string $env): void {
         $input = new ArrayInput(['--env' => $env], $this->setupCommand->getDefinition());
-        $bufferedOutput = new BufferedOutput;
-        $outputStyle = new OutputStyle($input, $bufferedOutput);
-        $outputSpy = m::spy($outputStyle);
+        $outputSpy = m::spy(new OutputStyle($input, new BufferedOutput));
         $this->setupCommand->run($input, $outputSpy);
         $outputSpy->shouldHaveReceived('newLine')->once();
     })->with('envs');
