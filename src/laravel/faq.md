@@ -3,7 +3,7 @@ title: FAQ
 description: Answers to popular questions about Laravel
 ---
 
-# FAQ
+# ❓ FAQ
 
 [[toc]]
 

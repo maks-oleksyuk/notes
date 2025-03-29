@@ -1,6 +1,7 @@
 .vp-doc {
   p {
     text-align: justify;
+    text-wrap-style: pretty;
   }
 
   table {

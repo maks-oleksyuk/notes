@@ -2,6 +2,10 @@ import { defineConfig } from 'vitepress';
 import { generateSidebar } from 'vitepress-sidebar';
 import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs';
 
+const devServerUrl = process.env.DDEV_PRIMARY_URL
+  ? `${process.env.DDEV_PRIMARY_URL.replace(/:\d+$/, '')}:5173`
+  : process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173';
+
 export default defineConfig({
   title: 'Notes',
   description: 'Just my notes and code snippets',
@@ -71,6 +75,13 @@ export default defineConfig({
     envDir: './../',
     ssr: {
       noExternal: ['@nolebase/vitepress-plugin-enhanced-readabilities'],
+    },
+    server: {
+      https: false,
+      host: '0.0.0.0',
+      port: 5173,
+      origin: devServerUrl,
+      cors: true,
     },
   },
 });

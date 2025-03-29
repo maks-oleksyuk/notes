@@ -9,13 +9,22 @@ node_modules
 # Ignore final build files.
 dist
 
+# Ignore .env files as they are personal.
+.env*
+!.env.example
+
 # Ignore temporary files and cache directories.
+var
 cache
 .temp
 
 # Ignore development tool files.
-.idea
 .ddev
+.idea
 
-# Ignore .env files as they are personal.
-.env
+# Ignore local folder and archives.
+local
+*.gz
+
+# Ignore OS files.
+.DS_Store
