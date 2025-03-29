@@ -6,7 +6,7 @@
     "require": {
         "php": "^8.4",
         "filament/filament": "^3.3",
-        "laravel/framework": "^12.3",
+        "laravel/framework": "^12.4",
         "laravel/pulse": "^1.4",
         "olssonm/l5-very-basic-auth": "^7.2",
         "opcodesio/log-viewer": "^3.15",

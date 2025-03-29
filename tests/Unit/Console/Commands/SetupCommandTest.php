@@ -23,13 +23,28 @@ covers(SetupCommand::class);
 
 uses(PHPMock::class);
 
-beforeEach(function (): void {
-    $this->vendorTags = ['public', 'laravel-assets', 'log-viewer-assets'];
+dataset('envs', [
+    'production',
+    'staging',
+    'development',
+    'testing',
+    'local',
+]);
 
+dataset('class existence', [
+    true,
+    false,
+]);
+
+beforeEach(function (): void {
     $this->setupCommand = new SetupCommand;
     $this->setupCommand->getDefinition()->addOption(
         new InputOption('env', null, InputOption::VALUE_OPTIONAL)
     );
+
+    $this->vendorTags = new ReflectionClass($this->setupCommand)
+        ->getProperty('vendorTags')
+        ->getValue($this->setupCommand);
 
     $this->filamentUpgradeMock = $this->mock(FilamentUpgradeCommand::class)->shouldIgnoreMissing();
     $this->vendorPublishMock = $this->mock(VendorPublishCommand::class)->shouldIgnoreMissing();
@@ -51,19 +66,6 @@ beforeEach(function (): void {
     $this->setupCommand->setLaravel($this->app);
     $this->setupCommand->setApplication($this->console);
 });
-
-dataset('envs', [
-    'production' => 'production',
-    'staging' => 'staging',
-    'development' => 'development',
-    'testing' => 'testing',
-    'local' => 'local',
-]);
-
-dataset('class existence', [
-    true,
-    false,
-]);
 
 describe('Setup Command', function (): void {
     it('executes setup command', function (string $env, bool $classExists): void {
