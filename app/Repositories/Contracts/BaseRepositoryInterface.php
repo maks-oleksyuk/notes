@@ -26,13 +26,13 @@ interface BaseRepositoryInterface
     public function find(int|string $id): ?Model;
 
     /**
-     * @return Collection<int, TModel>|LengthAwarePaginator<TModel>
+     * @return Collection<int, TModel>|LengthAwarePaginator<int, TModel>
      */
     public function findAll(int $perPage = -1, int $page = 1): Collection|LengthAwarePaginator;
 
     /**
      * @param  array<int|string, string>  $order
-     * @return Collection<int, TModel>|LengthAwarePaginator<TModel>
+     * @return Collection<int, TModel>|LengthAwarePaginator<int, TModel>
      */
     public function findBy(
         FiltersData $filters,

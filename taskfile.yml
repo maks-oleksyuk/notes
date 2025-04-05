@@ -105,15 +105,7 @@ tasks:
       - cr
     cmds:
       - task: artisan
-        vars: { CLI_ARGS: 'clear' }
-      - task: artisan
-        vars: { CLI_ARGS: 'cache:clear' }
-      - task: artisan
-        vars: { CLI_ARGS: 'config:clear' }
-      - task: artisan
-        vars: { CLI_ARGS: 'route:cache' }
-      - task: artisan
-        vars: { CLI_ARGS: 'view:cache' }
+        vars: { CLI_ARGS: 'optimize:clear' }
 
   db:fresh:
     label: 'Refresh database'

@@ -28,6 +28,10 @@ pest()->extend(Tests\TestCase::class)->in('Feature', 'Unit');
 
 expect()->extend('toBeOne', fn () => $this->toBe(1));
 
+arch()->preset()->security();
+arch()->preset()->laravel();
+arch()->preset()->php();
+
 /*
 |--------------------------------------------------------------------------
 | Functions

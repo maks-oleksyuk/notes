@@ -25,7 +25,7 @@ final class AppServiceProvider extends ServiceProvider
         ], 'public');
     }
 
-    protected function configureCommands(): void
+    private function configureCommands(): void
     {
         DB::prohibitDestructiveCommands($this->app->isProduction());
     }
@@ -35,15 +35,12 @@ final class AppServiceProvider extends ServiceProvider
         Date::use(CarbonImmutable::class);
     }
 
-    protected function configureModels(): void
+    private function configureModels(): void
     {
         Model::shouldBeStrict();
-        Model::preventLazyLoading();
-        Model::preventAccessingMissingAttributes();
-        Model::preventSilentlyDiscardingAttributes();
     }
 
-    protected function configureUrls(): void
+    private function configureUrls(): void
     {
         URL::forceHttps($this->app->isProduction());
     }
