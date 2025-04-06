@@ -4,11 +4,12 @@ docroot: public
 database:
   type: postgres
   version: '17'
-php_version: '8.3'
+php_version: '8.4'
 host_db_port: '14674'
 nodejs_version: '22'
 webserver_type: nginx-fpm
 xdebug_enabled: false
+corepack_enable: true
 hooks:
   pre-start:
     # Add pnpm and task to ddev if not already installed.

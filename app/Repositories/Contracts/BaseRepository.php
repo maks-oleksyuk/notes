@@ -24,6 +24,7 @@ abstract readonly class BaseRepository implements BaseRepositoryInterface
 
     public function query(): Builder
     {
+        /** @var Builder<TModel> */
         return $this->model->newQuery();
     }
 

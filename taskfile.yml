@@ -42,11 +42,12 @@ tasks:
   artisan:test:
     label: 'artisan test'
     desc: 'Runs `artisan test` command.'
-    internal: true
+    aliases:
+      - a:t
     cmds:
       - task: artisan
         vars:
-          { CLI_ARGS: 'test --configuration={{.CONFIG_DIR}}/phpunit.xml --parallel --processes=4 {{.CLI_ARGS}}' }
+          { CLI_ARGS: 'test -c {{.CONFIG_DIR}}/phpunit.xml --parallel {{.CLI_ARGS}}' }
         silent: true
 
   pint:
@@ -90,6 +91,7 @@ tasks:
     desc: 'Runs `pest` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/pest
+      --configuration={{.CONFIG_DIR}}/phpunit.xml
       {{.CLI_ARGS}} --colors=always'
     silent: true
 
@@ -103,13 +105,7 @@ tasks:
       - cr
     cmds:
       - task: artisan
-        vars: { CLI_ARGS: 'cache:clear' }
-      - task: artisan
-        vars: { CLI_ARGS: 'config:clear' }
-      - task: artisan
-        vars: { CLI_ARGS: 'route:cache' }
-      - task: artisan
-        vars: { CLI_ARGS: 'view:cache' }
+        vars: { CLI_ARGS: 'optimize:clear' }
 
   db:fresh:
     label: 'Refresh database'
@@ -150,7 +146,9 @@ tasks:
     label: 'Composer validation'
     desc: 'Validates composer.json file and checks platform requirements.'
     aliases:
+      - l:co
       - l:composer
+      - lint:co
     cmds:
       - task: composer
         vars: { CLI_ARGS: '-V' }
@@ -206,8 +204,6 @@ tasks:
       - l:format
       - l:prettier
       - lint:format
-      - prettier:l
-      - prettier:lint
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '-v' }
@@ -231,9 +227,9 @@ tasks:
     label: 'Composer fix'
     desc: 'Try to fix composer errors.'
     aliases:
+      - f:co
       - f:composer
-      - composer:f
-      - composer:fix
+      - fix:co
     cmds:
       - task: composer
         vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
@@ -243,8 +239,6 @@ tasks:
     desc: 'Fix php format issues.'
     aliases:
       - f:pint
-      - pint:f
-      - pint:fix
     cmds:
       - task: pint
         vars: { CLI_ARGS: '.' }
@@ -266,8 +260,6 @@ tasks:
       - f:format
       - f:prettier
       - fix:format
-      - format:fix
-      - prettier:fix
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '-wl .' }
@@ -289,6 +281,7 @@ tasks:
     label: 'Feature test'
     desc: 'Run feature test.'
     aliases:
+      - t:f
       - t:feature
       - qa:f
       - qa:feature
@@ -302,6 +295,7 @@ tasks:
     label: 'Unit test'
     desc: 'Run unit tests.'
     aliases:
+      - t:u
       - t:unit
       - qa:u
       - qa:unit
@@ -315,11 +309,12 @@ tasks:
     label: 'Mutate test'
     desc: 'Run mutate tests.'
     aliases:
+      - t:m
       - t:mutate
       - qa:m
       - qa:mutate
     cmds:
       - task: pest
         vars: { CLI_ARGS: '--version' }
-      - task: artisan:test
-        vars: { CLI_ARGS: '--mutate --covered-only {{.CLI_ARGS}}' }
+      - task: pest
+        vars: { CLI_ARGS: '--mutate --covered-only --parallel --min=100 {{.CLI_ARGS}}' }

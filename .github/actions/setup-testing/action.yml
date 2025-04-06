@@ -5,7 +5,7 @@ inputs:
   php:
     description: 'PHP version to install'
     required: true
-    default: '8.3'
+    default: '8.4'
 
 runs:
   using: composite
@@ -42,10 +42,11 @@ runs:
 
     - name: '📦 Install composer dependencies'
       shell: bash
-      run: composer i --quiet --no-progress --no-scripts --ansi;
+      run: composer i --no-progress --no-scripts -qn --ansi;
 
     - name: '🧰 Set up Laravel'
       shell: bash
       run: |
         cp .env.example .env.testing
         php artisan key:generate --env=testing --ansi
+        php artisan app:setup --env=testing --ansi

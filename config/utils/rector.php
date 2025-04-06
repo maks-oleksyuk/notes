@@ -10,7 +10,7 @@ use RectorLaravel\Rector\FuncCall\ArgumentFuncCallToMethodCallRector;
 use RectorLaravel\Set\LaravelLevelSetList;
 use RectorLaravel\Set\LaravelSetList;
 
-if (! class_exists(RectorConfig::class)) {
+if (env('APP_ENV') === 'testing' || ! class_exists(RectorConfig::class)) {
     return;
 }
 
@@ -18,11 +18,24 @@ return RectorConfig::configure()
     ->withPaths([
         __DIR__.'/../../app',
         __DIR__.'/../../database',
+        __DIR__.'/../../routes',
+        __DIR__.'/../../tests',
     ])
-    ->withPhpVersion(PhpVersion::PHP_83)
+    ->withPhpVersion(PhpVersion::PHP_84)
+    ->withPhpSets(php84: true)
+    ->withPreparedSets(
+        deadCode: true,
+        codeQuality: true,
+        codingStyle: true,
+        typeDeclarations: true,
+        instanceOf: true,
+        earlyReturn: true,
+        strictBooleans: true,
+        carbon: true,
+    )
     ->withSets([
-        LaravelLevelSetList::UP_TO_LARAVEL_110,
-        LaravelSetList::LARAVEL_110,
+        LaravelLevelSetList::UP_TO_LARAVEL_120,
+        LaravelSetList::LARAVEL_120,
         LaravelSetList::LARAVEL_ARRAYACCESS_TO_METHOD_CALL,
         LaravelSetList::LARAVEL_ARRAY_STR_FUNCTION_TO_STATIC_CALL,
         LaravelSetList::LARAVEL_CODE_QUALITY,

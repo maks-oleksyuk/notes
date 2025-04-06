@@ -5,7 +5,7 @@ inputs:
   php:
     description: 'PHP version to install'
     required: true
-    default: '8.3'
+    default: '8.4'
 
   node:
     description: 'Node.js version to install'
@@ -35,6 +35,7 @@ runs:
       with:
         php-version: ${{ inputs.php }}
         coverage: none
+        tools: cs2pr
 
     - name: '🗃 Get composer cache directory'
       if: ${{ inputs.use-php == 'true' }}
@@ -61,7 +62,7 @@ runs:
     - name: '📦 Install composer dependencies'
       if: ${{ inputs.use-php == 'true' }}
       shell: bash
-      run: composer i --quiet --no-progress --no-scripts --ansi;
+      run: composer i --no-progress --no-scripts -qn --ansi;
 
     - name: '🟧 Setup pnpm'
       if: ${{ inputs.use-node == 'true' }}

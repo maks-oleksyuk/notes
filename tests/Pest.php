@@ -13,7 +13,7 @@ declare(strict_types=1);
 |
 */
 
-pest()->extend(Tests\TestCase::class)->in('Feature');
+pest()->extend(Tests\TestCase::class)->in('Feature', 'Unit');
 
 /*
 |--------------------------------------------------------------------------
@@ -26,9 +26,11 @@ pest()->extend(Tests\TestCase::class)->in('Feature');
 |
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
+expect()->extend('toBeOne', fn () => $this->toBe(1));
+
+arch()->preset()->security();
+arch()->preset()->laravel();
+arch()->preset()->php();
 
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +43,4 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
-{
-    // ..
-}
+function something(): void {}

@@ -35,9 +35,9 @@ jobs:
   lint:
     name: '🪄 Lint | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     strategy:
+      fail-fast: false
       matrix:
         command:
           - {
@@ -48,7 +48,7 @@ jobs:
             }
           - {
               name: '🧽 Laravel Pint',
-              command: 'lint:pint',
+              command: 'lint:pint -- --format=checkstyle | tail -n +2 | cs2pr',
               php: true,
               node: false,
             }
@@ -66,7 +66,7 @@ jobs:
             }
           - {
               name: '🏠 Rector',
-              command: 'lint:rector -- --no-progress-bar',
+              command: 'lint:rector -- --no-progress-bar --output-format=github',
               php: true,
               node: false,
             }
@@ -87,7 +87,6 @@ jobs:
   test:
     name: '♻️ Test | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     services:
       postgres:
@@ -105,6 +104,7 @@ jobs:
           --health-retries 5
 
     strategy:
+      fail-fast: false
       matrix:
         command:
           - { name: '🧬 Feature', command: 'test:feature' }
@@ -128,6 +128,7 @@ jobs:
 
       - name: '☂️ Upload results to Codecov'
         uses: codecov/codecov-action@v5
+        if: ${{ matrix.command.command != 'test:mutate' }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: maks-oleksyuk/notes
@@ -136,6 +137,7 @@ jobs:
 
       - name: '☂️ Upload test results to Codecov'
         uses: codecov/test-results-action@v1
+        if: ${{ matrix.command.command != 'test:mutate' }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ matrix.command.name }}
