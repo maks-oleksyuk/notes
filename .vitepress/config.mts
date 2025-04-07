@@ -73,8 +73,18 @@ export default defineConfig({
   },
   vite: {
     envDir: './../',
+    optimizeDeps: {
+      exclude: [
+        '@nolebase/vitepress-plugin-enhanced-readabilities/client',
+        'vitepress',
+        '@nolebase/ui',
+      ],
+    },
     ssr: {
-      noExternal: ['@nolebase/vitepress-plugin-enhanced-readabilities'],
+      noExternal: [
+        '@nolebase/vitepress-plugin-enhanced-readabilities',
+        '@nolebase/ui',
+      ],
     },
     server: {
       https: false,

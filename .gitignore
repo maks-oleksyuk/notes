@@ -3,9 +3,6 @@ web
 vendor
 node_modules
 
-# Ignore directories used by Drupal.
-/app
-
 # Ignore final build files.
 dist
 
@@ -25,6 +22,11 @@ cache
 # Ignore local folder and archives.
 local
 *.gz
+
+# Ignore other projects directories.
+/app
+/public
+/storage
 
 # Ignore OS files.
 .DS_Store

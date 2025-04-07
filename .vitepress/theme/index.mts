@@ -1,9 +1,16 @@
 import { h } from 'vue';
+import type { Theme } from 'vitepress';
 import DefaultTheme from 'vitepress/theme';
 import { enhanceAppWithTabs } from 'vitepress-plugin-tabs/client';
 import vitepressBackToTop from 'vitepress-plugin-back-to-top';
 import googleAnalytics from 'vitepress-plugin-google-analytics';
-import { NolebaseEnhancedReadabilitiesMenu } from '@nolebase/vitepress-plugin-enhanced-readabilities/client';
+
+import {
+  InjectionKey as NolebaseEnhancedReadabilitiesInjectionKey,
+  LayoutMode as NolebaseEnhancedReadabilitiesLayoutMode,
+  NolebaseEnhancedReadabilitiesMenu,
+  Options as NolebaseEnhancedReadabilitiesOptions,
+} from '@nolebase/vitepress-plugin-enhanced-readabilities/client';
 
 import './styles/vars.css';
 import './styles/base.css';
@@ -19,8 +26,18 @@ export default {
     });
   },
   enhanceApp({ app }) {
+    app.provide(NolebaseEnhancedReadabilitiesInjectionKey, {
+      layoutSwitch: {
+        defaultMode:
+          NolebaseEnhancedReadabilitiesLayoutMode.SidebarWidthAdjustableOnly,
+      },
+      spotlight: {
+        disabled: true,
+      },
+    } as NolebaseEnhancedReadabilitiesOptions);
+
     enhanceAppWithTabs(app);
     vitepressBackToTop({ threshold: 300 });
     googleAnalytics({ id: import.meta.env.VITE_GTAG });
   },
-};
+} satisfies Theme;

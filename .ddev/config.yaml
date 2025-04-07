@@ -4,15 +4,15 @@ webserver_type: generic
 nodejs_version: '22'
 corepack_enable: true
 omit_containers: [db]
-web_extra_daemons:
-  - name: 'vitepress'
-    command: 'pnpm dev'
-    directory: /var/www/html
 web_extra_exposed_ports:
   - name: vitepress
     container_port: 5173
     http_port: 80
     https_port: 443
+  - name: vitepress-preview
+    container_port: 4173
+    http_port: 4172
+    https_port: 4173
 hooks:
   pre-start:
     - exec-host: |
