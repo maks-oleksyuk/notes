@@ -21,7 +21,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureUrls();
 
         $this->publishes([
-            __DIR__.'/../../resources/icons/favicon.ico' => public_path('favicon.ico'),
+            $this->app->resourcePath('icons/favicon.ico') => $this->app->publicPath('favicon.ico'),
         ], 'public');
     }
 

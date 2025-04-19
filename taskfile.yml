@@ -145,8 +145,8 @@ tasks:
       - defer: { task: lint:branch }
 
   lint:branch:
-    label: 'Lint branch naming'
-    desc: 'Git branch name validator.'
+    label: 'Lint git branch name'
+    desc: 'Validates the current git branch name.'
     aliases:
       - l:b
       - lint:b
