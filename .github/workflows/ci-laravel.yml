@@ -107,9 +107,9 @@ jobs:
       fail-fast: false
       matrix:
         command:
-          - { name: '🧬 Feature', command: 'test:feature' }
-          - { name: '🔬 Unit',    command: 'test:unit' }
-          - { name: '🦠 Mutate',  command: 'test:mutate' }
+          - { name: '🧬 Feature', command: 'test:feature -- --ci' }
+          - { name: '🔬 Unit',    command: 'test:unit -- --ci' }
+          - { name: '🦠 Mutate',  command: 'test:mutate -- --ci' }
 
     steps:
       - name: '🛎 Checkout'

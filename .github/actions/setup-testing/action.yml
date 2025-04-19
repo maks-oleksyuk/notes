@@ -31,14 +31,20 @@ runs:
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
         key: "${{ runner.os }}-${{ github.ref_name }}-composer-${{ hashFiles('**/composer.lock') }}"
-        restore-keys: ${{ runner.os }}-${{ github.ref_name }}-composer-
+        restore-keys: |
+          ${{ runner.os }}-${{ github.head_ref || github.ref_name }}-composer-
+          ${{ runner.os }}-${{ github.base_ref }}-composer-
+          ${{ runner.os }}-${{ github.event.repository.default_branch }}-composer-
 
     - name: '💽 Cache var directory'
       uses: actions/cache@v4
       with:
         path: var
         key: "${{ runner.os }}-${{ github.ref_name }}-var"
-        restore-keys: ${{ runner.os }}-${{ github.ref_name }}-var
+        restore-keys: |
+          ${{ runner.os }}-${{ github.head_ref || github.ref_name }}-var
+          ${{ runner.os }}-${{ github.base_ref }}-var
+          ${{ runner.os }}-${{ github.event.repository.default_branch }}-var
 
     - name: '📦 Install composer dependencies'
       shell: bash
