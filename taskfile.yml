@@ -10,7 +10,6 @@ vars:
   CONFIG_DIR: '{{.TASKFILE_DIR}}/config/utils'
   NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
   COMPOSER_BIN_DIR: '{{.TASKFILE_DIR}}/vendor/bin'
-  DB_SCHEMA_PATH: 'database/schema/pgsql-schema.sql'
 
 tasks:
   default:
@@ -22,21 +21,22 @@ tasks:
   composer:
     label: 'Composer'
     desc: 'Runs `composer` command.'
-    internal: true
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}} --ansi'
+    internal: true
     silent: true
 
   pnpm:
     label: 'pnpm'
     desc: 'Runs `pnpm` command.'
-    internal: true
     cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
+    internal: true
+    silent: true
 
   artisan:
     label: 'artisan'
     desc: 'Runs `artisan` command.'
-    internal: true
     cmd: '{{.PHP_BIN}} artisan {{.CLI_ARGS}} --ansi'
+    internal: true
     silent: true
 
   artisan:test:
@@ -55,7 +55,7 @@ tasks:
     desc: 'Runs `pint` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/pint
-      --cache-file=var/cache/pint/pint.cache --config={{.CONFIG_DIR}}/pint.json
+      --config={{.CONFIG_DIR}}/pint.json
       {{.CLI_ARGS}} --ansi'
     silent: true
 
@@ -117,7 +117,7 @@ tasks:
       - db:refresh
     cmds:
       - task: artisan
-        vars: { CLI_ARGS: 'migrate:fresh --schema-path={{.DB_SCHEMA_PATH}} --seed --force' }
+        vars: { CLI_ARGS: 'migrate:fresh --seed --force' }
 
   db:schema:dump:
     label: 'Dum database schema'
@@ -126,7 +126,7 @@ tasks:
       - db:s:d
     cmds:
       - task: artisan
-        vars: { CLI_ARGS: 'schema:dump --path={{.DB_SCHEMA_PATH}} --prune' }
+        vars: { CLI_ARGS: 'schema:dump --prune' }
 
   # Linters:
 
@@ -141,6 +141,33 @@ tasks:
       - defer: { task: lint:phpstan }
       - defer: { task: lint:pint }
       - defer: { task: lint:composer }
+      - defer: { task: lint:commit }
+      - defer: { task: lint:branch }
+
+  lint:branch:
+    label: 'Lint git branch name'
+    desc: 'Validates the current git branch name.'
+    aliases:
+      - l:b
+      - lint:b
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'validate-branch-name -v' }
+      - task: pnpm
+        vars: { CLI_ARGS: 'validate-branch-name' }
+
+  lint:commit:
+    label: 'Lint last git commits'
+    desc: 'Run commit message validation using commitlint.'
+    aliases:
+      - l:cmt
+      - l:commit
+      - lint:cmt
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'commitlint -v' }
+      - task: pnpm
+        vars: { CLI_ARGS: 'commitlint --from=HEAD~1 --to=HEAD' }
 
   lint:composer:
     label: 'Composer validation'
@@ -161,7 +188,9 @@ tasks:
     label: 'Laravel Pint validation'
     desc: 'Validate PHP for code style.'
     aliases:
+      - l:p
       - l:pint
+      - lint:p
     cmds:
       - task: pint
         vars: { CLI_ARGS: '-V' }
@@ -172,12 +201,11 @@ tasks:
     label: 'PHPStan analyze'
     desc: 'Analyze PHP code for bugs and errors.'
     aliases:
+      - l:s
       - l:stan
       - l:phpstan
-      - l:php:stan
+      - lint:s
       - lint:stan
-      - lint:phpstan
-      - lint:php:stan
     cmds:
       - task: phpstan
         vars: { CLI_ARGS: '-V' }
@@ -190,6 +218,7 @@ tasks:
     aliases:
       - l:r
       - l:rector
+      - lint:r
     cmds:
       - task: rector
         vars: { CLI_ARGS: '-V' }
@@ -200,9 +229,10 @@ tasks:
     label: 'Prettier'
     desc: 'Checks for common format issues with prettier.'
     aliases:
-      - format
+      - l:f
       - l:format
       - l:prettier
+      - lint:f
       - lint:format
     cmds:
       - task: prettier
@@ -257,12 +287,13 @@ tasks:
     label: 'Prettier'
     desc: 'Fix format issues.'
     aliases:
+      - f:f
       - f:format
       - f:prettier
       - fix:format
     cmds:
       - task: prettier
-        vars: { CLI_ARGS: '-wl .' }
+        vars: { CLI_ARGS: '. -wl' }
 
   # Testing:
 

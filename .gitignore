@@ -8,6 +8,9 @@ public
 storage
 artisan
 
+# Ignore final build files.
+dist
+
 # Ignore temporary/cache files and folders.
 var
 bootstrap/cache

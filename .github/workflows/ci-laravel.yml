@@ -54,7 +54,7 @@ jobs:
             }
           - {
               name: '🔍 PHPStan',
-              command: 'lint:php:stan -- --no-progress',
+              command: 'lint:phpstan -- --no-progress',
               php: true,
               node: false,
             }
@@ -107,9 +107,9 @@ jobs:
       fail-fast: false
       matrix:
         command:
-          - { name: '🧬 Feature', command: 'test:feature' }
-          - { name: '🔬 Unit',    command: 'test:unit' }
-          - { name: '🦠 Mutate',  command: 'test:mutate' }
+          - { name: '🧬 Feature', command: 'test:feature -- --ci' }
+          - { name: '🔬 Unit',    command: 'test:unit -- --ci' }
+          - { name: '🦠 Mutate',  command: 'test:mutate -- --ci' }
 
     steps:
       - name: '🛎 Checkout'
@@ -128,7 +128,7 @@ jobs:
 
       - name: '☂️ Upload results to Codecov'
         uses: codecov/codecov-action@v5
-        if: ${{ matrix.command.command != 'test:mutate' }}
+        if: ${{ matrix.command.name != '🦠 Mutate' }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: maks-oleksyuk/notes
@@ -137,7 +137,7 @@ jobs:
 
       - name: '☂️ Upload test results to Codecov'
         uses: codecov/test-results-action@v1
-        if: ${{ matrix.command.command != 'test:mutate' }}
+        if: ${{ matrix.command.name != '🦠 Mutate' }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ matrix.command.name }}

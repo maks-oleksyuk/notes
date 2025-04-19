@@ -6,18 +6,18 @@
     "require": {
         "php": "^8.4",
         "filament/filament": "^3.3",
-        "laravel/framework": "^12.7",
+        "laravel/framework": "^12.9",
         "laravel/pulse": "^1.4",
         "olssonm/l5-very-basic-auth": "^7.2",
         "opcodesio/log-viewer": "^3.15",
-        "spatie/laravel-data": "^4.14"
+        "spatie/laravel-data": "^4.15"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.5",
         "driftingly/rector-laravel": "^2.0",
         "fakerphp/faker": "^1.24",
         "larastan/larastan": "^3.3",
-        "laravel/pint": "^1.21",
+        "laravel/pint": "^1.22",
         "mockery/mockery": "^1.6",
         "pestphp/pest": "^3.8",
         "pestphp/pest-plugin-laravel": "^3.1",
