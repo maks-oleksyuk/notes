@@ -1,4 +1,4 @@
-version: '3'
+version: 3
 
 env:
   PHP_BIN: '{{.PHP_BIN | default "$(which php)"}}'
@@ -14,21 +14,23 @@ vars:
 tasks:
   default:
     desc: 'List all command.'
-    cmd: 'task --list-all'
+    cmd: 'task -l'
 
   # Utils.
 
   composer:
     label: 'Composer'
     desc: 'Runs `composer` command.'
-    internal: true
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}} --ansi'
+    internal: true
+    silent: true
 
   pnpm:
     label: 'pnpm'
     desc: 'Runs `pnpm` command.'
-    internal: true
     cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
+    internal: true
+    silent: true
 
   bin/console:
     label: 'Symfony console'
@@ -45,26 +47,16 @@ tasks:
     label: 'PHP CS Fixer'
     desc: 'Runs `php-cs-fixer` command.'
     aliases:
+      - csf
       - cs-fixer
       - php:cs-fixer
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/php-cs-fixer fix
       --config {{.CONFIG_DIR}}/.php-cs-fixer.php -v {{.CLI_ARGS}} --ansi'
-
-  prettier:
-    label: 'Prettier'
-    desc: 'Runs `prettier` command.'
-    cmd:
-      '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
-      --config={{.CONFIG_DIR}}/.prettierrc.json
-      --ignore-path={{.CONFIG_DIR}}/.prettierignore'
-
-  rector:
-    label: 'Rector'
-    desc: 'Runs `rector` command.'
-    cmd:
-      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector process
-      --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
+    silent: true
+    env:
+      # todo: Delete when add support php 8.4.
+      PHP_CS_FIXER_IGNORE_ENV: 1
 
   phpstan:
     label: 'PHPStan'
@@ -74,6 +66,24 @@ tasks:
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan
       --configuration={{.CONFIG_DIR}}/phpstan.neon {{.CLI_ARGS}} --ansi'
+    silent: true
+
+  rector:
+    label: 'Rector'
+    desc: 'Runs `rector` command.'
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector
+      --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
+    silent: true
+
+  prettier:
+    label: 'Prettier'
+    desc: 'Runs `prettier` command.'
+    cmd:
+      '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
+      --config={{.CONFIG_DIR}}/.prettierrc.json
+      --ignore-path={{.CONFIG_DIR}}/.prettierignore'
+    silent: true
 
   # Work commands.
 
@@ -85,17 +95,46 @@ tasks:
     aliases:
       - l
     cmds:
-      - task: lint:composer
-      - task: lint:php:cs-fixer
-      - task: lint:prettier
-      - task: lint:php:stan
-      - task: lint:rector
+      - defer: { task: lint:prettier }
+      - defer: { task: lint:rector }
+      - defer: { task: lint:phpstan }
+      - defer: { task: lint:php:cs-fixer }
+      - defer: { task: lint:composer }
+      - defer: { task: lint:commit }
+      - defer: { task: lint:branch }
+
+  lint:branch:
+    label: 'Lint git branch name'
+    desc: 'Validates the current git branch name.'
+    aliases:
+      - l:b
+      - lint:b
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'validate-branch-name -v' }
+      - task: pnpm
+        vars: { CLI_ARGS: 'validate-branch-name' }
+
+  lint:commit:
+    label: 'Lint last git commits'
+    desc: 'Run commit message validation using commitlint.'
+    aliases:
+      - l:cmt
+      - l:commit
+      - lint:cmt
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'commitlint -v' }
+      - task: pnpm
+        vars: { CLI_ARGS: 'commitlint --from=HEAD~1 --to=HEAD' }
 
   lint:composer:
     label: 'Composer validation'
     desc: 'Validates composer.json file and checks platform requirements.'
     aliases:
+      - l:co
       - l:composer
+      - lint:co
     cmds:
       - task: composer
         vars: { CLI_ARGS: '-V' }
@@ -103,6 +142,50 @@ tasks:
         vars: { CLI_ARGS: 'validate --strict' }
       - task: composer
         vars: { CLI_ARGS: 'check-platform-req' }
+
+  lint:php-cs-fixer:
+    label: 'PHP CS Fixer validation'
+    desc: 'Lint php files.'
+    aliases:
+      - l:p
+      - l:csf
+      - l:php
+      - l:php-cs-fixer
+      - lint:p
+      - lint:php
+      - lint:csf
+      - lint:php:cs-fixer
+    cmds:
+      - task: php-cs-fixer
+        vars: { CLI_ARGS: '--dry-run --diff' }
+
+  lint:phpstan:
+    label: 'PHPStan analyze'
+    desc: 'Analyze PHP code for bugs and errors.'
+    aliases:
+      - l:s
+      - l:stan
+      - l:phpstan
+      - lint:s
+      - lint:stan
+    cmds:
+      - task: phpstan
+        vars: { CLI_ARGS: '-V' }
+      - task: phpstan
+        vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}}' }
+
+  lint:rector:
+    label: 'Rector check'
+    desc: 'Check Rector issues.'
+    aliases:
+      - l:r
+      - l:rector
+      - lint:r
+    cmds:
+      - task: rector
+        vars: { CLI_ARGS: '-V' }
+      - task: rector
+        vars: { CLI_ARGS: 'process --dry-run {{.CLI_ARGS}}' }
 
   lint:prettier:
     label: 'Prettier'
@@ -116,42 +199,7 @@ tasks:
       - task: prettier
         vars: { CLI_ARGS: '-v' }
       - task: prettier
-        vars: { CLI_ARGS: '-c .' }
-
-  lint:phpstan:
-    label: 'PHPStan analyze'
-    desc: 'Analyze PHP code for bugs and errors.'
-    aliases:
-      - l:stan
-      - l:phpstan
-      - l:php:stan
-      - lint:stan
-      - lint:phpstan
-      - lint:php:stan
-    cmds:
-      - task: phpstan
-        vars: { CLI_ARGS: 'analyze' }
-
-  lint:rector:
-    label: 'Rector check'
-    desc: 'Check Rector issues.'
-    aliases:
-      - l:rector
-    cmds:
-      - task: rector
-        vars: { CLI_ARGS: '--dry-run' }
-
-  lint:php:cs-fixer:
-    label: 'PHP CS Fixer validation'
-    desc: 'Lint php files.'
-    aliases:
-      - l:php
-      - lint:php
-      - l:php-cs-fixer
-      - lint:php-cs-fixer
-    cmds:
-      - task: php-cs-fixer
-        vars: { CLI_ARGS: '--dry-run --diff' }
+        vars: { CLI_ARGS: '. -c' }
 
   # Fixing.
 
@@ -161,8 +209,42 @@ tasks:
     aliases:
       - f
     cmds:
-      - task: fix:prettier
-      - task: fix:rector
+      - defer: { task: fix:prettier }
+      - defer: { task: fix:rector }
+      - defer: { task: fix:php-cs-fixer }
+      - defer: { task: fix:composer }
+
+  fix:composer:
+    label: 'Composer fix'
+    desc: 'Try to fix composer errors.'
+    aliases:
+      - f:co
+      - f:composer
+      - fix:co
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
+
+  fix:php-cs-fixer:
+    label: 'PHP CS Fixer'
+    desc: 'Fix PHP CS Fixer issues.'
+    aliases:
+      - f:php
+      - fix:php
+      - f:php-cs-fixer
+      - fix:php-cs-fixer
+    cmds:
+      - task: php-cs-fixer
+
+  fix:rector:
+    label: 'Rector'
+    desc: 'Fix Rector issues.'
+    aliases:
+      - f:r
+      - f:rector
+    cmds:
+      - task: rector
+        vars: { CLI_ARGS: 'process {{.CLI_ARGS}}' }
 
   fix:prettier:
     label: 'Prettier'
@@ -174,23 +256,4 @@ tasks:
       - format:fix
     cmds:
       - task: prettier
-        vars: { CLI_ARGS: '-wl .' }
-
-  fix:php:cs-fixer:
-    label: 'PHP CS Fixer'
-    desc: 'Fix PHP CS Fixer issues.'
-    aliases:
-      - f:php
-      - fix:php
-      - f:php-cs-fixer
-      - fix:php-cs-fixer
-    cmds:
-      - task: php:cs-fixer
-
-  fix:rector:
-    label: 'Rector'
-    desc: 'Fix Rector issues.'
-    aliases:
-      - f:rector
-    cmds:
-      - task: rector
+        vars: { CLI_ARGS: '. -wl' }

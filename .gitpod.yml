@@ -8,6 +8,7 @@ tasks:
       command: |
           ddev start -y
           gp ports await 8080 && gp preview $(gp url 8080)
+          ddev co symfony:sync-recipes symfony/console --force --reset
 
 # VScode xdebug extension
 vscode:

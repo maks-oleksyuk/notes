@@ -14,7 +14,7 @@ on:
       - README.md
       - LICENSE.md
 
-  # Allows to run this workflow manually from the Actions tab.
+  # Allows running this workflow manually from the Actions tab.
   workflow_dispatch:
 
 jobs:
@@ -37,13 +37,39 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         command:
-          - { name: '📦 Composer',     command: 'lint:composer' }
-          - { name: '🔍 PHPStan',      command: 'lint:php:stan' }
-          - { name: '🪶 PHP CS Fixer', command: 'lint:php:cs-fixer' }
-          - { name: '🅿️ Prettier',     command: 'lint:prettier' }
-          - { name: '🏠 Rector',       command: 'lint:rector' }
+          - {
+              name: '📦 Composer',
+              command: 'lint:composer',
+              php: true,
+              node: false,
+            }
+          - {
+              name: '🔍 PHPStan',
+              command: 'lint:phpstan -- --no-progress',
+              php: true,
+              node: false,
+            }
+          - {
+              name: '🪶 PHP CS Fixer',
+              command: 'lint:php-cs-fixer',
+              php: true,
+              node: false,
+            }
+          - {
+              name: '🅿️ Prettier',
+              command: 'lint:prettier',
+              php: false,
+              node: true,
+            }
+          - {
+              name: '🏠 Rector',
+              command: 'lint:rector -- --no-progress-bar --output-format=github',
+              php: true,
+              node: false,
+            }
 
     steps:
       - name: '🛎 Checkout'

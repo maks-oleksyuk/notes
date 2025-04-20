@@ -1,16 +1,26 @@
-name: 'Setup environment'
+name: '⚙️ Setup environment'
 description: 'Setups environment for validation tasks.'
 
 inputs:
   php:
     description: 'PHP version to install'
     required: true
-    default: '8.3'
+    default: '8.4'
 
   node:
     description: 'Node.js version to install'
     required: true
-    default: '20.x'
+    default: '22.x'
+
+  use-php:
+      description: 'Whether to install PHP and dependencies'
+      required: false
+      default: 'false'
+
+  use-node:
+      description: 'Whether to install Node.js and dependencies'
+      required: false
+      default: 'false'
 
 runs:
   using: composite
@@ -24,32 +34,42 @@ runs:
       with:
         php-version: ${{ inputs.php }}
         coverage: none
+        tools: cs2pr
 
     - name: '🗃 Get composer cache directory'
+      if: ${{ inputs.use-php == 'true' }}
       id: composer-cache
       shell: bash
       run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
     - name: '💽 Cache composer dependencies'
+      if: ${{ inputs.use-php == 'true' }}
       uses: actions/cache@v4
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
-        key: "${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}"
-        restore-keys: ${{ runner.os }}-composer-
+        key: "${{ runner.os }}-${{ github.ref_name }}-composer-${{ hashFiles('**/composer.lock') }}"
+        restore-keys: |
+          ${{ runner.os }}-${{ github.head_ref || github.ref_name }}-composer-
+          ${{ runner.os }}-${{ github.base_ref }}-composer-
+          ${{ runner.os }}-${{ github.event.repository.default_branch }}-composer-
 
     - name: '📦 Install composer dependencies'
+      if: ${{ inputs.use-php == 'true' }}
       shell: bash
-      run: composer i --quiet --no-progress --no-scripts --ansi;
+      run: composer i --no-progress --no-scripts -qn --ansi;
 
     - name: '🟧 Setup pnpm'
+      if: ${{ inputs.use-node == 'true' }}
       uses: pnpm/action-setup@v4
 
     - name: '❇️ Setup Node.js ${{ inputs.node }}'
+      if: ${{ inputs.use-node == 'true' }}
       uses: actions/setup-node@v4
       with:
         cache: pnpm
         node-version: ${{ inputs.node }}
 
     - name: '📦 Install pnpm dependencies'
+      if: ${{ inputs.use-node == 'true' }}
       shell: bash
       run: pnpm i -sD --frozen-lockfile --color=always
