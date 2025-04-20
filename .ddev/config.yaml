@@ -3,12 +3,13 @@ type: php
 docroot: web
 database:
   type: mariadb
-  version: '10.11'
-php_version: '8.3'
+  version: '11.4'
+php_version: '8.4'
 host_db_port: '54374'
-nodejs_version: '20'
+nodejs_version: '22'
 webserver_type: nginx-fpm
 xdebug_enabled: false
+corepack_enable: true
 hooks:
   pre-start:
     # Add pnpm and task to ddev if not already installed.
@@ -17,3 +18,4 @@ hooks:
         ddev add-on list --installed | grep -q 'gebruederheitz/ddev-taskfile' || ddev add-on get gebruederheitz/ddev-taskfile > /dev/null
   post-start:
     - composer: install
+    - exec: pnpm i
