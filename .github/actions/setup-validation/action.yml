@@ -13,14 +13,14 @@ inputs:
     default: '22.x'
 
   use-php:
-      description: 'Whether to install PHP and dependencies'
-      required: false
-      default: 'false'
+    description: 'Whether to install PHP and dependencies'
+    required: false
+    default: 'false'
 
   use-node:
-      description: 'Whether to install Node.js and dependencies'
-      required: false
-      default: 'false'
+    description: 'Whether to install Node.js and dependencies'
+    required: false
+    default: 'false'
 
 runs:
   using: composite
@@ -30,6 +30,7 @@ runs:
       run: sh -c "$(curl -s --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin > /dev/null 2>&1
 
     - name: '🐘 Setup PHP ${{ inputs.php }}'
+      if: ${{ inputs.use-php == 'true' }}
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ inputs.php }}
@@ -47,11 +48,19 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
-        key: "${{ runner.os }}-${{ github.ref_name }}-composer-${{ hashFiles('**/composer.lock') }}"
+        key: "${{ runner.os }}-${{ github.head_ref || github.ref_name }}-composer-${{ hashFiles('**/composer.lock') }}"
         restore-keys: |
           ${{ runner.os }}-${{ github.head_ref || github.ref_name }}-composer-
           ${{ runner.os }}-${{ github.base_ref }}-composer-
-          ${{ runner.os }}-${{ github.event.repository.default_branch }}-composer-
+
+    - name: '💽 Cache var directory'
+      uses: actions/cache@v4
+      with:
+        path: var
+        key: "${{ runner.os }}-${{ github.head_ref || github.ref_name }}-var"
+        restore-keys: |
+          ${{ runner.os }}-${{ github.head_ref || github.ref_name }}-var
+          ${{ runner.os }}-${{ github.base_ref }}-var
 
     - name: '📦 Install composer dependencies'
       if: ${{ inputs.use-php == 'true' }}

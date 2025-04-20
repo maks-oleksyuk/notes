@@ -43,32 +43,27 @@ jobs:
           - {
               name: '📦 Composer',
               command: 'lint:composer',
-              php: true,
-              node: false,
+              use-php: true,
             }
           - {
               name: '🔍 PHPStan',
               command: 'lint:phpstan -- --no-progress',
-              php: true,
-              node: false,
+              use-php: true,
             }
           - {
               name: '🪶 PHP CS Fixer',
               command: 'lint:php-cs-fixer',
-              php: true,
-              node: false,
+              use-php: true,
             }
           - {
               name: '🅿️ Prettier',
               command: 'lint:prettier',
-              php: false,
-              node: true,
+              use-node: true,
             }
           - {
               name: '🏠 Rector',
               command: 'lint:rector -- --no-progress-bar --output-format=github',
-              php: true,
-              node: false,
+              use-php: true,
             }
 
     steps:
@@ -77,6 +72,9 @@ jobs:
 
       - name: '⚙️ Prepare environment'
         uses: ./.github/actions/setup-validation
+        with:
+          use-php: ${{ matrix.command.use-php }}
+          use-node: ${{ matrix.command.use-node }}
 
       - name: '${{ matrix.command.name }} validate'
         run: task ${{ matrix.command.command }}
