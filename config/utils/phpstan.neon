@@ -1,6 +1,16 @@
+includes:
+  - ../../vendor/phpstan/phpstan-doctrine/extension.neon
+  - ../../vendor/phpstan/phpstan-symfony/extension.neon
+  - ../../vendor/phpstan/phpstan-symfony/rules.neon
+
 parameters:
   level: 10
   paths:
     - ../../config
     - ../../src
 #   - ../../tests
+  tmpDir: ../../var/cache/phpstan
+  doctrine:
+    reportDynamicQueryBuilders: true
+    reportUnknownTypes: true
+    literalString: true

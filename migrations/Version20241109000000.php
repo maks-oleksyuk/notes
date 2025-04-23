@@ -19,7 +19,7 @@ final class Version20241109000000 extends AbstractMigration
         $this->addSql('
             CREATE TABLE `user` (
                 id INT AUTO_INCREMENT NOT NULL,
-                username VARCHAR(180) NOT NULL,
+                username VARCHAR(30) NOT NULL,
                 roles JSON NOT NULL,
                 password VARCHAR(255) NOT NULL,
                 UNIQUE INDEX UNIQ_IDENTIFIER_USERNAME (username),

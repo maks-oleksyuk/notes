@@ -19,16 +19,22 @@ return RectorConfig::configure()
         codeQuality: true,
         codingStyle: true,
         typeDeclarations: true,
+        privatization: true,
         instanceOf: true,
         earlyReturn: true,
         strictBooleans: true,
+        doctrineCodeQuality: true,
+        symfonyCodeQuality: true,
+    )
+    ->withAttributesSets(
+        symfony: true,
+        doctrine: true,
     )
     ->withSets([
         SymfonySetList::SYMFONY_72,
-        SymfonySetList::SYMFONY_CODE_QUALITY,
         SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION,
     ])
-    ->withParallel(100, 4, 25)
+    ->withParallel()
     ->withCache(
         __DIR__.'/../../var/cache/rector',
         FileCacheStorage::class
