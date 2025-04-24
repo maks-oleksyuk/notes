@@ -82,3 +82,13 @@ runs:
       if: ${{ inputs.use-node == 'true' }}
       shell: bash
       run: pnpm i -sD --frozen-lockfile --color=always
+
+    - name: '⚜️ Set up Symfony'
+      if: ${{ inputs.use-php == 'true' }}
+      shell: bash
+      run: |
+        cp .env.example .env
+        sed -i 's/^APP_ENV=.*/APP_ENV=test/' .env
+        composer symfony:sync-recipes symfony/console --reset --force -q
+        php bin/console cache:warmup -q
+        APP_DEBUG=1 php bin/console cache:warmup --env=dev -q

@@ -34,6 +34,9 @@ return RectorConfig::configure()
         SymfonySetList::SYMFONY_72,
         SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION,
     ])
+    ->withImportNames(importShortClasses: false, removeUnusedImports: true)
+    ->withPHPStanConfigs([__DIR__.'/phpstan.neon'])
+    ->withSymfonyContainerXml(__DIR__.'/../../var/cache/dev/App_KernelDevDebugContainer.xml')
     ->withParallel()
     ->withCache(
         __DIR__.'/../../var/cache/rector',

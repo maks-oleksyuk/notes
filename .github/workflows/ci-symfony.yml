@@ -65,6 +65,11 @@ jobs:
               command: 'lint:rector -- --no-progress-bar --output-format=github',
               use-php: true,
             }
+          - {
+              name: '🎼 Symfony Lint',
+              command: 'lint:symfony',
+              use-php: true,
+          }
 
     steps:
       - name: '🛎 Checkout'

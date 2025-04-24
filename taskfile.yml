@@ -42,6 +42,7 @@ tasks:
       - symfony
       - sf:console
     cmd: '{{.PHP_BIN}} bin/console {{.CLI_ARGS}} --ansi'
+    silent: true
 
   php-cs-fixer:
     label: 'PHP CS Fixer'
@@ -100,6 +101,7 @@ tasks:
       - defer: { task: lint:phpstan }
       - defer: { task: lint:php:cs-fixer }
       - defer: { task: lint:composer }
+      - defer: { task: lint:symfony }
       - defer: { task: lint:commit }
       - defer: { task: lint:branch }
 
@@ -127,6 +129,29 @@ tasks:
         vars: { CLI_ARGS: 'commitlint -v' }
       - task: pnpm
         vars: { CLI_ARGS: 'commitlint --from=HEAD~1 --to=HEAD' }
+
+  lint:symfony:
+    label: 'Symfony lint'
+    desc: 'Runs default Symfony lint commands to validate project'
+    aliases:
+      - l:sf
+      - l:symfony
+      - lint:sf
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: '-V' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'lint:container --no-debug' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'lint:twig templates --env=prod' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'lint:yaml config --parse-tags' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'lint:xliff translations' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:schema:validate --skip-sync' }
+      # - task: sf:console
+      #   vars: { CLI_ARGS: 'lint:translations' }
 
   lint:composer:
     label: 'Composer validation'
