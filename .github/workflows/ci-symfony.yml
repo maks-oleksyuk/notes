@@ -52,7 +52,7 @@ jobs:
             }
           - {
               name: '🪶 PHP CS Fixer',
-              command: 'lint:php-cs-fixer',
+              command: 'lint:php-cs-fixer -- --show-progress=none',
               use-php: true,
             }
           - {

@@ -48,19 +48,19 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
-        key: "${{ runner.os }}-${{ github.head_ref || github.ref_name }}-composer-${{ hashFiles('**/composer.lock') }}"
+        key: "composer-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}-${{ hashFiles('**/composer.lock') }}"
         restore-keys: |
-          ${{ runner.os }}-${{ github.head_ref || github.ref_name }}-composer-
-          ${{ runner.os }}-${{ github.base_ref }}-composer-
+          composer-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}
+          composer-cache-${{ runner.os }}-${{ github.base_ref }}
 
     - name: '💽 Cache var directory'
       uses: actions/cache@v4
       with:
         path: var
-        key: "${{ runner.os }}-${{ github.head_ref || github.ref_name }}-var"
+        key: "var-${{ runner.os }}-${{ github.head_ref || github.ref_name }}"
         restore-keys: |
-          ${{ runner.os }}-${{ github.head_ref || github.ref_name }}-var
-          ${{ runner.os }}-${{ github.base_ref }}-var
+          var-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}
+          var-cache-${{ runner.os }}-${{ github.base_ref }}
 
     - name: '📦 Install composer dependencies'
       if: ${{ inputs.use-php == 'true' }}

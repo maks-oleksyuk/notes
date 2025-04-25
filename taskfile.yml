@@ -182,7 +182,7 @@ tasks:
       - lint:php:cs-fixer
     cmds:
       - task: php-cs-fixer
-        vars: { CLI_ARGS: '--dry-run --diff' }
+        vars: { CLI_ARGS: '--dry-run --diff {{.CLI_ARGS}}' }
 
   lint:phpstan:
     label: 'PHPStan analyze'
