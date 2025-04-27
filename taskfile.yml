@@ -11,6 +11,8 @@ vars:
   NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
   COMPOSER_BIN_DIR: '{{.TASKFILE_DIR}}/vendor/bin'
 
+dotenv: ['.env', '.env.local' ]
+
 tasks:
   default:
     desc: 'List all command.'
@@ -87,6 +89,33 @@ tasks:
     silent: true
 
   # Work commands.
+
+  cache:clear:
+    label: 'Clear the cache'
+    desc: ' Clears the application cache for a given environment.'
+    aliases:
+      - cc
+      - cr
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: 'cache:clear' }
+    silent: true
+
+  deploy:
+    label: 'Deploy'
+    desc: 'Deploy code'
+    aliases:
+      - d
+    vars:
+      DEV_PACKAGES: '{{if eq .APP_ENV "prod"}}--no-dev{{end}}'
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: 'i {{.DEV_PACKAGES}} --no-scripts' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migration:migrate -n' }
+      - task: cache:clear
+      - task: sf:console
+        vars: { CLI_ARGS: 'cache:warmup' }
 
   # Linters.
 
