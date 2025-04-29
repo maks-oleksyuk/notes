@@ -11,14 +11,14 @@ vars:
   NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
   COMPOSER_BIN_DIR: '{{.TASKFILE_DIR}}/vendor/bin'
 
-dotenv: ['.env', '.env.local' ]
+dotenv: ['.env.local', '.env']
 
 tasks:
   default:
     desc: 'List all command.'
     cmd: 'task -l'
 
-  # Utils.
+  # Utils:
 
   composer:
     label: 'Composer'
@@ -88,7 +88,7 @@ tasks:
       --ignore-path={{.CONFIG_DIR}}/.prettierignore'
     silent: true
 
-  # Work commands.
+  # Work commands:
 
   cache:clear:
     label: 'Clear the cache'
@@ -117,7 +117,7 @@ tasks:
       - task: sf:console
         vars: { CLI_ARGS: 'cache:warmup' }
 
-  # Linters.
+  # Linters:
 
   lint:
     label: 'Project lint'
@@ -255,7 +255,7 @@ tasks:
       - task: prettier
         vars: { CLI_ARGS: '. -c' }
 
-  # Fixing.
+  # Fixing:
 
   fix:
     label: 'Fixing found issues'
