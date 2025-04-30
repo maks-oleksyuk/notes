@@ -128,7 +128,7 @@ tasks:
       - defer: { task: lint:prettier }
       - defer: { task: lint:rector }
       - defer: { task: lint:phpstan }
-      - defer: { task: lint:php:cs-fixer }
+      - defer: { task: lint:php-cs-fixer }
       - defer: { task: lint:composer }
       - defer: { task: lint:symfony }
       - defer: { task: lint:commit }

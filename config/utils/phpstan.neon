@@ -10,8 +10,12 @@ parameters:
     - ../../config
     - ../../src
 #   - ../../tests
-  tmpDir: ../../var/cache/phpstan
   doctrine:
     reportDynamicQueryBuilders: true
     reportUnknownTypes: true
     literalString: true
+  tmpDir: ../../var/cache/phpstan
+  scanDirectories:
+    - ../../var/cache/dev/Symfony/Config
+  scanFiles:
+    - ../../vendor/symfony/dependency-injection/Loader/Configurator/ContainerConfigurator.php
