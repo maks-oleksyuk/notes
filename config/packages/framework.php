@@ -3,18 +3,19 @@
 declare(strict_types=1);
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Config\Framework\SessionConfig;
+use Symfony\Config\FrameworkConfig;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    $containerConfigurator->extension('framework', [
-        'secret' => '%env(APP_SECRET)%',
-        'session' => true,
-    ]);
+use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
+
+return static function (ContainerConfigurator $containerConfigurator, FrameworkConfig $frameworkConfig): void {
+    $sessionConfig = $frameworkConfig->session();
+    assert($sessionConfig instanceof SessionConfig);
+
+    $frameworkConfig->secret(env('APP_SECRET'));
+
     if ('test' === $containerConfigurator->env()) {
-        $containerConfigurator->extension('framework', [
-            'test' => true,
-            'session' => [
-                'storage_factory_id' => 'session.storage.factory.mock_file',
-            ],
-        ]);
+        $frameworkConfig->test(true);
+        $sessionConfig->storageFactoryId('session.storage.factory.mock_file');
     }
 };

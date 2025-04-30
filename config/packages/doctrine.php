@@ -39,8 +39,9 @@ return static function (
         ->identityGenerationPreference(PostgreSQLPlatform::class, 'identity')
         ->autoMapping(true);
 
-    /** @var MappingConfig $appMapping */
     $appMapping = $entityManagerConfig->mapping('App');
+    assert($appMapping instanceof MappingConfig);
+
     $appMapping
         ->type('attribute')
         ->isBundle(false)
@@ -48,31 +49,28 @@ return static function (
         ->prefix('App\Entity')
         ->alias('App');
 
-    switch ($containerConfigurator->env()) {
-        case 'test':
-            $dbalConfig
-                ->connection('default')
-                ->dbnameSuffix('_test'.env('TEST_TOKEN')->default(''));
+    if ('test' === $containerConfigurator->env()) {
+        $dbalConfig
+            ->connection('default')
+            ->dbnameSuffix('_test'.env('TEST_TOKEN')->default(''));
+    }
 
-            break;
-        case 'prod':
-            $ormConfig
-                ->autoGenerateProxyClasses(false)
-                ->proxyDir(param('kernel.project_dir').'/doctrine/orm/Proxies');
+    if ('prod' === $containerConfigurator->env()) {
+        $ormConfig
+            ->autoGenerateProxyClasses(false)
+            ->proxyDir(param('kernel.project_dir').'/doctrine/orm/Proxies');
 
-            $entityManagerConfig->queryCacheDriver([
-                'type' => 'pool',
-                'pool' => 'doctrine.system_cache_pool',
-            ]);
-            $entityManagerConfig->resultCacheDriver([
-                'type' => 'pool',
-                'pool' => 'doctrine.result_cache_pool',
-            ]);
+        $entityManagerConfig->queryCacheDriver([
+            'type' => 'pool',
+            'pool' => 'doctrine.system_cache_pool',
+        ]);
+        $entityManagerConfig->resultCacheDriver([
+            'type' => 'pool',
+            'pool' => 'doctrine.result_cache_pool',
+        ]);
 
-            $cache = $frameworkConfig->cache();
-            $cache->pool('doctrine.system_cache_pool')->adapters(['cache.system']);
-            $cache->pool('doctrine.result_cache_pool')->adapters(['cache.app']);
-
-            break;
+        $cache = $frameworkConfig->cache();
+        $cache->pool('doctrine.system_cache_pool')->adapters(['cache.system']);
+        $cache->pool('doctrine.result_cache_pool')->adapters(['cache.app']);
     }
 };

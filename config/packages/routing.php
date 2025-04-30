@@ -3,16 +3,14 @@
 declare(strict_types=1);
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Config\Framework\RouterConfig;
+use Symfony\Config\FrameworkConfig;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    $containerConfigurator->extension('framework', [
-        'router' => null,
-    ]);
+return static function (ContainerConfigurator $containerConfigurator, FrameworkConfig $frameworkConfig): void {
+    $routerConfig = $frameworkConfig->router();
+    assert($routerConfig instanceof RouterConfig);
+
     if ('prod' === $containerConfigurator->env()) {
-        $containerConfigurator->extension('framework', [
-            'router' => [
-                'strict_requirements' => null,
-            ],
-        ]);
+        $routerConfig->strictRequirements(null);
     }
 };
