@@ -1,19 +1,20 @@
-{% extends 'base.html.twig' %}
+{% extends '@EasyAdmin/page/login_minimal.html.twig' %}
 
-{% block title %}{{ 'Register'|trans }}{% endblock %}
+{% block page_title %}{{ 'Register'|trans }}{% endblock %}
 
-{% block body %}
+{% block wrapper_wrapper %}
+
     <h1>Register</h1>
 
     {{ form_errors(registrationForm) }}
 
     {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.username) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+    {{ form_row(registrationForm.username) }}
+    {{ form_row(registrationForm.plainPassword, {
+        label: 'Password'
+    }) }}
 
-        <button type="submit" class="btn">{{ 'Register'|trans }}</button>
+    <button type="submit" class="btn">{{ 'Register'|trans }}</button>
     {{ form_end(registrationForm) }}
+
 {% endblock %}

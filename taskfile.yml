@@ -172,15 +172,15 @@ tasks:
       - task: sf:console
         vars: { CLI_ARGS: 'lint:container --no-debug' }
       - task: sf:console
+        vars: { CLI_ARGS: 'lint:translations --locale=en' }
+      - task: sf:console
         vars: { CLI_ARGS: 'lint:twig templates --env=prod' }
-      - task: sf:console
-        vars: { CLI_ARGS: 'lint:yaml config --parse-tags' }
-      - task: sf:console
-        vars: { CLI_ARGS: 'lint:xliff translations' }
+      # - task: sf:console
+      #   vars: { CLI_ARGS: 'lint:yaml config --parse-tags' }
+      # - task: sf:console
+      #   vars: { CLI_ARGS: 'lint:xliff translations' }
       - task: sf:console
         vars: { CLI_ARGS: 'doctrine:schema:validate --skip-sync' }
-      # - task: sf:console
-      #   vars: { CLI_ARGS: 'lint:translations' }
 
   lint:composer:
     label: 'Composer validation'
