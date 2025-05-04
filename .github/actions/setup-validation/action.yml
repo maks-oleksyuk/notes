@@ -52,6 +52,7 @@ runs:
         restore-keys: |
           composer-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}
           composer-cache-${{ runner.os }}-${{ github.base_ref }}
+          composer-cache-${{ runner.os }}-symfony
 
     - name: '💽 Cache var directory'
       uses: actions/cache@v4
@@ -61,6 +62,7 @@ runs:
         restore-keys: |
           var-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}
           var-cache-${{ runner.os }}-${{ github.base_ref }}
+          var-cache-${{ runner.os }}-symfony
 
     - name: '📦 Install composer dependencies'
       if: ${{ inputs.use-php == 'true' }}
