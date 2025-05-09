@@ -1,0 +1,498 @@
+{
+	"layout_mode_setting_subheading": "",
+	"admin_ui": "1",
+	"adminify_theme": "preset1",
+	"adminify_theme_custom_colors": {
+		"--adminify-preset-background": "#F9F9F9",
+		"--adminify-primary": "#3a3ae9",
+		"--adminify-menu-bg": "#4738a6",
+		"--adminify-menu-text-color": "#ffffff",
+		"--adminify-menu-border": "#7062cd",
+		"--adminify-notif-bg-color": "#FD49A0"
+	},
+	"body_fields": {
+		"adminify_custom_bg": "",
+		"admin_general_bg": "gradient",
+		"admin_general_bg_gradient": {
+			"background-color": "#0347FF",
+			"background-gradient-color": "#fd1919",
+			"background-gradient-direction": "135deg",
+			"background-attachment": ""
+		},
+		"admin_general_bg_image": {
+			"background-image": {
+				"url": "",
+				"id": "",
+				"width": "",
+				"height": "",
+				"thumbnail": "",
+				"alt": "",
+				"title": "",
+				"description": ""
+			},
+			"background-position": "",
+			"background-repeat": "",
+			"background-attachment": "",
+			"background-size": ""
+		}
+	},
+	"admin_general_google_font": {
+		"font-family": "",
+		"font-weight": "",
+		"font-style": "",
+		"type": "",
+		"unit": "px"
+	},
+	"admin_favicon_logo": {
+		"url": "",
+		"id": "",
+		"width": "",
+		"height": "",
+		"thumbnail": "",
+		"alt": "",
+		"title": "",
+		"description": ""
+	},
+	"gutenberg_editor_logo": {
+		"url": "",
+		"id": "",
+		"width": "",
+		"height": "",
+		"thumbnail": "",
+		"alt": "",
+		"title": "",
+		"description": ""
+	},
+	"light_dark_mode": {
+		"admin_ui_mode": "light",
+		"admin_ui_logo_type": "image_logo",
+		"admin_ui_light_mode": {
+			"admin_ui_light_logo_text": "WP Adminify",
+			"admin_ui_light_logo_text_typo": {
+				"font-family": "",
+				"font-weight": "",
+				"font-style": "",
+				"font-size": "",
+				"letter-spacing": "",
+				"color": "",
+				"type": "",
+				"unit": "px"
+			},
+			"admin_ui_light_logo": {
+				"url": "",
+				"id": "",
+				"width": "",
+				"height": "",
+				"thumbnail": "",
+				"alt": "",
+				"title": "",
+				"description": ""
+			},
+			"light_logo_size": {
+				"width": "120",
+				"height": "32",
+				"unit": "px"
+			},
+			"mini_admin_ui_light_logo": {
+				"url": "",
+				"id": "",
+				"width": "",
+				"height": "",
+				"thumbnail": "",
+				"alt": "",
+				"title": "",
+				"description": ""
+			}
+		},
+		"admin_ui_dark_mode": {
+			"admin_ui_dark_logo_text": "WP Adminify",
+			"admin_ui_dark_logo_text_typo": {
+				"font-family": "",
+				"font-weight": "",
+				"font-style": "",
+				"font-size": "",
+				"letter-spacing": "",
+				"color": "",
+				"type": "",
+				"unit": "px"
+			},
+			"admin_ui_dark_logo": {
+				"url": "",
+				"id": "",
+				"width": "",
+				"height": "",
+				"thumbnail": "",
+				"alt": "",
+				"title": "",
+				"description": ""
+			},
+			"dark_logo_size": {
+				"width": "150",
+				"height": "45",
+				"unit": "px"
+			},
+			"mini_admin_ui_dark_logo": {
+				"url": "",
+				"id": "",
+				"width": "",
+				"height": "",
+				"thumbnail": "",
+				"alt": "",
+				"title": "",
+				"description": ""
+			},
+			"schedule_dark_mode": {
+				"enable_schedule_dark_mode": "",
+				"schedule_dark_mode_type": "system",
+				"schedule_dark_mode_start_time": "",
+				"schedule_dark_mode_end_time": ""
+			}
+		}
+	},
+	"admin_bar_search": "0",
+	"admin_bar_notif": "0",
+	"admin_bar_dark_light_btn": "1",
+	"post_status_bg_colors": {
+		"publish": "transparent",
+		"pending": "transparent",
+		"future": "transparent",
+		"private": "transparent",
+		"draft": "transparent",
+		"trash": "transparent"
+	},
+	"menu_layout_settings": {
+		"layout_type": "vertical",
+		"menu_mode": "classic",
+		"icon_style": "classic",
+		"menu_hover_submenu": "toggle",
+		"user_info_fields": {
+			"enable_user_info": "",
+			"user_info_content": "text",
+			"user_info_avatar": "rounded"
+		},
+		"horz_menu_type": "both",
+		"horz_dropdown_icon": "1",
+		"horz_toplinks": "",
+		"horz_bubble_icon_hide": "",
+		"menu_styles": {
+			"menu_typography": {
+				"font-weight": "",
+				"font-style": "",
+				"font-size": "",
+				"line-height": "",
+				"letter-spacing": "",
+				"type": "google",
+				"unit": "px"
+			},
+			"menu_width": {
+				"width": ""
+			},
+			"menu_wrapper_padding": {
+				"top": "",
+				"right": "",
+				"bottom": "",
+				"left": "",
+				"unit": "px"
+			},
+			"menu_vertical_padding": "",
+			"horz_menu_parent_padding": "",
+			"submenu_wrapper_padding": {
+				"top": "",
+				"right": "",
+				"bottom": "",
+				"left": "",
+				"unit": "px"
+			},
+			"submenu_vertical_space": "",
+			"parent_menu_colors": {
+				"wrap_bg": "",
+				"hover_bg": "",
+				"text_color": "",
+				"text_hover": "",
+				"active_bg": "",
+				"active_color": ""
+			},
+			"sub_menu_colors": {
+				"wrap_bg": "",
+				"hover_bg": "",
+				"text_color": "",
+				"text_hover": "",
+				"active_bg": "",
+				"active_color": ""
+			},
+			"notif_colors": {
+				"notif_bg": "",
+				"notif_color": ""
+			}
+		},
+		"user_info_style": {
+			"info_text_color": "",
+			"info_text_hover_color": "",
+			"info_text_border": "",
+			"info_icon_color": "",
+			"info_icon_hover_color": ""
+		}
+	},
+	"productivity_sub_heading": "",
+	"hide_notices": "",
+	"hide_notices_non_admin": "",
+	"other_notices": [],
+	"screen_help_tab": {
+		"enable_for_screen": "",
+		"screen_help_data": []
+	},
+	"folders": {
+		"enable_folders": "1",
+		"enable_for": ["post", "page"],
+		"media": "1"
+	},
+	"admin_pages": "",
+	"dashboard_widgets": "1",
+	"post_types_order": {
+		"enable_pto": "0",
+		"pto_posts": ["page"],
+		"pto_media": "",
+		"pto_taxonomies": []
+	},
+	"menu_duplicator": "0",
+	"post_duplicator": {
+		"enable_post_duplicator": "0",
+		"post_types": ["page"],
+		"taxonomies": []
+	},
+	"custom_admin_columns": {
+		"enable": "",
+		"post_page_column_thumb_image": {
+			"url": "",
+			"id": "",
+			"width": "",
+			"height": "",
+			"thumbnail": "",
+			"alt": "",
+			"title": "",
+			"description": ""
+		},
+		"columns_data": [],
+		"slug_column_post_types": []
+	},
+	"media_attachments": {
+		"enable_media": "1",
+		"thumbnails_rss_feed": "0"
+	},
+	"remove_widgets": {
+		"remove_widgets_type": "sidebar",
+		"disable_gutenberg_editor": "",
+		"sidebar_widgets_list": [],
+		"dashboard_widgets_list": []
+	},
+	"redirect_urls_fields": {
+		"enable_redirect_urls": "",
+		"redirect_urls_options": {
+			"redirect_urls_tabs": {
+				"new_login_url": "",
+				"redirect_admin_url": "",
+				"new_register_url": "",
+				"roles_redirect_tabs": "login",
+				"login_redirects": [
+					{
+						"redirect_user": "",
+						"redirect_role": "",
+						"redirect_cap": "",
+						"redirect_url": ""
+					},
+					{
+						"redirect_user": "",
+						"redirect_role": "",
+						"redirect_cap": "",
+						"redirect_url": ""
+					},
+					{
+						"redirect_user": "",
+						"redirect_role": "",
+						"redirect_cap": "",
+						"redirect_url": ""
+					},
+					{
+						"redirect_user": "",
+						"redirect_role": "",
+						"redirect_cap": "",
+						"redirect_url": ""
+					},
+					{
+						"redirect_user": "",
+						"redirect_role": "",
+						"redirect_cap": "",
+						"redirect_url": ""
+					}
+				],
+				"logout_redirects": [
+					{
+						"redirect_user": "",
+						"redirect_role": "",
+						"redirect_cap": "",
+						"redirect_url": ""
+					},
+					{
+						"redirect_user": "",
+						"redirect_role": "",
+						"redirect_cap": "",
+						"redirect_url": ""
+					},
+					{
+						"redirect_user": "",
+						"redirect_role": "",
+						"redirect_cap": "",
+						"redirect_url": ""
+					},
+					{
+						"redirect_user": "",
+						"redirect_role": "",
+						"redirect_cap": "",
+						"redirect_url": ""
+					},
+					{
+						"redirect_user": "",
+						"redirect_role": "",
+						"redirect_cap": "",
+						"redirect_url": ""
+					}
+				]
+			}
+		}
+	},
+	"security_head": {
+		"enable_security_head": "",
+		"security_head_data": ["generator_wp_version"],
+		"self_ping_sites": ""
+	},
+	"security_feed": "",
+	"security_rest_api": {
+		"security_rest_api_enable": "",
+		"security_rest_api_data": []
+	},
+	"disable_comments": {
+		"enable_disable_comments": "1",
+		"post_types": ["post", "page"],
+		"apply_for": [
+			"admin_bar",
+			"menu_redirect",
+			"admin_menu",
+			"discussion_menu",
+			"close_front",
+			"comments_notes",
+			"comments_url_field",
+			"recentcomments"
+		]
+	},
+	"post_archives": {
+		"post_archives_enable": "",
+		"post_archives_data": []
+	},
+	"custom_gravatar": {
+		"enable": "",
+		"image": [
+			{
+				"avatar_image": {
+					"url": "",
+					"id": "",
+					"width": "",
+					"height": "",
+					"thumbnail": "",
+					"alt": "",
+					"title": "",
+					"description": ""
+				},
+				"avatar_name": ""
+			}
+		]
+	},
+	"performance_subheading": "",
+	"disable_embeds": "",
+	"heartbeat_api": {
+		"enabled": "",
+		"backend": "default",
+		"backend_modify": "60",
+		"on_post_create": "default",
+		"on_post_create_modify": "15",
+		"on_frontend": "default",
+		"on_frontend_modify": "60"
+	},
+	"performance": {
+		"performance_enable": "1",
+		"performance_data": [
+			"dashicons",
+			"version_strings",
+			"gravatar_query_strings",
+			"emoji",
+			"jquery_migrate_front",
+			"jquery_migrate_back",
+			"defer_parsing_js_footer",
+			"cache_gzip_compression"
+		]
+	},
+	"disable_gutenberg": {
+		"disable_gutenberg_enable": "",
+		"disable_for": []
+	},
+	"devtools_tabs": {
+		"custom_css": "",
+		"custom_js": ""
+	},
+	"white_label": {
+		"wordpress": {
+			"remove_howdy_msg": "",
+			"change_howdy_text": "Howdy",
+			"admin_footer": [
+				"php_version",
+				"wp_version",
+				"memory_usage",
+				"memory_limit",
+				"memory_available"
+			],
+			"footer_text": "",
+			"admin_bar_cleanup": []
+		},
+		"adminify": {
+			"plugin_logo": {
+				"url": "",
+				"id": "",
+				"width": "",
+				"height": "",
+				"thumbnail": "",
+				"alt": "",
+				"title": "",
+				"description": ""
+			},
+			"plugin_logo_dark": {
+				"url": "",
+				"id": "",
+				"width": "",
+				"height": "",
+				"thumbnail": "",
+				"alt": "",
+				"title": "",
+				"description": ""
+			},
+			"plugin_name": "WP Adminify",
+			"plugin_desc": "WP Adminify is a powerful plugin that modernizes and customizes your WordPress admin dashboard. It offers a clean, branded interface and advanced menu management features to enhance your admin user experience.",
+			"author_name": "Jewel Theme",
+			"menu_label": "WP Adminify",
+			"menu_icon": {
+				"url": "",
+				"id": "",
+				"width": "",
+				"height": "",
+				"thumbnail": "",
+				"alt": "",
+				"title": "",
+				"description": ""
+			},
+			"plugin_url": "https:\/\/wpadminify.com",
+			"row_links": "",
+			"plugin_option": ""
+		}
+	},
+	"users_security": [],
+	"adminify_assets": [],
+	"revisions": []
+}

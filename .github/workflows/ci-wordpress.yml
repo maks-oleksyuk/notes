@@ -14,7 +14,7 @@ on:
       - README.md
       - LICENSE.md
 
-  # Allows to run this workflow manually from the Actions tab.
+  # Allows running this workflow manually from the Actions tab.
   workflow_dispatch:
 
 jobs:
@@ -35,28 +35,25 @@ jobs:
   lint:
     name: '🪄 Lint | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     strategy:
+      fail-fast: false
       matrix:
         command:
           - {
               name: '📦 Composer',
               command: 'lint:composer',
-              php: true,
-              node: false,
+              use-php: true,
             }
           - {
-            name: '🐘 PHPCS',
-            command: 'lint:phpcs',
-            php: true,
-            node: false,
-          }
+              name: '🐘 PHPCS',
+              command: 'lint:phpcs',
+              use-php: true,
+            }
           - {
               name: '🅿️ Prettier',
               command: 'lint:prettier',
-              php: false,
-              node: true,
+              use-node: true,
             }
 
     steps:
@@ -66,8 +63,8 @@ jobs:
       - name: '⚙️ Prepare environment'
         uses: ./.github/actions/setup-validation
         with:
-          use-php: ${{ matrix.command.php }}
-          use-node: ${{ matrix.command.node }}
+          use-php: ${{ matrix.command.use-php }}
+          use-node: ${{ matrix.command.use-node }}
 
       - name: '${{ matrix.command.name }} validate'
         run: task ${{ matrix.command.command }}

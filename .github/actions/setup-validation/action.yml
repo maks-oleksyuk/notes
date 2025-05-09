@@ -47,21 +47,27 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
-        key: "${{ runner.os }}-${{ github.ref_name }}-composer-${{ hashFiles('**/composer.lock') }}"
-        restore-keys: ${{ runner.os }}-${{ github.ref_name }}-composer-
+        key: "composer-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}-${{ hashFiles('**/composer.lock') }}"
+        restore-keys: |
+          composer-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}
+          composer-cache-${{ runner.os }}-${{ github.base_ref }}
+          composer-cache-${{ runner.os }}-wordpress
 
     - name: '💽 Cache var directory'
       uses: actions/cache@v4
       if: ${{ inputs.use-php == 'true' }}
       with:
         path: var
-        key: "${{ runner.os }}-${{ github.ref_name }}-var"
-        restore-keys: ${{ runner.os }}-${{ github.ref_name }}-var
+        key: "var-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}"
+        restore-keys: |
+          var-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}
+          var-cache-${{ runner.os }}-${{ github.base_ref }}
+          var-cache-${{ runner.os }}-wordpress
 
     - name: '📦 Install composer dependencies'
       if: ${{ inputs.use-php == 'true' }}
       shell: bash
-      run: composer i --quiet --no-progress --no-scripts --ansi;
+      run: composer i --no-progress --no-scripts -qn --ansi;
 
     - name: '🟧 Setup pnpm'
       if: ${{ inputs.use-node == 'true' }}

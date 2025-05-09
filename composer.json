@@ -9,13 +9,12 @@
 		"oscarotero/env": "^2.1",
 		"roots/bedrock-autoloader": "^1.0",
 		"roots/bedrock-disallow-indexing": "^2.0",
-		"roots/wordpress": "^6.7",
+		"roots/wordpress": "^6.8",
 		"roots/wp-config": "^1.0",
-		"roots/wp-password-bcrypt": "^1.2",
 		"vlucas/phpdotenv": "^5.6",
 		"wordpress-notes/nts_site": "^1.0@dev",
-		"wpackagist-plugin/uipress-lite": "^3.5",
-		"wpackagist-theme/twentytwentyfive": "^1.1"
+		"wpackagist-plugin/adminify": "^4.0",
+		"wpackagist-theme/twentytwentyfive": "^1.2"
 	},
 	"require-dev": {
 		"phpcompatibility/phpcompatibility-wp": "^2.1",
