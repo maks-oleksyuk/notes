@@ -208,7 +208,6 @@ tasks:
       - lint:p
       - lint:php
       - lint:csf
-      - lint:php:cs-fixer
     cmds:
       - task: php-cs-fixer
         vars: { CLI_ARGS: '--dry-run --diff {{.CLI_ARGS}}' }
@@ -245,9 +244,11 @@ tasks:
     label: 'Prettier'
     desc: 'Checks for common format issues with prettier.'
     aliases:
-      - format
+      - l:f
+      - l:prt
       - l:format
-      - l:prettier
+      - lint:f
+      - lint:prt
       - lint:format
     cmds:
       - task: prettier
@@ -283,9 +284,13 @@ tasks:
     label: 'PHP CS Fixer'
     desc: 'Fix PHP CS Fixer issues.'
     aliases:
+      - f:p
+      - f:csf
       - f:php
-      - fix:php
       - f:php-cs-fixer
+      - fix:p
+      - fix:csf
+      - fix:php
       - fix:php-cs-fixer
     cmds:
       - task: php-cs-fixer
@@ -304,10 +309,12 @@ tasks:
     label: 'Prettier'
     desc: 'Fix format issues.'
     aliases:
+      - f:f
+      - f:prt
       - f:format
-      - f:prettier
+      - fix:f
+      - fix:prt
       - fix:format
-      - format:fix
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '. -wl' }

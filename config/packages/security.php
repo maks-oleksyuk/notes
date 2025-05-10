@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Entity\User;
-use App\Enum\Role;
+use App\Enum\UserRole;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Config\Security\PasswordHasherConfig;
@@ -42,7 +42,7 @@ return static function (ContainerConfigurator $containerConfigurator, SecurityCo
     $securityConfig
         ->accessControl()
         ->path('admin')
-        ->roles(Role::ADMIN->value);
+        ->roles(UserRole::ADMIN->value);
 
     if ('test' === $containerConfigurator->env()) {
         $passwordHasher = $securityConfig->passwordHasher(PasswordAuthenticatedUserInterface::class);

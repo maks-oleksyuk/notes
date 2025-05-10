@@ -28,6 +28,7 @@ return static function (
 
     $ormConfig
         ->autoGenerateProxyClasses(true)
+        ->proxyDir(param('kernel.project_dir').'/var/doctrine/orm/Proxies')
         ->enableLazyGhostObjects(true)
         ->controllerResolver()
         ->autoMapping(false);
@@ -57,8 +58,7 @@ return static function (
 
     if ('prod' === $containerConfigurator->env()) {
         $ormConfig
-            ->autoGenerateProxyClasses(false)
-            ->proxyDir(param('kernel.project_dir').'/doctrine/orm/Proxies');
+            ->autoGenerateProxyClasses(false);
 
         $entityManagerConfig->queryCacheDriver([
             'type' => 'pool',

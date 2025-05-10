@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\User;
-use App\Enum\Role;
+use App\Enum\UserRole;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -22,11 +22,11 @@ final class UserFixtures extends Fixture
     private array $usersData = [[
         'username' => 'admin',
         'password' => 'admin',
-        'roles' => [Role::ADMIN->value],
+        'roles' => [UserRole::ADMIN->value],
     ], [
         'username' => 'test',
         'password' => 'test',
-        'roles' => [Role::USER->value],
+        'roles' => [UserRole::USER->value],
     ]];
 
     public function __construct(
