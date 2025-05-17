@@ -46,6 +46,19 @@ tasks:
     cmd: '{{.PHP_BIN}} bin/console {{.CLI_ARGS}} --ansi'
     silent: true
 
+  bin/phpunit:
+    label: 'Symfony phpunit'
+    desc: 'Runs `bin/phpunit` command.'
+    aliases:
+      - phpunit
+    cmd:
+      '{{.PHP_BIN}} bin/phpunit
+      -c {{.CONFIG_DIR}}/phpunit.dist.xml
+      {{.CLI_ARGS}} --colors=always'
+    env:
+      APP_ENV: test
+    silent: true
+
   php-cs-fixer:
     label: 'PHP CS Fixer'
     desc: 'Runs `php-cs-fixer` command.'
@@ -291,7 +304,6 @@ tasks:
       - fix:p
       - fix:csf
       - fix:php
-      - fix:php-cs-fixer
     cmds:
       - task: php-cs-fixer
 
@@ -318,3 +330,39 @@ tasks:
     cmds:
       - task: prettier
         vars: { CLI_ARGS: '. -wl' }
+
+  # Testing:
+
+  test:
+    label: 'Project test'
+    desc: 'Run project test.'
+    aliases:
+      - t
+      - qa
+    cmds:
+      - defer: { task: test:integration }
+      - defer: { task: test:unit }
+
+  test:integration:
+    label: 'Integration test'
+    desc: 'Run integration tests.'
+    aliases:
+      - t:i
+      - t:integration
+      - qa:i
+      - qa:integration
+    cmds:
+      - task: bin/phpunit
+        vars: { CLI_ARGS: '--testsuite=Integration {{.CLI_ARGS}}' }
+
+  test:unit:
+    label: 'Unit test'
+    desc: 'Run unit tests.'
+    aliases:
+      - t:u
+      - t:unit
+      - qa:u
+      - qa:unit
+    cmds:
+      - task: bin/phpunit
+        vars: { CLI_ARGS: '--testsuite=Unit {{.CLI_ARGS}}' }

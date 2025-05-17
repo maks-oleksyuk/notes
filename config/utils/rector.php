@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
-use Rector\Symfony\Set\SymfonySetList;
 use Rector\ValueObject\PhpVersion;
 
 return RectorConfig::configure()
@@ -14,6 +13,12 @@ return RectorConfig::configure()
     ])
     ->withPhpVersion(PhpVersion::PHP_84)
     ->withPhpSets(php84: true)
+    ->withComposerBased(
+        twig: true,
+        doctrine: true,
+        phpunit: true,
+        symfony: true,
+    )
     ->withPreparedSets(
         deadCode: true,
         codeQuality: true,
@@ -29,12 +34,12 @@ return RectorConfig::configure()
     ->withAttributesSets(
         symfony: true,
         doctrine: true,
+        phpunit: true,
     )
-    ->withSets([
-        SymfonySetList::SYMFONY_72,
-        SymfonySetList::SYMFONY_CONSTRUCTOR_INJECTION,
-    ])
-    ->withImportNames(importShortClasses: false, removeUnusedImports: true)
+    ->withImportNames(
+        importShortClasses: false,
+        removeUnusedImports: true,
+    )
     ->withPHPStanConfigs([__DIR__.'/phpstan.neon'])
     ->withSymfonyContainerXml(__DIR__.'/../../var/cache/dev/App_KernelDevDebugContainer.xml')
     ->withParallel()

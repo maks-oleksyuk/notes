@@ -83,3 +83,55 @@ jobs:
 
       - name: '${{ matrix.command.name }} validate'
         run: task ${{ matrix.command.command }}
+
+  test:
+    name: '♻️ Test | ${{ matrix.command.name }}'
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: mariadb:11.4
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_DATABASE: db_test
+          MARIADB_USER: db
+          MARIADB_PASSWORD: db
+          MARIADB_ROOT_PASSWORD: root
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - { name: '🔬 Unit',        command: 'test:unit' }
+          - { name: '⚗️ Integration', command: 'test:integration' }
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@v4
+
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-testing
+
+      - name: '${{ matrix.command.name }} tests'
+        run: task ${{ matrix.command.command }}
+
+      - name: '☂️ Upload results to Codecov'
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: maks-oleksyuk/notes
+          flags: ${{ matrix.command.name }}
+          directory: ./var/report
+
+      - name: '☂️ Upload test results to Codecov'
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.command.name }}
+          directory: ./var/report
