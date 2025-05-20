@@ -108,8 +108,9 @@ jobs:
       fail-fast: false
       matrix:
         command:
-          - { name: '🔬 Unit',        command: 'test:unit' }
-          - { name: '⚗️ Integration', command: 'test:integration' }
+          - { name: '🔬 Unit',        command: 'test:unit -- --no-progress' }
+          - { name: '🧬 Integration', command: 'test:integration -- --no-progress' }
+          # - { name: '🔮 Application', command: 'test:application -- --no-progress' }
 
     steps:
       - name: '🛎 Checkout'

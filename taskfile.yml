@@ -340,8 +340,21 @@ tasks:
       - t
       - qa
     cmds:
+      # - defer: { task: test:application }
       - defer: { task: test:integration }
       - defer: { task: test:unit }
+
+  test:unit:
+    label: 'Unit test'
+    desc: 'Run unit tests.'
+    aliases:
+      - t:u
+      - t:unit
+      - qa:u
+      - qa:unit
+    cmds:
+      - task: bin/phpunit
+        vars: { CLI_ARGS: '--testsuite=Unit {{.CLI_ARGS}}' }
 
   test:integration:
     label: 'Integration test'
@@ -355,14 +368,14 @@ tasks:
       - task: bin/phpunit
         vars: { CLI_ARGS: '--testsuite=Integration {{.CLI_ARGS}}' }
 
-  test:unit:
-    label: 'Unit test'
-    desc: 'Run unit tests.'
+  test:application:
+    label: 'application test'
+    desc: 'Run application tests.'
     aliases:
-      - t:u
-      - t:unit
-      - qa:u
-      - qa:unit
+      - t:a
+      - t:application
+      - qa:a
+      - qa:application
     cmds:
       - task: bin/phpunit
-        vars: { CLI_ARGS: '--testsuite=Unit {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '--testsuite=Application {{.CLI_ARGS}}' }

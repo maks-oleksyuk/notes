@@ -5,19 +5,23 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Entity;
 
 use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Doctrine\ORM\EntityManagerInterface;
 
-class UserTest extends KernelTestCase
+#[CoversClass(User::class)]
+final class UserTest extends KernelTestCase
 {
     private ValidatorInterface $validator;
+
     private EntityManagerInterface $em;
 
     protected function setUp(): void
     {
         self::bootKernel();
-        $container = static::getContainer();
+        $container = self::getContainer();
+
         $this->validator = $container->get(ValidatorInterface::class);
         $this->em = $container->get(EntityManagerInterface::class);
 
@@ -26,40 +30,32 @@ class UserTest extends KernelTestCase
 
     public function testValidUser(): void
     {
-        $user = (new User())
-            ->setUsername('validuser')
-            ->setPassword('password');
-
+        $user = new User()->setUsername('valid_user');
         $violations = $this->validator->validate($user);
-        $this->assertCount(0, $violations);
+
+        self::assertCount(0, $violations);
     }
 
     public function testShortUsername(): void
     {
-        $user = (new User())
-            ->setUsername('ab') // too short
-            ->setPassword('123');
-
+        $user = new User()->setUsername('ab');
         $violations = $this->validator->validate($user);
-        $this->assertGreaterThan(0, count($violations));
-        $this->assertSame('Username must be at least 3 characters', $violations[0]->getMessage());
+
+        self::assertCount(1, $violations);
+        self::assertSame('Username must be at least 3 characters', $violations->get(0)->getMessage());
     }
 
     public function testUniqueUsernameConstraint(): void
     {
-        $user1 = (new User())
-            ->setUsername('duplicate')
-            ->setPassword('pwd');
-
-        $user2 = (new User())
-            ->setUsername('duplicate')
-            ->setPassword('pwd');
+        $user1 = new User()->setUsername('duplicate')->setPassword('pass');
+        $user2 = new User()->setUsername('duplicate')->setPassword('pass');
 
         $this->em->persist($user1);
         $this->em->flush();
 
         $violations = $this->validator->validate($user2);
-        $this->assertGreaterThan(0, count($violations));
-        $this->assertSame('There is already an account with this username', $violations[0]->getMessage());
+
+        self::assertCount(1, $violations);
+        self::assertSame('There is already an account with this username', $violations->get(0)->getMessage());
     }
 }

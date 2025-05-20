@@ -90,6 +90,4 @@ runs:
       shell: bash
       run: |
         cp .env.example .env
-        sed -i 's/^APP_ENV=.*/APP_ENV=test/' .env
-        php bin/console cache:warmup -q
-        APP_DEBUG=1 php bin/console cache:warmup --env=dev -q
+        APP_DEBUG=1 php bin/console cache:warmup -q

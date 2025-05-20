@@ -10,6 +10,7 @@ return RectorConfig::configure()
     ->withPaths([
         __DIR__.'/../../config',
         __DIR__.'/../../src',
+        __DIR__.'/../../tests',
     ])
     ->withPhpVersion(PhpVersion::PHP_84)
     ->withPhpSets(php84: true)

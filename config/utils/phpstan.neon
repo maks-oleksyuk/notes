@@ -1,7 +1,9 @@
 includes:
   - ../../vendor/phpstan/phpstan-doctrine/extension.neon
   - ../../vendor/phpstan/phpstan-symfony/extension.neon
+  - ../../vendor/phpstan/phpstan-phpunit/extension.neon
   - ../../vendor/phpstan/phpstan-symfony/rules.neon
+  - ../../vendor/phpstan/phpstan-phpunit/rules.neon
   - ../../vendor/phpstan/phpstan-strict-rules/rules.neon
   - ../../vendor/phpstan/phpstan-deprecation-rules/rules.neon
 
@@ -10,11 +12,13 @@ parameters:
   paths:
     - ../../config
     - ../../src
-#   - ../../tests
+    - ../../tests
   doctrine:
     reportDynamicQueryBuilders: true
     reportUnknownTypes: true
     literalString: true
+  symfony:
+    containerXmlPath: ../../var/cache/dev/App_KernelDevDebugContainer.xml
   tmpDir: ../../var/cache/phpstan
   scanDirectories:
     - ../../var/cache/dev/Symfony/Config
