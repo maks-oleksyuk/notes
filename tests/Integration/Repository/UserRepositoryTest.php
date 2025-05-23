@@ -24,10 +24,32 @@ final class UserRepositoryTest extends KernelTestCase
         self::bootKernel();
         $container = self::getContainer();
 
-        $this->repository = self::getContainer()->get(UserRepository::class);
         $this->em = $container->get(EntityManagerInterface::class);
+        $this->repository = $container->get(UserRepository::class);
 
         $this->em->createQuery('DELETE FROM App\Entity\User')->execute();
+    }
+
+    public function testFindOneByUsernameReturnsUserWhenExists(): void
+    {
+        $user = new User()
+            ->setUsername('maks')
+            ->setPassword('password');
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        $found = $this->repository->findOneByUsername('maks');
+
+        self::assertInstanceOf(User::class, $found);
+        self::assertSame('maks', $found->getUsername());
+    }
+
+    public function testFindOneByUsernameReturnsNullWhenNotExists(): void
+    {
+        $result = $this->repository->findOneByUsername('ghost');
+
+        self::assertNull($result);
     }
 
     public function testUpgradePasswordThrowsForUnsupportedUser(): void

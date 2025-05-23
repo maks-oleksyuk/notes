@@ -50,6 +50,7 @@ tasks:
     label: 'Symfony phpunit'
     desc: 'Runs `bin/phpunit` command.'
     aliases:
+      - unit
       - phpunit
     cmd:
       '{{.PHP_BIN}} bin/phpunit

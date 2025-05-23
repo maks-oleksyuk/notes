@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Integration\DataFixtures;
 
 use App\DataFixtures\UserFixtures;
-use App\Entity\User;
 use App\Enum\UserRole;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -17,6 +17,8 @@ final class UserFixturesTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
 
+    private UserRepository $userRepository;
+
     private UserPasswordHasherInterface $passwordHasher;
 
     protected function setUp(): void
@@ -25,6 +27,7 @@ final class UserFixturesTest extends KernelTestCase
         $container = self::getContainer();
 
         $this->em = $container->get(EntityManagerInterface::class);
+        $this->userRepository = $container->get(UserRepository::class);
         $this->passwordHasher = $container->get(UserPasswordHasherInterface::class);
 
         $this->em->createQuery('DELETE FROM App\Entity\User')->execute();
@@ -35,23 +38,18 @@ final class UserFixturesTest extends KernelTestCase
         $fixtures = new UserFixtures($this->passwordHasher);
         $fixtures->load($this->em);
 
-        $users = $this->em->getRepository(User::class)->findAll();
+        $users = $this->userRepository->findAll();
 
         self::assertCount(2, $users);
 
-        $admin = $this->findUserByUsername('admin');
+        $admin = $this->userRepository->findOneByUsername('admin');
         self::assertNotNull($admin);
         self::assertContains(UserRole::ADMIN->value, $admin->getRoles());
         self::assertTrue($this->passwordHasher->isPasswordValid($admin, 'admin'));
 
-        $testUser = $this->findUserByUsername('test');
+        $testUser = $this->userRepository->findOneByUsername('test');
         self::assertNotNull($testUser);
         self::assertContains(UserRole::USER->value, $testUser->getRoles());
         self::assertTrue($this->passwordHasher->isPasswordValid($testUser, 'test'));
-    }
-
-    private function findUserByUsername(string $username): ?User
-    {
-        return $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
     }
 }
