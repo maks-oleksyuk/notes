@@ -7,6 +7,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 final class SecurityController extends AbstractController
@@ -14,6 +15,10 @@ final class SecurityController extends AbstractController
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        if ($this->getUser() instanceof UserInterface) {
+            return $this->redirectToRoute('admin');
+        }
+
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
@@ -39,7 +44,7 @@ final class SecurityController extends AbstractController
             // the title visible above the login form (define this option only if you are
             // rendering the login template in a regular Symfony controller; when rendering
             // it from an EasyAdmin Dashboard this is automatically set as the Dashboard title)
-            'page_title' => 'Symfony Notes login',
+            'page_title' => 'Symfony Notes | Login',
 
             // the string used to generate the CSRF token. If you don't define
             // this parameter, the login form won't include a CSRF token
@@ -58,13 +63,13 @@ final class SecurityController extends AbstractController
             'sign_in_label' => 'Log in',
 
             // whether to enable or not the "forgot password?" link (default: false)
-            'forgot_password_enabled' => true,
+            // 'forgot_password_enabled' => true,
 
             // the path (i.e. a relative or absolute URL) to visit when clicking the "forgot password?" link (default: '#')
             // 'forgot_password_path' => $this->generateUrl('...', ['...' => '...']),
 
             // the label displayed for the "forgot password?" link (the |trans filter is applied to it)
-            'forgot_password_label' => 'Forgot your password?',
+            // 'forgot_password_label' => 'Forgot your password?',
 
             // whether to enable or not the "remember me" checkbox (default: false)
             'remember_me_enabled' => true,

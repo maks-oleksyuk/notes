@@ -341,9 +341,8 @@ tasks:
       - t
       - qa
     cmds:
-      # - defer: { task: test:application }
-      - defer: { task: test:integration }
-      - defer: { task: test:unit }
+      - task: bin/phpunit
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
   test:unit:
     label: 'Unit test'

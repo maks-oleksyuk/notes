@@ -56,5 +56,6 @@ runs:
         cp .env.example .env
         sed -i -e '/^APP_ENV=/s/=.*/=test/' -e 't' -e '$aAPP_ENV=test' .env
         sed -i -e '/^DB_HOST=/s/=.*/=127.0.0.1/' -e 't' -e '$aDB_HOST=127.0.0.1' .env
-        php bin/console doctrine:database:create --env=test --if-not-exists --ansi
-        php bin/console doctrine:schema:create --env=test --ansi
+        php bin/console doctrine:database:create --env=test --if-not-exists -q
+        php bin/console doctrine:schema:create --env=test -q
+        php bin/console cache:warmup --env=test -q

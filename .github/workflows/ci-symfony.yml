@@ -110,7 +110,7 @@ jobs:
         command:
           - { name: '🔬 Unit',        command: 'test:unit -- --no-progress' }
           - { name: '🧬 Integration', command: 'test:integration -- --no-progress' }
-          # - { name: '🔮 Application', command: 'test:application -- --no-progress' }
+          - { name: '🔮 Application', command: 'test:application -- --no-progress' }
 
     steps:
       - name: '🛎 Checkout'

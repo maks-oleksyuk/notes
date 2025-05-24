@@ -35,10 +35,10 @@ final class UserTest extends TestCase
     public function testRolesCanBeSetAndRetrieved(): void
     {
         $user = new User();
-        $user->setRoles(['ROLE_ADMIN']);
+        $user->setRoles([UserRole::ADMIN->value]);
 
         self::assertContains(UserRole::ADMIN->value, $user->getRoles());
-        // every user at least has ROLE_USER
+        // every user at least has `ROLE_USER`
         self::assertContains(UserRole::USER->value, $user->getRoles());
         self::assertCount(2, $user->getRoles());
     }
