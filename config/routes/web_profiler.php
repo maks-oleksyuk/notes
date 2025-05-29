@@ -7,10 +7,10 @@ use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 return static function (RoutingConfigurator $routingConfigurator): void {
     if ('dev' === $routingConfigurator->env()) {
         $routingConfigurator
-            ->import('@WebProfilerBundle/Resources/config/routing/wdt.xml')
+            ->import('@WebProfilerBundle/Resources/config/routing/wdt.php')
             ->prefix('/_wdt');
         $routingConfigurator
-            ->import('@WebProfilerBundle/Resources/config/routing/profiler.xml')
+            ->import('@WebProfilerBundle/Resources/config/routing/profiler.php')
             ->prefix('/_profiler');
     }
 };

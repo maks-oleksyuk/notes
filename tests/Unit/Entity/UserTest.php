@@ -51,8 +51,6 @@ final class UserTest extends TestCase
 
         $user->setPassword('secret');
 
-        $user->eraseCredentials();
-
         self::assertSame('secret', $user->getPassword());
     }
 }

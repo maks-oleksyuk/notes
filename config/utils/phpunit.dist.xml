@@ -5,6 +5,9 @@
          xsi:noNamespaceSchemaLocation="../../vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="../../tests/bootstrap.php"
          cacheDirectory="../../var/cache/phpunit/.phpunit.cache"
+         failOnDeprecation="true"
+         failOnWarning="true"
+         failOnNotice="true"
          colors="true"
 >
     <testsuites>
@@ -19,24 +22,37 @@
         </testsuite>
     </testsuites>
 
-    <source ignoreSuppressionOfDeprecations="true" restrictNotices="true" restrictWarnings="true">
+    <source ignoreSuppressionOfDeprecations="true"
+            ignoreIndirectDeprecations="true"
+            restrictWarnings="true"
+            restrictNotices="true"
+    >
         <include>
             <directory>../../src</directory>
         </include>
+
+        <deprecationTrigger>
+            <function>trigger_deprecation</function>
+        </deprecationTrigger>
     </source>
 
     <php>
         <ini name="display_errors" value="1"/>
         <ini name="error_reporting" value="-1"/>
 
-        <env name="APP_ENV" value="test" force="true"/>
+        <env name="APP_ENV" value="test"/>
         <env name="KERNEL_CLASS" value="App\Kernel"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
 
         <server name="APP_ENV" value="test" force="true"/>
         <server name="SHELL_VERBOSITY" value="-1"/>
     </php>
 
     <extensions>
+        <bootstrap class="Symfony\Bridge\PhpUnit\SymfonyExtension">
+            <parameter name="clock-mock-namespaces" value="App" />
+            <parameter name="dns-mock-namespaces" value="App" />
+        </bootstrap>
     </extensions>
 
     <coverage>
