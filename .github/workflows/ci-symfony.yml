@@ -70,6 +70,11 @@ jobs:
               command: 'lint:symfony',
               use-php: true,
           }
+          - {
+            name: '🌿 Twig CS Fixer',
+            command: 'lint:twig -- --report=github',
+            use-php: true,
+          }
 
     steps:
       - name: '🛎 Checkout'
@@ -108,9 +113,9 @@ jobs:
       fail-fast: false
       matrix:
         command:
-          - { name: '🔬 Unit',        command: 'test:unit -- --no-progress' }
-          - { name: '🧬 Integration', command: 'test:integration -- --no-progress' }
           - { name: '🔮 Application', command: 'test:application -- --no-progress' }
+          - { name: '🧬 Integration', command: 'test:integration -- --no-progress' }
+          - { name: '🔬 Unit',        command: 'test:unit -- --no-progress' }
 
     steps:
       - name: '🛎 Checkout'

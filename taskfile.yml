@@ -93,6 +93,18 @@ tasks:
       --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
     silent: true
 
+  twig-cs-fixer:
+    label: 'Twig CS Fixer'
+    desc: 'Runs `twig-cs-fixer` command.'
+    aliases:
+      - tcsf
+      - twig:cs-fixer
+    cmd: '
+      {{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/twig-cs-fixer
+      lint --config={{.CONFIG_DIR}}/.twig-cs-fixer.php
+      {{.CLI_ARGS}} --ansi'
+    silent: true
+
   prettier:
     label: 'Prettier'
     desc: 'Runs `prettier` command.'
@@ -140,6 +152,7 @@ tasks:
       - l
     cmds:
       - defer: { task: lint:prettier }
+      - defer: { task: lint:twig }
       - defer: { task: lint:rector }
       - defer: { task: lint:phpstan }
       - defer: { task: lint:php-cs-fixer }
@@ -254,6 +267,19 @@ tasks:
       - task: rector
         vars: { CLI_ARGS: 'process --dry-run {{.CLI_ARGS}}' }
 
+  lint:twig:
+    label: 'Twig linter'
+    desc: 'Lints Twig files.'
+    aliases:
+      - l:t
+      - l:twig
+      - lint:t
+    cmds:
+      - task: twig-cs-fixer
+        vars: { CLI_ARGS: '-V' }
+      - task: twig-cs-fixer
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
+
   lint:prettier:
     label: 'Prettier'
     desc: 'Checks for common format issues with prettier.'
@@ -279,6 +305,7 @@ tasks:
       - f
     cmds:
       - defer: { task: fix:prettier }
+      - defer: { task: fix:twig }
       - defer: { task: fix:rector }
       - defer: { task: fix:php-cs-fixer }
       - defer: { task: fix:composer }
@@ -317,6 +344,17 @@ tasks:
     cmds:
       - task: rector
         vars: { CLI_ARGS: 'process {{.CLI_ARGS}}' }
+
+  fix:twig:
+    label: 'Twig CS Fixer '
+    desc: 'Fix Twig CS Fixer issues.'
+    aliases:
+      - f:t
+      - f:twig
+      - fix:t
+    cmds:
+      - task: twig-cs-fixer
+        vars: { CLI_ARGS: '--fix' }
 
   fix:prettier:
     label: 'Prettier'
