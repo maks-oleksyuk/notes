@@ -1,30 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'Maintenance Mode'|trans }}{% endblock %}
+{% block title %}{{ 'Maintenance Mode' }}{% endblock %}
 
 {% block body %}
     <div class="maintenance">
-        <h1>Site temporarily under maintenance</h1>
-        <p>Sorry for the inconvenience, we will get back soon!</p>
+        <h1>{{ 'Site temporarily under maintenance' }}</h1>
+        <p>{{ 'Sorry for the inconvenience, we will get back soon!' }}</p>
     </div>
 
     <style>
         html, body {
             height: 100%;
+            margin: 0;
         }
 
         body {
-            margin: 0;
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: center;
-            background-image: url("https://sdmntpritalynorth.oaiusercontent.com/files/00000000-9c8c-6246-8f6f-9b7194e24751/raw?se=2025-05-04T15%3A44%3A52Z&sp=r&sv=2024-08-04&sr=b&scid=28b614f8-5dcf-5c04-95d9-f1467cc7bb62&skoid=59d06260-d7df-416c-92f4-051f0b47c607&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-05-04T06%3A28%3A05Z&ske=2025-05-05T06%3A28%3A05Z&sks=b&skv=2024-08-04&sig=xW8bLKYTsz%2BwpHzFoD1QQMbB14BkETEraAj5eNN5/Oo%3D");
+            font-family: Verdana, sans-serif;
+            background: #000000;
+            background: linear-gradient(to bottom, #000000 60%, #966a19);
         }
 
         .maintenance {
             color: white;
             text-align: center;
-            padding-top: 10dvh;
+            padding-top: 20dvh;
+            display: flex;
+            flex-direction: column;
         }
     </style>
 {% endblock %}
