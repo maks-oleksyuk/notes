@@ -21,7 +21,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     #[ORM\Id]
     #[ORM\Column]
     #[ORM\GeneratedValue]
-    private readonly int $id;
+    private int $id;
 
     /** @var non-empty-string */
     #[Assert\Length(min: 3, minMessage: 'Username must be at least {{ limit }} characters')]

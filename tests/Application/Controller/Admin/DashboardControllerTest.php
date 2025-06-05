@@ -92,5 +92,10 @@ final class DashboardControllerTest extends WebTestCase
         self::assertSame(MenuItemDto::TYPE_DASHBOARD, $dto->getType());
         self::assertSame('Dashboard', $dto->getLabel());
         self::assertSame('fa fa-home', $dto->getIcon());
+
+        $dto = $menuItems[1]->getAsDto();
+        self::assertSame(MenuItemDto::TYPE_CRUD, $dto->getType());
+        self::assertSame('Users', $dto->getLabel());
+        self::assertSame('fa fa-users', $dto->getIcon());
     }
 }
