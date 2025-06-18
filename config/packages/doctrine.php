@@ -27,13 +27,12 @@ return static function (
         ->useSavepoints(true);
 
     $ormConfig
-        ->autoGenerateProxyClasses(true)
-        ->proxyDir(param('kernel.project_dir').'/var/doctrine/orm/Proxies')
         ->enableLazyGhostObjects(true)
         ->controllerResolver()
         ->autoMapping(false);
 
     $entityManagerConfig
+        ->enableNativeLazyObjects(true)
         ->reportFieldsWhereDeclared(true)
         ->validateXmlMapping(true)
         ->namingStrategy('doctrine.orm.naming_strategy.underscore_number_aware')
@@ -57,9 +56,6 @@ return static function (
     }
 
     if ('prod' === $containerConfigurator->env()) {
-        $ormConfig
-            ->autoGenerateProxyClasses(false);
-
         $entityManagerConfig->queryCacheDriver([
             'type' => 'pool',
             'pool' => 'doctrine.system_cache_pool',

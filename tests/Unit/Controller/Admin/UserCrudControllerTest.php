@@ -7,8 +7,9 @@ namespace App\Tests\Unit\Controller\Admin;
 use App\Controller\Admin\UserCrudController;
 use App\EasyAdmin\Field\LinkedTextField;
 use App\Entity\User;
+use App\Enum\UserRole;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -47,7 +48,7 @@ final class UserCrudControllerTest extends TestCase
 
         self::assertInstanceOf(IdField::class, $fields[0]);
         self::assertInstanceOf(LinkedTextField::class, $fields[1]);
-        self::assertInstanceOf(ArrayField::class, $fields[2]);
+        self::assertInstanceOf(ChoiceField::class, $fields[2]);
 
         $idFieldDto = $fields[0]->getAsDto();
         self::assertSame('id', $idFieldDto->getProperty());
@@ -62,6 +63,9 @@ final class UserCrudControllerTest extends TestCase
 
         $rolesFieldDto = $fields[2]->getAsDto();
         self::assertSame('roles', $rolesFieldDto->getProperty());
+        self::assertSame(array_column(UserRole::cases(), 'value', 'name'), $rolesFieldDto->getCustomOption(ChoiceField::OPTION_CHOICES));
+        self::assertTrue($rolesFieldDto->getCustomOption(ChoiceField::OPTION_ALLOW_MULTIPLE_CHOICES));
+        self::assertTrue($rolesFieldDto->getCustomOption(ChoiceField::OPTION_RENDER_EXPANDED));
         self::assertFalse($rolesFieldDto->isSortable());
     }
 

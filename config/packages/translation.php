@@ -11,6 +11,5 @@ return static function (FrameworkConfig $config): void {
 
     $config
         ->translator()
-        ->defaultPath(param('kernel.project_dir').'/translations')
-        ->fallbacks(['en']);
+        ->defaultPath(param('kernel.project_dir').'/translations');
 };

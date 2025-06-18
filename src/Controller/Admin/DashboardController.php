@@ -24,7 +24,7 @@ final class DashboardController extends AbstractDashboardController
     #[\Override]
     public function configureDashboard(): Dashboard
     {
-        return Dashboard::new()
+        return parent::configureDashboard()
             ->setTitle('Symfony Notes')
             ->setDefaultColorScheme(ColorScheme::AUTO);
     }

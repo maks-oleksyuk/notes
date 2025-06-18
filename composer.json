@@ -8,9 +8,9 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "doctrine/dbal": "^4.2",
-        "doctrine/doctrine-bundle": "^2.14",
+        "doctrine/doctrine-bundle": "^2.15",
         "doctrine/doctrine-migrations-bundle": "^3.4",
-        "doctrine/orm": "^3.3",
+        "doctrine/orm": "^3.4",
         "easycorp/easyadmin-bundle": "^4.24",
         "symfony/console": "^7.3",
         "symfony/dotenv": "^7.3",
@@ -37,7 +37,7 @@
         "symfony/phpunit-bridge": "^7.3",
         "symfony/stopwatch": "^7.3",
         "symfony/web-profiler-bundle": "^7.3",
-        "vincentlanglet/twig-cs-fixer": "^3.7"
+        "vincentlanglet/twig-cs-fixer": "^3.8"
     },
     "conflict": {
         "symfony/symfony": "*"
