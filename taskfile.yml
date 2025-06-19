@@ -143,6 +143,58 @@ tasks:
       - task: sf:console
         vars: { CLI_ARGS: 'cache:warmup' }
 
+  # Migrations:
+
+  migrations:create:
+    label: 'Create migration'
+    desc: 'Generate a new migration based on current schema'
+    aliases:
+      - m:c
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:diff --formatted {{.CLI_ARGS}}' }
+
+  migrations:run:
+    label: 'Run migrations'
+    desc: 'Apply all pending migrations'
+    aliases:
+      - m
+      - m:s
+      - m:r
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:migrate {{.CLI_ARGS}}' }
+
+  migrations:rerun-last:
+    label: 'Rerun last migration'
+    desc: 'Rollback and re-apply the last migration'
+    aliases:
+      - m:l
+      - m:rr
+      - m:rl
+      - m:lrr
+      - m:rrl
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:migrate prev -n' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:migrate next -n' }
+
+  migrations:reset:
+    label: 'Reset DB'
+    desc: 'Drop schema, clear versions, rerun migrations and load fixtures.'
+    aliases:
+      - m:rst
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:schema:drop --force' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:version --delete --all -q -n' }
+      - task: migrations:run
+        vars: { CLI_ARGS: '-n' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:fixtures:load --append -n' }
+
   # Linters:
 
   lint:

@@ -45,6 +45,15 @@ final class UserTest extends KernelTestCase
         self::assertSame('Username must be at least 3 characters', $violations->get(0)->getMessage());
     }
 
+    public function testUsernameWithSpaces(): void
+    {
+        $user = new User()->setUsername('user name');
+        $violations = $this->validator->validate($user);
+
+        self::assertCount(1, $violations);
+        self::assertSame('Username must not contain spaces', $violations->get(0)->getMessage());
+    }
+
     public function testUniqueUsernameConstraint(): void
     {
         $user1 = new User()->setUsername('duplicate')->setPassword('pass');

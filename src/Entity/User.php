@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
 #[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
-class User implements PasswordAuthenticatedUserInterface, UserInterface
+final class User implements PasswordAuthenticatedUserInterface, UserInterface
 {
     #[ORM\Id]
     #[ORM\Column]
@@ -25,6 +25,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
 
     /** @var non-empty-string */
     #[Assert\Length(min: 3, minMessage: 'Username must be at least {{ limit }} characters')]
+    #[Assert\Regex(pattern: '/^\S+$/', message: 'Username must not contain spaces')]
     #[ORM\Column(length: 30)]
     private string $username;
 
@@ -32,7 +33,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     #[ORM\Column(type: Types::JSON)]
     private array $roles = [];
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?string $password = null;
 
     public function getId(): int
