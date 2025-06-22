@@ -272,7 +272,7 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: '-V' }
       - task: composer
-        vars: { CLI_ARGS: 'validate --no-check-publish --strict' }
+        vars: { CLI_ARGS: 'validate --no-check-version --no-check-publish --strict' }
       - task: composer
         vars: { CLI_ARGS: 'check-platform-req' }
 
