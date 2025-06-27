@@ -25,6 +25,7 @@ return new PhpCsFixer\Config()
         'strict_param' => true,
     ])
     ->setFinder(new PhpCsFixer\Finder()
+        ->in(__DIR__ . '/../../bin')
         ->in(__DIR__ . '/../../config')
         ->in(__DIR__ . '/../../src')
         ->in(__DIR__ . '/../../tests')

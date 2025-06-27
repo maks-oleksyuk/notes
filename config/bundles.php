@@ -6,6 +6,7 @@ use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 use EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle;
+use Nelmio\ApiDocBundle\NelmioApiDocBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MakerBundle\MakerBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
@@ -20,6 +21,7 @@ return [
     DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
     DoctrineMigrationsBundle::class => ['all' => true],
     EasyAdminBundle::class => ['all' => true],
+    NelmioApiDocBundle::class => ['all' => true],
     FrameworkBundle::class => ['all' => true],
     MakerBundle::class => ['dev' => true],
     MonologBundle::class => ['all' => true],

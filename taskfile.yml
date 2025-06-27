@@ -372,6 +372,8 @@ tasks:
     cmds:
       - task: composer
         vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
+      - task: composer
+        vars: { CLI_ARGS: 'bump' }
 
   fix:php-cs-fixer:
     label: 'PHP CS Fixer'
