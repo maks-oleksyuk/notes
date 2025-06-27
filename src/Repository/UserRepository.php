@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Api\V1\Dto\Request\PaginationQueryDto;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -24,6 +25,24 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
     public function findOneByUsername(string $username): ?User
     {
         return $this->findOneBy(['username' => $username]);
+    }
+
+    /**
+     * @return User[]
+     */
+    public function paginate(int $page = 1, int $limit = PaginationQueryDto::DEFAULT_LIMIT): array
+    {
+        $offset = ($page - 1) * $limit;
+
+        /** @var User[] $result */
+        $result = $this->createQueryBuilder('u')
+            ->orderBy('u.id', 'ASC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+
+        return $result;
     }
 
     /**

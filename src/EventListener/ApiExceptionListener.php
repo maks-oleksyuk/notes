@@ -18,7 +18,7 @@ final readonly class ApiExceptionListener
     {
         $request = $event->getRequest();
 
-        if (!str_starts_with($request->getPathInfo(), '/api')) {
+        if (!str_starts_with($request->getPathInfo(), '/api/v')) {
             return;
         }
 
@@ -36,7 +36,7 @@ final readonly class ApiExceptionListener
             data: [
                 'title' => $message,
                 'status' => $statusCode,
-                'instance' => $request->getPathInfo(),
+                'instance' => $request->getRequestUri(),
             ],
             status: $statusCode,
             headers: [

@@ -27,6 +27,8 @@ return static function (
     }
 
     if ('test' === $containerConfigurator->env()) {
-        $frameworkProfilerConfig->collect(false);
+        $frameworkProfilerConfig
+            ->collect(false)
+            ->collectSerializerData(true);
     }
 };

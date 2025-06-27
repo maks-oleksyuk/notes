@@ -13,14 +13,15 @@
         "doctrine/orm": "^3.4.3",
         "easycorp/easyadmin-bundle": "^4.24.9",
         "nelmio/api-doc-bundle": "^5.4",
-        "symfony/console": "^7.3",
+        "symfony/console": "^7.3.1",
         "symfony/dotenv": "^7.3",
         "symfony/flex": "^2.7.1",
-        "symfony/framework-bundle": "^7.3",
+        "symfony/framework-bundle": "^7.3.1",
         "symfony/monolog-bundle": "^3.10",
-        "symfony/object-mapper": "^7.3",
-        "symfony/runtime": "^7.3",
-        "symfony/security-bundle": "^7.3"
+        "symfony/object-mapper": "^7.3.1",
+        "symfony/runtime": "^7.3.1",
+        "symfony/security-bundle": "^7.3.1",
+        "symfony/serializer": "^7.3.1"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^4.1",
@@ -36,9 +37,9 @@
         "symfony/browser-kit": "^7.3",
         "symfony/css-selector": "^7.3",
         "symfony/maker-bundle": "^1.63",
-        "symfony/phpunit-bridge": "^7.3",
+        "symfony/phpunit-bridge": "^7.3.1",
         "symfony/stopwatch": "^7.3",
-        "symfony/web-profiler-bundle": "^7.3",
+        "symfony/web-profiler-bundle": "^7.3.1",
         "vincentlanglet/twig-cs-fixer": "^3.8.1"
     },
     "conflict": {
