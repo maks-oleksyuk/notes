@@ -71,9 +71,6 @@ tasks:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/php-cs-fixer fix
       --config {{.CONFIG_DIR}}/.php-cs-fixer.php -v {{.CLI_ARGS}} --ansi'
     silent: true
-    env:
-      # todo: Delete when add support php 8.4.
-      PHP_CS_FIXER_IGNORE_ENV: 1
 
   phpstan:
     label: 'PHPStan'
@@ -88,9 +85,11 @@ tasks:
   rector:
     label: 'Rector'
     desc: 'Runs `rector` command.'
+    aliases:
+      - r
     cmd:
-      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector
-      --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector {{.CLI_ARGS}}
+      --config={{.CONFIG_DIR}}/rector.php --ansi'
     silent: true
 
   twig-cs-fixer:
@@ -142,6 +141,20 @@ tasks:
       - task: cache:clear
       - task: sf:console
         vars: { CLI_ARGS: 'cache:warmup' }
+
+  update:
+    label: 'Update project'
+    desc: 'Updates project dependencies withing constraints.'
+    prompt: |
+      This command can break website. Do it independently without any other active changes.
+      Make sure you have a backup. Never run it on production.
+    aliases:
+      - u
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: 'u -W' }
+      - task: pnpm
+        vars: { CLI_ARGS: 'up --save --latest' }
 
   # Migrations:
 
@@ -317,7 +330,7 @@ tasks:
       - task: rector
         vars: { CLI_ARGS: '-V' }
       - task: rector
-        vars: { CLI_ARGS: 'process --dry-run {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '--dry-run {{.CLI_ARGS}}' }
 
   lint:twig:
     label: 'Twig linter'
@@ -397,7 +410,7 @@ tasks:
       - f:rector
     cmds:
       - task: rector
-        vars: { CLI_ARGS: 'process {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
   fix:twig:
     label: 'Twig CS Fixer '

@@ -57,7 +57,9 @@ runs:
     - name: '💽 Cache var directory'
       uses: actions/cache@v4
       with:
-        path: var
+        path: |
+          var
+          !var/log
         key: "var-${{ runner.os }}-${{ github.head_ref || github.ref_name }}"
         restore-keys: |
           var-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}

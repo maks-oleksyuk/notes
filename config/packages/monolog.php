@@ -11,7 +11,7 @@ use Symfony\Config\MonologConfig;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
 
 return static function (MonologConfig $monologConfig, ContainerConfigurator $containerConfigurator): void {
-    $monologConfig->channels(['deprecation']);
+    $monologConfig->channels(['api', 'deprecation']);
 
     switch ($containerConfigurator->env()) {
         case 'prod':
@@ -28,6 +28,14 @@ return static function (MonologConfig $monologConfig, ContainerConfigurator $con
                 ->level(LogLevel::DEBUG)
                 ->path('php://stderr')
                 ->formatter('monolog.formatter.json');
+
+            $monologConfig->handler('api')
+                ->type('rotating_file')
+                ->level(LogLevel::ERROR)
+                ->maxFiles(7)
+                ->filenameFormat('{date}-{filename}')
+                ->path(sprintf('%s/%s/api.log', param('kernel.logs_dir'), param('kernel.environment')))
+                ->channels()->elements(['api']);
 
             $monologConfig->handler('console')
                 ->type('console')
@@ -54,7 +62,8 @@ return static function (MonologConfig $monologConfig, ContainerConfigurator $con
             $monologConfig->handler('nested')
                 ->type('stream')
                 ->level(LogLevel::DEBUG)
-                ->path(sprintf('%s/%s.log', param('kernel.logs_dir'), param('kernel.environment')));
+                ->filenameFormat('{date}')
+                ->path(sprintf('%s/%s/.log', param('kernel.logs_dir'), param('kernel.environment')));
 
             break;
         case 'dev':
@@ -62,13 +71,27 @@ return static function (MonologConfig $monologConfig, ContainerConfigurator $con
                 ->type('rotating_file')
                 ->level(LogLevel::DEBUG)
                 ->maxFiles(1)
-                ->path(sprintf('%s/%s.log', param('kernel.logs_dir'), param('kernel.environment')))
-                ->channels()->elements(['!event', '!deprecation']);
+                ->filenameFormat('{date}-{filename}')
+                ->path(sprintf('%s/%s/main.log', param('kernel.logs_dir'), param('kernel.environment')))
+                ->channels()->elements([
+                    '!api',
+                    '!event',
+                    '!deprecation',
+                ]);
+
+            $monologConfig->handler('api')
+                ->type('rotating_file')
+                ->level(LogLevel::DEBUG)
+                ->maxFiles(1)
+                ->filenameFormat('{date}-{filename}')
+                ->path(sprintf('%s/%s/api.log', param('kernel.logs_dir'), param('kernel.environment')))
+                ->channels()->elements(['api']);
 
             $monologConfig->handler('console')
                 ->type('console')
                 ->processPsr3Messages(false)
                 ->channels()->elements([
+                    '!api',
                     '!event',
                     '!doctrine',
                     '!console',
@@ -77,7 +100,7 @@ return static function (MonologConfig $monologConfig, ContainerConfigurator $con
 
             $monologConfig->handler('deprecation')
                 ->type('stream')
-                ->path(sprintf('%s/%s-deprecation.log', param('kernel.logs_dir'), param('kernel.environment')))
+                ->path(sprintf('%s/%s/deprecation.log', param('kernel.logs_dir'), param('kernel.environment')))
                 ->formatter('monolog.formatter.line')
                 ->channels()->elements(['deprecation']);
 

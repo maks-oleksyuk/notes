@@ -16,8 +16,7 @@
 
         body {
             font-family: Verdana, sans-serif;
-            background: #000000;
-            background: linear-gradient(to bottom, #000000 60%, #966a19);
+            background: radial-gradient(ellipse 80% 60% at 50% 0, rgba(251, 191, 36, 0.25), transparent 70%), #000000;
         }
 
         .maintenance {
@@ -26,6 +25,7 @@
             padding-top: 20dvh;
             display: flex;
             flex-direction: column;
+            user-select: none;
         }
     </style>
 {% endblock %}
