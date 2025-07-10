@@ -3,7 +3,7 @@ type: php
 docroot: web
 database:
   type: mariadb
-  version: '11.4'
+  version: '11.8'
 php_version: '8.4'
 host_db_port: '54374'
 nodejs_version: '22'

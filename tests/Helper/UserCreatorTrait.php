@@ -46,4 +46,22 @@ trait UserCreatorTrait
     ): User {
         return $this->createUser($em, $hasher, 'test', 'test');
     }
+
+    /**
+     * @return User[]
+     */
+    private function createUsers(EntityManagerInterface $em, int $count): array
+    {
+        $users = [];
+        for ($i = 1; $i <= $count; ++$i) {
+            $user = new User();
+            $user->setUsername('user'.$i);
+            $em->persist($user);
+            $users[] = $user;
+        }
+
+        $em->flush();
+
+        return $users;
+    }
 }

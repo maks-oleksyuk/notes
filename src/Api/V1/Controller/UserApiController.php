@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[OA\Tag(name: 'User')]
 final class UserApiController extends AbstractController
 {
     public function __construct(
@@ -26,6 +27,7 @@ final class UserApiController extends AbstractController
     ) {
     }
 
+    // @codeCoverageIgnoreStart
     #[OA\Response(
         response: Response::HTTP_OK,
         description: 'Returns the list of users.',
@@ -40,6 +42,7 @@ final class UserApiController extends AbstractController
             type: 'object'
         )
     )]
+    // @codeCoverageIgnoreEnd
     #[Route(path: '/users', name: 'user_index', methods: [Request::METHOD_GET], format: 'json')]
     public function index(
         #[MapQueryString]
@@ -51,6 +54,7 @@ final class UserApiController extends AbstractController
         )]);
     }
 
+    // @codeCoverageIgnoreStart
     #[OA\Response(
         response: Response::HTTP_OK,
         description: 'Returns the user resource.',
@@ -64,6 +68,7 @@ final class UserApiController extends AbstractController
             type: 'object',
         )
     )]
+    // @codeCoverageIgnoreEnd
     #[Route(path: '/users/{id}', name: 'user_show', methods: [Request::METHOD_GET], format: 'json')]
     public function show(User $user): JsonResponse
     {
@@ -72,6 +77,7 @@ final class UserApiController extends AbstractController
         ]);
     }
 
+    // @codeCoverageIgnoreStart
     #[OA\Response(
         response: Response::HTTP_CREATED,
         description: 'Returns the user resource.',
@@ -85,12 +91,14 @@ final class UserApiController extends AbstractController
             type: 'object',
         )
     )]
+    // @codeCoverageIgnoreEnd
     #[Route(path: '/users', name: 'user_create', methods: [Request::METHOD_POST], format: 'json')]
     public function create(): JsonResponse
     {
         return $this->json([], Response::HTTP_CREATED);
     }
 
+    // @codeCoverageIgnoreStart
     #[OA\Response(
         response: Response::HTTP_OK,
         description: 'Returns the user resource.',
@@ -104,16 +112,19 @@ final class UserApiController extends AbstractController
             type: 'object',
         )
     )]
+    // @codeCoverageIgnoreEnd
     #[Route(path: '/users/{id}', name: 'user_update', methods: [Request::METHOD_PUT, Request::METHOD_PATCH], format: 'json')]
     public function update(User $user): JsonResponse
     {
         return $this->json([]);
     }
 
+    // @codeCoverageIgnoreStart
     #[OA\Response(
         response: Response::HTTP_NO_CONTENT,
         description: 'User deleted.'
     )]
+    // @codeCoverageIgnoreEnd
     #[Route(path: '/users/{id}', name: 'user_delete', methods: [Request::METHOD_DELETE], format: 'json')]
     public function delete(User $user): JsonResponse
     {

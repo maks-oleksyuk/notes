@@ -6,6 +6,7 @@ namespace App\Tests\Integration\Repository;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Tests\Helper\UserCreatorTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -15,6 +16,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[CoversClass(UserRepository::class)]
 final class UserRepositoryTest extends KernelTestCase
 {
+    use UserCreatorTrait;
+
     private EntityManagerInterface $em;
 
     private UserRepository $repository;
@@ -50,6 +53,24 @@ final class UserRepositoryTest extends KernelTestCase
         $result = $this->repository->findOneByUsername('ghost');
 
         self::assertNull($result);
+    }
+
+    public function testPaginateReturnsCorrectUsersForPages(): void
+    {
+        $this->createUsers($this->em, 5);
+
+        $result = $this->repository->paginate(1, 2);
+        self::assertCount(2, $result);
+        self::assertSame('user1', $result[0]->getUsername());
+        self::assertSame('user2', $result[1]->getUsername());
+
+        $result = $this->repository->paginate(2, 2);
+        self::assertCount(2, $result);
+        self::assertSame('user3', $result[0]->getUsername());
+        self::assertSame('user4', $result[1]->getUsername());
+
+        $result = $this->repository->paginate(5, 2);
+        self::assertEmpty($result);
     }
 
     public function testUpgradePasswordThrowsForUnsupportedUser(): void

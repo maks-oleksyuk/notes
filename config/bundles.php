@@ -6,6 +6,7 @@ use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 use EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle;
+use Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle;
 use Nelmio\ApiDocBundle\NelmioApiDocBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MakerBundle\MakerBundle;
@@ -21,6 +22,7 @@ return [
     DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
     DoctrineMigrationsBundle::class => ['all' => true],
     EasyAdminBundle::class => ['all' => true],
+    LexikJWTAuthenticationBundle::class => ['all' => true],
     NelmioApiDocBundle::class => ['all' => true],
     FrameworkBundle::class => ['all' => true],
     MakerBundle::class => ['dev' => true],

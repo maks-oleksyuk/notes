@@ -10,9 +10,11 @@ use Symfony\Component\ObjectMapper\Attribute\Map;
 #[Map(target: User::class)]
 final class UserResourceDto
 {
-    #[Map(target: 'id')]
-    public int $id;
-
-    #[Map(target: 'username')]
-    public string $username;
+    public function __construct(
+        #[Map(target: 'id')]
+        public int $id,
+        #[Map(target: 'username')]
+        public string $username,
+    ) {
+    }
 }
