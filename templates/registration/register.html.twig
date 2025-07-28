@@ -1,19 +1,97 @@
-{% extends 'base.html.twig' %}
+{% extends '@EasyAdmin/page/login_minimal.html.twig' %}
 
-{% block title %}{{ 'Register'|trans }}{% endblock %}
+{% block body_class 'page-login d-flex justify-content-center align-items-center' %}
+{% block page_title %}{{ 'Symfony Notes | Register' }}{% endblock %}
 
-{% block body %}
-    <h1>Register</h1>
+{% block wrapper_wrapper %}
+    {% set page_title = block('page_title') %}
 
-    {{ form_errors(registrationForm) }}
+    {{ include('@EasyAdmin/flash_messages.html.twig') }}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.username) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+    <div class="login-wrapper d-flex flex-column align-items-center">
+        <header class="main-header">
+            <div id="header-logo">
+                {% block header_logo %}
+                    {% if page_title %}
+                        {% if ea.hasContext %}
+                            <a class="logo {{ page_title|length > 14 ? 'logo-long' }}" title="{{ page_title|striptags }}" href="{{ path(ea.dashboardRouteName) }}">
+                                {{ page_title|raw }}
+                            </a>
+                        {% else %}
+                            <div class="logo {{ page_title|length > 14 ? 'logo-long' }}">
+                                {{ page_title|raw }}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endblock header_logo %}
+            </div>
+        </header>
 
-        <button type="submit" class="btn">{{ 'Register'|trans }}</button>
-    {{ form_end(registrationForm) }}
+        <section class="content">
+            {% block register_form_wrapper %}
+                {{ form_start(registrationForm) }}
+
+                <div class="form-group">
+                    {{ form_label(registrationForm.username) }}
+                    <div class="form-widget">
+                        {{ form_widget(registrationForm.username, {
+                            attr: {
+                                class: 'form-control' ~ (registrationForm.username.vars.errors|length > 0 ? ' is-invalid' : ''),
+                            },
+                        }) }}
+                        {% if registrationForm.username.vars.errors|length > 0 %}
+                            <div class="invalid-feedback">
+                                <ul class="list-unstyled">
+                                    {% for error in registrationForm.username.vars.errors %}
+                                        <li>{{ error.message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(registrationForm.password.first, 'Password') }}
+                    <div class="form-widget has-validation">
+                        {{ form_widget(registrationForm.password.first, {
+                            attr: {
+                                class: 'form-control mb-2' ~ (registrationForm.password.first.vars.errors|length > 0 ? ' is-invalid' : ''),
+                            },
+                        }) }}
+                        {{ form_widget(registrationForm.password.second, {
+                            attr: {
+                                class: 'form-control' ~ (registrationForm.password.second.vars.errors|length > 0 ? ' is-invalid' : ''),
+                            },
+                        }) }}
+
+                        {% if registrationForm.password.first.vars.errors|length > 0 %}
+                            <div class="invalid-feedback">
+                                <ul class="list-unstyled">
+                                    {% for error in registrationForm.password.first.vars.errors %}
+                                        <li>{{ error.message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {{ form_widget(registrationForm.submit, {
+                    attr: {class: 'btn btn-primary btn-lg w-100'},
+                }) }}
+
+                {{ form_end(registrationForm) }}
+
+                <div class="mt-3 text-center">
+                    <a href="{{ path('app_login') }}">
+                        {{ 'Already registered?'|trans }} {{ 'Login'|trans }}!
+                    </a>
+                </div>
+
+                <script
+                    src="{{ asset('login.js', constant('EasyCorp\\Bundle\\EasyAdminBundle\\Asset\\AssetPackage::PACKAGE_NAME')) }}"></script>
+            {% endblock register_form_wrapper %}
+        </section>
+    </div>
 {% endblock %}

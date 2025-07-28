@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'Maintenance Mode' }}{% endblock %}
+
+{% block body %}
+    <div class="maintenance">
+        <h1>{{ 'Site temporarily under maintenance' }}</h1>
+        <p>{{ 'Sorry for the inconvenience, we will get back soon!' }}</p>
+    </div>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            font-family: Verdana, sans-serif;
+            background: radial-gradient(ellipse 80% 60% at 50% 0, rgba(251, 191, 36, 0.25), transparent 70%), #000000;
+        }
+
+        .maintenance {
+            color: white;
+            text-align: center;
+            padding-top: 20dvh;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+    </style>
+{% endblock %}

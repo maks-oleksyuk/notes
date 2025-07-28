@@ -1,4 +1,4 @@
-version: '3'
+version: 3
 
 env:
   PHP_BIN: '{{.PHP_BIN | default "$(which php)"}}'
@@ -11,59 +11,66 @@ vars:
   NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
   COMPOSER_BIN_DIR: '{{.TASKFILE_DIR}}/vendor/bin'
 
+dotenv: ['.env.local', '.env']
+
 tasks:
   default:
     desc: 'List all command.'
-    cmd: 'task --list-all'
+    cmd: 'task -l'
 
-  # Utils.
+  # Utils:
 
   composer:
     label: 'Composer'
     desc: 'Runs `composer` command.'
-    internal: true
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}} --ansi'
+    internal: true
+    silent: true
 
   pnpm:
     label: 'pnpm'
     desc: 'Runs `pnpm` command.'
-    internal: true
     cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
+    internal: true
+    silent: true
 
   bin/console:
     label: 'Symfony console'
     desc: 'Runs Symfony `bin/console` command.'
     aliases:
+      - c
       - sf
       - console
       - symfony
       - sf:console
     cmd: '{{.PHP_BIN}} bin/console {{.CLI_ARGS}} --ansi'
+    silent: true
+
+  bin/phpunit:
+    label: 'Symfony phpunit'
+    desc: 'Runs `bin/phpunit` command.'
+    aliases:
+      - unit
+      - phpunit
+    cmd:
+      '{{.PHP_BIN}} bin/phpunit
+      -c {{.CONFIG_DIR}}/phpunit.dist.xml
+      {{.CLI_ARGS}} --colors=always'
+    env:
+      APP_ENV: test
+    silent: true
 
   php-cs-fixer:
     label: 'PHP CS Fixer'
     desc: 'Runs `php-cs-fixer` command.'
     aliases:
+      - csf
       - cs-fixer
       - php:cs-fixer
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/php-cs-fixer fix
       --config {{.CONFIG_DIR}}/.php-cs-fixer.php -v {{.CLI_ARGS}} --ansi'
-
-  prettier:
-    label: 'Prettier'
-    desc: 'Runs `prettier` command.'
-    cmd:
-      '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
-      --config={{.CONFIG_DIR}}/.prettierrc.json
-      --ignore-path={{.CONFIG_DIR}}/.prettierignore'
-
-  rector:
-    label: 'Rector'
-    desc: 'Runs `rector` command.'
-    cmd:
-      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector process
-      --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
+    silent: true
 
   phpstan:
     label: 'PHPStan'
@@ -73,10 +80,135 @@ tasks:
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan
       --configuration={{.CONFIG_DIR}}/phpstan.neon {{.CLI_ARGS}} --ansi'
+    silent: true
 
-  # Work commands.
+  rector:
+    label: 'Rector'
+    desc: 'Runs `rector` command.'
+    aliases:
+      - r
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector {{.CLI_ARGS}}
+      --config={{.CONFIG_DIR}}/rector.php --ansi'
+    silent: true
 
-  # Linters.
+  twig-cs-fixer:
+    label: 'Twig CS Fixer'
+    desc: 'Runs `twig-cs-fixer` command.'
+    aliases:
+      - tcsf
+      - twig:cs-fixer
+    cmd: '
+      {{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/twig-cs-fixer
+      lint --config={{.CONFIG_DIR}}/.twig-cs-fixer.php
+      {{.CLI_ARGS}} --ansi'
+    silent: true
+
+  prettier:
+    label: 'Prettier'
+    desc: 'Runs `prettier` command.'
+    cmd:
+      '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
+      --config={{.CONFIG_DIR}}/.prettierrc.json
+      --ignore-path={{.CONFIG_DIR}}/.prettierignore'
+    silent: true
+
+  # Work commands:
+
+  cache:clear:
+    label: 'Clear the cache'
+    desc: ' Clears the application cache for a given environment.'
+    aliases:
+      - cc
+      - cr
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: 'cache:clear' }
+    silent: true
+
+  deploy:
+    label: 'Deploy'
+    desc: 'Deploy code'
+    aliases:
+      - d
+    vars:
+      DEV_PACKAGES: '{{if eq .APP_ENV "prod"}}--no-dev{{end}}'
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: 'i {{.DEV_PACKAGES}} --no-scripts' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migration:migrate -n' }
+      - task: cache:clear
+      - task: sf:console
+        vars: { CLI_ARGS: 'cache:warmup' }
+
+  update:
+    label: 'Update project'
+    desc: 'Updates project dependencies withing constraints.'
+    prompt: |
+      This command can break website. Do it independently without any other active changes.
+      Make sure you have a backup. Never run it on production.
+    aliases:
+      - u
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: 'u -W' }
+      - task: pnpm
+        vars: { CLI_ARGS: 'up --save --latest' }
+
+  # Migrations:
+
+  migrations:create:
+    label: 'Create migration'
+    desc: 'Generate a new migration based on current schema'
+    aliases:
+      - m:c
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:diff --formatted {{.CLI_ARGS}}' }
+
+  migrations:run:
+    label: 'Run migrations'
+    desc: 'Apply all pending migrations'
+    aliases:
+      - m
+      - m:s
+      - m:r
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:migrate {{.CLI_ARGS}}' }
+
+  migrations:rerun-last:
+    label: 'Rerun last migration'
+    desc: 'Rollback and re-apply the last migration'
+    aliases:
+      - m:l
+      - m:rr
+      - m:rl
+      - m:lrr
+      - m:rrl
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:migrate prev -n' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:migrate next -n' }
+
+  migrations:reset:
+    label: 'Reset DB'
+    desc: 'Drop schema, clear versions, rerun migrations and load fixtures.'
+    aliases:
+      - m:rst
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:schema:drop --force' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:version --delete --all -q -n' }
+      - task: migrations:run
+        vars: { CLI_ARGS: '-n' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:fixtures:load --append -n' }
+
+  # Linters:
 
   lint:
     label: 'Project lint'
@@ -84,75 +216,152 @@ tasks:
     aliases:
       - l
     cmds:
-      - task: lint:composer
-      - task: lint:php:cs-fixer
-      - task: lint:prettier
-      - task: lint:php:stan
-      - task: lint:rector
+      - defer: { task: lint:prettier }
+      - defer: { task: lint:twig }
+      - defer: { task: lint:rector }
+      - defer: { task: lint:phpstan }
+      - defer: { task: lint:php-cs-fixer }
+      - defer: { task: lint:composer }
+      - defer: { task: lint:symfony }
+      - defer: { task: lint:commit }
+      - defer: { task: lint:branch }
+
+  lint:branch:
+    label: 'Lint git branch name'
+    desc: 'Validates the current git branch name.'
+    aliases:
+      - l:b
+      - lint:b
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'validate-branch-name -v' }
+      - task: pnpm
+        vars: { CLI_ARGS: 'validate-branch-name' }
+
+  lint:commit:
+    label: 'Lint last git commits'
+    desc: 'Run commit message validation using commitlint.'
+    aliases:
+      - l:cmt
+      - l:commit
+      - lint:cmt
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'commitlint -v' }
+      - task: pnpm
+        vars: { CLI_ARGS: 'commitlint --from=HEAD~1 --to=HEAD' }
+
+  lint:symfony:
+    label: 'Symfony lint'
+    desc: 'Runs default Symfony lint commands to validate project'
+    aliases:
+      - l:sf
+      - l:symfony
+      - lint:sf
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: '-V' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'lint:container --no-debug' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'lint:translations --locale=en' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'lint:twig templates --env=prod' }
+      # - task: sf:console
+      #   vars: { CLI_ARGS: 'lint:yaml config --parse-tags' }
+      # - task: sf:console
+      #   vars: { CLI_ARGS: 'lint:xliff translations' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:schema:validate --skip-sync' }
 
   lint:composer:
     label: 'Composer validation'
     desc: 'Validates composer.json file and checks platform requirements.'
     aliases:
+      - l:co
       - l:composer
+      - lint:co
     cmds:
       - task: composer
         vars: { CLI_ARGS: '-V' }
       - task: composer
-        vars: { CLI_ARGS: 'validate --strict' }
+        vars: { CLI_ARGS: 'validate --no-check-version --no-check-publish --strict' }
       - task: composer
         vars: { CLI_ARGS: 'check-platform-req' }
 
-  lint:prettier:
-    label: 'Prettier'
-    desc: 'Checks for common format issues with prettier.'
+  lint:php-cs-fixer:
+    label: 'PHP CS Fixer validation'
+    desc: 'Lint php files.'
     aliases:
-      - format
-      - l:format
-      - l:prettier
-      - lint:format
+      - l:p
+      - l:csf
+      - l:php
+      - l:php-cs-fixer
+      - lint:p
+      - lint:php
+      - lint:csf
     cmds:
-      - task: prettier
-        vars: { CLI_ARGS: '-v' }
-      - task: prettier
-        vars: { CLI_ARGS: '-c .' }
+      - task: php-cs-fixer
+        vars: { CLI_ARGS: '--dry-run --diff {{.CLI_ARGS}}' }
 
   lint:phpstan:
     label: 'PHPStan analyze'
     desc: 'Analyze PHP code for bugs and errors.'
     aliases:
+      - l:s
       - l:stan
       - l:phpstan
-      - l:php:stan
+      - lint:s
       - lint:stan
-      - lint:phpstan
-      - lint:php:stan
     cmds:
       - task: phpstan
-        vars: { CLI_ARGS: 'analyze' }
+        vars: { CLI_ARGS: '-V' }
+      - task: phpstan
+        vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}}' }
 
   lint:rector:
     label: 'Rector check'
     desc: 'Check Rector issues.'
     aliases:
+      - l:r
       - l:rector
+      - lint:r
     cmds:
       - task: rector
-        vars: { CLI_ARGS: '--dry-run' }
+        vars: { CLI_ARGS: '-V' }
+      - task: rector
+        vars: { CLI_ARGS: '--dry-run {{.CLI_ARGS}}' }
 
-  lint:php:cs-fixer:
-    label: 'PHP CS Fixer validation'
-    desc: 'Lint php files.'
+  lint:twig:
+    label: 'Twig linter'
+    desc: 'Lints Twig files.'
     aliases:
-      - l:php
-      - lint:php
-      - l:php-cs-fixer
-      - lint:php-cs-fixer
+      - l:t
+      - l:twig
+      - lint:t
     cmds:
-      - task: php-cs-fixer
-        vars: { CLI_ARGS: '--dry-run --diff' }
+      - task: twig-cs-fixer
+        vars: { CLI_ARGS: '-V' }
+      - task: twig-cs-fixer
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
-  # Fixing.
+  lint:prettier:
+    label: 'Prettier'
+    desc: 'Checks for common format issues with prettier.'
+    aliases:
+      - l:f
+      - l:prt
+      - l:format
+      - lint:f
+      - lint:prt
+      - lint:format
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-v' }
+      - task: prettier
+        vars: { CLI_ARGS: '. -c' }
+
+  # Fixing:
 
   fix:
     label: 'Fixing found issues'
@@ -160,36 +369,120 @@ tasks:
     aliases:
       - f
     cmds:
-      - task: fix:prettier
-      - task: fix:rector
+      - defer: { task: fix:prettier }
+      - defer: { task: fix:twig }
+      - defer: { task: fix:rector }
+      - defer: { task: fix:php-cs-fixer }
+      - defer: { task: fix:composer }
 
-  fix:prettier:
-    label: 'Prettier'
-    desc: 'Fix format issues.'
+  fix:composer:
+    label: 'Composer fix'
+    desc: 'Try to fix composer errors.'
     aliases:
-      - f:format
-      - f:prettier
-      - fix:format
-      - format:fix
+      - f:co
+      - f:composer
+      - fix:co
     cmds:
-      - task: prettier
-        vars: { CLI_ARGS: '-wl .' }
+      - task: composer
+        vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
+      - task: composer
+        vars: { CLI_ARGS: 'bump' }
 
-  fix:php:cs-fixer:
+  fix:php-cs-fixer:
     label: 'PHP CS Fixer'
     desc: 'Fix PHP CS Fixer issues.'
     aliases:
+      - f:p
+      - f:csf
       - f:php
-      - fix:php
       - f:php-cs-fixer
-      - fix:php-cs-fixer
+      - fix:p
+      - fix:csf
+      - fix:php
     cmds:
-      - task: php:cs-fixer
+      - task: php-cs-fixer
 
   fix:rector:
     label: 'Rector'
     desc: 'Fix Rector issues.'
     aliases:
+      - f:r
       - f:rector
     cmds:
       - task: rector
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
+
+  fix:twig:
+    label: 'Twig CS Fixer '
+    desc: 'Fix Twig CS Fixer issues.'
+    aliases:
+      - f:t
+      - f:twig
+      - fix:t
+    cmds:
+      - task: twig-cs-fixer
+        vars: { CLI_ARGS: '--fix' }
+
+  fix:prettier:
+    label: 'Prettier'
+    desc: 'Fix format issues.'
+    aliases:
+      - f:f
+      - f:prt
+      - f:format
+      - fix:f
+      - fix:prt
+      - fix:format
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '. -wl' }
+
+  # Testing:
+
+  test:
+    label: 'Project test'
+    desc: 'Run project test.'
+    aliases:
+      - t
+      - qa
+    cmds:
+      - task: bin/phpunit
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
+
+  test:application:
+    label: 'application test'
+    desc: 'Run application tests.'
+    aliases:
+      - t:a
+      - t:app
+      - t:application
+      - qa:a
+      - qa:app
+      - qa:application
+    cmds:
+      - task: bin/phpunit
+        vars: { CLI_ARGS: '--testsuite=Application {{.CLI_ARGS}}' }
+
+  test:integration:
+    label: 'Integration test'
+    desc: 'Run integration tests.'
+    aliases:
+      - t:i
+      - t:integration
+      - qa:i
+      - qa:integration
+    cmds:
+      - task: bin/phpunit
+        vars: { CLI_ARGS: '--testsuite=Integration {{.CLI_ARGS}}' }
+
+  test:unit:
+    label: 'Unit test'
+    desc: 'Run unit tests.'
+    aliases:
+      - t:u
+      - t:unit
+      - qa:u
+      - qa:unit
+    cmds:
+      - task: bin/phpunit
+        vars: { CLI_ARGS: '--testsuite=Unit {{.CLI_ARGS}}' }
