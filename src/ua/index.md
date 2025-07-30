@@ -7,6 +7,6 @@ hero:
 
 features:
   - icon: 🚍
-    title: Графік руху автобусів
+    title: 'Графік руху автобусів'
     link: /ua/other/bus
 ---

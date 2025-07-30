@@ -44,6 +44,7 @@ export default defineConfig({
         useFolderTitleFromIndexFile: true,
       },
     ]),
+    externalLinkIcon: true,
   },
   locales: {
     root: {
