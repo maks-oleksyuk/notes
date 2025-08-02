@@ -4,9 +4,7 @@
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
-    "preview": "vitepress preview",
-    "lint:format": "prettier -c ./ '!pnpm-lock.yaml' --cache",
-    "lint:format:fix": "prettier -wl ./ '!pnpm-lock.yaml' --cache"
+    "preview": "vitepress preview"
   },
   "devDependencies": {
     "@nolebase/vitepress-plugin-enhanced-readabilities": "2.18.1",
@@ -19,14 +17,9 @@
     "vitepress-sidebar": "^1.33.0",
     "vue": "^3.5.18"
   },
-  "packageManager": "pnpm@10.13.1",
+  "packageManager": "pnpm@10.14.0",
   "engines": {
     "pnpm": ">=10",
     "node": ">=22"
-  },
-  "prettier": {
-    "bracketSameLine": true,
-    "proseWrap": "always",
-    "singleQuote": true
   }
 }

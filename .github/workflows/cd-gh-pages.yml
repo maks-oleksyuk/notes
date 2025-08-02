@@ -49,39 +49,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🛎️ Checkout
+      - name: '🛎️ Checkout'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 🟧 Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-environment
 
-      - name: ❇️ Setup Node.js
-        uses: actions/setup-node@v4
-        timeout-minutes: 5
-        with:
-          cache: pnpm
-          node-version: 22.x
-
-      - name: 📦 Install dependencies
-        env:
-          PNPM_FLAGS: --frozen-lockfile --color=always
-        run: pnpm i ${{ env.PNPM_FLAGS }}
-
-      - name: ⚡️ Build site with VitePress
-        run: pnpm build
+      - name: '⚡️ Build site with VitePress'
+        run: task build
         env:
           VITE_GTAG: ${{ vars.VITE_GTAG }}
 
-      - name: 📤 Upload artifact
+      - name: '📤 Upload artifact'
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
           name: dist
 
   deploy:
-    name: 🌐 Deploy
+    name: '🌐 Deploy'
     needs: build
     runs-on: ubuntu-latest
 
@@ -90,7 +78,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: 🚀 Deploy to GitHub Pages
+      - name: '🚀 Deploy to GitHub Pages'
         id: deployment
         uses: actions/deploy-pages@v4
         with:

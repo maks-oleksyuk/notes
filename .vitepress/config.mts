@@ -2,8 +2,9 @@ import { defineConfig } from 'vitepress';
 import { generateSidebar } from 'vitepress-sidebar';
 import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs';
 
-const devServerUrl = process.env.DDEV_PRIMARY_URL
-  ? `${process.env.DDEV_PRIMARY_URL.replace(/:\d+$/, '')}:5173`
+const devServerUrl =
+  process.env.DDEV_PRIMARY_URL ?
+    `${process.env.DDEV_PRIMARY_URL.replace(/:\d+$/, '')}:5173`
   : process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173';
 
 export default defineConfig({

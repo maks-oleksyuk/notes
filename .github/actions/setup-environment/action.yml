@@ -1,0 +1,28 @@
+name: '⚙️ Setup environment'
+description: 'Setups environment for validation tasks.'
+
+inputs:
+  node:
+    description: 'Node.js version to install'
+    required: true
+    default: '22.x'
+
+runs:
+  using: composite
+  steps:
+    - name: '📋 Install Task'
+      shell: bash
+      run: sh -c "$(curl -s --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin > /dev/null 2>&1
+
+    - name: '🟧 Setup pnpm'
+      uses: pnpm/action-setup@v4
+
+    - name: '❇️ Setup Node.js ${{ inputs.node }}'
+      uses: actions/setup-node@v4
+      with:
+        cache: pnpm
+        node-version: ${{ inputs.node }}
+
+    - name: '📦 Install pnpm dependencies'
+      shell: bash
+      run: pnpm i -s --prefer-offline --color=always
