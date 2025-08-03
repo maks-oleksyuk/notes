@@ -20,17 +20,17 @@ on the content of a Drupal website.
 ## Menu Links
 
 Each menu can have multiple links structured hierarchically in a tree with a
-maximum depth of `9` links. The ordering of menu links can be easily
-accomplished through the user interface or by using menu link weights, if
-defined in the code.
+maximum depth of `9` links. The ordering of menu links can be easily achieved
+through the user interface or by using menu link weights, if defined in the
+code.
 
 Menu links can also be content objects. Links created using the user interface
 are saved as objects because they are considered content. This works like this:
 for each [`MenuLinkContent`] entity created, a derived plugin is created. Menu
-links have several properties, including path or route. When created through the
-user interface, the path can be external or internal, or refer to an existing
-resource (for example, a user or piece of content). When you create them
-programmatically, you usually use a route.
+links have several properties, including a path or route. When created through
+the user interface, the path can be external or internal, or refer to an
+existing resource (for example, a user or piece of content). When you create
+them programmatically, you usually use a route.
 
 If the module wants to provide links to menus, they are defined in the module's
 static file - `MODULE_NAME.links.menu.yml`, and can be changed by other modules
@@ -51,7 +51,7 @@ using the [`menu_links_discovered_alter()`] hook.
 | `menu_name`           | The machine name of the menu to which the menu item should be added (default = `administration`)                                |
 | `options`             | A series of options to be used when rendering the menu link. (see [`\Drupal\Core\Url::fromUri()`])                              |
 
-```yml
+```yml [MODULE_NAME.links.menu.yml]
 entity.menu.collection:
   title: Menus
   description: 'Manage menus and menu links.'
@@ -78,7 +78,7 @@ defined in a static YAML file named `MODULE_NAME.links.task.yml`.
 | `options`          | The default link options. (see [`\Drupal\Core\Url::fromUri()`])                      |
 | `class`            | Default class for local task implementations ([`Drupal\Core\Menu\LocalTaskDefault`]) |
 
-```yml
+```yml [MODULE_NAME.links.task.yml]
 entity.menu.edit_form:
   title: 'Edit menu'
   route_name: entity.menu.edit_form
@@ -92,7 +92,7 @@ entity.menu.collection:
 
 > [!WARNING]
 >
-> Local tabs will not be displayed if there are less than 2 of them, this is
+> Local tabs will not be displayed if there is less than `2` of them, this is
 > influenced by the number and access rights.
 
 ## Action links
@@ -116,7 +116,7 @@ naming convention, `MODULE_NAME.links.action.yml`.
 | `appears_on`\*     | The route names where this local action appears                                               |
 | `class`            | Default class for local action implementations ([`Drupal\Core\Menu\LocalActionDefault`])      |
 
-```yml
+```yml [MODULE_NAME.links.action.yml]
 menu_ui.menu_add:
   title: 'Add menu'
   route_name: menu_ui.menu_add
@@ -126,14 +126,14 @@ menu_ui.menu_add:
 
 ## Contextual links
 
-Contextual links are actions that are related to sections of rendered output,
-and are usually rendered as a pop-up list of links. The Contextual Links module
+Contextual links are actions that are related to sections of rendered output and
+are usually rendered as a pop-up list of links. The Contextual Links module
 handles the gathering and rendering of contextual links. Contextual links
 provide shortcuts to common administrator tasks. For example, when viewing a
 node, common actions may include editing or deleting the content. These routes
 are listed in a YAML file with the name `MODULE_NAME.links.contextual.yml`. In
-addition to the YAML file ax contextual link needs to add a #contextual_links
-element to the render array where the link needs to appear.
+addition to the YAML file, an ax contextual link needs to add a
+`#contextual_links` element to the render array where the link needs to appear.
 
 | Key                | Description                                                                                    |
 | ------------------ | ---------------------------------------------------------------------------------------------- |
@@ -146,7 +146,7 @@ element to the render array where the link needs to appear.
 | `weight`           | The weight of the link (default = `0`)                                                         |
 | `class`            | Default class for contextual link implementations ([`Drupal\Core\Menu\ContextualLinkManager`]) |
 
-```yml
+```yml [MODULE_NAME.links.contextual.yml]
 entity.menu.edit_form:
   title: 'Edit menu'
   route_name: 'entity.menu.edit_form'
@@ -159,7 +159,7 @@ entity.menu.edit_form:
 - [Concept: Menu | Basic Page Management](//drupal.org/docs/user_guide/en/menu-concept.html)
 - [Overview: Menu Links in a Module for Drupal 8, 9, and 10](//drupalize.me/tutorial/overview-menu-links-module)
 - [Providing module-defined local tasks | Menu API | Drupal Wiki guide on Drupal.org](//drupal.org/node/2122253)
-- [Drupal 10 Development Cookbook - Third Edition](//packtpub.com/product/drupal-10-development-cookbook-third-edition/9781803234960)
+- [Drupal 10 Development Cookbook — Third Edition](//packtpub.com/product/drupal-10-development-cookbook-third-edition/9781803234960)
 - [Drupal 8: Создание собственного раздела на странице конфигурации](//niklan.net/blog/137)
 
 <!-- prettier-ignore-start -->

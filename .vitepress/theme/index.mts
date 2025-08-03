@@ -17,6 +17,7 @@ import './styles/base.css';
 import './styles/components/vp-doc.css';
 import './styles/components/back-to-top.css';
 import '@nolebase/vitepress-plugin-enhanced-readabilities/client/style.css';
+import 'virtual:group-icons.css';
 
 export default {
   extends: DefaultTheme,

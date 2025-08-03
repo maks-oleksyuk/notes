@@ -1,8 +1,8 @@
 ---
-title: Create toolbar item
+title: Create a toolbar item
 ---
 
-# Create toolbar item
+# Create a toolbar item
 
 When developing a project, you have to create some forms and pages with settings
 and administrative views, custom entity settings, and so on. It's a good
@@ -15,7 +15,7 @@ Usually, a link in the toolbar acts only as a page with other links. To create
 such a page, you need to declare a route in the `MODULE_NAME.routing.yml` file
 for this page with the following settings:
 
-```yml
+```yml [MODULE_NAME.routing.yml]
 module_name.admin:
   path: '/admin/module-name'
   defaults:
@@ -42,7 +42,7 @@ accessible only to administrators. The same controller is used for the
 Now you need to add a link to the created route in the
 `MODULE_NAME.links.menu.yml` file:
 
-```yml
+```yml [MODULE_NAME.links.menu.yml]
 module_name.admin:
   title: 'Module Name'
   description: 'Administer and configure my module.'
@@ -58,29 +58,29 @@ displayed as **_You do not have any administrative items_**.
 ## Add an icon
 
 To add an icon to the toolbar element, you need to add CSS. To do this, create
-the `module_name.toolbar.css` file with the following content:
+the `MODULE_NAME.toolbar.css` file with the following content:
 
-```css
+```css [MODULE_NAME.toolbar.css]
 /* For Claro admin theme */
-.toolbar-icon.toolbar-icon-modeule-name-admin::before {
+.toolbar-icon.toolbar-icon-module-name-admin::before {
   background-image: url(../icons/787878/icon-name.svg);
 }
 
 /* For Gin admin theme */
-.toolbar .toolbar-bar .toolbar-icon.toolbar-icon-modeule-name-admin::before,
-.toolbar-link--has-icon.toolbar-link--modeule-name-admin::before {
+.toolbar .toolbar-bar .toolbar-icon.toolbar-icon-module-name-admin::before,
+.toolbar-link--has-icon.toolbar-link--module-name-admin::before {
   mask-image: url(../icons/787878/icon-name.svg);
 }
 ```
 
-Here is the CSS for 2 popular admin themes, **Claro** and **Gin**, as the
+Here is the CSS for two popular admin themes, **Claro** and **Gin**, as the
 approach to styling their toolbar is different.
 
 After creating the CSS, you need to connect it as a library, for this purpose,
-in the `module_name.libraries.yml` file, create a library to which we connect
+in the `MODULE_NAME.libraries.yml` file, create a library to which we connect
 our style file:
 
-```yml
+```yml [MODULE_NAME.libraries.yml]
 admin.toolbar:
   version: VERSION
   css:
@@ -91,7 +91,7 @@ admin.toolbar:
 After declaring the library, you need to connect it to the toolbar using
 `hook_preprocess_HOOK`. This hook will only work when the toolbar is displayed.
 
-```php
+```php [MODULE_NAME.module]
 /**
  * Implements hook_preprocess_HOOK().
  */

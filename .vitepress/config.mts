@@ -1,6 +1,10 @@
 import { defineConfig } from 'vitepress';
 import { generateSidebar } from 'vitepress-sidebar';
 import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs';
+import {
+  groupIconMdPlugin,
+  groupIconVitePlugin,
+} from 'vitepress-plugin-group-icons';
 
 const devServerUrl =
   process.env.DDEV_PRIMARY_URL ?
@@ -24,6 +28,7 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: '//github.com/maks-oleksyuk/notes' },
       { icon: 'linkedin', link: '//linkedin.com/in/maks-oleksyuk' },
+      { icon: 'telegram', link: '//t.me/maks_oleksyuk' },
     ],
     sidebar: generateSidebar([
       {
@@ -44,6 +49,17 @@ export default defineConfig({
         useFolderLinkFromIndexFile: true,
         useFolderTitleFromIndexFile: true,
       },
+      {
+        documentRootPath: 'src',
+        scanStartPath: 'ua/other/bus',
+        resolvePath: '/ua/other/bus/',
+        collapsed: true,
+        useTitleFromFrontmatter: true,
+        useFolderLinkFromIndexFile: true,
+        useFolderTitleFromIndexFile: true,
+        frontmatterTitleFieldName: 'menu_title',
+        manualSortFileNameByPriority: ['lutsk.md', 'kivertsi.md', 'ozero.md'],
+      },
     ]),
     externalLinkIcon: true,
   },
@@ -56,7 +72,7 @@ export default defineConfig({
       label: 'Українська',
       lang: 'uk',
       themeConfig: {
-        nav: [{ text: 'Buses', link: '/ua/other/bus' }],
+        nav: [{ text: 'Buses', link: '/ua/other/bus/' }],
         darkModeSwitchLabel: 'Зовнішній вигляд',
         returnToTopLabel: 'Повернутись до початку',
         outline: {
@@ -65,16 +81,28 @@ export default defineConfig({
         lastUpdated: {
           text: 'Останнє оновлення',
         },
+        docFooter: {
+          prev: 'Попередня сторінка',
+          next: 'Наступна сторінка',
+        },
       },
     },
   },
   markdown: {
     config(md) {
       md.use(tabsMarkdownPlugin);
+      md.use(groupIconMdPlugin);
     },
   },
   vite: {
     envDir: './../',
+    plugins: [
+      groupIconVitePlugin({
+        customIcon: {
+          '.module': 'vscode-icons:file-type-php',
+        },
+      }),
+    ],
     optimizeDeps: {
       exclude: [
         '@nolebase/vitepress-plugin-enhanced-readabilities/client',

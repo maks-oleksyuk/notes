@@ -2,6 +2,7 @@
 .github
 LICENSE.md
 dist
+cache
 local
 pnpm-lock.yaml
 public
