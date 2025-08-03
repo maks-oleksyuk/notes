@@ -1,0 +1,12 @@
+.ddev
+.github
+LICENSE.md
+dist
+cache
+local
+pnpm-lock.yaml
+public
+taskfile.yml
+var
+vendor
+web

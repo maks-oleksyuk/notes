@@ -4,29 +4,23 @@
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
-    "preview": "vitepress preview",
-    "lint:format": "prettier -c ./ '!pnpm-lock.yaml' --cache",
-    "lint:format:fix": "prettier -wl ./ '!pnpm-lock.yaml' --cache"
+    "preview": "vitepress preview"
   },
   "devDependencies": {
-    "@nolebase/vitepress-plugin-enhanced-readabilities": "2.18.0",
-    "@types/node": "^24.0.8",
+    "@nolebase/vitepress-plugin-enhanced-readabilities": "2.18.1",
+    "@types/node": "^24.1.0",
     "prettier": "^3.6.2",
     "vitepress": "^1.6.3",
     "vitepress-plugin-back-to-top": "^1.0.1",
     "vitepress-plugin-google-analytics": "^1.0.2",
+    "vitepress-plugin-group-icons": "^1.6.1",
     "vitepress-plugin-tabs": "^0.7.1",
-    "vitepress-sidebar": "^1.31.1",
-    "vue": "^3.5.17"
+    "vitepress-sidebar": "^1.33.0",
+    "vue": "^3.5.18"
   },
-  "packageManager": "pnpm@10.7.1",
+  "packageManager": "pnpm@10.14.0",
   "engines": {
     "pnpm": ">=10",
     "node": ">=22"
-  },
-  "prettier": {
-    "bracketSameLine": true,
-    "proseWrap": "always",
-    "singleQuote": true
   }
 }

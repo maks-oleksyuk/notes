@@ -1,0 +1,115 @@
+version: 3
+
+env:
+  NODE_BIN: '{{.NODE_BIN | default "$(which node)"}}'
+  PNPM_BIN: '{{.PNPM_BIN | default "$(which pnpm)"}}'
+
+vars:
+  CONFIG_DIR: '{{.TASKFILE_DIR}}/config/utils'
+  NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
+
+tasks:
+  default:
+    desc: 'List all command.'
+    cmd: 'task -l'
+
+  # Utils:
+
+  pnpm:
+    label: 'pnpm'
+    desc: 'Runs `pnpm` command.'
+    cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
+    internal: true
+    silent: true
+
+  prettier:
+    label: 'Prettier'
+    desc: 'Runs `prettier` command.'
+    cmd:
+      '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}} --cache
+      --config={{.CONFIG_DIR}}/.prettierrc.json
+      --ignore-path={{.CONFIG_DIR}}/.prettierignore'
+    silent: true
+
+  # Work commands:
+
+  dev:
+    label: 'Run vitepress dev'
+    aliases:
+      - d
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'vitepress dev' }
+
+  build:
+    label: 'Run vitepress build'
+    aliases:
+      - b
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'vitepress build' }
+
+  preview:
+    label: 'Run vitepress preview'
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'vitepress preview' }
+
+  update:
+    label: 'Update project'
+    desc: 'Updates project dependencies withing constraints.'
+    aliases:
+      - u
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'up --save --latest' }
+
+  # Linters:
+
+  lint:
+    label: 'Project lint'
+    desc: 'Validates project files.'
+    aliases:
+      - l
+    cmds:
+      - defer: { task: lint:prettier }
+
+  lint:prettier:
+    label: 'Prettier'
+    desc: 'Checks for common format issues with prettier.'
+    aliases:
+      - l:f
+      - l:prt
+      - l:format
+      - lint:f
+      - lint:prt
+      - lint:format
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-v' }
+      - task: prettier
+        vars: { CLI_ARGS: '. -c' }
+
+  # Fixing:
+
+  fix:
+    label: 'Fixing found issues'
+    desc: 'Trying for automated fixes for found problems.'
+    aliases:
+      - f
+    cmds:
+      - defer: { task: fix:prettier }
+
+  fix:prettier:
+    label: 'Prettier'
+    desc: 'Fix format issues.'
+    aliases:
+      - f:f
+      - f:prt
+      - f:format
+      - fix:f
+      - fix:prt
+      - fix:format
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '. -wl' }

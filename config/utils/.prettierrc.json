@@ -1,0 +1,7 @@
+{
+  "experimentalTernaries": true,
+  "experimentalOperatorPosition": "start",
+  "singleQuote": true,
+  "bracketSameLine": true,
+  "proseWrap": "always"
+}

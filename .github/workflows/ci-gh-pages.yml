@@ -23,45 +23,42 @@ concurrency:
 
 jobs:
   lint:
-    name: 🪄 Lint
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 🛎️ Checkout
-        uses: actions/checkout@v4
-
-      - name: 🪄 Prettify code
-        uses: creyD/prettier_action@v4.6
-        with:
-          dry: true
-          prettier_options: '-c ./ !pnpm-lock.yaml'
-
-  build:
-    name: 🏗️ Build (node - ${{ matrix.node }})
+    name: '🪄 Lint | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
-        node: [22.x, 23.x]
+        command:
+          - { name: '🅿️ Prettier', command: 'lint:prettier' }
 
     steps:
-      - name: 🛎️ Checkout
+      - name: '🛎 Checkout'
         uses: actions/checkout@v4
 
-      - name: 🟧 Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-environment
 
-      - name: ❇️ Setup Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        timeout-minutes: 5
+      - name: '${{ matrix.command.name }} validate'
+        run: task ${{ matrix.command.command }}
+
+  build:
+    name: '🏗️ Build | node - ${{ matrix.node }}'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22.x, 24.x]
+
+    steps:
+      - name: '🛎️ Checkout'
+        uses: actions/checkout@v4
+
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-environment
         with:
-          cache: pnpm
-          node-version: ${{ matrix.node }}
+          node: ${{ matrix.node }}
 
-      - name: 📦 Install dependencies
-        env:
-          PNPM_FLAGS: --frozen-lockfile --color=always
-        run: pnpm i ${{ env.PNPM_FLAGS }}
-
-      - name: ⚡️ Build site with VitePress
-        run: pnpm build
+      - name: '⚡️ Build site with VitePress'
+        run: task build
