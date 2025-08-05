@@ -11,8 +11,8 @@
 		"--adminify-notif-bg-color": "#FD49A0"
 	},
 	"body_fields": {
-		"adminify_custom_bg": "",
-		"admin_general_bg": "gradient",
+		"adminify_custom_bg": "0",
+		"admin_general_bg": "image",
 		"admin_general_bg_gradient": {
 			"background-color": "#0347FF",
 			"background-gradient-color": "#fd1919",
@@ -242,12 +242,12 @@
 		"screen_help_data": []
 	},
 	"folders": {
-		"enable_folders": "1",
+		"enable_folders": "0",
 		"enable_for": ["post", "page"],
 		"media": "1"
 	},
 	"admin_pages": "",
-	"dashboard_widgets": "1",
+	"dashboard_widgets": "0",
 	"post_types_order": {
 		"enable_pto": "0",
 		"pto_posts": ["page"],
@@ -280,10 +280,15 @@
 		"thumbnails_rss_feed": "0"
 	},
 	"remove_widgets": {
-		"remove_widgets_type": "sidebar",
+		"remove_widgets_type": "dashboard",
 		"disable_gutenberg_editor": "",
-		"sidebar_widgets_list": [],
-		"dashboard_widgets_list": []
+		"dashboard_widgets_list": [
+			"jltwp_adminify_dashboard_widget|normal",
+			"dashboard_right_now|normal",
+			"dashboard_quick_press|side",
+			"dashboard_primary|side"
+		],
+		"sidebar_widgets_list": []
 	},
 	"redirect_urls_fields": {
 		"enable_redirect_urls": "",

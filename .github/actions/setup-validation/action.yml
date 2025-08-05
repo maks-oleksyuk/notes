@@ -29,6 +29,9 @@ runs:
       shell: bash
       run: sh -c "$(curl -s --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin > /dev/null 2>&1
 
+    # - name: '🛠️ Setup WP-CLI'
+    #   uses: godaddy-wordpress/setup-wp-cli@1
+
     - name: '🐘 Setup PHP ${{ inputs.php }}'
       if: ${{ inputs.use-php == 'true' }}
       uses: shivammathur/setup-php@v2
