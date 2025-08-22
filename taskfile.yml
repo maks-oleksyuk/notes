@@ -36,7 +36,7 @@ tasks:
   wp:
     label: 'wp'
     desc: 'Runs `wp` command.'
-    cmd: '{{.WP_BIN}} {{.CLI_ARGS}}'
+    cmd: '{{.WP_BIN}} {{.CLI_ARGS}} --color'
     silent: true
 
   phpcs:
@@ -76,6 +76,20 @@ tasks:
       - task: wp
         vars: { CLI_ARGS: 'cache flush' }
 
+  update:
+    label: 'Update project'
+    desc: 'Updates project dependencies withing constraints.'
+    prompt: |
+      This command can break website. Do it independently without any other active changes.
+      Make sure you have a backup. Never run it on production.
+    aliases:
+      - u
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: 'u -W' }
+      - task: pnpm
+        vars: { CLI_ARGS: 'up --save --latest' }
+
   # Linters:
 
   lint:
@@ -84,6 +98,7 @@ tasks:
     aliases:
       - l
     cmds:
+      - defer: { task: lint:plugin }
       - defer: { task: lint:prettier }
       - defer: { task: lint:phpcs }
       - defer: { task: lint:composer }
@@ -126,7 +141,7 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: '-V' }
       - task: composer
-        vars: { CLI_ARGS: 'validate --strict' }
+        vars: { CLI_ARGS: 'validate --no-check-version --no-check-publish --strict' }
       - task: composer
         vars: { CLI_ARGS: 'check-platform-req' }
 
@@ -134,7 +149,13 @@ tasks:
     label: 'PHPCS validation'
     desc: 'Validate PHP for code style.'
     aliases:
+      - l:p
       - l:php
+      - l:pcs
+      - l:phpcs
+      - lint:p
+      - lint:php
+      - lint:pcs
     cmds:
       - task: phpcs
 
@@ -154,6 +175,16 @@ tasks:
         vars: { CLI_ARGS: '-v' }
       - task: prettier
         vars: { CLI_ARGS: '. -c' }
+
+  lint:plugin:
+    label: 'WP Plugin Check'
+    aliases:
+      - l:plg
+      - l:plugin
+      - lint:plg
+    cmds:
+      - task: wp
+        vars: { CLI_ARGS: 'plugin check nts-site --exclude-directories=import --include-experimental' }
 
   # Fixing:
 
@@ -177,6 +208,8 @@ tasks:
     cmds:
       - task: composer
         vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
+      - task: composer
+        vars: { CLI_ARGS: 'bump' }
 
   fix:phpcs:
     label: 'PHPCS'
