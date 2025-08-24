@@ -10,6 +10,8 @@ nodejs_version: '22'
 webserver_type: nginx-fpm
 xdebug_enabled: false
 corepack_enable: true
+upload_dirs:
+  - storage/app/public
 hooks:
   pre-start:
     # Add pnpm and task to ddev if not already installed.

@@ -83,7 +83,8 @@ tasks:
     cmd:
       '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
       --config={{.CONFIG_DIR}}/.prettierrc.json
-      --ignore-path={{.CONFIG_DIR}}/.prettierignore'
+      --ignore-path={{.CONFIG_DIR}}/.prettierignore
+      --cache --cache-location=var/cache/prettier/prettier.cache'
     silent: true
 
   pest:

@@ -19,9 +19,9 @@
         "larastan/larastan": "^3.6",
         "laravel/pint": "^1.24",
         "mockery/mockery": "^1.6.12",
-        "pestphp/pest": "^3.8.4",
-        "pestphp/pest-plugin-laravel": "^3.2",
-        "pestphp/pest-plugin-livewire": "^3.0",
+        "pestphp/pest": "^4.0.3",
+        "pestphp/pest-plugin-laravel": "^4.0.0",
+        "pestphp/pest-plugin-livewire": "^4.0.1",
         "php-mock/php-mock-phpunit": "^2.13"
     },
     "autoload": {
