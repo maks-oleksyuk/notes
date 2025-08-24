@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Filament\Resources\UserResource;
-use App\Filament\Resources\UserResource\Pages\ListUsers;
+use App\Filament\Resources\User\Pages\ListUsers;
+use App\Filament\Resources\User\UserResource;
 use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Pest\Expectation;
 use Tests\Feature\Filament\Fixtures\FilamentForm;
@@ -28,7 +28,7 @@ describe('Filament | User Resource', function (): void {
     });
 
     it('returns a valid form schema', function (): void {
-        $form = UserResource::form(Form::make(FilamentForm::make()));
+        $form = UserResource::form(Schema::make(FilamentForm::make()));
         $schema = $form->getComponents();
 
         expect($schema)

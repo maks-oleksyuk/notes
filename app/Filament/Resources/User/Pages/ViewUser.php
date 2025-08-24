@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\UserResource\Pages;
+namespace App\Filament\Resources\User\Pages;
 
-use App\Filament\Resources\UserResource;
+use App\Filament\Resources\User\UserResource;
 use Filament\Resources\Pages\ViewRecord;
 
 final class ViewUser extends ViewRecord

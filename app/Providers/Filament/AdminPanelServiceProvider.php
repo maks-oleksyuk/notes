@@ -11,7 +11,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Support\Enums\MaxWidth;
+use Filament\Support\Enums\Width;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -36,7 +36,7 @@ final class AdminPanelServiceProvider extends PanelProvider
             ->favicon(asset('favicon.ico'))
             ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
-            ->maxContentWidth(MaxWidth::Full)
+            ->maxContentWidth(Width::Full)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([

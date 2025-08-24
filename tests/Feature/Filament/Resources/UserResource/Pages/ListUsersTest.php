@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Filament\Exports\UserExporter;
-use App\Filament\Resources\UserResource\Pages\ListUsers;
+use App\Filament\Resources\User\Pages\ListUsers;
 use Filament\Actions\ExportAction;
 use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Support\Colors\Color;
