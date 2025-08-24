@@ -107,6 +107,20 @@ tasks:
       - task: artisan
         vars: { CLI_ARGS: 'optimize:clear' }
 
+  update:
+    label: 'Update project'
+    desc: 'Updates project dependencies withing constraints.'
+    prompt: |
+      This command can break website. Do it independently without any other active changes.
+      Make sure you have a backup. Never run it on production.
+    aliases:
+      - u
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: 'u -W' }
+      - task: pnpm
+        vars: { CLI_ARGS: 'up --save --latest' }
+
   db:fresh:
     label: 'Refresh database'
     desc: 'Drop all tables and re-run all migrations'
@@ -180,7 +194,7 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: '-V' }
       - task: composer
-        vars: { CLI_ARGS: 'validate --strict' }
+        vars: { CLI_ARGS: 'validate --no-check-version --no-check-publish --strict' }
       - task: composer
         vars: { CLI_ARGS: 'check-platform-req' }
 
@@ -223,16 +237,18 @@ tasks:
       - task: rector
         vars: { CLI_ARGS: '-V' }
       - task: rector
-        vars: { CLI_ARGS: 'process --dry-run {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '--dry-run {{.CLI_ARGS}}' }
 
   lint:prettier:
     label: 'Prettier'
     desc: 'Checks for common format issues with prettier.'
     aliases:
       - l:f
+      - l:prt
       - l:format
       - l:prettier
       - lint:f
+      - lint:prt
       - lint:format
     cmds:
       - task: prettier
@@ -263,6 +279,8 @@ tasks:
     cmds:
       - task: composer
         vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
+      - task: composer
+        vars: { CLI_ARGS: 'bump' }
 
   fix:pint:
     label: 'Laravel Pint'
@@ -279,17 +297,21 @@ tasks:
     aliases:
       - f:r
       - f:rector
+      - fix:r
     cmds:
       - task: rector
-        vars: { CLI_ARGS: 'process {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
   fix:prettier:
     label: 'Prettier'
     desc: 'Fix format issues.'
     aliases:
       - f:f
+      - f:prt
       - f:format
       - f:prettier
+      - fix:f
+      - fix:prt
       - fix:format
     cmds:
       - task: prettier

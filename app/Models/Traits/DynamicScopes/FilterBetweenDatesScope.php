@@ -17,7 +17,7 @@ trait FilterBetweenDatesScope
      * @param  Builder<TModel>  $query
      * @return Builder<TModel>
      */
-    public function scopeFilterBetweenDates(
+    protected function scopeFilterBetweenDates(
         Builder $query,
         string $column,
         Carbon $startDate,
