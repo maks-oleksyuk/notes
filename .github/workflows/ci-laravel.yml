@@ -44,36 +44,31 @@ jobs:
               name: '📦 Composer',
               command: 'lint:composer',
               php: true,
-              node: false,
             }
           - {
               name: '🧽 Laravel Pint',
               command: 'lint:pint -- --format=checkstyle | tail -n +2 | cs2pr',
               php: true,
-              node: false,
             }
           - {
               name: '🔍 PHPStan',
               command: 'lint:phpstan -- --no-progress',
               php: true,
-              node: false,
             }
           - {
               name: '🅿️ Prettier',
               command: 'lint:prettier',
-              php: false,
               node: true,
             }
           - {
               name: '🏠 Rector',
               command: 'lint:rector -- --no-progress-bar --output-format=github',
               php: true,
-              node: false,
             }
 
     steps:
       - name: '🛎 Checkout'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: '⚙️ Prepare environment'
         uses: ./.github/actions/setup-validation
@@ -113,7 +108,7 @@ jobs:
 
     steps:
       - name: '🛎 Checkout'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: '⚙️ Prepare environment'
         uses: ./.github/actions/setup-testing

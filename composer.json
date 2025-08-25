@@ -16,7 +16,7 @@
         "barryvdh/laravel-ide-helper": "^3.6",
         "driftingly/rector-laravel": "^2.0.7",
         "fakerphp/faker": "^1.24.1",
-        "larastan/larastan": "^3.6",
+        "larastan/larastan": "^3.6.1",
         "laravel/pint": "^1.24",
         "mockery/mockery": "^1.6.12",
         "pestphp/pest": "^4.0.3",
