@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\User\Tables;
 
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
@@ -54,10 +53,8 @@ final readonly class UsersTable
                 ViewAction::make()->label(''),
                 DeleteAction::make()->label(''),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+            ->groupedBulkActions([
+                DeleteBulkAction::make(),
             ]);
     }
 }

@@ -19,6 +19,8 @@ final class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
+    protected static ?string $slug = 'users';
+
     protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-users';
 
     #[\Override]

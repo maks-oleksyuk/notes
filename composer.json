@@ -5,8 +5,8 @@
     "type": "project",
     "require": {
         "php": "^8.4",
-        "filament/filament": "^4.0.3",
-        "laravel/framework": "^12.25",
+        "filament/filament": "^4.0.5",
+        "laravel/framework": "^12.26.4",
         "laravel/pulse": "^1.4.3",
         "olssonm/l5-very-basic-auth": "^7.2",
         "opcodesio/log-viewer": "^3.19",
@@ -19,10 +19,11 @@
         "larastan/larastan": "^3.6.1",
         "laravel/pint": "^1.24",
         "mockery/mockery": "^1.6.12",
-        "pestphp/pest": "^4.0.3",
+        "pestphp/pest": "^4.0.4",
         "pestphp/pest-plugin-laravel": "^4.0.0",
         "pestphp/pest-plugin-livewire": "^4.0.1",
-        "php-mock/php-mock-phpunit": "^2.13"
+        "php-mock/php-mock-phpunit": "^2.13",
+        "phpstan/phpstan-deprecation-rules": "^2.0.3"
     },
     "autoload": {
         "psr-4": {

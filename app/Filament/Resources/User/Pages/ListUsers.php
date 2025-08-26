@@ -6,7 +6,7 @@ namespace App\Filament\Resources\User\Pages;
 
 use App\Filament\Exports\UserExporter;
 use App\Filament\Resources\User\UserResource;
-use Filament\Actions;
+use Filament\Actions\ExportAction;
 use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Colors\Color;
@@ -18,7 +18,7 @@ final class ListUsers extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ExportAction::make('export_csv')
+            ExportAction::make('export_csv')
                 ->label('Export CSV')
                 ->exporter(UserExporter::class)
                 ->icon('heroicon-m-document-arrow-down')
@@ -28,7 +28,7 @@ final class ListUsers extends ListRecords
                 ->modal(false)
                 ->outlined(),
 
-            Actions\ExportAction::make('export_xls')
+            ExportAction::make('export_xls')
                 ->label('Export XLSX')
                 ->exporter(UserExporter::class)
                 ->icon('heroicon-m-document-arrow-down')

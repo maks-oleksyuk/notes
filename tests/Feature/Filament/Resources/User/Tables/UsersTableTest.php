@@ -3,25 +3,35 @@
 declare(strict_types=1);
 
 use App\Filament\Resources\User\Pages\ListUsers;
+use App\Filament\Resources\User\Tables\UsersTable;
 use App\Models\User;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\Testing\TestAction;
+use Filament\Actions\ViewAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Livewire\livewire;
 
-covers(App\Filament\Resources\User\Tables\UsersTable::class);
+covers(UsersTable::class);
 uses(RefreshDatabase::class);
 
 describe('Filament | User Table', function (): void {
     it('renders valid table configuration', function (): void {
+        $user = User::factory()->create();
+
         livewire(ListUsers::class)
             ->assertTableColumnExists('name')
             ->assertTableColumnExists('email')
             ->assertTableColumnExists('created_at')
             ->assertTableFilterExists('name')
             ->assertTableFilterExists('email')
-            ->assertTableActionExists('view')
-            ->assertTableActionExists('delete')
-            ->assertTableBulkActionExists('delete');
+            ->assertActionExists(TestAction::make(ViewAction::class)->table($user))
+            ->assertActionExists(TestAction::make(DeleteAction::class)->table($user))
+            ->selectTableRecords($user->pluck('id')->toArray())
+            ->callAction(TestAction::make(DeleteBulkAction::class)->table()->bulk())
+            ->assertActionVisible(TestAction::make(DeleteBulkAction::class)->table()->bulk())
+            ->assertActionExists(TestAction::make(DeleteBulkAction::class)->table()->bulk());
     });
 
     it('has correct filters configuration', function (): void {
@@ -35,9 +45,11 @@ describe('Filament | User Table', function (): void {
     });
 
     it('has view and delete actions with empty labels', function (): void {
+        $user = User::factory()->create();
+
         livewire(ListUsers::class)
-            ->assertTableActionExists('view', fn ($action): bool => $action->getLabel() === '')
-            ->assertTableActionExists('delete', fn ($action): bool => $action->getLabel() === '');
+            ->assertActionHasLabel(TestAction::make(ViewAction::class)->table($user), '')
+            ->assertActionHasLabel(TestAction::make(DeleteAction::class)->table($user), '');
     });
 
     it('applies the `name` filter correctly', function (): void {

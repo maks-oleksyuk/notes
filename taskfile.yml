@@ -339,6 +339,7 @@ tasks:
       - t:feature
       - qa:f
       - qa:feature
+      - test:f
     cmds:
       - task: pest
         vars: { CLI_ARGS: '--version' }
@@ -353,6 +354,7 @@ tasks:
       - t:unit
       - qa:u
       - qa:unit
+      - test:u
     cmds:
       - task: pest
         vars: { CLI_ARGS: '--version' }
@@ -367,6 +369,7 @@ tasks:
       - t:mutate
       - qa:m
       - qa:mutate
+      - test:m
     cmds:
       - task: pest
         vars: { CLI_ARGS: '--version' }

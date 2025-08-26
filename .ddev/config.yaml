@@ -11,7 +11,11 @@ webserver_type: nginx-fpm
 xdebug_enabled: false
 corepack_enable: true
 upload_dirs:
-  - storage/app/public
+  - ../storage/app/public
+web_extra_daemons:
+  - name: 'queue'
+    command: 'php artisan queue:work'
+    directory: /var/www/html
 hooks:
   pre-start:
     # Add pnpm and task to ddev if not already installed.

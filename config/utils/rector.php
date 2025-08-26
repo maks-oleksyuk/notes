@@ -59,7 +59,7 @@ return RectorConfig::configure()
             __DIR__.'/../../app/Providers/Filament',
         ],
     ])
-    ->withParallel(100, 4, 25)
+    ->withParallel()
     ->withCache(
         __DIR__.'/../../var/cache/rector',
         FileCacheStorage::class
