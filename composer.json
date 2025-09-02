@@ -5,8 +5,8 @@
     "type": "project",
     "require": {
         "php": "^8.4",
-        "filament/filament": "^4.0.5",
-        "laravel/framework": "^12.26.4",
+        "filament/filament": "^4.0.6",
+        "laravel/framework": "^12.27.0",
         "laravel/pulse": "^1.4.3",
         "olssonm/l5-very-basic-auth": "^7.2",
         "opcodesio/log-viewer": "^3.19",
