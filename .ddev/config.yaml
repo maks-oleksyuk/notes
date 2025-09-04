@@ -9,7 +9,6 @@ host_db_port: '14674'
 nodejs_version: '22'
 webserver_type: nginx-fpm
 xdebug_enabled: false
-corepack_enable: true
 upload_dirs:
   - ../storage/app/public
 web_extra_daemons:

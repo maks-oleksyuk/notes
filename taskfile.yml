@@ -122,6 +122,17 @@ tasks:
       - task: pnpm
         vars: { CLI_ARGS: 'up --save --latest' }
 
+  deploy:
+    label: 'Deploy project'
+    aliases:
+      - d
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: 'i --no-dev' }
+      - task: artisan
+        vars: { CLI_ARGS: 'migrate' }
+      - task: cache:clear
+
   db:fresh:
     label: 'Refresh database'
     desc: 'Drop all tables and re-run all migrations'
@@ -135,7 +146,7 @@ tasks:
         vars: { CLI_ARGS: 'migrate:fresh --seed --force' }
 
   db:schema:dump:
-    label: 'Dum database schema'
+    label: 'Dump database schema'
     desc: 'Dump the given db schema and delete all existing migration'
     aliases:
       - db:s:d
@@ -279,6 +290,8 @@ tasks:
       - fix:co
     cmds:
       - task: composer
+        vars: { CLI_ARGS: '-V' }
+      - task: composer
         vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
       - task: composer
         vars: { CLI_ARGS: 'bump' }
@@ -287,8 +300,12 @@ tasks:
     label: 'Laravel Pint'
     desc: 'Fix php format issues.'
     aliases:
+      - f:p
       - f:pint
+      - fix:p
     cmds:
+      - task: pint
+        vars: { CLI_ARGS: '-V' }
       - task: pint
         vars: { CLI_ARGS: '.' }
 
@@ -300,6 +317,8 @@ tasks:
       - f:rector
       - fix:r
     cmds:
+      - task: rector
+        vars: { CLI_ARGS: '-V' }
       - task: rector
         vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
@@ -315,6 +334,8 @@ tasks:
       - fix:prt
       - fix:format
     cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-v' }
       - task: prettier
         vars: { CLI_ARGS: '. -wl' }
 

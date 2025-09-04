@@ -13,7 +13,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Knuckles\Scribe\Attributes\Group;
 
+#[Group('User')]
 final class UserController extends Controller
 {
     public function __construct(

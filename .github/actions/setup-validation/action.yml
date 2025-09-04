@@ -83,3 +83,10 @@ runs:
       if: ${{ inputs.use-node == 'true' }}
       shell: bash
       run: pnpm i -sD --frozen-lockfile --color=always
+
+    - name: '🧰 Set up Laravel'
+      if: ${{ inputs.use-php == 'true' }}
+      shell: bash
+      run: |
+        php artisan migrate:fresh --force --env=testing
+        php artisan ide-helper:models --write-mixin --ansi

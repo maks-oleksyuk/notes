@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 ## Description: Run artisan CLI inside the web container
-## Usage: a [flags] [args]
+## Usage: artisan [flags] [args]
+## Example: "ddev artisan list" or "ddev artisan cache:clear"
+## Aliases: art,a
 ## ProjectTypes: laravel
 ## ExecRaw: true
 ## MutagenSync: true

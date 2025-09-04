@@ -1,6 +1,7 @@
 .ddev
 .github
 .pnpm-store
+.scribe
 LICENSE.md
 composer.lock
 dist
