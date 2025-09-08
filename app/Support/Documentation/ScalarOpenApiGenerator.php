@@ -21,21 +21,17 @@ final class ScalarOpenApiGenerator extends OpenApiGenerator
 
     /**
      * @param  array<string, mixed>  $root
+     * @param  array<int, array{name: string, description: string, endpoints: array<OutputEndpointData>}>  $groupedEndpoints
      * @return array<string, mixed>
-     *
-     * @throws \JsonException
      */
     #[\Override]
     public function root(array $root, array $groupedEndpoints): array
     {
-        $this->config->data['external']['html_attributes'] = [
-            'data-configuration' => htmlspecialchars(json_encode([
-                'defaultHttpClient' => ['targetKey' => 'js', 'clientKey' => 'fetch'],
-            ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES),
-        ];
-
         $tags = [];
         $tagsHashmap = [];
+
+        /** @var string $defaultGroup */
+        $defaultGroup = $this->configRepository->get('scribe.groups.default');
 
         foreach ($groupedEndpoints as $groupedEndpoint) {
             $grouped = [];
@@ -64,17 +60,22 @@ final class ScalarOpenApiGenerator extends OpenApiGenerator
             }
 
             sort($grouped, SORT_STRING);
+
+            if (! isset($root['x-tagGroups']) || ! is_array($root['x-tagGroups'])) {
+                $root['x-tagGroups'] = [];
+            }
+
             $root['x-tagGroups'][] = [
                 'name' => $groupedEndpoint['name'],
                 'tags' => array_merge($grouped, [
                     // Tag for an endpoint with a group but without a subgroup.
-                    $groupedEndpoint['name'].' '.$this->configRepository->get('scribe.groups.default'),
+                    $groupedEndpoint['name'].' '.$defaultGroup,
                 ]),
             ];
         }
 
         // set default(_UNGROUPED) tag.
-        $tags[] = ['name' => $this->configRepository->get('scribe.groups.default')];
+        $tags[] = ['name' => $defaultGroup];
         $root['tags'] = $tags;
 
         return $root;
@@ -97,6 +98,12 @@ final class ScalarOpenApiGenerator extends OpenApiGenerator
 
     private function generateTagNameFromMetadata(Metadata $metadata): string
     {
-        return mb_trim($metadata->groupName.' '.($metadata->subgroup ?: $this->configRepository->get('scribe.groups.default')));
+        $subgroup = $metadata->subgroup;
+        if ($subgroup === null || $subgroup === '') {
+            /** @var string $subgroup */
+            $subgroup = $this->configRepository->get('scribe.groups.default');
+        }
+
+        return mb_trim($metadata->groupName.' '.$subgroup);
     }
 }

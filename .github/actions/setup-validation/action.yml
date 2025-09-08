@@ -22,6 +22,11 @@ inputs:
     required: false
     default: 'false'
 
+  use-db:
+    description: 'Whether to use db'
+    required: false
+    default: 'false'
+
 runs:
   using: composite
   steps:
@@ -85,8 +90,10 @@ runs:
       run: pnpm i -sD --frozen-lockfile --color=always
 
     - name: '🧰 Set up Laravel'
-      if: ${{ inputs.use-php == 'true' }}
+      if: ${{ inputs.use-db == 'true' }}
       shell: bash
       run: |
-        php artisan migrate:fresh --force --env=testing
-        php artisan ide-helper:models --write-mixin --ansi
+        cp .env.example .env
+        sed -i -e '/^DB_HOST=/s/=.*/=127.0.0.1/' -e 't' -e '$aDB_HOST=127.0.0.1' .env
+        php artisan migrate:fresh --force --ansi
+        php artisan ide-helper:models --write-mixin -n --ansi

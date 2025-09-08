@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
-use Rector\Strict\Rector\Ternary\DisallowedShortTernaryRuleFixerRector;
 use Rector\Transform\Rector\StaticCall\StaticCallToMethodCallRector;
 use Rector\ValueObject\PhpVersion;
 use RectorLaravel\Rector\FuncCall\ArgumentFuncCallToMethodCallRector;
@@ -52,7 +51,6 @@ return RectorConfig::configure()
         LaravelSetList::LARAVEL_STATIC_TO_INJECTION,
     ])
     ->withSkip([
-        DisallowedShortTernaryRuleFixerRector::class,
         StaticCallToMethodCallRector::class => [
             __DIR__.'/../../app/Providers',
             __DIR__.'/../../database',
@@ -64,5 +62,5 @@ return RectorConfig::configure()
     ->withParallel()
     ->withCache(
         __DIR__.'/../../var/cache/rector',
-        FileCacheStorage::class
+        FileCacheStorage::class,
     );

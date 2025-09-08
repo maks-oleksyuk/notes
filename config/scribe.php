@@ -35,7 +35,7 @@ return [
         [
             'match' => [
                 // Match only routes whose paths match this pattern (use * as a wildcard to match any characters). Example: 'users/*'.
-                'prefixes' => ['api/*'],
+                'prefixes' => ['api/v1/*'],
 
                 // Match only routes whose domains match this pattern (use * as a wildcard to match any characters). Example: 'api.*'.
                 'domains' => ['*'],
@@ -65,7 +65,7 @@ return [
     'static' => [
         // HTML documentation, assets and Postman collection will be generated to this folder.
         // Source Markdown will still be in resources/docs.
-        'output_path' => 'public/docs',
+        'output_path' => 'public/docs/v1',
     ],
 
     'laravel' => [
@@ -74,7 +74,7 @@ return [
 
         // URL path to use for the docs endpoint (if `add_routes` is true).
         // By default, `/docs` opens the HTML page, `/docs.postman` opens the Postman collection, and `/docs.openapi` the OpenAPI spec.
-        'docs_url' => '/docs',
+        'docs_url' => '/docs/v1',
 
         // Directory within `public` in which to store CSS and JS assets.
         // By default, assets are stored in `public/vendor/scribe`.
@@ -86,7 +86,42 @@ return [
     ],
 
     'external' => [
-        'html_attributes' => [],
+        'html_attributes' => [
+            'data-configuration' => htmlspecialchars(json_encode([
+                'documentDownloadType' => 'json',
+                'defaultHttpClient' => ['targetKey' => 'js', 'clientKey' => 'fetch'],
+                'hiddenClients' => [
+                    'libcurl',
+                    'httpclient',
+                    'restsharp',
+                    'clj_http',
+                    'http',
+                    'http1.1',
+                    'asynchttp',
+                    'nethttp',
+                    'okhttp',
+                    'unirest',
+                    'ofetch',
+                    'jquery',
+                    'undici',
+                    'nsurlsession',
+                    'cohttp',
+                    'curl',
+                    'guzzle',
+                    'webrequest',
+                    'restmethod',
+                    'python3',
+                    'requests',
+                    'httpx_sync',
+                    'httpx_async',
+                    'httr',
+                    'native',
+                    'reqwest',
+                    'httpie',
+                    'wget',
+                ],
+            ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES),
+        ],
     ],
 
     'try_it_out' => [

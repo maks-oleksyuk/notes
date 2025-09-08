@@ -32,52 +32,47 @@ jobs:
           keep_minimum_runs: 1
           delete_workflow_pattern: ci-laravel.yml
 
-#  lint:
-#    name: '🪄 Lint | ${{ matrix.command.name }}'
-#    runs-on: ubuntu-latest
-#
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        command:
-#          - {
-#              name: '📦 Composer',
-#              command: 'lint:composer',
-#              php: true,
-#            }
-#          - {
-#              name: '🧽 Laravel Pint',
-#              command: 'lint:pint -- --format=checkstyle | tail -n +2 | cs2pr',
-#              php: true,
-#            }
-#          - {
-#              name: '🔍 PHPStan',
-#              command: 'lint:phpstan -- --no-progress',
-#              php: true,
-#            }
-#          - {
-#              name: '🅿️ Prettier',
-#              command: 'lint:prettier',
-#              node: true,
-#            }
-#          - {
-#              name: '🏠 Rector',
-#              command: 'lint:rector -- --no-progress-bar --output-format=github',
-#              php: true,
-#            }
-#
-#    steps:
-#      - name: '🛎 Checkout'
-#        uses: actions/checkout@v5
-#
-#      - name: '⚙️ Prepare environment'
-#        uses: ./.github/actions/setup-validation
-#        with:
-#          use-php: ${{ matrix.command.php }}
-#          use-node: ${{ matrix.command.node }}
-#
-#      - name: '${{ matrix.command.name }} validate'
-#        run: task ${{ matrix.command.command }}
+  lint:
+    name: '🪄 Lint | ${{ matrix.command.name }}'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - {
+              name: '📦 Composer',
+              command: 'lint:composer',
+              php: true,
+            }
+          - {
+              name: '🧽 Laravel Pint',
+              command: 'lint:pint -- --format=checkstyle | tail -n +2 | cs2pr',
+              php: true,
+            }
+          - {
+              name: '🅿️ Prettier',
+              command: 'lint:prettier',
+              node: true,
+            }
+          - {
+              name: '🏠 Rector',
+              command: 'lint:rector -- --no-progress-bar --output-format=github',
+              php: true,
+            }
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@v5
+
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-validation
+        with:
+          use-php: ${{ matrix.command.php }}
+          use-node: ${{ matrix.command.node }}
+
+      - name: '${{ matrix.command.name }} validate'
+        run: task ${{ matrix.command.command }}
 
   lint_phpstan:
     name: '🪄 Lint | 🔍 PHPStan'
@@ -106,6 +101,7 @@ jobs:
         uses: ./.github/actions/setup-validation
         with:
           use-php: true
+          use-db: true
 
       - name: '🔍 PHPStan validate'
         run: task lint:phpstan -- --no-progress
@@ -115,61 +111,61 @@ jobs:
           DB_USERNAME: db
           DB_PASSWORD: db
 
-#  test:
-#    name: '♻️ Test | ${{ matrix.command.name }}'
-#    runs-on: ubuntu-latest
-#
-#    services:
-#      postgres:
-#        image: postgres:17
-#        ports:
-#          - 5432:5432
-#        env:
-#          POSTGRES_DB: testing
-#          POSTGRES_USER: db
-#          POSTGRES_PASSWORD: db
-#        options: >-
-#          --health-cmd pg_isready
-#          --health-interval 10s
-#          --health-timeout 5s
-#          --health-retries 5
-#
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        command:
-#          - { name: '🧬 Feature', command: 'test:feature -- --ci' }
-#          - { name: '🔬 Unit',    command: 'test:unit -- --ci' }
-#          - { name: '🦠 Mutate',  command: 'test:mutate -- --ci' }
-#
-#    steps:
-#      - name: '🛎 Checkout'
-#        uses: actions/checkout@v5
-#
-#      - name: '⚙️ Prepare environment'
-#        uses: ./.github/actions/setup-testing
-#
-#      - name: '${{ matrix.command.name }} tests'
-#        run: task ${{ matrix.command.command }}
-#        env:
-#          DB_HOST: 127.0.0.1
-#          DB_DATABASE: testing
-#          DB_USERNAME: db
-#          DB_PASSWORD: db
-#
-#      - name: '☂️ Upload results to Codecov'
-#        uses: codecov/codecov-action@v5
-#        if: ${{ matrix.command.name != '🦠 Mutate' }}
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-#          slug: maks-oleksyuk/notes
-#          flags: ${{ matrix.command.name }}
-#          directory: ./var/report
-#
-#      - name: '☂️ Upload test results to Codecov'
-#        uses: codecov/test-results-action@v1
-#        if: ${{ matrix.command.name != '🦠 Mutate' }}
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-#          flags: ${{ matrix.command.name }}
-#          directory: ./var/report
+  test:
+    name: '♻️ Test | ${{ matrix.command.name }}'
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: db
+          POSTGRES_PASSWORD: db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - { name: '🧬 Feature', command: 'test:feature -- --ci' }
+          - { name: '🔬 Unit',    command: 'test:unit -- --ci' }
+          - { name: '🦠 Mutate',  command: 'test:mutate -- --ci' }
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@v5
+
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-testing
+
+      - name: '${{ matrix.command.name }} tests'
+        run: task ${{ matrix.command.command }}
+        env:
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: testing
+          DB_USERNAME: db
+          DB_PASSWORD: db
+
+      - name: '☂️ Upload results to Codecov'
+        uses: codecov/codecov-action@v5
+        if: ${{ matrix.command.name != '🦠 Mutate' }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: maks-oleksyuk/notes
+          flags: ${{ matrix.command.name }}
+          directory: ./var/report
+
+      - name: '☂️ Upload test results to Codecov'
+        uses: codecov/test-results-action@v1
+        if: ${{ matrix.command.name != '🦠 Mutate' }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.command.name }}
+          directory: ./var/report
