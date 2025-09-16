@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.2 (Debian 17.2-1.pgdg120+1)
--- Dumped by pg_dump version 17.2 (Debian 17.2-1.pgdg120+1)
+-- Dumped from database version 17.5 (Debian 17.5-1.pgdg120+1)
+-- Dumped by pg_dump version 17.5 (Debian 17.5-1.pgdg120+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -226,6 +226,43 @@ CREATE TABLE public.password_reset_tokens (
 
 
 --
+-- Name: personal_access_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.personal_access_tokens (
+    id bigint NOT NULL,
+    tokenable_type character varying(255) NOT NULL,
+    tokenable_id bigint NOT NULL,
+    name text NOT NULL,
+    token character varying(64) NOT NULL,
+    abilities text,
+    last_used_at timestamp(0) without time zone,
+    expires_at timestamp(0) without time zone,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+--
+-- Name: personal_access_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.personal_access_tokens_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: personal_access_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.personal_access_tokens_id_seq OWNED BY public.personal_access_tokens.id;
+
+
+--
 -- Name: pulse_aggregates; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -405,6 +442,13 @@ ALTER TABLE ONLY public.migrations ALTER COLUMN id SET DEFAULT nextval('public.m
 
 
 --
+-- Name: personal_access_tokens id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.personal_access_tokens ALTER COLUMN id SET DEFAULT nextval('public.personal_access_tokens_id_seq'::regclass);
+
+
+--
 -- Name: pulse_aggregates id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -513,6 +557,22 @@ ALTER TABLE ONLY public.password_reset_tokens
 
 
 --
+-- Name: personal_access_tokens personal_access_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.personal_access_tokens
+    ADD CONSTRAINT personal_access_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: personal_access_tokens personal_access_tokens_token_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.personal_access_tokens
+    ADD CONSTRAINT personal_access_tokens_token_unique UNIQUE (token);
+
+
+--
 -- Name: pulse_aggregates pulse_aggregates_bucket_period_type_aggregate_key_hash_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -588,6 +648,20 @@ CREATE INDEX jobs_queue_index ON public.jobs USING btree (queue);
 --
 
 CREATE INDEX notifications_notifiable_type_notifiable_id_index ON public.notifications USING btree (notifiable_type, notifiable_id);
+
+
+--
+-- Name: personal_access_tokens_expires_at_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX personal_access_tokens_expires_at_index ON public.personal_access_tokens USING btree (expires_at);
+
+
+--
+-- Name: personal_access_tokens_tokenable_type_tokenable_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX personal_access_tokens_tokenable_type_tokenable_id_index ON public.personal_access_tokens USING btree (tokenable_type, tokenable_id);
 
 
 --
@@ -683,8 +757,8 @@ ALTER TABLE ONLY public.exports
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.2 (Debian 17.2-1.pgdg120+1)
--- Dumped by pg_dump version 17.2 (Debian 17.2-1.pgdg120+1)
+-- Dumped from database version 17.5 (Debian 17.5-1.pgdg120+1)
+-- Dumped by pg_dump version 17.5 (Debian 17.5-1.pgdg120+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;

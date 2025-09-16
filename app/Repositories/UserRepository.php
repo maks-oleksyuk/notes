@@ -23,7 +23,7 @@ final readonly class UserRepository extends BaseRepository implements UserReposi
     {
         $query = $this->query()
             ->when($filters->ids,
-                fn ($query) => $query->whereIn('id', $filters->ids)
+                fn (Builder $query) => $query->whereIn('id', $filters->ids)
             );
 
         return $this->addQueryOrder($query, $order);

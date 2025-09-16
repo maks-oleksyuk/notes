@@ -10,7 +10,7 @@ artisan
 
 # Ignore final build files.
 dist
-.scribe
+.scribe*
 
 # Ignore temporary/cache files and folders.
 var

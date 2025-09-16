@@ -1,7 +1,7 @@
 .ddev
 .github
 .pnpm-store
-.scribe
+.scribe*
 dist
 local
 public

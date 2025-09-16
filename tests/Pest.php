@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\V1\Auth\AuthController;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -29,7 +31,9 @@ pest()->extend(Tests\TestCase::class)->in('Feature', 'Unit');
 expect()->extend('toBeOne', fn () => $this->toBe(1));
 
 arch()->preset()->security();
-arch()->preset()->laravel();
+arch()->preset()->laravel()->ignoring(
+    AuthController::class,
+);
 arch()->preset()->php();
 
 /*

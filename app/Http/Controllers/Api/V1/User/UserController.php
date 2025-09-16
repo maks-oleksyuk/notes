@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\V1;
+namespace App\Http\Controllers\Api\V1\User;
 
-use App\Http\Requests\Api\V1\StoreUserRequest;
-use App\Http\Requests\Api\V1\UpdateUserRequest;
-use App\Http\Resources\Api\V1\UserResource;
+use App\Http\Requests\Api\V1\User\StoreUserRequest;
+use App\Http\Requests\Api\V1\User\UpdateUserRequest;
+use App\Http\Resources\Api\V1\User\UserResource;
 use App\Models\User;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
@@ -22,6 +22,9 @@ final class UserController extends Controller
         private readonly ResponseFactory $responseFactory,
     ) {}
 
+    /**
+     * @throws \Throwable
+     */
     public function index(): ResourceCollection
     {
         return User::query()->latest('id')->paginate()->toResourceCollection(UserResource::class);

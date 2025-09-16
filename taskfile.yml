@@ -132,6 +132,7 @@ tasks:
       - task: artisan
         vars: { CLI_ARGS: 'migrate' }
       - task: cache:clear
+      - task: docs:generate
 
   db:fresh:
     label: 'Refresh database'
@@ -153,6 +154,15 @@ tasks:
     cmds:
       - task: artisan
         vars: { CLI_ARGS: 'schema:dump --prune' }
+
+  docs:generate:
+    label: 'Generate docs'
+    desc: 'Generate docs with scribe.'
+    aliases:
+      - docs
+    cmds:
+      - task: artisan
+        vars: { CLI_ARGS: 'scribe:generate --config scribe-v1' }
 
   # Linters:
 

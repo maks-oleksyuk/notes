@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories\Contracts;
 
 use App\Data\Filters\Contracts\FiltersData;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * @template TModel of Model
@@ -21,7 +21,7 @@ interface BaseRepositoryInterface
     public function query(): Builder;
 
     /**
-     * @return TModel
+     * @return TModel|null
      */
     public function find(int|string $id): ?Model;
 

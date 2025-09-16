@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories\Contracts;
 
 use App\Data\Filters\Contracts\FiltersData;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * @template TModel of Model
@@ -31,23 +31,31 @@ abstract readonly class BaseRepository implements BaseRepositoryInterface
     public function find(int|string $id): ?Model
     {
         /** @var TModel|null */
-        return $this->query()->findOrFail($id);
+        return $this->query()->find($id);
     }
 
     public function findAll(int $perPage = -1, int $page = 1): Collection|LengthAwarePaginator
     {
-        return $perPage === -1
-            ? $this->query()->get()
-            : $this->query()->paginate(perPage: $perPage, page: $page);
+        if ($perPage === -1) {
+            /** @var Collection<int, TModel> */
+            return $this->query()->get();
+        }
+
+        /** @var LengthAwarePaginator<int, TModel> */
+        return $this->query()->paginate(perPage: $perPage, page: $page);
     }
 
     public function findBy(FiltersData $filters, array $order = [], int $perPage = -1, int $page = 1): Collection|LengthAwarePaginator
     {
         $query = $this->getFilteredQuery($filters, $order);
 
-        return $perPage === -1
-            ? $query->get()
-            : $query->paginate(perPage: $perPage, page: $page);
+        if ($perPage === -1) {
+            /** @var Collection<int, TModel> */
+            return $query->get();
+        }
+
+        /** @var LengthAwarePaginator<int, TModel> */
+        return $query->paginate(perPage: $perPage, page: $page);
     }
 
     /**
