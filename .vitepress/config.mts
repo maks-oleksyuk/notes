@@ -19,7 +19,17 @@ export default defineConfig({
   outDir: './dist',
   cleanUrls: true,
   lastUpdated: true,
-  head: [['link', { rel: 'icon', href: '/notes/favicon.ico' }]],
+  head: [
+    ['link', { rel: 'icon', href: '/notes/favicon.ico' }],
+    [
+      'script',
+      {
+        async: true,
+        src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1549697176150032',
+        crossorigin: 'anonymous',
+      },
+    ],
+  ],
   themeConfig: {
     nav: [
       { text: 'Drupal', link: '/drupal/' },

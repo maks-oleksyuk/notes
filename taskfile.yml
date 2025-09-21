@@ -51,7 +51,10 @@ tasks:
 
   preview:
     label: 'Run vitepress preview'
+    aliases:
+      - p
     cmds:
+      - task: build
       - task: pnpm
         vars: { CLI_ARGS: 'vitepress preview' }
 

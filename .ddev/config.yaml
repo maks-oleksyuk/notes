@@ -4,6 +4,7 @@ webserver_type: generic
 nodejs_version: '22'
 corepack_enable: true
 omit_containers: [db]
+disable_upload_dirs_warning: true
 web_extra_exposed_ports:
   - name: vitepress
     container_port: 5173
