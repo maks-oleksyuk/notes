@@ -5,9 +5,9 @@
     "type": "project",
     "require": {
         "php": "^8.4",
-        "filament/filament": "^4.0.18",
+        "filament/filament": "^4.1.1",
         "knuckleswtf/scribe": "^5.3",
-        "laravel/framework": "^12.30.1",
+        "laravel/framework": "^12.32.5",
         "laravel/pulse": "^1.4.3",
         "laravel/sanctum": "^4.2",
         "olssonm/l5-very-basic-auth": "^7.2",
@@ -22,10 +22,11 @@
         "larastan/larastan": "^3.7.2",
         "laravel/pint": "^1.25.1",
         "mockery/mockery": "^1.6.12",
-        "pestphp/pest": "^4.1",
+        "pestphp/pest": "^4.1.2",
         "pestphp/pest-plugin-laravel": "^4.0",
         "pestphp/pest-plugin-livewire": "^4.0.1",
-        "php-mock/php-mock-phpunit": "^2.13",
+        "pestphp/pest-plugin-type-coverage": "^4.0.2",
+        "php-mock/php-mock-phpunit": "^2.13.1",
         "phpstan/phpstan-deprecation-rules": "^2.0.3"
     },
     "autoload": {
@@ -45,6 +46,7 @@
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
         },
+        "bump-after-update": true,
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true

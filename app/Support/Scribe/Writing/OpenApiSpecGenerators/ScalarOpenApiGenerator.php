@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Support\Documentation;
+namespace App\Support\Scribe\Writing\OpenApiSpecGenerators;
 
 use Illuminate\Contracts\Config\Repository;
 use Knuckles\Camel\Extraction\Metadata;

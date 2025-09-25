@@ -108,6 +108,19 @@ tasks:
       - task: artisan
         vars: { CLI_ARGS: 'optimize:clear' }
 
+  install:
+    label: 'Install project'
+    aliases:
+      - i
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: 'install' }
+      - task: pnpm
+        vars: { CLI_ARGS: 'install' }
+      - task: artisan
+        vars: { CLI_ARGS: 'key:generate' }
+      - task: db:fresh
+
   update:
     label: 'Update project'
     desc: 'Updates project dependencies withing constraints.'
@@ -127,12 +140,18 @@ tasks:
     aliases:
       - d
     cmds:
+      - task: artisan
+        vars: { CLI_ARGS: 'down' }
       - task: composer
         vars: { CLI_ARGS: 'i --no-dev' }
       - task: artisan
-        vars: { CLI_ARGS: 'migrate' }
+        vars: { CLI_ARGS: 'migrate --force' }
       - task: cache:clear
+      - task: artisan
+        vars: { CLI_ARGS: 'optimize' }
       - task: docs:generate
+      - task: artisan
+        vars: { CLI_ARGS: 'up' }
 
   db:fresh:
     label: 'Refresh database'
@@ -361,6 +380,21 @@ tasks:
       - defer: { task: test:mutate }
       - defer: { task: test:unit }
       - defer: { task: test:feature }
+
+  test:coverage:
+    label: 'Type Coverage'
+    desc: 'Ensure all methods and properties have type declarations.'
+    aliases:
+      - t:c
+      - t:coverage
+      - qa:c
+      - qa:coverage
+      - test:c
+    cmds:
+      - task: pest
+        vars: { CLI_ARGS: '--version' }
+      - task: pest
+        vars: { CLI_ARGS: '--type-coverage --compact --min=100 {{.CLI_ARGS}}' }
 
   test:feature:
     label: 'Feature test'

@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Support\Documentation\ScalarOpenApiGenerator;
+use App\Support\Scribe\Extracting\Strategies\Responses\AppDefaultResponses;
+use App\Support\Scribe\Writing\OpenApiSpecGenerators\ScalarOpenApiGenerator;
 use Knuckles\Scribe\Config\AuthIn;
 use Knuckles\Scribe\Config\Defaults;
 use Knuckles\Scribe\Extracting\Strategies;
@@ -88,7 +89,7 @@ return [
     'external' => [
         'html_attributes' => [
             'data-configuration' => htmlspecialchars(json_encode([
-                'documentDownloadType' => 'json',
+                'documentDownloadType' => 'yaml',
                 'defaultHttpClient' => ['targetKey' => 'js', 'clientKey' => 'fetch'],
                 'hiddenClients' => [
                     'libcurl',
@@ -101,6 +102,7 @@ return [
                     'nethttp',
                     'okhttp',
                     'unirest',
+                    'xhr',
                     'ofetch',
                     'jquery',
                     'undici',
@@ -266,16 +268,16 @@ return [
         'bodyParameters' => [
             ...Defaults::BODY_PARAMETERS_STRATEGIES,
         ],
-        'responses' => configureStrategy(
-            Defaults::RESPONSES_STRATEGIES,
-            Strategies\Responses\ResponseCalls::withSettings(
-                only: ['GET *'],
-                // Recommended: disable debug mode in response calls to avoid error stack traces in responses
-                config: [
-                    'app.debug' => false,
-                ]
-            )
-        ),
+        'responses' => configureStrategy([
+            ...Defaults::RESPONSES_STRATEGIES,
+            AppDefaultResponses::class,
+        ], Strategies\Responses\ResponseCalls::withSettings(
+            // Recommended: disable debug mode in response calls to avoid error stack traces in responses
+            config: [
+                'app.debug' => false,
+                'debugbar.enabled' => false,
+            ]
+        )),
         'responseFields' => [
             ...Defaults::RESPONSE_FIELDS_STRATEGIES,
         ],

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Exceptions\ApiExceptionHandler;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 
 /*
@@ -31,9 +32,10 @@ pest()->extend(Tests\TestCase::class)->in('Feature', 'Unit');
 expect()->extend('toBeOne', fn () => $this->toBe(1));
 
 arch()->preset()->security();
-arch()->preset()->laravel()->ignoring(
+arch()->preset()->laravel()->ignoring([
     AuthController::class,
-);
+    ApiExceptionHandler::class,
+]);
 arch()->preset()->php();
 
 /*
