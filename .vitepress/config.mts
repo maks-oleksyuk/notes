@@ -34,6 +34,7 @@ export default defineConfig({
     nav: [
       { text: 'Drupal', link: '/drupal/' },
       { text: 'Laravel', link: '/laravel/' },
+      { text: 'mono', link: '//send.monobank.ua/jar/f82PN8AyZ' },
     ],
     socialLinks: [
       { icon: 'github', link: '//github.com/maks-oleksyuk/notes' },
@@ -68,21 +69,29 @@ export default defineConfig({
         useFolderLinkFromIndexFile: true,
         useFolderTitleFromIndexFile: true,
         frontmatterTitleFieldName: 'menu_title',
-        manualSortFileNameByPriority: ['lutsk.md', 'kivertsi.md', 'ozero.md'],
+        manualSortFileNameByPriority: [
+          'lutsk.md',
+          'kivertsi.md',
+          'ozero.md',
+          '103.md',
+        ],
       },
     ]),
     externalLinkIcon: true,
   },
   locales: {
     root: {
-      label: 'English',
+      label: '🇺🇸 English',
       lang: 'en',
     },
     ua: {
-      label: 'Українська',
+      label: '🇺🇦 Українська',
       lang: 'uk',
       themeConfig: {
-        nav: [{ text: 'Buses', link: '/ua/other/bus/' }],
+        nav: [
+          { text: 'Buses', link: '/ua/other/bus/' },
+          { text: 'mono', link: '//send.monobank.ua/jar/f82PN8AyZ' },
+        ],
         darkModeSwitchLabel: 'Зовнішній вигляд',
         returnToTopLabel: 'Повернутись до початку',
         outline: {
