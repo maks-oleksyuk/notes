@@ -24,19 +24,19 @@ final class AppDefaultResponses extends Strategy
         $this->setDescriptionForStatus($endpointData, Response::HTTP_NO_CONTENT);
 
         if ($endpointData->metadata->authenticated) {
-            $responses[] = $this->makeSimpleErrorResponse(Response::HTTP_UNAUTHORIZED);
+            $responses[] = $this->makeSimpleErrorResponse($endpointData, Response::HTTP_UNAUTHORIZED);
         }
 
         if (array_key_exists('id', $endpointData->urlParameters)) {
-            $responses[] = $this->makeSimpleErrorResponse(Response::HTTP_NOT_FOUND);
+            $responses[] = $this->makeSimpleErrorResponse($endpointData, Response::HTTP_NOT_FOUND);
         }
 
         if ($endpointData->bodyParameters || $endpointData->queryParameters) {
-            $responses[] = $this->makeSimpleErrorResponse(Response::HTTP_UNPROCESSABLE_ENTITY);
+            $responses[] = $this->makeSimpleErrorResponse($endpointData, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $responses[] = $this->makeSimpleErrorResponse(Response::HTTP_TOO_MANY_REQUESTS);
-        $responses[] = $this->makeSimpleErrorResponse(Response::HTTP_SERVICE_UNAVAILABLE);
+        $responses[] = $this->makeSimpleErrorResponse($endpointData, Response::HTTP_TOO_MANY_REQUESTS);
+        $responses[] = $this->makeSimpleErrorResponse($endpointData, Response::HTTP_SERVICE_UNAVAILABLE);
 
         return $responses;
     }
@@ -54,7 +54,7 @@ final class AppDefaultResponses extends Strategy
     /**
      * @return array{status:int,description:string,content:string}
      */
-    private function makeSimpleErrorResponse(int $status): array
+    private function makeSimpleErrorResponse(ExtractedEndpointData $endpointData, int $status): array
     {
         return [
             'status' => $status,
@@ -63,9 +63,11 @@ final class AppDefaultResponses extends Strategy
                 'title' => Response::$statusTexts[$status],
                 'status' => $status,
                 'detail' => 'string',
-                'instance' => 'string',
-            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
-            ),
+                'instance' => '/'.$endpointData->uri,
+            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            'headers' => [
+                'Content-Type' => 'application/problem+json',
+            ],
         ];
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,9 +25,12 @@ final readonly class ApiExceptionHandler
             return null;
         }
 
-        $status = $e instanceof HttpExceptionInterface
-            ? $e->getStatusCode()
-            : $e->getCode();
+        $status = match (true) {
+            $e instanceof HttpExceptionInterface => $e->getStatusCode(),
+            $e instanceof AuthenticationException => Response::HTTP_UNAUTHORIZED,
+            $e instanceof ValidationException => Response::HTTP_UNPROCESSABLE_ENTITY,
+            default => $e->getCode(),
+        };
 
         $problem = [
             'title' => Response::$statusTexts[$status],

@@ -1,0 +1,36 @@
+ src/Plugin.php                              | 3 ++-
+ src/Support/ConfigurationSourceDetector.php | 5 +++--
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/src/Plugin.php b/src/Plugin.php
+index f482668..ac95c34 100644
+--- a/src/Plugin.php
++++ b/src/Plugin.php
+@@ -119,7 +119,8 @@ public function handleOriginalArguments(array $arguments): void
+             }
+         }
+
+-        $source = ConfigurationSourceDetector::detect();
++        $configArg = current(array_filter($arguments, fn ($arg) => str_starts_with($arg, '--configuration=')));
++        $source = ConfigurationSourceDetector::detect($configArg ? [$configArg] : []);
+
+         if ($source === []) {
+             View::render('components.badge', [
+diff --git a/src/Support/ConfigurationSourceDetector.php b/src/Support/ConfigurationSourceDetector.php
+index 8f64e53..aea3604 100644
+--- a/src/Support/ConfigurationSourceDetector.php
++++ b/src/Support/ConfigurationSourceDetector.php
+@@ -18,11 +18,12 @@ final class ConfigurationSourceDetector
+     /**
+      * Detects the "source" of the configuration.
+      *
++     * @param  array<int, string>  $arguments
+      * @return array<int, string>
+      */
+-    public static function detect(): array
++    public static function detect(array $arguments = []): array
+     {
+-        $cliConfiguration = (new Builder)->fromParameters([]);
++        $cliConfiguration = (new Builder)->fromParameters($arguments);
+         $configurationFile = (new XmlConfigurationFileFinder)->find($cliConfiguration);
+         $xmlConfiguration = DefaultConfiguration::create();

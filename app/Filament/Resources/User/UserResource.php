@@ -10,6 +10,7 @@ use App\Filament\Resources\User\Tables\UsersTable;
 use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -53,6 +54,9 @@ final class UserResource extends Resource
         return UsersTable::configure($table);
     }
 
+    /**
+     * @return array<string, PageRegistration>
+     */
     #[\Override]
     public static function getPages(): array
     {

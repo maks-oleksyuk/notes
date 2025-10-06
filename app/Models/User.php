@@ -41,6 +41,9 @@ final class User extends Authenticatable implements FilamentUser
         'remember_token',
     ];
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [

@@ -380,6 +380,7 @@ tasks:
       - defer: { task: test:mutate }
       - defer: { task: test:unit }
       - defer: { task: test:feature }
+      - defer: { task: test:coverage }
 
   test:coverage:
     label: 'Type Coverage'
