@@ -6,7 +6,7 @@ namespace App\Actions\Api\V1\Auth;
 
 use App\Models\User;
 use Illuminate\Contracts\Hashing\Hasher;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Validation\ValidationException;
 
 final readonly class LoginAction
@@ -28,7 +28,7 @@ final readonly class LoginAction
             'password' => [__('auth.failed')],
         ]));
 
-        $expiresAt = Carbon::now()->addHour();
+        $expiresAt = Date::now()->addHour();
         $token = $user->createToken(name: 'api', expiresAt: $expiresAt)->plainTextToken;
 
         return [

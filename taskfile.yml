@@ -181,7 +181,7 @@ tasks:
       - docs
     cmds:
       - task: artisan
-        vars: { CLI_ARGS: 'scribe:generate --config scribe-v1' }
+        vars: { CLI_ARGS: 'scribe:generate --scribe-dir=var/.scribe-v1 --config scribe-v1' }
 
   # Linters:
 

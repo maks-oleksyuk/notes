@@ -10,7 +10,7 @@ use RectorLaravel\Rector\FuncCall\ArgumentFuncCallToMethodCallRector;
 use RectorLaravel\Set\LaravelLevelSetList;
 use RectorLaravel\Set\LaravelSetList;
 
-if (in_array(env('APP_ENV'), ['production', 'testing']) || ! class_exists(RectorConfig::class)) {
+if (defined('ARTISAN_BINARY') || ! class_exists(RectorConfig::class)) {
     return;
 }
 
@@ -50,6 +50,8 @@ return RectorConfig::configure()
         LaravelSetList::LARAVEL_IF_HELPERS,
         LaravelSetList::LARAVEL_LEGACY_FACTORIES_TO_CLASSES,
         LaravelSetList::LARAVEL_STATIC_TO_INJECTION,
+        LaravelSetList::LARAVEL_TESTING,
+        LaravelSetList::LARAVEL_TYPE_DECLARATIONS,
     ])
     ->withSkip([
         StaticCallToMethodCallRector::class => [
