@@ -6,9 +6,11 @@ use App\Data\Filters\Models\UserFilters;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 covers([UserRepository::class, UserFilters::class]);
+
 uses(RefreshDatabase::class);
 
 beforeEach(fn (): UserRepository => $this->repository = new UserRepository(new User));
@@ -31,7 +33,12 @@ describe('User Repository', function (): void {
     it('retrieves paginated users', function (): void {
         User::factory(15)->create();
 
-        expect($this->repository->findAll(perPage: 10))->toHaveCount(10);
+        $paginator = $this->repository->findAll(perPage: 10);
+
+        expect($paginator)
+            ->toBeInstanceOf(LengthAwarePaginator::class)
+            ->and($paginator->items())->toHaveCount(10)
+            ->and($paginator->currentPage())->toBe(1);
     });
 
     it('filters users by IDs', function (): void {
@@ -54,13 +61,25 @@ describe('User Repository', function (): void {
         }
     });
 
-    it('filters users correctly', function (): void {
+    it('filters users correctly using findBy without pagination', function (): void {
         $user = User::factory()->create(['name' => 'Alice']);
         User::factory()->create(['name' => 'Bob']);
 
         $filteredUsers = $this->repository->findBy(new UserFilters(ids: [$user->id]));
 
-        expect($filteredUsers)->toHaveCount(1)
+        expect($filteredUsers)->toBeInstanceOf(Collection::class)
+            ->and($filteredUsers)->toHaveCount(1)
             ->and($filteredUsers->first()->id)->toBe($user->id);
+    });
+
+    it('returns paginated results when perPage is provided in findBy', function (): void {
+        User::factory(15)->create();
+
+        $paginator = $this->repository->findBy(filters: new UserFilters, perPage: 10);
+
+        expect($paginator)
+            ->toBeInstanceOf(LengthAwarePaginator::class)
+            ->and($paginator->items())->toHaveCount(10)
+            ->and($paginator->currentPage())->toBe(1);
     });
 });

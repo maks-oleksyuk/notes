@@ -6,13 +6,16 @@ use App\Filament\Exports\UserExporter;
 use App\Models\User;
 use Filament\Actions\Exports\Models\Export;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Pest\Expectation;
+
+covers(UserExporter::class);
 
 uses(RefreshDatabase::class);
 
 describe('Filament | User Exporter', function (): void {
-    it('returns the correct model', function (): void {
-        expect(UserExporter::getModel())->toBe(User::class);
-    });
+    it('returns the correct model',
+        fn (): Expectation => expect(UserExporter::getModel())->toBe(User::class)
+    );
 
     it('returns the correct columns', function (): void {
         $columns = UserExporter::getColumns();

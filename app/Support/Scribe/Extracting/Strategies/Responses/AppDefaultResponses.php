@@ -13,7 +13,12 @@ final class AppDefaultResponses extends Strategy
 {
     /**
      * @param  array<string,mixed>  $settings
-     * @return array<int,array{status:int,description:string,content?:string}>
+     * @return array<int,array{
+     *     status:int,
+     *     description:string,
+     *     content?:string,
+     *     headers:array<string,string>
+     * }>
      */
     public function __invoke(ExtractedEndpointData $endpointData, array $settings = []): array
     {
@@ -32,7 +37,7 @@ final class AppDefaultResponses extends Strategy
         }
 
         if ($endpointData->bodyParameters || $endpointData->queryParameters) {
-            $responses[] = $this->makeSimpleErrorResponse($endpointData, Response::HTTP_UNPROCESSABLE_ENTITY);
+            $responses[] = $this->makeValidationErrorResponse($endpointData);
         }
 
         $responses[] = $this->makeSimpleErrorResponse($endpointData, Response::HTTP_TOO_MANY_REQUESTS);
@@ -43,16 +48,19 @@ final class AppDefaultResponses extends Strategy
 
     private function setDescriptionForStatus(ExtractedEndpointData $endpointData, int $status): void
     {
-        $collection = $endpointData->responses->where('status', $status);
-
-        foreach ($collection as $response) {
+        if ($response = $endpointData->responses->firstWhere('status', $status)) {
             /** @var ScribeResponse $response */
             $response->description = Response::$statusTexts[$status];
         }
     }
 
     /**
-     * @return array{status:int,description:string,content:string}
+     * @return array{
+     *     status:int,
+     *     description:string,
+     *     content:string,
+     *     headers:array<string,string>
+     * }
      */
     private function makeSimpleErrorResponse(ExtractedEndpointData $endpointData, int $status): array
     {
@@ -69,5 +77,33 @@ final class AppDefaultResponses extends Strategy
                 'Content-Type' => 'application/problem+json',
             ],
         ];
+    }
+
+    /**
+     * @return array{
+     *     status:int,
+     *     description:string,
+     *     content:string,
+     *     headers:array<string,string>
+     * }
+     */
+    private function makeValidationErrorResponse(ExtractedEndpointData $endpointData): array
+    {
+        $response = $this->makeSimpleErrorResponse($endpointData, Response::HTTP_UNPROCESSABLE_ENTITY);
+        /** @var array<string, array<string, mixed>> $content */
+        $content = json_decode($response['content'], true);
+
+        $parameters = array_merge(
+            iterator_to_array($endpointData->queryParameters ?? []),
+            iterator_to_array($endpointData->bodyParameters ?? [])
+        );
+
+        foreach ($parameters as $parameter) {
+            $content['errors'][$parameter->name] = [$parameter->description];
+        }
+
+        $response['content'] = (string) json_encode($content, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        return $response;
     }
 }

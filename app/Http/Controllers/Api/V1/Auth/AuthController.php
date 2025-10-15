@@ -8,9 +8,9 @@ use App\Actions\Api\V1\Auth\LoginAction;
 use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Resources\Api\V1\Auth\TokenResource;
 use Illuminate\Routing\Controller;
+use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
-use Knuckles\Scribe\Attributes\Unauthenticated;
 
 #[Group('Auth')]
 final class AuthController extends Controller
@@ -22,7 +22,7 @@ final class AuthController extends Controller
     /**
      * @throws \Throwable
      */
-    #[Unauthenticated]
+    #[Endpoint('Login', 'Login to the application', false)]
     #[ResponseFromApiResource(TokenResource::class)]
     public function login(LoginRequest $request): TokenResource
     {

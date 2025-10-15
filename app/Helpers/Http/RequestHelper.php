@@ -18,7 +18,7 @@ final readonly class RequestHelper
     {
         return array_values(
             array_filter(
-                array_map('trim', explode(',', $inputString))
+                array_map(trim(...), explode(',', $inputString))
             )
         );
     }
@@ -30,8 +30,8 @@ final readonly class RequestHelper
     {
         return array_values(
             array_map(
-                'intval',
-                array_filter(self::parseStringIntoArray($inputString), 'is_numeric')
+                intval(...),
+                array_filter(self::parseStringIntoArray($inputString), is_numeric(...))
             )
         );
     }

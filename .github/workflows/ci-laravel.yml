@@ -134,10 +134,10 @@ jobs:
       fail-fast: false
       matrix:
         command:
-          - { name: '🧮 Coverage', command: 'test:coverage -- --ci' }
-          - { name: '🧬 Feature',  command: 'test:feature -- --ci' }
-          - { name: '🔬 Unit',     command: 'test:unit -- --ci' }
-          - { name: '🦠 Mutate',   command: 'test:mutate -- --ci' }
+          - { name: '🧮 Coverage', command: 'test:coverage -- --ci', report: false }
+          - { name: '🧬 Feature',  command: 'test:feature -- --ci',  report: true  }
+          - { name: '🔬 Unit',     command: 'test:unit -- --ci',     report: true  }
+          - { name: '🦠 Mutate',   command: 'test:mutate -- --ci',   report: false }
 
     steps:
       - name: '🛎 Checkout'
@@ -156,16 +156,16 @@ jobs:
 
       - name: '☂️ Upload results to Codecov'
         uses: codecov/codecov-action@v5
-        if: ${{ matrix.command.name != '🦠 Mutate' && matrix.command.name != '🧮 Coverage' }}
+        if: ${{ matrix.command.report }}
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           slug: maks-oleksyuk/notes
+          token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ matrix.command.name }}
           directory: ./var/report
 
       - name: '☂️ Upload test results to Codecov'
         uses: codecov/test-results-action@v1
-        if: ${{ matrix.command.name != '🦠 Mutate' && matrix.command.name != '🧮 Coverage' }}
+        if: ${{ matrix.command.report }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ matrix.command.name }}

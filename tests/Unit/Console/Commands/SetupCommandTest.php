@@ -123,4 +123,4 @@ describe('Setup Command', function (): void {
     })->with('envs');
 });
 
-afterEach(fn () => m::close());
+afterEach(m::close(...));

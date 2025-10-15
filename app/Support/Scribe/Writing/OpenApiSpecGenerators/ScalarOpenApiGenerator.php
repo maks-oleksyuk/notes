@@ -13,7 +13,7 @@ use Knuckles\Scribe\Writing\OpenApiSpecGenerators\OpenApiGenerator;
 final class ScalarOpenApiGenerator extends OpenApiGenerator
 {
     public function __construct(
-        protected DocumentationConfig $config,
+        DocumentationConfig $config,
         private readonly Repository $configRepository,
     ) {
         parent::__construct($config);
@@ -46,17 +46,17 @@ final class ScalarOpenApiGenerator extends OpenApiGenerator
 
                 $tagName = $this->generateTagNameFromMetadata($metadata);
 
-                if (isset($tagsHashmap[$tagName])) {
+                if (in_array($tagName, $tagsHashmap)) {
                     continue;
                 }
 
-                $tagsHashmap[$tagName] = true;
                 $tags[] = [
                     'name' => $tagName,
                     'x-displayName' => $metadata->subgroup,
                     'description' => $metadata->subgroupDescription,
                 ];
                 $grouped[] = $tagName;
+                $tagsHashmap[] = $tagName;
             }
 
             sort($grouped, SORT_STRING);

@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 
 #[Group('User')]
@@ -25,11 +26,13 @@ final class UserController extends Controller
     /**
      * @throws \Throwable
      */
+    #[Endpoint('List users')]
     public function index(): ResourceCollection
     {
         return User::query()->latest('id')->paginate()->toResourceCollection(UserResource::class);
     }
 
+    #[Endpoint('Create user')]
     public function store(StoreUserRequest $request): JsonResponse
     {
         $user = User::query()->create($request->validated());
@@ -39,11 +42,13 @@ final class UserController extends Controller
             ->setStatusCode(201);
     }
 
+    #[Endpoint('Get user')]
     public function show(User $user): UserResource
     {
         return new UserResource($user);
     }
 
+    #[Endpoint('Update user')]
     public function update(UpdateUserRequest $request, User $user): UserResource
     {
         $user->update($request->validated());
@@ -51,6 +56,7 @@ final class UserController extends Controller
         return new UserResource($user);
     }
 
+    #[Endpoint('Delete user')]
     public function destroy(User $user): Response
     {
         $user->delete();

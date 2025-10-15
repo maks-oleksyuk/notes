@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models\Traits\DynamicScopes;
 
+use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 /**
  * @template TModel of Model
@@ -17,15 +18,16 @@ trait FilterBetweenDatesScope
      * @param  Builder<TModel>  $query
      * @return Builder<TModel>
      */
-    protected function scopeFilterBetweenDates(
+    #[Scope]
+    protected function filterBetweenDates(
         Builder $query,
         string $column,
-        Carbon $startDate,
-        Carbon $endDate,
+        CarbonImmutable $startDate,
+        CarbonImmutable $endDate,
     ): Builder {
         return $query->whereBetween($column, [
-            $startDate->copy()->startOfDay(),
-            $endDate->copy()->endOfDay(),
+            $startDate->startOfDay(),
+            $endDate->endOfDay(),
         ]);
     }
 }

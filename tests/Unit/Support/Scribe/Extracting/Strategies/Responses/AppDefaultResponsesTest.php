@@ -1,0 +1,138 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Support\Scribe\Extracting\Strategies\Responses\AppDefaultResponses;
+use Illuminate\Routing\Route;
+use Illuminate\Support\Collection;
+use Knuckles\Camel\Extraction\ExtractedEndpointData;
+use Knuckles\Camel\Extraction\Parameter;
+use Knuckles\Camel\Extraction\Response as ScribeResponse;
+use Knuckles\Camel\Extraction\ResponseCollection as ScribeResponseCollection;
+use Knuckles\Scribe\Tools\DocumentationConfig;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+covers(AppDefaultResponses::class);
+
+beforeEach(fn (): array => [
+    $this->scribeStrategy = new AppDefaultResponses(new DocumentationConfig),
+    $this->route = new Route(
+        [Request::METHOD_GET],
+        '/test-uri',
+        ['uses' => fn (): null => null]
+    ),
+]);
+
+describe('Scribe | AppDefaultResponses', function (): void {
+    it('assigns descriptions for standard successful responses', function (): void {
+        $endpointData = ExtractedEndpointData::fromRoute($this->route);
+        $statuses = [Response::HTTP_OK, Response::HTTP_CREATED, Response::HTTP_NO_CONTENT];
+
+        $endpointData->responses = new ScribeResponseCollection(array_map(
+            fn (int $status): ScribeResponse => new ScribeResponse(['status' => $status]),
+            $statuses,
+        ));
+
+        $this->scribeStrategy->__invoke($endpointData);
+
+        foreach ($statuses as $status) {
+            expect($endpointData->responses->firstWhere('status', $status)->description)
+                ->toBe(Response::$statusTexts[$status]);
+        }
+    });
+
+    it('adds unauthorized error response for authenticated endpoints', function (): void {
+        $endpointData = ExtractedEndpointData::fromRoute($this->route);
+        $endpointData->metadata->authenticated = true;
+
+        $responses = $this->scribeStrategy->__invoke($endpointData);
+
+        assertErrorResponseStructure($responses, Response::HTTP_UNAUTHORIZED);
+    });
+
+    it('adds not found error response when url parameters exist', function (): void {
+        $endpointData = ExtractedEndpointData::fromRoute($this->route);
+        $endpointData->urlParameters = [
+            'id' => new Parameter(['name' => 'id']),
+        ];
+
+        $responses = $this->scribeStrategy->__invoke($endpointData);
+
+        assertErrorResponseStructure($responses, Response::HTTP_NOT_FOUND);
+    });
+
+    it('adds validation error response with parameter descriptions', function (): void {
+        $endpointData = ExtractedEndpointData::fromRoute($this->route);
+        $endpointData->queryParameters = [
+            'query_parameter' => new Parameter([
+                'name' => 'query_parameter',
+                'description' => 'query parameter description',
+            ]),
+        ];
+        $endpointData->bodyParameters = [
+            'body_parameter' => new Parameter([
+                'name' => 'body_parameter',
+                'description' => 'body parameter description',
+            ]),
+        ];
+
+        $responses = $this->scribeStrategy->__invoke($endpointData);
+
+        $found = new Collection($responses)->firstWhere('status', Response::HTTP_UNPROCESSABLE_ENTITY);
+        expect($found)->not()->toBeNull()
+            ->and($found['description'])->toBe(Response::$statusTexts[Response::HTTP_UNPROCESSABLE_ENTITY])
+            ->and(json_decode((string) $found['content'], true))->toBe([
+                'title' => Response::$statusTexts[Response::HTTP_UNPROCESSABLE_ENTITY],
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
+                'detail' => 'string',
+                'instance' => '/test-uri',
+                'errors' => [
+                    'query_parameter' => ['query parameter description'],
+                    'body_parameter' => ['body parameter description'],
+                ],
+            ])->and($found['headers'])->toBe(['Content-Type' => 'application/problem+json']);
+    });
+
+    it('adds validation error when only body OR only query parameters exist', function (): void {
+        $endpointData = ExtractedEndpointData::fromRoute($this->route);
+        $endpointData->bodyParameters = [
+            'body_only' => new Parameter(['name' => 'body_only', 'description' => 'body only']),
+        ];
+
+        $responsesBodyOnly = $this->scribeStrategy->__invoke($endpointData);
+        $foundBody = new Collection($responsesBodyOnly)->firstWhere('status', Response::HTTP_UNPROCESSABLE_ENTITY);
+        expect($foundBody)->not()->toBeNull();
+
+        $endpointData = ExtractedEndpointData::fromRoute($this->route);
+        $endpointData->queryParameters = [
+            'query_only' => new Parameter(['name' => 'query_only', 'description' => 'query only']),
+        ];
+
+        $responsesQueryOnly = $this->scribeStrategy->__invoke($endpointData);
+        $foundQuery = new Collection($responsesQueryOnly)->firstWhere('status', Response::HTTP_UNPROCESSABLE_ENTITY);
+        expect($foundQuery)->not()->toBeNull();
+    });
+
+    it('adds standard error responses for throttling and downtime', function (): void {
+        $endpointData = ExtractedEndpointData::fromRoute($this->route);
+        $responses = $this->scribeStrategy->__invoke($endpointData);
+
+        foreach ([Response::HTTP_TOO_MANY_REQUESTS, Response::HTTP_SERVICE_UNAVAILABLE] as $status) {
+            assertErrorResponseStructure($responses, $status);
+        }
+    });
+});
+
+function assertErrorResponseStructure(array $responses, int $status): void
+{
+    $found = new Collection($responses)->firstWhere('status', $status);
+    expect($found)->not()->toBeNull()
+        ->and($found['description'])->toBe(Response::$statusTexts[$status])
+        ->and(json_decode((string) $found['content'], true))->toBe([
+            'title' => Response::$statusTexts[$status],
+            'status' => $status,
+            'detail' => 'string',
+            'instance' => '/test-uri',
+        ])->and($found['headers'])->toBe(['Content-Type' => 'application/problem+json']);
+}

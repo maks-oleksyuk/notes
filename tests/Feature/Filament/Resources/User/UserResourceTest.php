@@ -9,10 +9,12 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Features\SupportTesting\Testable;
 use Pest\Expectation;
 use Tests\Feature\Filament\Fixtures\FilamentForm;
 
 covers(UserResource::class);
+
 uses(RefreshDatabase::class);
 
 describe('Filament | User Resource', function (): void {
@@ -20,10 +22,9 @@ describe('Filament | User Resource', function (): void {
         fn (): Expectation => expect(UserResource::canCreate())->toBeTrue()
     );
 
-    it('disallows editing users', function (): void {
-        $user = User::factory()->create();
-        expect(UserResource::canEdit($user))->toBeFalse();
-    });
+    it('disallows editing users',
+        fn (): Expectation => expect(UserResource::canEdit(User::factory()->create()))->toBeFalse()
+    );
 
     it('returns a valid form schema', function (): void {
         $form = UserResource::form(Schema::make(FilamentForm::make()));
@@ -37,12 +38,11 @@ describe('Filament | User Resource', function (): void {
             ->and($schema[3])->toBeInstanceOf(DateTimePicker::class);
     });
 
-    it('returns a Table instance configured by UsersTable', function (): void {
-        Livewire::test(ListUsers::class)->assertSuccessful();
-    });
+    it('returns a Table instance configured by UsersTable',
+        fn (): Testable => Livewire::test(ListUsers::class)->assertSuccessful()
+    );
 
-    it('returns valid pages routes', function (): void {
-        $pages = UserResource::getPages();
-        expect($pages)->toHaveKeys(['index', 'view']);
-    });
+    it('returns valid pages routes',
+        fn (): Expectation => expect(UserResource::getPages())->toHaveKeys(['index', 'view'])
+    );
 });

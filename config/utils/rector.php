@@ -34,7 +34,6 @@ return RectorConfig::configure()
         typeDeclarationDocblocks: true,
         instanceOf: true,
         earlyReturn: true,
-        strictBooleans: true,
         carbon: true,
     )
     ->withSets([

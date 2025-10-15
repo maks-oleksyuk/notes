@@ -14,6 +14,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Livewire\livewire;
 
 covers(UsersTable::class);
+
 uses(RefreshDatabase::class);
 
 describe('Filament | User Table', function (): void {
