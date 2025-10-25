@@ -7,8 +7,8 @@
         "php": "^8.4",
         "cweagans/composer-patches": "^1.7.3",
         "filament/filament": "^4.1.10",
-        "knuckleswtf/scribe": "^5.3",
-        "laravel/framework": "^12.35",
+        "knuckleswtf/scribe": "^5.5",
+        "laravel/framework": "^12.35.1",
         "laravel/pulse": "^1.4.3",
         "laravel/sanctum": "^4.2",
         "olssonm/l5-very-basic-auth": "^7.2",
@@ -58,9 +58,6 @@
             "dont-discover": []
         },
         "patches": {
-            "knuckleswtf/scribe": {
-                "support for custom response Content-Types": "patches/knuckleswtf/scribe/support-for-custom-response-content-types.patch"
-            },
             "pestphp/pest-plugin-type-coverage": {
                 "support for --configuration argument": "patches/pestphp/pest-plugin-type-coverage/support-for-configuration-argument.patch"
             }

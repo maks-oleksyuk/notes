@@ -120,7 +120,5 @@ describe('Setup Command', function (): void {
         $outputSpy = m::spy(new OutputStyle($input, new BufferedOutput));
         $this->setupCommand->run($input, $outputSpy);
         $outputSpy->shouldHaveReceived('newLine')->once();
-    })->with('envs');
+    })->with('envs')->after(m::close(...));
 });
-
-afterEach(m::close(...));
