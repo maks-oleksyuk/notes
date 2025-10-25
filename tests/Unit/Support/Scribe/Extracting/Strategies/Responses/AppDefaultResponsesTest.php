@@ -58,8 +58,14 @@ describe('Scribe | AppDefaultResponses', function (): void {
         ];
 
         $responses = $this->scribeStrategy->__invoke($endpointData);
+        $response = new Collection($responses)->firstWhere('status', Response::HTTP_NOT_FOUND);
 
         assertErrorResponseStructure($responses, Response::HTTP_NOT_FOUND);
+        expect($response['content'])
+            ->not->toContain('\/')
+            ->not->toContain('\u')
+            ->toContain('/test-uri')
+            ->toContain('Not Found');
     });
 
     it('adds validation error response with parameter descriptions', function (): void {
@@ -67,13 +73,13 @@ describe('Scribe | AppDefaultResponses', function (): void {
         $endpointData->queryParameters = [
             'query_parameter' => new Parameter([
                 'name' => 'query_parameter',
-                'description' => 'query parameter description',
+                'description' => 'query parameter / description 📑',
             ]),
         ];
         $endpointData->bodyParameters = [
             'body_parameter' => new Parameter([
                 'name' => 'body_parameter',
-                'description' => 'body parameter description',
+                'description' => 'body parameter / description 📑',
             ]),
         ];
 
@@ -88,10 +94,12 @@ describe('Scribe | AppDefaultResponses', function (): void {
                 'detail' => 'string',
                 'instance' => '/test-uri',
                 'errors' => [
-                    'query_parameter' => ['query parameter description'],
-                    'body_parameter' => ['body parameter description'],
+                    'query_parameter' => ['query parameter / description 📑'],
+                    'body_parameter' => ['body parameter / description 📑'],
                 ],
-            ])->and($found['headers'])->toBe(['Content-Type' => 'application/problem+json']);
+            ])
+            ->and($found['content'])->toContain('parameter / description 📑')
+            ->and($found['headers'])->toBe(['Content-Type' => 'application/problem+json']);
     });
 
     it('adds validation error when only body OR only query parameters exist', function (): void {
@@ -120,6 +128,26 @@ describe('Scribe | AppDefaultResponses', function (): void {
 
         foreach ([Response::HTTP_TOO_MANY_REQUESTS, Response::HTTP_SERVICE_UNAVAILABLE] as $status) {
             assertErrorResponseStructure($responses, $status);
+        }
+    });
+
+    it('casts json_encode false to string when encoding invalid UTF-8 data', function (): void {
+        $endpointData = ExtractedEndpointData::fromRoute($this->route);
+
+        $uriProperty = new ReflectionProperty($endpointData, 'uri');
+        $uriProperty->setValue($endpointData, "\xB1invalid-uri");
+
+        $endpointData->bodyParameters = [
+            'broken' => new Parameter(['name' => 'broken', 'description' => "\xB1invalid"]),
+        ];
+
+        $ref = new ReflectionClass($this->scribeStrategy);
+
+        foreach (['makeSimpleErrorResponse', 'makeValidationErrorResponse'] as $methodName) {
+            $method = $ref->getMethod($methodName);
+            $response = $method->invoke($this->scribeStrategy, $endpointData, Response::HTTP_BAD_REQUEST);
+
+            expect($response['content'])->toBeString()->toBe('');
         }
     });
 });
