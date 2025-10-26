@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Exceptions\ApiExceptionHandler;
+use App\Http\Middleware\Api\RejectNonJsonRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->throttleApi();
+
+        $middleware->api(prepend: [
+            RejectNonJsonRequests::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (Throwable $e, Request $request) {

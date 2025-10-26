@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Scribe;
@@ -28,6 +29,11 @@ final class AppServiceProvider extends ServiceProvider
         $this->publishes([
             $this->app->resourcePath('icons/favicon.ico') => $this->app->publicPath('favicon.ico'),
         ], 'public');
+
+        View::addNamespace(
+            'errors',
+            base_path('vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/views')
+        );
     }
 
     private function configureCommands(): void
