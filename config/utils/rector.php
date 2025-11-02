@@ -26,6 +26,10 @@ return RectorConfig::configure()
     ->withComposerBased(
         laravel: true,
     )
+    ->withImportNames(
+        importShortClasses: false,
+        removeUnusedImports: true,
+    )
     ->withPreparedSets(
         deadCode: true,
         codeQuality: true,

@@ -6,7 +6,7 @@
     "require": {
         "php": "^8.4",
         "cweagans/composer-patches": "^1.7.3",
-        "filament/filament": "^4.1.10",
+        "filament/filament": "^4.2.0",
         "knuckleswtf/scribe": "^5.5",
         "laravel/framework": "^12.36.1",
         "laravel/pulse": "^1.4.3",
