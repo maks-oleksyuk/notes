@@ -19,22 +19,12 @@ export default defineConfig({
   outDir: './dist',
   cleanUrls: true,
   lastUpdated: true,
-  head: [
-    ['link', { rel: 'icon', href: '/notes/favicon.ico' }],
-    [
-      'script',
-      {
-        async: true,
-        src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1549697176150032',
-        crossorigin: 'anonymous',
-      },
-    ],
-  ],
+  head: [['link', { rel: 'icon', href: '/notes/favicon.ico' }]],
   themeConfig: {
     nav: [
       { text: 'Drupal', link: '/drupal/' },
       { text: 'Laravel', link: '/laravel/' },
-      { text: 'mono', link: '//send.monobank.ua/jar/f82PN8AyZ' },
+      { text: 'mono', link: '//send.monobank.ua/jar/72Yj5TxSg9' },
     ],
     socialLinks: [
       { icon: 'github', link: '//github.com/maks-oleksyuk/notes' },
@@ -90,7 +80,7 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: 'Buses', link: '/ua/other/bus/' },
-          { text: 'mono', link: '//send.monobank.ua/jar/f82PN8AyZ' },
+          { text: 'mono', link: '//send.monobank.ua/jar/72Yj5TxSg9' },
         ],
         darkModeSwitchLabel: 'Зовнішній вигляд',
         returnToTopLabel: 'Повернутись до початку',

@@ -115,4 +115,6 @@ tasks:
       - fix:format
     cmds:
       - task: prettier
+        vars: { CLI_ARGS: '-v' }
+      - task: prettier
         vars: { CLI_ARGS: '. -wl' }
