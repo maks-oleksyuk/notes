@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 
 uses(RefreshDatabase::class);
 
 describe('Between Dates Scope ', function (): void {
     it('filters models between dates', function (): void {
-        $startDate = Carbon::parse('2025-01-01');
-        $endDate = Carbon::parse('2025-01-31');
+        $startDate = Date::parse('2025-01-01');
+        $endDate = Date::parse('2025-01-31');
 
         $in1 = User::factory()->create(['created_at' => '2025-01-10']);
         $in2 = User::factory()->create(['created_at' => '2025-01-20']);
@@ -29,7 +29,7 @@ describe('Between Dates Scope ', function (): void {
     });
 
     it('filters models for a single day range', function (): void {
-        $date = Carbon::parse('2025-01-01');
+        $date = Date::parse('2025-01-01');
 
         $in = User::factory()->create(['created_at' => '2025-01-01 12:00:00']);
         $out = User::factory()->create(['created_at' => '2025-01-02 00:00:01']);

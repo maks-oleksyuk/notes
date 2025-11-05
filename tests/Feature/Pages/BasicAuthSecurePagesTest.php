@@ -22,7 +22,7 @@ dataset('protected routes', [
 
 describe('Basic Auth', function (): void {
     it('denies access without authentication for `:dataset`',
-        fn ($route) => get($route)->assertUnauthorized()
+        fn (string $route) => get($route)->assertUnauthorized()
     )->with('protected routes');
 
     it('denies access with invalid credentials for `:dataset`',

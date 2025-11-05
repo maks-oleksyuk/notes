@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @mixin IdeHelperUser
@@ -21,6 +22,8 @@ final class User extends Authenticatable implements FilamentUser
 {
     /** @use FilterBetweenDatesScope<User> */
     use FilterBetweenDatesScope;
+
+    use HasApiTokens;
 
     /** @use HasFactory<UserFactory> */
     use HasFactory;
@@ -38,6 +41,9 @@ final class User extends Authenticatable implements FilamentUser
         'remember_token',
     ];
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [

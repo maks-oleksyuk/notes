@@ -8,6 +8,7 @@ use Filament\Panel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 covers(User::class);
+
 uses(RefreshDatabase::class);
 
 describe('User Model', function (): void {

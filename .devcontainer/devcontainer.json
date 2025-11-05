@@ -1,0 +1,76 @@
+{
+    "name": "notes-laravel",
+    "image": "ddev/ddev-gitpod-base:latest",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
+    "remoteUser": "gitpod",
+    "containerUser": "gitpod",
+    "workspaceFolder": "/workspace/notes",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/notes,type=bind",
+    "forwardPorts": [3306, 6942, 8027, 8036, 8080, 8443, 9003, 9999],
+    "portsAttributes": {
+        "3306": {
+            "label": "Port 3306",
+            "onAutoForward": "ignore",
+            "elevateIfNeeded": true
+        },
+        "6942": {
+            "label": "Port 6942",
+            "onAutoForward": "ignore",
+            "elevateIfNeeded": true
+        },
+        "8027": {
+            "label": "Port 8027",
+            "onAutoForward": "ignore",
+            "elevateIfNeeded": true
+        },
+        "8036": {
+            "label": "Port 8036",
+            "onAutoForward": "ignore",
+            "elevateIfNeeded": true
+        },
+        "8080": {
+            "label": "Port 8080",
+            "onAutoForward": "ignore",
+            "elevateIfNeeded": true
+        },
+        "8443": {
+            "label": "Port 8443",
+            "onAutoForward": "ignore",
+            "elevateIfNeeded": true
+        },
+        "9003": {
+            "label": "Port 9003",
+            "onAutoForward": "ignore",
+            "elevateIfNeeded": true
+        },
+        "9999": {
+            "label": "Port 9999",
+            "onAutoForward": "openBrowser",
+            "elevateIfNeeded": true
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "felixfbecker.php-debug",
+                "wongjn.php-sniffer",
+                "neilbrayfield.php-docblocker",
+                "bmewburn.vscode-intelephense-client",
+                "timonwong.shellcheck",
+                "rogalmic.bash-debug"
+            ]
+        }
+    },
+    "postCreateCommand": [
+        "ddev start -y",
+        "ddev artisan key:generate --ansi",
+        "ddev task db:fresh",
+        "cp .env.example .env.testing",
+        "ddev artisan key:generate --env=testing --ansi",
+        "ddev psql -U db -d db -c \"CREATE DATABASE IF NOT EXISTS testing;\" || true",
+        "ddev psql -U db -d db -c \"GRANT ALL PRIVILEGES ON DATABASE testing TO db;\" || true"
+    ],
+    "postStartCommand": ["ddev describe >/dev/null 2>&1 || ddev start -y"]
+}

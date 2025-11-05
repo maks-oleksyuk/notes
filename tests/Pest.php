@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Exceptions\ApiExceptionHandler;
+use App\Http\Controllers\Api\V1\Auth\AuthController;
+use Tests\TestCase;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -13,7 +17,7 @@ declare(strict_types=1);
 |
 */
 
-pest()->extend(Tests\TestCase::class)->in('Feature', 'Unit');
+pest()->extend(TestCase::class)->in('Feature', 'Unit');
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +33,10 @@ pest()->extend(Tests\TestCase::class)->in('Feature', 'Unit');
 expect()->extend('toBeOne', fn () => $this->toBe(1));
 
 arch()->preset()->security();
-arch()->preset()->laravel();
+arch()->preset()->laravel()->ignoring([
+    AuthController::class,
+    ApiExceptionHandler::class,
+]);
 arch()->preset()->php();
 
 /*

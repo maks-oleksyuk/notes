@@ -13,6 +13,9 @@ final class UserExporter extends Exporter
 {
     protected static ?string $model = User::class;
 
+    /**
+     * @return ExportColumn[]
+     */
     public static function getColumns(): array
     {
         return [

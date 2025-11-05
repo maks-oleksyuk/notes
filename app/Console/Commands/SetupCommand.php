@@ -23,6 +23,7 @@ final class SetupCommand extends Command
     private array $vendorTags = [
         'public',
         'laravel-assets',
+        'scribe-external',
         'log-viewer-assets',
     ];
 
