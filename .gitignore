@@ -20,7 +20,8 @@ cache
 .pnpm-store
 
 # Ignore .env files as they are personal.
-.env
+.env*
+!.env.example
 
 # Ignore development tool files.
 .ddev

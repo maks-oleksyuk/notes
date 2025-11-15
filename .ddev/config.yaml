@@ -3,16 +3,17 @@ type: drupal
 docroot: web
 database:
   type: mariadb
-  version: '10.11'
+  version: '11.4'
 php_version: '8.4'
-nodejs_version: '22'
+nodejs_version: '24'
 webserver_type: nginx-fpm
 xdebug_enabled: false
 hooks:
   pre-start:
     # Add pnpm and task to ddev if not already installed.
     - exec-host: |
-        ddev add-on list --installed | grep -q 'envsa/ddev-pnpm' || ddev add-on get envsa/ddev-pnpm > /dev/null
+        ddev add-on list --installed | grep -q 'ddev/ddev-pnpm' || ddev add-on get ddev/ddev-pnpm > /dev/null
         ddev add-on list --installed | grep -q 'gebruederheitz/ddev-taskfile' || ddev add-on get gebruederheitz/ddev-taskfile > /dev/null
   post-start:
     - composer: install
+    - exec: pnpm install

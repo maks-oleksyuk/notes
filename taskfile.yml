@@ -1,4 +1,4 @@
-version: '3'
+version: 3
 
 env:
   PHP_BIN: '{{.PHP_BIN | default "$(which php)"}}'
@@ -13,21 +13,86 @@ vars:
 
 tasks:
   default:
-    cmd: 'task --list-all'
+    desc: 'List all command.'
+    cmd: 'task -l'
+
+  # Utils:
 
   composer:
     label: 'Composer'
     desc: 'Runs `composer` command.'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}} --ansi'
     internal: true
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}}'
+    silent: true
+
+  pnpm:
+    label: 'pnpm'
+    desc: 'Runs `pnpm` command.'
+    cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
+    internal: true
+    silent: true
 
   drush:
     label: 'Drush'
     desc: 'Runs `drush` command.'
-    requires:
-      vars:
-        - COMPOSER_BIN_DIR
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/drush {{.CLI_ARGS}}'
+    silent: true
+
+  phpcs:
+    label: 'PHPCS'
+    desc: 'Runs `phpcs` command.'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcs -ps --colors --standard={{.CONFIG_DIR}}/phpcs.xml {{.CLI_ARGS}}'
+    silent: true
+
+  phpcbf:
+    label: 'PHPCBF'
+    desc: 'Runs `phpcbf` command.'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcbf -ps --colors --standard={{.CONFIG_DIR}}/phpcs.xml {{.CLI_ARGS}}'
+    silent: true
+
+  phpstan:
+    label: 'PHPStan'
+    desc: 'Runs `phpstan` command.'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan --configuration={{.CONFIG_DIR}}/phpstan.neon {{.CLI_ARGS}}'
+    silent: true
+
+  twigcs:
+    label: 'TWIGCS'
+    desc: 'Runs `twig-cs-fixer` command.'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/twig-cs-fixer lint --config={{.CONFIG_DIR}}/.twig-cs-fixer.php ./app/Drupal --ansi {{.CLI_ARGS}}'
+    silent: true
+
+  eslint:
+    label: 'ESLint'
+    desc: 'Runs `eslint` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/eslint {{.CLI_ARGS}}'
+    silent: true
+
+  stylelint:
+    label: 'Stylelint'
+    desc: 'Runs `stylelint` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/stylelint -c {{.CONFIG_DIR}}/.stylelintrc.json {{.CLI_ARGS}}'
+    silent: true
+
+  cspell:
+    label: 'CSPell'
+    desc: 'Runs `cspell` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/cspell {{.CLI_ARGS}}'
+    silent: true
+
+  prettier:
+    label: 'Prettier'
+    desc: 'Runs `prettier` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}} --config={{.CONFIG_DIR}}/.prettierrc.json --ignore-path={{.CONFIG_DIR}}/.prettierignore'
+    silent: true
+
+  rector:
+    label: 'Rector'
+    desc: 'Runs `rector` command.'
+    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector process --config={{.CONFIG_DIR}}/rector.php app --ansi {{.CLI_ARGS}}'
+    silent: true
+
+  # Work commands:
 
   phpstorm-meta:
     label: 'PHPStorm metadata'
@@ -35,57 +100,6 @@ tasks:
     cmds:
       - task: drush
         vars: { CLI_ARGS: 'generate -y phpstorm-meta' }
-
-  phpcs:
-    label: 'PHPCS'
-    desc: 'Runs `phpcs` command.'
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcs -ps --colors --standard={{.CONFIG_DIR}}/phpcs.xml {{.CLI_ARGS}}'
-
-  phpcbf:
-    label: 'PHPCBF'
-    desc: 'Runs `phpcbf` command.'
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcbf -ps --colors --standard={{.CONFIG_DIR}}/phpcs.xml {{.CLI_ARGS}}'
-
-  phpstan:
-    label: 'PHPStan'
-    desc: 'Runs `phpstan` command.'
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan --configuration={{.CONFIG_DIR}}/phpstan.neon {{.CLI_ARGS}}'
-
-  twigcs:
-    label: 'TWIGCS'
-    desc: 'Runs `twig-cs-fixer` command.'
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/twig-cs-fixer lint --config={{.CONFIG_DIR}}/.twig-cs-fixer.php ./app/Drupal --ansi {{.CLI_ARGS}}'
-
-  pnpm:
-    label: 'pnpm'
-    desc: 'Runs `pnpm` command.'
-    internal: true
-    cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
-
-  eslint:
-    label: 'ESLint'
-    desc: 'Runs `eslint` command.'
-    cmd: '{{.NODEJS_BIN_DIR}}/eslint {{.CLI_ARGS}}'
-
-  stylelint:
-    label: 'Stylelint'
-    desc: 'Runs `stylelint` command.'
-    cmd: '{{.NODEJS_BIN_DIR}}/stylelint -c {{.CONFIG_DIR}}/.stylelintrc.json {{.CLI_ARGS}}'
-
-  cspell:
-    label: 'CSPell'
-    desc: 'Runs `cspell` command.'
-    cmd: '{{.NODEJS_BIN_DIR}}/cspell {{.CLI_ARGS}}'
-
-  prettier:
-    label: 'Prettier'
-    desc: 'Runs `prettier` command.'
-    cmd: '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}} --config={{.CONFIG_DIR}}/.prettierrc.json --ignore-path={{.CONFIG_DIR}}/.prettierignore'
-
-  rector:
-    label: 'Rector'
-    desc: 'Runs `rector` command.'
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector process --config={{.CONFIG_DIR}}/rector.php app --ansi {{.CLI_ARGS}}'
 
   install:
     desc: 'Install website.'
@@ -107,6 +121,8 @@ tasks:
       - task: drush
         vars: { CLI_ARGS: 'user:login --uid=1' }
 
+  # Linters:
+
   lint:
     label: 'Project lint'
     desc: 'Validates project files.'
@@ -126,11 +142,17 @@ tasks:
   lint:composer:
     label: 'Composer validation'
     desc: 'Validates composer.json file and checks platform requirements.'
+    aliases:
+      - l:co
+      - l:composer
+      - lint:co
     cmds:
       - task: composer
-        vars: { CLI_ARGS: 'validate --strict --ansi' }
+        vars: { CLI_ARGS: '-V' }
       - task: composer
-        vars: { CLI_ARGS: 'check-platform-req --ansi' }
+        vars: { CLI_ARGS: 'validate --no-check-version --no-check-publish --strict' }
+      - task: composer
+        vars: { CLI_ARGS: 'check-platform-req' }
 
   lint:phpcs:
     label: 'PHPCS validation'
@@ -210,16 +232,34 @@ tasks:
       - task: rector
         vars: { CLI_ARGS: '--dry-run' }
 
+  # Fixing:
+
   fix:
     label: 'Fixing found issues'
     desc: 'Trying for automated fixes for found problems.'
     cmds:
-      - task: fix:phpcs
-      - task: fix:js
-      - task: fix:css
-      - task: fix:yml
-      - task: fix:twig
-      - task: fix:prettier
+      - defer: { task: fix:phpcs }
+      - defer: { task: fix:js }
+      - defer: { task: fix:css }
+      - defer: { task: fix:yml }
+      - defer: { task: fix:twig }
+      - defer: { task: fix:prettier }
+      - defer: { task: fix:composer }
+
+  fix:composer:
+    label: 'Composer fix'
+    desc: 'Try to fix composer errors.'
+    aliases:
+      - f:co
+      - f:composer
+      - fix:co
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: '-V' }
+      - task: composer
+        vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
+      - task: composer
+        vars: { CLI_ARGS: 'bump' }
 
   fix:phpcs:
     label: 'PHPCS'

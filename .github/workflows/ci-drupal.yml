@@ -1,4 +1,4 @@
-name: 🔄 CI | 💧 Drupal
+name: '🔄 CI | 💧 Drupal'
 
 on:
   push:
@@ -19,13 +19,13 @@ on:
 
 jobs:
   cleanup:
-    name: 🧹 Clean up GitHub repo
+    name: '🧹 Clean up GitHub repo'
     runs-on: ubuntu-latest
     permissions: write-all
     if: github.event_name != 'pull_request'
 
     steps:
-      - name: 🗑 Delete workflow runs
+      - name: '🗑 Delete workflow runs'
         uses: Mattraks/delete-workflow-runs@v2
         with:
           retain_days: 7
@@ -33,29 +33,33 @@ jobs:
           delete_workflow_pattern: ci-drupal.yml
 
   lint:
-    name: 🪄 Lint | ${{ matrix.command.name }}
+    name: '🪄 Lint | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         command:
-          - { name: '📦 Composer',  command: 'lint:composer' }
-          - { name: '📝 Cspell',    command: 'lint:spellcheck' }
-          - { name: '☕️ JS',        command: 'lint:js' }
-          - { name: '🐘 PHPCS',     command: 'lint:phpcs' }
-          - { name: '🔍 PHPStan',   command: 'lint:phpstan' }
-          - { name: '🅿 Prettier',  command: 'lint:format' }
-          - { name: '🏠 Rector',    command: 'lint:rector' }
-          - { name: '👔 Stylelint', command: 'lint:style' }
-          - { name: '🌿 Twig',      command: 'lint:twig' }
-          - { name: '📄 YML',       command: 'lint:yml' }
+          - { name: '📦 Composer', command: 'lint:composer', php: true }
+          - { name: '📝 Cspell', command: 'lint:spellcheck', php: true, node: true }
+          - { name: '☕️ JS', command: 'lint:js', php: true, node: true }
+          - { name: '🐘 PHPCS', command: 'lint:phpcs', php: true }
+          - { name: '🔍 PHPStan', command: 'lint:phpstan', php: true }
+          - { name: '🅿️ Prettier', command: 'lint:format', node: true }
+          - { name: '🏠 Rector', command: 'lint:rector', php: true }
+          - { name: '👔 Stylelint', command: 'lint:style', php: true, node: true }
+          - { name: '🌿 Twig', command: 'lint:twig', php: true }
+          - { name: '📄 YML', command: 'lint:yml', php: true, node: true }
 
     steps:
-      - name: 🛎 Checkout
-        uses: actions/checkout@v4
+      - name: '🛎 Checkout'
+        uses: actions/checkout@v5
 
-      - name: ⚙️ Prepare environment
+      - name: '⚙️ Prepare environment'
         uses: ./.github/actions/setup-validation
+        with:
+          use-php: ${{ matrix.command.php }}
+          use-node: ${{ matrix.command.node }}
 
-      - name: ${{ matrix.command.name }} validate
-        run: "task ${{ matrix.command.command }}"
+      - name: '${{ matrix.command.name }} validate'
+        run: task ${{ matrix.command.command }}
