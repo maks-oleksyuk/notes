@@ -2,6 +2,7 @@
 web
 vendor
 node_modules
+recipes
 
 # Ignore the dist directory with built theme style files.
 dist

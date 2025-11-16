@@ -1,6 +1,6 @@
 parameters:
   paths:
-    - ../app
+    - ../../app
   excludePaths:
     - *Test.php
     - *TestBase.php

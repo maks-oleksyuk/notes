@@ -1,7 +1,7 @@
 {
   "language": "en",
   "import": [
-    "../web/core/.cspell.json"
+    "../../web/core/.cspell.json"
   ],
   "dictionaries": ["project"],
   "dictionaryDefinitions": [
@@ -12,22 +12,22 @@
     }
   ],
   "ignorePaths": [
-    "../config/cspell/**",
-    "../config/sync/**",
-    "../dist/**",
-    "../local/**",
-    "../private/**",
-    "../public/**",
-    "../var/**",
-    "../vendor/**",
-    "../web/**",
-    "../taskfile.yml",
+    "../../config/cspell/**",
+    "../../config/sync/**",
+    "../../dist/**",
+    "../../local/**",
+    "../../private/**",
+    "../../public/**",
+    "../../var/**",
+    "../../vendor/**",
+    "../../web/**",
+    "../../taskfile.yml",
     "node_modules",
     "**/*.sql",
     "**/*/composer.json",
     "**/*/composer.lock",
     "**/*/package.json",
     "**/*/pnpm-lock.yaml",
-    "../LICENSE.md"
+    "../../LICENSE.md"
   ]
 }
