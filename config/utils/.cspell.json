@@ -1,4 +1,5 @@
 {
+  "version": "0.2",
   "language": "en",
   "import": [
     "../../web/core/.cspell.json"
@@ -29,5 +30,11 @@
     "**/*/package.json",
     "**/*/pnpm-lock.yaml",
     "../../LICENSE.md"
-  ]
+  ],
+  "cache": {
+    "useCache": true,
+    "cacheFormat": "universal",
+    "cacheStrategy": "content",
+    "cacheLocation": "../../var/cache/cspell/.cspellcache"
+  }
 }

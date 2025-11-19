@@ -65,7 +65,11 @@ tasks:
   eslint:
     label: 'ESLint'
     desc: 'Runs `eslint` command.'
-    cmd: '{{.NODEJS_BIN_DIR}}/eslint {{.CLI_ARGS}}'
+    cmd:
+      '{{.NODEJS_BIN_DIR}}/eslint
+      -c {{.CONFIG_DIR}}/.eslintrc.json
+      --cache --cache-location var/cache/eslint/.eslintcache
+      {{.CLI_ARGS}} --color'
     silent: true
 
   stylelint:
@@ -77,13 +81,20 @@ tasks:
   cspell:
     label: 'CSPell'
     desc: 'Runs `cspell` command.'
-    cmd: '{{.NODEJS_BIN_DIR}}/cspell {{.CLI_ARGS}}'
+    cmd:
+      '{{.NODEJS_BIN_DIR}}/cspell
+      -c {{.CONFIG_DIR}}/.cspell.json --color
+      {{.CLI_ARGS}}'
     silent: true
 
   prettier:
     label: 'Prettier'
     desc: 'Runs `prettier` command.'
-    cmd: '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}} --config={{.CONFIG_DIR}}/.prettierrc.json --ignore-path={{.CONFIG_DIR}}/.prettierignore'
+    cmd:
+      '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
+      --config={{.CONFIG_DIR}}/.prettierrc.json
+      --ignore-path={{.CONFIG_DIR}}/.prettierignore
+      --cache --cache-location=var/cache/prettier/prettier.cache'
     silent: true
 
   rector:
@@ -120,6 +131,29 @@ tasks:
       - task: phpstorm-meta
       - task: drush
         vars: { CLI_ARGS: 'user:login --uid=1' }
+
+  update:
+    label: 'Update project'
+    desc: 'Updates project dependencies withing constraints.'
+    prompt: |
+      This command can break website. Do it independently without any other active changes.
+      Make sure you have a backup. Never run it on production.
+    aliases:
+      - u
+    cmds:
+      - task: composer
+        vars: { CLI_ARGS: 'u -W' }
+      - task: pnpm
+        vars: { CLI_ARGS: 'up --save --latest' }
+
+  build-dictionary:
+    label: 'Builds dictionary'
+    desc: 'Builds a project dictionary for CSPell.'
+    cmds:
+      - task: cspell
+        vars: { CLI_ARGS: '--version' }
+      - task: cspell
+        vars: { CLI_ARGS: '--words-only --unique "**" | sort -f > {{.CONFIG_DIR}}/cspell/dictionary.dic' }
 
   # Linters:
 
@@ -171,10 +205,14 @@ tasks:
     label: 'JavaScript linter'
     desc: 'Lints JavaScript files.'
     aliases:
-      - jslint
+      - l:js
+      - l:eslint
+      - lint:eslint
     cmds:
       - task: eslint
-        vars: { CLI_ARGS: '-c {{.CONFIG_DIR}}/.eslintrc.json {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '-v' }
+      - task: eslint
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
   lint:css:
     label: 'CSS linter'
@@ -210,10 +248,14 @@ tasks:
     label: 'Spellcheck'
     desc: 'Checks for common spelling issues.'
     aliases:
-      - spellcheck
+      - l:cspell
+      - l:spellcheck
+      - lint:cspell
     cmds:
       - task: cspell
-        vars: { CLI_ARGS: '--config {{.CONFIG_DIR}}/.cspell.json --no-progress "**" {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '--version' }
+      - task: cspell
+        vars: { CLI_ARGS: '--no-progress "**" {{.CLI_ARGS}}' }
 
   lint:prettier:
     label: 'Prettier'
@@ -270,8 +312,14 @@ tasks:
   fix:js:
     label: 'JavaScript'
     desc: 'Fix JavaScript issues.'
+    aliases:
+      - f:js
+      - f:eslint
+      - fix:eslint
     cmds:
-      - task: lint:js
+      - task: eslint
+        vars: { CLI_ARGS: '-v' }
+      - task: eslint
         vars: { CLI_ARGS: '--fix' }
 
   fix:css:
@@ -311,10 +359,3 @@ tasks:
     desc: 'Fix Rector issues.'
     cmds:
       - task: rector
-
-  build-dictionary:
-    label: 'Builds dictionary'
-    desc: 'Builds a project dictionary for CSPell.'
-    cmds:
-      - task: cspell
-        vars: { CLI_ARGS: '--config {{.CONFIG_DIR}}/.cspell.json --words-only --unique "**" | sort -f > {{.CONFIG_DIR}}/cspell/dictionary.dic' }

@@ -1,16 +1,8 @@
 {
-  "homepage": "https://maks-oleksyuk.github.io/notes",
   "license": "GPL-3.0-or-later",
-  "author": {
-    "name": "Maks Oleksyuk",
-    "url": "https://github.com/maks-oleksyuk"
-  },
   "type": "module",
   "private": true,
   "scripts": {
-    "spellcheck": "cspell -c config/.cspell.json '**' --quiet --color",
-    "lint:js": "eslint -c ./config/.eslintrc.json --no-error-on-unmatched-pattern --color",
-    "lint:js:fix": "eslint -c ./config/.eslintrc.json --no-error-on-unmatched-pattern --fix",
     "lint:yml": "eslint -c ./config/.eslintrc.json --ext .yml --ext .yaml --no-error-on-unmatched-pattern --color",
     "lint:yml:fix": "eslint -c ./config/.eslintrc.json --ext .yml --ext .yaml --no-error-on-unmatched-pattern --fix",
     "lint:style": "stylelint app/**/*.css --aei --cache --cache-location node_modules/.cache/stylelint/ --color",
@@ -19,7 +11,7 @@
     "lint:format:fix": "prettier app !**/pnpm-lock.yaml -wl --cache --no-error-on-unmatched-pattern"
   },
   "devDependencies": {
-    "cspell": "^9.3.1",
+    "cspell": "^9.3.2",
     "eslint": "8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.1.2",
