@@ -35,19 +35,25 @@ tasks:
   drush:
     label: 'Drush'
     desc: 'Runs `drush` command.'
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/drush {{.CLI_ARGS}}'
+    cmd: '{{.COMPOSER_BIN_DIR}}/drush {{.CLI_ARGS}}'
     silent: true
 
   phpcs:
     label: 'PHPCS'
     desc: 'Runs `phpcs` command.'
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcs -ps --colors --standard={{.CONFIG_DIR}}/phpcs.xml {{.CLI_ARGS}}'
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcs -s
+      --standard={{.CONFIG_DIR}}/phpcs.xml
+      {{.CLI_ARGS}} --colors'
     silent: true
 
   phpcbf:
     label: 'PHPCBF'
     desc: 'Runs `phpcbf` command.'
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcbf -ps --colors --standard={{.CONFIG_DIR}}/phpcs.xml {{.CLI_ARGS}}'
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcbf -s
+      --standard={{.CONFIG_DIR}}/phpcs.xml
+      {{.CLI_ARGS}} --colors'
     silent: true
 
   phpstan:
@@ -144,7 +150,7 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: 'u -W' }
       - task: pnpm
-        vars: { CLI_ARGS: 'up --save --latest' }
+        vars: { CLI_ARGS: 'up --save' }
 
   build-dictionary:
     label: 'Builds dictionary'
@@ -191,7 +197,15 @@ tasks:
   lint:phpcs:
     label: 'PHPCS validation'
     desc: 'Validate PHP for code style.'
+    aliases:
+      - l:p
+      - l:php
+      - l:phpcs
+      - lint:p
+      - lint:php
     cmds:
+      - task: phpcs
+        vars: { CLI_ARGS: '--version' }
       - task: phpcs
 
   lint:phpstan:
@@ -306,7 +320,15 @@ tasks:
   fix:phpcs:
     label: 'PHPCS'
     desc: 'Fix PHPCS issues.'
+    aliases:
+      - f:p
+      - f:php
+      - f:phpcs
+      - fix:p
+      - fix:php
     cmds:
+      - task: phpcs
+        vars: { CLI_ARGS: '--version' }
       - task: phpcbf
 
   fix:js:
