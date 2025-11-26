@@ -59,7 +59,12 @@ tasks:
   phpstan:
     label: 'PHPStan'
     desc: 'Runs `phpstan` command.'
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan --configuration={{.CONFIG_DIR}}/phpstan.neon {{.CLI_ARGS}}'
+    aliases:
+      - stan
+      - php:stan
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan
+      --configuration={{.CONFIG_DIR}}/phpstan.neon {{.CLI_ARGS}} --ansi'
     silent: true
 
   twigcs:
@@ -211,9 +216,17 @@ tasks:
   lint:phpstan:
     label: 'PHPStan analyze'
     desc: 'Analyze PHP code for bugs and errors.'
+    aliases:
+      - l:s
+      - l:stan
+      - l:phpstan
+      - lint:s
+      - lint:stan
     cmds:
       - task: phpstan
-        vars: { CLI_ARGS: 'analyze' }
+        vars: { CLI_ARGS: '-V' }
+      - task: phpstan
+        vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}} || true' } # update when add php code
 
   lint:js:
     label: 'JavaScript linter'
