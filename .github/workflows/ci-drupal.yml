@@ -45,7 +45,7 @@ jobs:
           - { name: '☕️ JS', command: 'lint:js', php: true, node: true }
           - { name: '🐘 PHPCS', command: 'lint:phpcs', php: true }
           - { name: '🔍 PHPStan', command: 'lint:phpstan', php: true }
-          - { name: '🅿️ Prettier', command: 'lint:format', node: true }
+          - { name: '🅿️ Prettier', command: 'lint:prettier', php: true, node: true }
           - { name: '🏠 Rector', command: 'lint:rector', php: true }
           - { name: '👔 Stylelint', command: 'lint:style', php: true, node: true }
           - { name: '🌿 Twig', command: 'lint:twig', php: true }

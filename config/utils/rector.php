@@ -6,25 +6,57 @@ use DrupalFinder\DrupalFinderComposerRuntime;
 use DrupalRector\Set\Drupal10SetList;
 use DrupalRector\Set\Drupal8SetList;
 use DrupalRector\Set\Drupal9SetList;
+use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
+use Rector\ValueObject\PhpVersion;
 
-return static function (RectorConfig $rectorConfig): void {
-    $rectorConfig->sets([
-        Drupal8SetList::DRUPAL_8,
-        Drupal9SetList::DRUPAL_9,
-        Drupal10SetList::DRUPAL_10,
-    ]);
+$drupalFinder = new DrupalFinderComposerRuntime();
+$drupalRoot = $drupalFinder->getDrupalRoot();
 
-    $drupalFinder = new DrupalFinderComposerRuntime();
-    $drupalRoot = $drupalFinder->getDrupalRoot();
-    $rectorConfig->autoloadPaths([
-        $drupalRoot . '/core',
-        $drupalRoot . '/modules',
-        $drupalRoot . '/profiles',
-        $drupalRoot . '/themes'
-    ]);
-
-    $rectorConfig->fileExtensions(['php', 'module', 'theme', 'install', 'profile', 'inc', 'engine']);
-    $rectorConfig->importNames(TRUE, FALSE);
-    $rectorConfig->importShortClasses(FALSE);
-};
+return RectorConfig::configure()
+  ->withPaths([
+    __DIR__ . '/../../app',
+  ])
+  ->withFileExtensions([
+    'php',
+    'inc',
+    'install',
+    'module',
+    'theme',
+    'profile',
+  ])
+  ->withPhpVersion(PhpVersion::PHP_84)
+  ->withPhpSets(php84: true)
+  ->withComposerBased(
+    twig: true,
+  )
+  ->withImportNames(
+    importShortClasses: false,
+    removeUnusedImports: true,
+  )
+  ->withPreparedSets(
+    deadCode: true,
+    codeQuality: true,
+    codingStyle: true,
+    typeDeclarations: true,
+    typeDeclarationDocblocks: true,
+    instanceOf: true,
+    earlyReturn: true,
+    carbon: true,
+  )
+  ->withSets([
+    Drupal8SetList::DRUPAL_8,
+    Drupal9SetList::DRUPAL_9,
+    Drupal10SetList::DRUPAL_10,
+  ])
+  ->withAutoloadPaths([
+    $drupalRoot . '/core',
+    $drupalRoot . '/modules',
+    $drupalRoot . '/profiles',
+    $drupalRoot . '/themes',
+  ])
+  ->withParallel()
+  ->withCache(
+    __DIR__ . '/../../var/cache/rector',
+    FileCacheStorage::class,
+  );
