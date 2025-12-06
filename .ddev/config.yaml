@@ -18,6 +18,9 @@ web_extra_daemons:
   - name: 'pulse'
     command: 'php artisan pulse:check'
     directory: /var/www/html
+webimage_extra_packages:
+  - aspell
+  - aspell-en
 hooks:
   pre-start:
     # Add pnpm and task to ddev if not already installed.
