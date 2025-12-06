@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('login', [AuthController::class, 'login'])
     ->name('login')
-    ->middleware('throttle:5')
+    ->middleware('throttle:5,1')
     ->withoutMiddleware('auth:sanctum');
 
 Route::apiResource('users', UserController::class)->names('users');
