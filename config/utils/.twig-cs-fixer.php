@@ -6,12 +6,10 @@ use Drupal\Core\Template\TwigTransTokenParser;
 use TwigCsFixer\Config\Config;
 use TwigCsFixer\File\Finder;
 
-$finder = new Finder();
-$finder->exclude('tests');
-
-$config = new Config();
-$config->setFinder($finder);
-$config->setCacheFile(NULL);
-$config->addTokenParser(new TwigTransTokenParser());
-
-return $config;
+return new Config()
+  ->setFinder(new Finder()
+    ->in('app')
+    ->exclude('tests'),
+  )
+  ->setCacheFile('var/cache/twig-cs-fixer.cache')
+  ->addTokenParser(new TwigTransTokenParser());

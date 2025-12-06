@@ -3,4 +3,3 @@ parameters:
     - ../../app
   level: 5
   tmpDir: ../../var/cache/phpstan
-

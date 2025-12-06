@@ -2,7 +2,7 @@ _core:
   default_config_hash: l58O_yEXSo-SeJi19LXdzTU1tNJG3lmnIhCitRkM1tk
 langcode: en
 uuid: 2e002016-8344-437b-add6-e27ecbeebba9
-name: Drupal
+name: 'Drupal Notes'
 mail: mail@example.com
 slogan: ''
 page:

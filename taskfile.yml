@@ -61,9 +61,19 @@ tasks:
       --configuration={{.CONFIG_DIR}}/phpstan.neon {{.CLI_ARGS}} --ansi'
     silent: true
 
-  twigcs:
+  rector:
+    desc: 'Run `rector` command.'
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector
+      --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
+    silent: true
+
+  twig-cs:
     desc: 'Run `twig-cs-fixer` command.'
-    cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/twig-cs-fixer lint --config={{.CONFIG_DIR}}/.twig-cs-fixer.php ./app/Drupal --ansi {{.CLI_ARGS}}'
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/twig-cs-fixer
+      --config={{.CONFIG_DIR}}/.twig-cs-fixer.php
+      {{.CLI_ARGS}} --ansi'
     silent: true
 
   eslint:
@@ -84,14 +94,6 @@ tasks:
       --aei {{.CLI_ARGS}} --color'
     silent: true
 
-  cspell:
-    desc: 'Run `cspell` command.'
-    cmd:
-      '{{.NODEJS_BIN_DIR}}/cspell
-      -c {{.CONFIG_DIR}}/.cspell.json --color
-      {{.CLI_ARGS}}'
-    silent: true
-
   prettier:
     desc: 'Run `prettier` command.'
     cmd:
@@ -101,11 +103,12 @@ tasks:
       --cache --cache-location=var/cache/prettier/prettier.cache'
     silent: true
 
-  rector:
-    desc: 'Run `rector` command.'
+  cspell:
+    desc: 'Run `cspell` command.'
     cmd:
-      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector
-      --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
+      '{{.NODEJS_BIN_DIR}}/cspell
+      -c {{.CONFIG_DIR}}/.cspell.json --color
+      {{.CLI_ARGS}}'
     silent: true
 
   # Work commands:
@@ -216,59 +219,29 @@ tasks:
       - task: phpstan
         vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}} || true' } # update when add php code
 
-  lint:js:
-    desc: 'Lint JavaScript files.'
+  lint:rector:
+    desc: 'Check for Rector refactoring suggestions.'
     aliases:
-      - l:js
-      - l:eslint
-      - lint:eslint
+      - l:r
+      - l:rector
+      - lint:r
     cmds:
-      - task: eslint
-        vars: { CLI_ARGS: '-v' }
-      - task: eslint
-        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
-
-  lint:css:
-    desc: 'Lint CSS files.'
-    aliases:
-      - l:css
-      - l:style
-      - lint:style
-    cmds:
-      - task: stylelint
-        vars: { CLI_ARGS: '-v' }
-      - task: stylelint
-        vars: { CLI_ARGS: 'app/**/*.css {{.CLI_ARGS}}' }
-
-  lint:yml:
-    desc: 'Lint Y(A)ML files.'
-    aliases:
-      - ymllint
-      - yamllint
-      - lint:yaml
-    cmds:
-      - task: eslint
-        vars: { CLI_ARGS: '-c {{.CONFIG_DIR}}/.eslintrc.json --ext .yml --ext .yaml {{.CLI_ARGS}}' }
+      - task: rector
+        vars: { CLI_ARGS: '-V' }
+      - task: rector
+        vars: { CLI_ARGS: '--dry-run {{.CLI_ARGS}}' }
 
   lint:twig:
     desc: 'Lint Twig template files.'
     aliases:
-      - twiglint
+      - l:t
+      - l:twig
+      - lint:t
     cmds:
-      - task: twigcs
-        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
-
-  lint:spellcheck:
-    desc: 'Check for spelling issues.'
-    aliases:
-      - l:cspell
-      - l:spellcheck
-      - lint:cspell
-    cmds:
-      - task: cspell
-        vars: { CLI_ARGS: '--version' }
-      - task: cspell
-        vars: { CLI_ARGS: '--no-progress "**" {{.CLI_ARGS}}' }
+      - task: twig-cs
+        vars: { CLI_ARGS: '-V' }
+      - task: twig-cs
+        vars: { CLI_ARGS: 'lint {{.CLI_ARGS}}' }
 
   lint:prettier:
     desc: 'Check code formatting with Prettier.'
@@ -286,17 +259,55 @@ tasks:
       - task: prettier
         vars: { CLI_ARGS: 'app -c' }
 
-  lint:rector:
-    desc: 'Check for Rector refactoring suggestions.'
+  lint:css:
+    desc: 'Lint CSS files.'
     aliases:
-      - l:r
-      - l:rector
-      - lint:r
+      - l:css
+      - l:style
+      - lint:style
     cmds:
-      - task: rector
-        vars: { CLI_ARGS: '-V' }
-      - task: rector
-        vars: { CLI_ARGS: '--dry-run {{.CLI_ARGS}}' }
+      - task: stylelint
+        vars: { CLI_ARGS: '-v' }
+      - task: stylelint
+        vars: { CLI_ARGS: 'app/**/*.css {{.CLI_ARGS}}' }
+
+  lint:js:
+    desc: 'Lint JavaScript files.'
+    aliases:
+      - l:js
+      - l:eslint
+      - lint:eslint
+    cmds:
+      - task: eslint
+        vars: { CLI_ARGS: '-v' }
+      - task: eslint
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
+
+  lint:yml:
+    desc: 'Lint Y(A)ML files.'
+    aliases:
+      - l:y
+      - l:yml
+      - l:yaml
+      - lint:y
+      - lint:yaml
+    cmds:
+      - task: eslint
+        vars: { CLI_ARGS: '-v' }
+      - task: eslint
+        vars: { CLI_ARGS: '--ext .yml --ext .yaml {{.CLI_ARGS}}' }
+
+  lint:spellcheck:
+    desc: 'Check for spelling issues.'
+    aliases:
+      - l:cspell
+      - l:spellcheck
+      - lint:cspell
+    cmds:
+      - task: cspell
+        vars: { CLI_ARGS: '--version' }
+      - task: cspell
+        vars: { CLI_ARGS: '--no-progress "**" {{.CLI_ARGS}}' }
 
   # Fixing:
 
@@ -338,43 +349,29 @@ tasks:
         vars: { CLI_ARGS: '--version' }
       - task: phpcbf
 
-  fix:js:
-    desc: 'Auto-fix JavaScript issues.'
+  fix:rector:
+    desc: 'Apply Rector refactoring suggestions.'
     aliases:
-      - f:js
-      - f:eslint
-      - fix:eslint
+      - f:r
+      - f:rector
+      - fix:r
     cmds:
-      - task: eslint
-        vars: { CLI_ARGS: '-v' }
-      - task: eslint
-        vars: { CLI_ARGS: '--fix' }
-
-  fix:css:
-    desc: 'Auto-fix CSS/SCSS issues.'
-    aliases:
-      - f:css
-      - f:style
-      - fix:style
-    cmds:
-      - task: stylelint
-        vars: { CLI_ARGS: '-v' }
-      - task: lint:css
-        vars: { CLI_ARGS: '--fix' }
-
-  fix:yml:
-    desc: 'Auto-fix Y(A)ML formatting.'
-    aliases:
-      - fix:yaml
-    cmds:
-      - task: lint:yml
-        vars: { CLI_ARGS: '--fix' }
+      - task: rector
+        vars: { CLI_ARGS: '-V' }
+      - task: rector
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
   fix:twig:
     desc: 'Auto-fix Twig template issues.'
+    aliases:
+      - f:t
+      - f:twig
+      - fix:t
     cmds:
-      - task: lint:twig
-        vars: { CLI_ARGS: '--fix' }
+      - task: twig-cs
+        vars: { CLI_ARGS: '-V' }
+      - task: twig-cs
+        vars: { CLI_ARGS: 'fix {{.CLI_ARGS}}' }
 
   fix:prettier:
     desc: 'Auto-fix code formatting with Prettier.'
@@ -392,14 +389,38 @@ tasks:
       - task: prettier
         vars: { CLI_ARGS: 'app -wl' }
 
-  fix:rector:
-    desc: 'Apply Rector refactoring suggestions.'
+  fix:css:
+    desc: 'Auto-fix CSS/SCSS issues.'
     aliases:
-      - f:r
-      - f:rector
-      - fix:r
+      - f:css
+      - f:style
+      - fix:style
     cmds:
-      - task: rector
-        vars: { CLI_ARGS: '-V' }
-      - task: rector
-        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
+      - task: stylelint
+        vars: { CLI_ARGS: '-v' }
+      - task: lint:css
+        vars: { CLI_ARGS: '--fix' }
+
+  fix:js:
+    desc: 'Auto-fix JavaScript issues.'
+    aliases:
+      - f:js
+      - f:eslint
+      - fix:eslint
+    cmds:
+      - task: eslint
+        vars: { CLI_ARGS: '-v' }
+      - task: eslint
+        vars: { CLI_ARGS: '--fix' }
+
+  fix:yml:
+    desc: 'Auto-fix Y(A)ML formatting.'
+    aliases:
+      - f:y
+      - fix:y
+      - fix:yaml
+    cmds:
+      - task: eslint
+        vars: { CLI_ARGS: '-v' }
+      - task: lint:yml
+        vars: { CLI_ARGS: '--fix' }
