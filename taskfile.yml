@@ -13,46 +13,42 @@ vars:
 
 tasks:
   default:
-    desc: 'List all command.'
+    desc: 'List all commands.'
     cmd: 'task -l'
 
   # Utils:
 
   composer:
-    label: 'Composer'
-    desc: 'Runs `composer` command.'
+    desc: 'Run `composer` command.'
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}} --ansi'
     internal: true
     silent: true
 
   pnpm:
-    label: 'pnpm'
-    desc: 'Runs `pnpm` command.'
+    desc: 'Run `pnpm` command.'
     cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
     internal: true
     silent: true
 
   artisan:
-    label: 'artisan'
-    desc: 'Runs `artisan` command.'
+    desc: 'Run `artisan` command.'
     cmd: '{{.PHP_BIN}} artisan {{.CLI_ARGS}} --ansi'
+    aliases:
+      - art
     internal: true
     silent: true
 
   artisan:test:
-    label: 'artisan test'
-    desc: 'Runs `artisan test` command.'
+    desc: 'Run `artisan test` command.'
     aliases:
       - a:t
     cmds:
       - task: artisan
-        vars:
-          { CLI_ARGS: 'test -c {{.CONFIG_DIR}}/phpunit.xml --parallel {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: 'test -c {{.CONFIG_DIR}}/phpunit.xml --parallel {{.CLI_ARGS}}' }
         silent: true
 
   pint:
-    label: 'Laravel Pint'
-    desc: 'Runs `pint` command.'
+    desc: 'Run `pint` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/pint
       --config={{.CONFIG_DIR}}/pint.json
@@ -60,8 +56,7 @@ tasks:
     silent: true
 
   phpstan:
-    label: 'PHPStan'
-    desc: 'Runs `phpstan` command.'
+    desc: 'Run `phpstan` command.'
     aliases:
       - php:stan
     cmd:
@@ -70,16 +65,14 @@ tasks:
     silent: true
 
   rector:
-    label: 'Rector'
-    desc: 'Runs `rector` command.'
+    desc: 'Run `rector` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector
       --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
     silent: true
 
   prettier:
-    label: 'Prettier'
-    desc: 'Runs `prettier` command.'
+    desc: 'Run `prettier` command.'
     cmd:
       '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
       --config={{.CONFIG_DIR}}/.prettierrc.json
@@ -88,8 +81,7 @@ tasks:
     silent: true
 
   pest:
-    label: 'Pest'
-    desc: 'Runs `pest` command.'
+    desc: 'Run `pest` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/pest
       --configuration={{.CONFIG_DIR}}/phpunit.xml
@@ -99,7 +91,6 @@ tasks:
   # Work commands:
 
   cache:clear:
-    label: 'Cache clear'
     desc: 'Clear all Laravel caches'
     aliases:
       - cc
@@ -109,7 +100,7 @@ tasks:
         vars: { CLI_ARGS: 'optimize:clear' }
 
   install:
-    label: 'Install project'
+    desc: 'Install project'
     aliases:
       - i
     cmds:
@@ -122,7 +113,6 @@ tasks:
       - task: db:fresh
 
   update:
-    label: 'Update project'
     desc: 'Updates project dependencies withing constraints.'
     prompt: |
       This command can break website. Do it independently without any other active changes.
@@ -136,7 +126,7 @@ tasks:
         vars: { CLI_ARGS: 'up --save --latest' }
 
   deploy:
-    label: 'Deploy project'
+    desc: 'Deploy project'
     aliases:
       - d
     cmds:
@@ -154,7 +144,6 @@ tasks:
         vars: { CLI_ARGS: 'up' }
 
   db:fresh:
-    label: 'Refresh database'
     desc: 'Drop all tables and re-run all migrations'
     aliases:
       - m:f
@@ -166,7 +155,6 @@ tasks:
         vars: { CLI_ARGS: 'migrate:fresh --seed --force' }
 
   db:schema:dump:
-    label: 'Dump database schema'
     desc: 'Dump the given db schema and delete all existing migration'
     aliases:
       - db:s:d
@@ -175,7 +163,6 @@ tasks:
         vars: { CLI_ARGS: 'schema:dump --prune' }
 
   docs:generate:
-    label: 'Generate docs'
     desc: 'Generate docs with scribe.'
     aliases:
       - docs
@@ -186,8 +173,7 @@ tasks:
   # Linters:
 
   lint:
-    label: 'Project lint'
-    desc: 'Validates project files.'
+    desc: 'Run all linters and validators.'
     aliases:
       - l
     cmds:
@@ -200,7 +186,6 @@ tasks:
       - defer: { task: lint:branch }
 
   lint:branch:
-    label: 'Lint git branch name'
     desc: 'Validates the current git branch name.'
     aliases:
       - l:b
@@ -212,7 +197,6 @@ tasks:
         vars: { CLI_ARGS: 'validate-branch-name' }
 
   lint:commit:
-    label: 'Lint last git commits'
     desc: 'Run commit message validation using commitlint.'
     aliases:
       - l:cmt
@@ -225,8 +209,7 @@ tasks:
         vars: { CLI_ARGS: 'commitlint --from=HEAD~1 --to=HEAD' }
 
   lint:composer:
-    label: 'Composer validation'
-    desc: 'Validates composer.json file and checks platform requirements.'
+    desc: 'Validates composer.json and platform requirements.'
     aliases:
       - l:co
       - l:composer
@@ -240,7 +223,6 @@ tasks:
         vars: { CLI_ARGS: 'check-platform-req' }
 
   lint:pint:
-    label: 'Laravel Pint validation'
     desc: 'Validate PHP for code style.'
     aliases:
       - l:p
@@ -253,7 +235,6 @@ tasks:
         vars: { CLI_ARGS: '. --test {{.CLI_ARGS}}' }
 
   lint:phpstan:
-    label: 'PHPStan analyze'
     desc: 'Analyze PHP code for bugs and errors.'
     aliases:
       - l:s
@@ -268,8 +249,7 @@ tasks:
         vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}}' }
 
   lint:rector:
-    label: 'Rector check'
-    desc: 'Check Rector issues.'
+    desc: 'Check for Rector refactoring suggestions.'
     aliases:
       - l:r
       - l:rector
@@ -281,8 +261,7 @@ tasks:
         vars: { CLI_ARGS: '--dry-run {{.CLI_ARGS}}' }
 
   lint:prettier:
-    label: 'Prettier'
-    desc: 'Checks for common format issues with prettier.'
+    desc: 'Check code formatting with Prettier.'
     aliases:
       - l:f
       - l:prt
@@ -300,8 +279,7 @@ tasks:
   # Fixing:
 
   fix:
-    label: 'Fixing found issues'
-    desc: 'Trying for automated fixes for found problems.'
+    desc: 'Run all automated fixers.'
     aliases:
       - f
     cmds:
@@ -311,8 +289,7 @@ tasks:
       - defer: { task: fix:composer }
 
   fix:composer:
-    label: 'Composer fix'
-    desc: 'Try to fix composer errors.'
+    desc: 'Fix Composer lock file and dependencies.'
     aliases:
       - f:co
       - f:composer
@@ -326,7 +303,6 @@ tasks:
         vars: { CLI_ARGS: 'bump' }
 
   fix:pint:
-    label: 'Laravel Pint'
     desc: 'Fix php format issues.'
     aliases:
       - f:p
@@ -339,8 +315,7 @@ tasks:
         vars: { CLI_ARGS: '.' }
 
   fix:rector:
-    label: 'Rector'
-    desc: 'Fix Rector issues.'
+    desc: 'Apply Rector refactoring suggestions.'
     aliases:
       - f:r
       - f:rector
@@ -352,8 +327,7 @@ tasks:
         vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
   fix:prettier:
-    label: 'Prettier'
-    desc: 'Fix format issues.'
+    desc: 'Auto-fix code formatting with Prettier.'
     aliases:
       - f:f
       - f:prt
@@ -371,7 +345,6 @@ tasks:
   # Testing:
 
   test:
-    label: 'Project test'
     desc: 'Run project test.'
     aliases:
       - t
@@ -383,7 +356,6 @@ tasks:
       - defer: { task: test:coverage }
 
   test:coverage:
-    label: 'Type Coverage'
     desc: 'Ensure all methods and properties have type declarations.'
     aliases:
       - t:c
@@ -398,7 +370,6 @@ tasks:
         vars: { CLI_ARGS: '--type-coverage --compact --min=100 {{.CLI_ARGS}}' }
 
   test:feature:
-    label: 'Feature test'
     desc: 'Run feature test.'
     aliases:
       - t:f
@@ -413,7 +384,6 @@ tasks:
         vars: { CLI_ARGS: '--testsuite=Feature {{.CLI_ARGS}}' }
 
   test:unit:
-    label: 'Unit test'
     desc: 'Run unit tests.'
     aliases:
       - t:u
@@ -428,7 +398,6 @@ tasks:
         vars: { CLI_ARGS: '--testsuite=Unit {{.CLI_ARGS}}' }
 
   test:mutate:
-    label: 'Mutate test'
     desc: 'Run mutate tests.'
     aliases:
       - t:m
