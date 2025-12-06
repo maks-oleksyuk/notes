@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+
 use function Spatie\RouteTesting\routeTesting;
 
 // Smoke test for public web routes only.

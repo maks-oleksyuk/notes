@@ -1,0 +1,990 @@
+<laravel-boost-guidelines>
+=== critical environment rules ===
+
+# Laravel Development Environment Guidelines
+
+This document contains critical guidelines for AI assistants working on this
+Laravel application. All rules must be followed strictly.
+
+## Environment & Execution
+
+### DDEV Container Execution
+
+**CRITICAL**: This application runs in a DDEV containerized environment. All
+commands MUST be executed inside the DDEV container.
+
+- **All PHP commands** must be prefixed with `ddev .` or use `ddev php`,
+  `ddev composer`, etc.
+- **All Artisan commands** must be executed as `ddev artisan`
+- **All Composer commands** must be executed as `ddev composer`
+- **All NPM/PNPM commands** must be executed as `ddev pnpm` or use DDEV's native
+  commands
+- **Database commands** must be executed as `ddev mysql` or appropriate DDEV
+  database commands
+- **Task runner commands** must be executed as `ddev task {task-name}` (never
+  run tasks directly)
+
+<code-snippet name="Correct command execution examples" lang="bash">
+# Correct ✓
+ddev artisan make:model Post
+ddev composer require package/name
+ddev pnpm install
+ddev task test
+ddev mysql -e "SELECT * FROM users"
+
+# Incorrect ✗
+
+php artisan make:model Post composer require package/name pnpm install
+./vendor/bin/pest mysql -e "SELECT \* FROM users" </code-snippet>
+
+### PHP 8.5 Requirements
+
+This application **requires PHP 8.5** and you must utilize PHP 8.5 features when
+writing code:
+
+- **Property hooks** - Use property hooks for computed properties and validation
+- **Asymmetric visibility** - Use `public private(set)` for read-only properties
+- **New array functions** - Use `array_find()`, `array_find_key()`,
+  `array_any()`, `array_all()`
+- **`new` without parentheses** - Use `new MyClass` when no constructor
+  arguments
+- **Modern syntax** - Leverage all PHP 8.x features (named arguments,
+  attributes, enums, match expressions, etc.)
+
+<code-snippet name="PHP 8.5 Property Hooks Example" lang="php">
+class User extends Model
+{
+    // Property hook for computed property
+    public string $fullName {
+        get => "{$this->first_name} {$this->last_name}";
+    }
+
+    // Asymmetric visibility
+    public private(set) string $id;
+
+} </code-snippet>
+
+## Code Quality & Standards
+
+### Quality Assurance Requirements
+
+**CRITICAL**: Before finalizing ANY code changes, you MUST ensure all quality
+checks pass:
+
+1. **Code Formatting** - Run `ddev exec vendor/bin/pint --dirty` to format all
+   modified files
+2. **Static Analysis** - Run `ddev exec vendor/bin/phpstan analyze` or
+   `ddev task phpstan` to ensure type safety
+3. **Tests** - Run relevant tests with `ddev task test` or
+   `ddev exec php artisan test --filter={test-name}`
+4. **Frontend Build** - Run `ddev exec pnpm run build` or `ddev task build` if
+   frontend changes were made
+
+**Never mark a task as complete until:**
+
+- Laravel Pint has formatted the code (no formatting errors)
+- PHPStan/Larastan static analysis passes (no type errors)
+- All relevant tests pass (no test failures)
+- Frontend builds successfully if applicable (no build errors)
+
+### Running Quality Checks
+
+<code-snippet name="Pre-commit quality check sequence" lang="bash">
+# 1. Format code with Pint
+ddev exec vendor/bin/pint --dirty
+
+# 2. Run static analysis
+
+ddev exec vendor/bin/phpstan analyze
+
+# 3. Run relevant tests
+
+ddev exec php artisan test --filter=UserTest
+
+# 4. Run all tests (before finalizing)
+
+ddev task test
+
+# 5. Build frontend if needed
+
+ddev exec pnpm run build </code-snippet>
+
+## Best Practices
+
+### Laravel Best Practices
+
+- **SOLID principles** - Follow Single Responsibility, Open/Closed, Liskov
+  Substitution, Interface Segregation, Dependency Inversion
+- **DRY (Don't Repeat Yourself)** - Extract reusable logic into services,
+  traits, or helper methods
+- **Service classes** - Use dedicated service classes for complex business logic
+  instead of fat controllers
+- **Repository pattern** - Consider using repositories for complex data access
+  patterns
+- **Action classes** - Use single-action classes for complex operations
+  (`app/Actions/`)
+- **Events & Listeners** - Use Laravel's event system for decoupled, side-effect
+  logic
+- **Jobs & Queues** - Offload time-consuming operations to queued jobs
+- **Resource classes** - Always use API Resources for API responses, never
+  return models directly
+- **Form Requests** - Always use Form Request classes for validation, never
+  validate inline
+- **Policy classes** - Use policies for authorization logic, never use inline
+  authorization
+- **Eager loading** - Prevent N+1 queries by eager loading relationships
+- **Database transactions** - Wrap multiple database operations in transactions
+  for data integrity
+- **Caching** - Cache expensive operations and database queries appropriately
+- **Rate limiting** - Apply rate limiting to API endpoints and public routes
+
+### Code Quality Principles
+
+- **Type safety** - Use strict types, type hints, and return type declarations
+  everywhere
+- **Immutability** - Prefer immutable objects and readonly properties when
+  appropriate
+- **Early returns** - Use early returns to reduce nesting and improve
+  readability
+- **Named arguments** - Use named arguments for clarity when calling methods
+  with many parameters
+- **Null safety** - Handle null cases explicitly, use null coalescing operators
+- **Meaningful names** - Use descriptive variable, method, and class names
+  (e.g., `isRegisteredForDiscounts()` not `discount()`)
+- **Small methods** - Keep methods focused and small (single responsibility)
+- **No magic** - Avoid magic numbers and strings, use constants or enums
+- **Comments** - Only comment complex logic; prefer self-documenting code
+- **PHPDoc** - Use PHPDoc for array shapes, generics, and complex return types
+
+## Foundational Context
+
+This application is a Laravel application and its main Laravel ecosystem
+packages & versions are below. You are an expert with them all. Ensure you abide
+by these specific packages & versions.
+
+- php - 8.5.0
+- filament/filament (FILAMENT) - v4
+- laravel/framework (LARAVEL) - v12
+- laravel/nightwatch (NIGHTWATCH) - v1
+- laravel/prompts (PROMPTS) - v0
+- laravel/pulse (PULSE) - v1
+- laravel/sanctum (SANCTUM) - v4
+- livewire/livewire (LIVEWIRE) - v3
+- larastan/larastan (LARASTAN) - v3
+- laravel/mcp (MCP) - v0
+- laravel/pint (PINT) - v1
+- pestphp/pest (PEST) - v4
+- phpunit/phpunit (PHPUNIT) - v12
+- rector/rector (RECTOR) - v2
+- prettier (PRETTIER) - v3
+
+## Code Conventions
+
+- You must follow all existing code conventions used in this application. When
+  creating or editing a file, check sibling files for the correct structure,
+  approach, naming.
+- Use descriptive names for variables and methods. For example,
+  `isRegisteredForDiscounts`, not `discount()`.
+- Check for existing components to reuse before writing a new one.
+- Never create verification scripts or tinker code when tests cover that
+  functionality. Unit and feature tests are more important.
+
+## Application Structure & Architecture
+
+- Stick to existing directory structure - don't create new base folders without
+  approval.
+- Do not change the application's dependencies without approval.
+- Follow Laravel 12's streamlined structure (no Kernel files, use
+  `bootstrap/app.php` for configuration).
+
+## Frontend Development
+
+- If the user doesn't see a frontend change reflected in the UI, run
+  `ddev exec pnpm run build` or ask them to run `ddev exec pnpm run dev`.
+- All frontend tooling commands must run in the DDEV container.
+
+## Communication
+
+- Be concise in your explanations - focus on what's important rather than
+  explaining obvious details.
+- Only create documentation files if explicitly requested by the user.
+
+=== boost rules ===
+
+## Laravel Boost
+
+- Laravel Boost is an MCP server that comes with powerful tools designed
+  specifically for this application. Use them.
+
+## Artisan
+
+- Use the `list-artisan-commands` tool when you need to call an Artisan command
+  to double check the available parameters.
+
+## URLs
+
+- Whenever you share a project URL with the user you should use the
+  `get-absolute-url` tool to ensure you're using the correct scheme, domain /
+  IP, and port.
+
+## Tinker / Debugging
+
+- You should use the `tinker` tool when you need to execute PHP to debug code or
+  query Eloquent models directly.
+- Use the `database-query` tool when you only need to read from the database.
+
+## Reading Browser Logs With the `browser-logs` Tool
+
+- You can read browser logs, errors, and exceptions using the `browser-logs`
+  tool from Boost.
+- Only recent browser logs will be useful - ignore old logs.
+
+## Searching Documentation (Critically Important)
+
+- Boost comes with a powerful `search-docs` tool you should use before any other
+  approaches. This tool automatically passes a list of installed packages and
+  their versions to the remote Boost API, so it returns only version-specific
+  documentation specific for the user's circumstance. You should pass an array
+  of packages to filter on if you know you need docs for particular packages.
+- The 'search-docs' tool is perfect for all Laravel related packages, including
+  Laravel, Inertia, Livewire, Filament, Tailwind, Pest, Nova, Nightwatch, etc.
+- You must use this tool to search for Laravel-ecosystem documentation before
+  falling back to other approaches.
+- Search the documentation before making code changes to ensure we are taking
+  the correct approach.
+- Use multiple, broad, simple, topic based queries to start. For example:
+  `['rate limiting', 'routing rate limiting', 'routing']`.
+- Do not add package names to queries - package information is already shared.
+  For example, use `test resource table`, not `filament 4 test resource table`.
+
+### Available Search Syntax
+
+- You can and should pass multiple queries at once. The most relevant results
+  will be returned first.
+
+1. Simple Word Searches with auto-stemming - query=authentication - finds
+   'authenticate' and 'auth'
+2. Multiple Words (AND Logic) - query=rate limit - finds knowledge containing
+   both "rate" AND "limit"
+3. Quoted Phrases (Exact Position) - query="infinite scroll" - Words must be
+   adjacent and in that order
+4. Mixed Queries - query=middleware "rate limit" - "middleware" AND exact phrase
+   "rate limit"
+5. Multiple Queries - queries=["authentication", "middleware"] - ANY of these
+   terms
+
+=== php rules ===
+
+## PHP 8.5 Standards
+
+This application uses PHP 8.5 and you must leverage modern PHP features.
+
+### Control Structures
+
+- Always use curly braces for control structures, even for single-line
+  statements.
+- Prefer early returns over nested conditions.
+- Use match expressions instead of switch statements when appropriate.
+
+<code-snippet name="Control Structure Best Practices" lang="php">
+// Good - early return
+public function process(User $user): void
+{
+    if (! $user->isActive()) {
+        return;
+    }
+
+    // Process active user
+
+}
+
+// Good - match expression $status = match ($user->role) { 'admin' =>
+'Administrator', 'user' => 'Regular User', default => 'Guest', };
+</code-snippet>
+
+### Constructors
+
+- Use constructor property promotion for all constructor parameters.
+- Use asymmetric visibility (`public private(set)`) for read-only properties
+  that are set in the constructor.
+- Do not create empty `__construct()` methods with zero parameters.
+
+<code-snippet name="Modern Constructor Examples" lang="php">
+// Constructor property promotion with asymmetric visibility
+public function __construct(
+    public private(set) string $id,
+    public string $name,
+    private readonly GitHub $github,
+) {
+}
+</code-snippet>
+
+### Type Declarations
+
+- **Always** use explicit return type declarations for methods and functions.
+- Use appropriate PHP type hints for all method parameters.
+- Use union types and nullable types where appropriate.
+- Leverage `never` type for methods that never return.
+
+<code-snippet name="Type Declaration Examples" lang="php">
+// Explicit return types
+protected function isAccessible(User $user, ?string $path = null): bool
+{
+    return $user->hasAccess($path);
+}
+
+// Union types public function find(int|string
+$id): ?User
+{
+    return User::find($id); }
+
+// Never type private function handleCriticalError(string
+$message): never
+{
+    throw new CriticalException($message); } </code-snippet>
+
+### PHP 8.5 Property Hooks
+
+- Use property hooks for computed properties instead of accessor methods.
+- Use property hooks for validation and transformation logic.
+- Prefer hooks over traditional getters/setters for cleaner syntax.
+
+<code-snippet name="Property Hooks Examples" lang="php">
+class User extends Model
+{
+    // Computed property with getter hook
+    public string $fullName {
+        get => "{$this->first_name} {$this->last_name}";
+    }
+
+    // Property with validation hook
+    public string $email {
+        set (string $value) {
+            if (! filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                throw new InvalidArgumentException('Invalid email');
+            }
+            $this->email = strtolower($value);
+        }
+    }
+
+    // Read-only property with asymmetric visibility
+    public private(set) Carbon $createdAt {
+        get => $this->created_at;
+    }
+
+} </code-snippet>
+
+### Modern Array Functions (PHP 8.5)
+
+- Use new array functions: `array_find()`, `array_find_key()`, `array_any()`,
+  `array_all()`
+- These are more expressive than traditional loops or `array_filter()` +
+  `reset()`
+
+<code-snippet name="Modern Array Functions" lang="php">
+// Find first matching element
+$admin = array_find($users, fn($user) => $user->isAdmin());
+
+// Find first matching key $key = array_find_key($data, fn($value) => $value >
+100);
+
+// Check if any element matches $hasActive = array_any($users, fn($user) =>
+$user->isActive());
+
+// Check if all elements match $allVerified = array_all($users, fn($user) =>
+$user->isVerified()); </code-snippet>
+
+### Attributes
+
+- Use attributes for metadata instead of docblock annotations.
+- Common use cases: routes, validation, authorization, event listeners.
+
+<code-snippet name="Attribute Usage" lang="php">
+#[Route('/users/{id}', methods: ['GET'])]
+#[Authorize('view-users')]
+public function show(int $id): Response
+{
+    // ...
+}
+</code-snippet>
+
+### Enums
+
+- Use enums for fixed sets of values instead of constants.
+- Enum cases should be PascalCase: `FavoritePerson`, `BestLake`, `Monthly`.
+- Use backed enums when you need scalar values.
+
+<code-snippet name="Enum Examples" lang="php">
+enum Status: string
+{
+    case Pending = 'pending';
+    case Approved = 'approved';
+    case Rejected = 'rejected';
+
+    public function label(): string
+    {
+        return match($this) {
+            self::Pending => 'Pending Review',
+            self::Approved => 'Approved',
+            self::Rejected => 'Rejected',
+        };
+    }
+
+} </code-snippet>
+
+### Comments & Documentation
+
+- Prefer PHPDoc blocks over inline comments.
+- Never use inline comments within code unless explaining very complex logic.
+- Use PHPDoc for array shapes, generics, and complex return types.
+- Self-documenting code is preferred over comments.
+
+<code-snippet name="PHPDoc Best Practices" lang="php">
+/**
+ * @param  array{name: string, email: string, age: int}  $data
+ * @return Collection<int, User>
+ */
+public function createUsers(array $data): Collection
+{
+    // Implementation
+}
+</code-snippet>
+
+=== laravel/core rules ===
+
+## Do Things the Laravel Way
+
+- Use `ddev exec php artisan make:` commands to create new files (migrations,
+  controllers, models, etc.).
+- You can list available Artisan commands using the `list-artisan-commands`
+  tool.
+- If you're creating a generic PHP class, use
+  `ddev exec php artisan make:class`.
+- **Always** pass `--no-interaction` to all Artisan commands to ensure they work
+  without user input.
+- Pass the correct `--options` to ensure correct behavior (check with
+  `list-artisan-commands` or `--help`).
+
+<code-snippet name="Artisan Command Examples" lang="bash">
+# Create a model with migration, factory, and seeder
+ddev exec php artisan make:model Post --migration --factory --seed --no-interaction
+
+# Create a Form Request
+
+ddev exec php artisan make:request StoreUserRequest --no-interaction
+
+# Create a resource controller
+
+ddev exec php artisan make:controller PostController --resource --no-interaction
+</code-snippet>
+
+### Database
+
+- Always use proper Eloquent relationship methods with return type hints. Prefer
+  relationship methods over raw queries or manual joins.
+- Use Eloquent models and relationships before suggesting raw database queries
+- Avoid `DB::`; prefer `Model::query()`. Generate code that leverages Laravel's
+  ORM capabilities rather than bypassing them.
+- Generate code that prevents N+1 query problems by using eager loading.
+- Use Laravel's query builder for very complex database operations.
+
+### Model Creation
+
+- When creating new models, create useful factories and seeders for them too.
+  Ask the user if they need any other things, using `list-artisan-commands` to
+  check the available options to `php artisan make:model`.
+
+### APIs & Eloquent Resources
+
+- For APIs, default to using Eloquent API Resources and API versioning unless
+  existing API routes do not, then you should follow existing application
+  convention.
+
+### Controllers & Validation
+
+- Always create Form Request classes for validation rather than inline
+  validation in controllers. Include both validation rules and custom error
+  messages.
+- Check sibling Form Requests to see if the application uses array or string
+  based validation rules.
+
+### Queues
+
+- Use queued jobs for time-consuming operations with the `ShouldQueue`
+  interface.
+
+### Authentication & Authorization
+
+- Use Laravel's built-in authentication and authorization features (gates,
+  policies, Sanctum, etc.).
+
+### URL Generation
+
+- When generating links to other pages, prefer named routes and the `route()`
+  function.
+
+### Configuration
+
+- Use environment variables only in configuration files - never use the `env()`
+  function directly outside of config files. Always use `config('app.name')`,
+  not `env('APP_NAME')`.
+
+### Testing
+
+- When creating models for tests, use the factories for the models. Check if the
+  factory has custom states that can be used before manually setting up the
+  model.
+- Faker: Use methods such as `$this->faker->word()` or `fake()->randomDigit()`.
+  Follow existing conventions whether to use `$this->faker` or `fake()`.
+- When creating tests, use `ddev exec php artisan make:test [options] {name}` to
+  create a feature test, and pass `--pest --unit` to create a unit test. Most
+  tests should be feature tests.
+
+<code-snippet name="Creating Tests" lang="bash">
+# Create a feature test
+ddev exec php artisan make:test PostTest --pest --no-interaction
+
+# Create a unit test
+
+ddev exec php artisan make:test PostServiceTest --pest --unit --no-interaction
+</code-snippet>
+
+### Vite Error
+
+- If you receive an "Illuminate\Foundation\ViteException: Unable to locate file
+  in Vite manifest" error, run `ddev exec pnpm run build` or ask the user to run
+  `ddev exec pnpm run dev`.
+
+=== laravel/v12 rules ===
+
+## Laravel 12
+
+- Use the `search-docs` tool to get version specific documentation.
+- Since Laravel 11, Laravel has a new streamlined file structure which this
+  project uses.
+
+### Laravel 12 Structure
+
+- No middleware files in `app/Http/Middleware/`.
+- `bootstrap/app.php` is the file to register middleware, exceptions, and
+  routing files.
+- `bootstrap/providers.php` contains application specific service providers.
+- **No app\Console\Kernel.php** - use `bootstrap/app.php` or
+  `routes/console.php` for console configuration.
+- **Commands auto-register** - files in `app/Console/Commands/` are
+  automatically available and do not require manual registration.
+
+### Database
+
+- When modifying a column, the migration must include all of the attributes that
+  were previously defined on the column. Otherwise, they will be dropped and
+  lost.
+- Laravel 11 allows limiting eagerly loaded records natively, without external
+  packages: `$query->latest()->limit(10);`.
+
+### Models
+
+- Casts can and likely should be set in a `casts()` method on a model rather
+  than the `$casts` property. Follow existing conventions from other models.
+
+=== livewire/core rules ===
+
+## Livewire Core
+
+- Use the `search-docs` tool to find exact version specific documentation for
+  how to write Livewire & Livewire tests.
+- Use `ddev exec php artisan make:livewire [Posts\CreatePost]` to create new
+  components.
+- State should live on the server, with the UI reflecting it.
+- All Livewire requests hit the Laravel backend, they're like regular HTTP
+  requests. Always validate form data, and run authorization checks in Livewire
+  actions.
+
+## Livewire Best Practices
+
+- Livewire components require a single root element.
+- Use `wire:loading` and `wire:dirty` for delightful loading states.
+- Add `wire:key` in loops:
+
+    ```blade
+    @foreach ($items as $item)
+        <div wire:key="item-{{ $item->id }}">
+            {{ $item->name }}
+        </div>
+    @endforeach
+    ```
+
+- Prefer lifecycle hooks like `mount()`, `updatedFoo()` for initialization and
+  reactive side effects:
+
+<code-snippet name="Lifecycle hook examples" lang="php">
+    public function mount(User $user) { $this->user = $user; }
+    public function updatedSearch() { $this->resetPage(); }
+</code-snippet>
+
+## Testing Livewire
+
+<code-snippet name="Example Livewire component test" lang="php">
+    Livewire::test(Counter::class)
+        ->assertSet('count', 0)
+        ->call('increment')
+        ->assertSet('count', 1)
+        ->assertSee(1)
+        ->assertStatus(200);
+</code-snippet>
+
+    <code-snippet name="Testing a Livewire component exists within a page" lang="php">
+        $this->get('/posts/create')
+        ->assertSeeLivewire(CreatePost::class);
+    </code-snippet>
+
+=== livewire/v3 rules ===
+
+## Livewire 3
+
+### Key Changes From Livewire 2
+
+- These things changed in Livewire 2, but may not have been updated in this
+  application. Verify this application's setup to ensure you conform with
+  application conventions.
+    - Use `wire:model.live` for real-time updates, `wire:model` is now deferred
+      by default.
+    - Components now use the `App\Livewire` namespace (not `App\Http\Livewire`).
+    - Use `$this->dispatch()` to dispatch events (not `emit` or
+      `dispatchBrowserEvent`).
+    - Use the `components.layouts.app` view as the typical layout path (not
+      `layouts.app`).
+
+### New Directives
+
+- `wire:show`, `wire:transition`, `wire:cloak`, `wire:offline`, `wire:target`
+  are available for use. Use the documentation to find usage examples.
+
+### Alpine
+
+- Alpine is now included with Livewire, don't manually include Alpine.js.
+- Plugins included with Alpine: persist, intersect, collapse, and focus.
+
+### Lifecycle Hooks
+
+- You can listen for `livewire:init` to hook into Livewire initialization, and
+  `fail.status === 419` for the page expiring:
+
+<code-snippet name="livewire:load example" lang="js">
+document.addEventListener('livewire:init', function () {
+    Livewire.hook('request', ({ fail }) => {
+        if (fail && fail.status === 419) {
+            alert('Your session expired');
+        }
+    });
+
+    Livewire.hook('message.failed', (message, component) => {
+        console.error(message);
+    });
+
+}); </code-snippet>
+
+=== pint/core rules ===
+
+## Laravel Pint Code Formatter
+
+**CRITICAL**: You must run Pint before finalizing any code changes.
+
+- Run `ddev exec vendor/bin/pint --dirty` before finalizing changes to format
+  all modified files.
+- Do **not** run `ddev exec vendor/bin/pint --test`; simply run
+  `ddev exec vendor/bin/pint` to fix formatting issues.
+- Alternatively, use `ddev task pint` if a task is configured for it.
+- All code must pass Pint formatting before marking tasks as complete.
+
+<code-snippet name="Running Pint" lang="bash">
+# Format only dirty (modified) files
+ddev exec vendor/bin/pint --dirty
+
+# Format all files
+
+ddev exec vendor/bin/pint
+
+# Or use task runner if configured
+
+ddev task pint </code-snippet>
+
+=== pest/core rules ===
+
+## Pest
+
+### Testing
+
+- If you need to verify a feature is working, write or update a Unit / Feature
+  test.
+
+### Pest Tests
+
+- All tests must be written using Pest. Use
+  `ddev exec php artisan make:test --pest {name}`.
+- You must **not** remove any tests or test files from the tests directory
+  without approval. These are not temporary or helper files - these are core to
+  the application.
+- Tests should test all of the happy paths, failure paths, and edge cases.
+- Tests live in the `tests/Feature` and `tests/Unit` directories.
+- Pest tests look and behave like this:
+
+<code-snippet name="Basic Pest Test Example" lang="php">
+it('is true', function () {
+    expect(true)->toBeTrue();
+});
+</code-snippet>
+
+### Running Tests
+
+**CRITICAL**: Run relevant tests before marking any task as complete.
+
+- Run the minimal number of tests using an appropriate filter before finalizing
+  code edits.
+- To run all tests: `ddev exec php artisan test` or `ddev task test`.
+- To run all tests in a file:
+  `ddev exec php artisan test tests/Feature/ExampleTest.php`.
+- To filter on a particular test name:
+  `ddev exec php artisan test --filter=testName` (recommended after making a
+  change to a related file).
+- When the tests relating to your changes are passing, ask the user if they
+  would like to run the entire test suite to ensure everything is still passing.
+
+<code-snippet name="Running Tests Examples" lang="bash">
+# Run all tests
+ddev exec php artisan test
+ddev task test
+
+# Run specific test file
+
+ddev exec php artisan test tests/Feature/PostTest.php
+
+# Run tests matching a filter
+
+ddev exec php artisan test --filter=user_can_create_post
+
+# Run tests with parallel execution
+
+ddev exec php artisan test --parallel </code-snippet>
+
+### Pest Assertions
+
+- When asserting status codes on a response, use the specific method like
+  `assertForbidden` and `assertNotFound` instead of using `assertStatus(403)` or
+  similar, e.g.:
+  <code-snippet name="Pest Example Asserting postJson Response" lang="php">
+  it('returns all', function () { $response = $this->postJson('/api/docs', []);
+
+        $response->assertSuccessful();
+
+    }); </code-snippet>
+
+### Mocking
+
+- Mocking can be very helpful when appropriate.
+- When mocking, you can use the `Pest\Laravel\mock` Pest function, but always
+  import it via `use function Pest\Laravel\mock;` before using it.
+  Alternatively, you can use `$this->mock()` if existing tests do.
+- You can also create partial mocks using the same import or self method.
+
+### Datasets
+
+- Use datasets in Pest to simplify tests which have a lot of duplicated data.
+  This is often the case when testing validation rules, so consider going with
+  this solution when writing tests for validation rules.
+
+<code-snippet name="Pest Dataset Example" lang="php">
+it('has emails', function (string $email) {
+    expect($email)->not->toBeEmpty();
+})->with([
+    'james' => 'james@laravel.com',
+    'taylor' => 'taylor@laravel.com',
+]);
+</code-snippet>
+
+=== pest/v4 rules ===
+
+## Pest 4
+
+- Pest v4 is a huge upgrade to Pest and offers: browser testing, smoke testing,
+  visual regression testing, test sharding, and faster type coverage.
+- Browser testing is incredibly powerful and useful for this project.
+- Browser tests should live in `tests/Browser/`.
+- Use the `search-docs` tool for detailed guidance on utilizing these features.
+
+### Browser Testing
+
+- You can use Laravel features like `Event::fake()`, `assertAuthenticated()`,
+  and model factories within Pest v4 browser tests, as well as `RefreshDatabase`
+  (when needed) to ensure a clean state for each test.
+- Interact with the page (click, type, scroll, select, submit, drag-and-drop,
+  touch gestures, etc.) when appropriate to complete the test.
+- If requested, test on multiple browsers (Chrome, Firefox, Safari).
+- If requested, test on different devices and viewports (like iPhone 14 Pro,
+  tablets, or custom breakpoints).
+- Switch color schemes (light/dark mode) when appropriate.
+- Take screenshots or pause tests for debugging when appropriate.
+
+### Example Tests
+
+<code-snippet name="Pest Browser Test Example" lang="php">
+it('may reset the password', function () {
+    Notification::fake();
+
+    $this->actingAs(User::factory()->create());
+
+    $page = visit('/sign-in'); // Visit on a real browser...
+
+    $page->assertSee('Sign In')
+        ->assertNoJavascriptErrors() // or ->assertNoConsoleLogs()
+        ->click('Forgot Password?')
+        ->fill('email', 'nuno@laravel.com')
+        ->click('Send Reset Link')
+        ->assertSee('We have emailed your password reset link!')
+
+    Notification::assertSent(ResetPassword::class);
+
+}); </code-snippet>
+
+<code-snippet name="Pest Smoke Testing Example" lang="php">
+$pages = visit(['/', '/about', '/contact']);
+
+$pages->assertNoJavascriptErrors()->assertNoConsoleLogs(); </code-snippet>
+
+=== filament/filament rules ===
+
+## Filament
+
+- Filament is used by this application, check how and where to follow existing
+  application conventions.
+- Filament is a Server-Driven UI (SDUI) framework for Laravel. It allows
+  developers to define user interfaces in PHP using structured configuration
+  objects. It is built on top of Livewire, Alpine.js, and Tailwind CSS.
+- You can use the `search-docs` tool to get information from the official
+  Filament documentation when needed. This is very useful for Artisan command
+  arguments, specific code examples, testing functionality, relationship
+  management, and ensuring you're following idiomatic practices.
+- Utilize static `make()` methods for consistent component initialization.
+
+### Artisan
+
+- You must use the Filament specific Artisan commands to create new files or
+  components for Filament. You can find these with the `list-artisan-commands`
+  tool, or with `php artisan` and the `--help` option.
+- Inspect the required options, always pass `--no-interaction`, and valid
+  arguments for other options when applicable.
+
+### Filament's Core Features
+
+- Actions: Handle doing something within the application, often with a button or
+  link. Actions encapsulate the UI, the interactive modal window, and the logic
+  that should be executed when the modal window is submitted. They can be used
+  anywhere in the UI and are commonly used to perform one-time actions like
+  deleting a record, sending an email, or updating data in the database based on
+  modal form input.
+- Forms: Dynamic forms rendered within other features, such as resources, action
+  modals, table filters, and more.
+- Infolists: Read-only lists of data.
+- Notifications: Flash notifications displayed to users within the application.
+- Panels: The top-level container in Filament that can include all other
+  features like pages, resources, forms, tables, notifications, actions,
+  infolists, and widgets.
+- Resources: Static classes that are used to build CRUD interfaces for Eloquent
+  models. Typically live in `app/Filament/Resources`.
+- Schemas: Represent components that define the structure and behavior of the
+  UI, such as forms, tables, or lists.
+- Tables: Interactive tables with filtering, sorting, pagination, and more.
+- Widgets: Small component included within dashboards, often used for displaying
+  data in charts, tables, or as a stat.
+
+### Relationships
+
+- Determine if you can use the `relationship()` method on form components when
+  you need `options` for a select, checkbox, repeater, or when building a
+  `Fieldset`:
+
+<code-snippet name="Relationship example for Form Select" lang="php">
+Forms\Components\Select::make('user_id')
+    ->label('Author')
+    ->relationship('author')
+    ->required(),
+</code-snippet>
+
+## Testing
+
+- It's important to test Filament functionality for user satisfaction.
+- Ensure that you are authenticated to access the application within the test.
+- Filament uses Livewire, so start assertions with `livewire()` or
+  `Livewire::test()`.
+
+### Example Tests
+
+<code-snippet name="Filament Table Test" lang="php">
+    livewire(ListUsers::class)
+        ->assertCanSeeTableRecords($users)
+        ->searchTable($users->first()->name)
+        ->assertCanSeeTableRecords($users->take(1))
+        ->assertCanNotSeeTableRecords($users->skip(1))
+        ->searchTable($users->last()->email)
+        ->assertCanSeeTableRecords($users->take(-1))
+        ->assertCanNotSeeTableRecords($users->take($users->count() - 1));
+</code-snippet>
+
+<code-snippet name="Filament Create Resource Test" lang="php">
+    livewire(CreateUser::class)
+        ->fillForm([
+            'name' => 'Howdy',
+            'email' => 'howdy@example.com',
+        ])
+        ->call('create')
+        ->assertNotified()
+        ->assertRedirect();
+
+    assertDatabaseHas(User::class, [
+        'name' => 'Howdy',
+        'email' => 'howdy@example.com',
+    ]);
+
+</code-snippet>
+
+<code-snippet name="Testing Multiple Panels (setup())" lang="php">
+    use Filament\Facades\Filament;
+
+    Filament::setCurrentPanel('app');
+
+</code-snippet>
+
+<code-snippet name="Calling an Action in a Test" lang="php">
+    livewire(EditInvoice::class, [
+        'invoice' => $invoice,
+    ])->callAction('send');
+
+    expect($invoice->refresh())->isSent()->toBeTrue();
+
+</code-snippet>
+
+### Important Version 4 Changes
+
+- File visibility is now `private` by default.
+- The `deferFilters` method from Filament v3 is now the default behavior in
+  Filament v4, so users must click a button before the filters are applied to
+  the table. To disable this behavior, you can use the `deferFilters(false)`
+  method.
+- The `Grid`, `Section`, and `Fieldset` layout components no longer span all
+  columns by default.
+- The `all` pagination page method is not available for tables by default.
+- All action classes extend `Filament\Actions\Action`. No action classes exist
+  in `Filament\Tables\Actions`.
+- The `Form` & `Infolist` layout components have been moved to
+  `Filament\Schemas\Components`, for example `Grid`, `Section`, `Fieldset`,
+  `Tabs`, `Wizard`, etc.
+- A new `Repeater` component for Forms has been added.
+- Icons now use the `Filament\Support\Icons\Heroicon` Enum by default. Other
+  options are available and documented.
+
+### Organize Component Classes Structure
+
+- Schema components: `Schemas/Components/`
+- Table columns: `Tables/Columns/`
+- Table filters: `Tables/Filters/`
+- Actions: `Actions/` </laravel-boost-guidelines>
