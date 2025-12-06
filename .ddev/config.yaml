@@ -4,7 +4,7 @@ docroot: public
 database:
   type: postgres
   version: '17'
-php_version: '8.4'
+php_version: '8.5'
 host_db_port: '14674'
 nodejs_version: '24'
 webserver_type: nginx-fpm
