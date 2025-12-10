@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use MrPunyapal\RectorPest\Set\PestLevelSetList;
+use MrPunyapal\RectorPest\Set\PestSetList;
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\Transform\Rector\StaticCall\StaticCallToMethodCallRector;
@@ -9,6 +11,7 @@ use Rector\ValueObject\PhpVersion;
 use RectorLaravel\Rector\FuncCall\ArgumentFuncCallToMethodCallRector;
 use RectorLaravel\Set\LaravelLevelSetList;
 use RectorLaravel\Set\LaravelSetList;
+use RectorLaravel\Set\LaravelSetProvider;
 
 if (defined('ARTISAN_BINARY') || ! class_exists(RectorConfig::class)) {
     return;
@@ -23,6 +26,7 @@ return RectorConfig::configure()
     ])
     ->withPhpVersion(PhpVersion::PHP_85)
     ->withPhpSets(php85: true)
+    ->withSetProviders(LaravelSetProvider::class)
     ->withComposerBased(
         laravel: true,
     )
@@ -55,6 +59,8 @@ return RectorConfig::configure()
         LaravelSetList::LARAVEL_STATIC_TO_INJECTION,
         LaravelSetList::LARAVEL_TESTING,
         LaravelSetList::LARAVEL_TYPE_DECLARATIONS,
+        PestLevelSetList::UP_TO_PEST_40,
+        PestSetList::PEST_CODE_QUALITY,
     ])
     ->withSkip([
         StaticCallToMethodCallRector::class => [

@@ -9,6 +9,7 @@ storage
 var
 vendor
 web
+CLAUDE.md
 composer.lock
 LICENSE.md
 pnpm-lock.yaml

@@ -38,7 +38,7 @@ describe('API | V1 | Auth', function (): void {
         } catch (ValidationException $validationException) {
             $messages = $validationException->errors();
 
-            expect(array_key_exists('password', $messages))->toBeTrue()
+            expect($messages)->toHaveKey('password')
                 ->and($messages['password'])->toContain(__('auth.failed'));
         }
     });

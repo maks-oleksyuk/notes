@@ -3,8 +3,11 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Spatie\RouteTesting\routeTesting;
+
+uses(RefreshDatabase::class);
 
 // Smoke test for public web routes only.
 routeTesting('public web routes are accessible')

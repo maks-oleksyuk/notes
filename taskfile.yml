@@ -67,8 +67,10 @@ tasks:
   rector:
     desc: 'Run `rector` command.'
     cmd:
-      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector
-      --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector {{.CLI_ARGS}}
+      --config={{.CONFIG_DIR}}/rector.php --ansi'
+    aliases:
+      - r
     silent: true
 
   prettier:

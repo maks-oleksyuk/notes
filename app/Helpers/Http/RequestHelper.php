@@ -16,11 +16,11 @@ final readonly class RequestHelper
      */
     public static function parseStringIntoArray(string $inputString): array
     {
-        return array_values(
-            array_filter(
-                array_map(trim(...), explode(',', $inputString))
-            )
-        );
+        return $inputString
+            |> (fn (string $str): array => explode(',', $str))
+            |> (fn (array $arr): array => array_map(trim(...), $arr))
+            |> array_filter(...)
+            |> array_values(...);
     }
 
     /**
@@ -28,11 +28,10 @@ final readonly class RequestHelper
      */
     public static function parseStringIntoIntArray(string $inputString): array
     {
-        return array_values(
-            array_map(
-                intval(...),
-                array_filter(self::parseStringIntoArray($inputString), is_numeric(...))
-            )
-        );
+        return $inputString
+            |> self::parseStringIntoArray(...)
+            |> (fn (array $arr): array => array_filter($arr, is_numeric(...)))
+            |> (fn (array $arr): array => array_map(intval(...), $arr))
+            |> array_values(...);
     }
 }

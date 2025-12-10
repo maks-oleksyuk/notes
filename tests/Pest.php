@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 use App\Exceptions\ApiExceptionHandler;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use Illuminate\Foundation\Testing\WithCachedConfig;
+use Illuminate\Foundation\Testing\WithCachedRoutes;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 /*
@@ -17,7 +20,12 @@ use Tests\TestCase;
 |
 */
 
-pest()->extend(TestCase::class)->in('Feature', 'Unit');
+pest()
+    ->extend(TestCase::class)
+    ->use(WithCachedConfig::class)
+    ->use(WithCachedRoutes::class)
+    ->beforeEach(fn () => Http::preventStrayRequests())
+    ->in('Feature', 'Unit');
 
 /*
 |--------------------------------------------------------------------------

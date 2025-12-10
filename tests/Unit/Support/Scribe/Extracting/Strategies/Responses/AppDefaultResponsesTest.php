@@ -147,7 +147,7 @@ describe('Scribe | AppDefaultResponses', function (): void {
             $method = $ref->getMethod($methodName);
             $response = $method->invoke($this->scribeStrategy, $endpointData, Response::HTTP_BAD_REQUEST);
 
-            expect($response['content'])->toBeString()->toBe('');
+            expect($response['content'])->toBeString()->toBeEmpty();
         }
     });
 });
