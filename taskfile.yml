@@ -147,6 +147,8 @@ tasks:
         vars: { CLI_ARGS: 'migrate --force' }
       - task: cache:clear
       - task: artisan
+        vars: { CLI_ARGS: 'reload' }
+      - task: artisan
         vars: { CLI_ARGS: 'optimize' }
       - task: docs:generate
       - task: artisan

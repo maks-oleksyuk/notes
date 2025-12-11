@@ -1,0 +1,10 @@
+webserver_type: generic
+web_extra_daemons:
+  - name: 'octane'
+    command: 'php artisan octane:start --host=0.0.0.0 --port=80 --admin-port=2019 --watch'
+    directory: /var/www/html
+web_extra_exposed_ports:
+  - name: 'octane'
+    container_port: 80
+    http_port: 80
+    https_port: 443

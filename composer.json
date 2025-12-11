@@ -9,6 +9,7 @@
         "knuckleswtf/scribe": "^5.6",
         "laravel/framework": "^12.42.0",
         "laravel/nightwatch": "^1.19",
+        "laravel/octane": "^2.13.2",
         "laravel/pulse": "^1.4.6",
         "laravel/sanctum": "^4.2.1",
         "olssonm/l5-very-basic-auth": "^7.3",
