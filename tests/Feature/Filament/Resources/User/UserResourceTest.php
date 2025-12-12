@@ -15,7 +15,7 @@ use Tests\Feature\Filament\Fixtures\FilamentForm;
 
 covers(UserResource::class);
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 describe('Filament | User Resource', function (): void {
     it('allows creating users',

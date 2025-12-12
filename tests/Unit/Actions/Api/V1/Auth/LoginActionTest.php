@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 
 covers(LoginAction::class);
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 beforeEach(fn (): LoginAction => $this->loginAction = App::make(LoginAction::class));
 

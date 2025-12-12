@@ -15,6 +15,9 @@ web_extra_daemons:
   - name: 'queue'
     command: 'php artisan queue:work'
     directory: /var/www/html
+  - name: 'nightwatch'
+    command: 'php artisan nightwatch:agent'
+    directory: /var/www/html
   - name: 'pulse'
     command: 'php artisan pulse:check'
     directory: /var/www/html

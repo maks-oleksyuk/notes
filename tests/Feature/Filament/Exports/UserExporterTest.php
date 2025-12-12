@@ -10,7 +10,7 @@ use Pest\Expectation;
 
 covers(UserExporter::class);
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 describe('Filament | User Exporter', function (): void {
     it('returns the correct model',

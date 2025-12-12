@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 covers(UserController::class);
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 beforeEach(function (): void {
     $this->baseUrl = '/api/v1/users';
@@ -33,7 +33,7 @@ it('creates a new user when authenticated', function (): void {
     $payload = [
         'name' => 'John Doe',
         'email' => 'john@example.com',
-        'password' => 'password123',
+        'password' => '!Password123',
     ];
 
     $response = $this->postJson($this->baseUrl, $payload);

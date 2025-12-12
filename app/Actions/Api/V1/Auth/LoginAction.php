@@ -20,7 +20,7 @@ final readonly class LoginAction
      *
      * @throws \Throwable
      */
-    public function __invoke(string $email, string $password): array
+    public function __invoke(string $email, #[\SensitiveParameter] string $password): array
     {
         $user = User::query()->whereEmail($email)->first();
 

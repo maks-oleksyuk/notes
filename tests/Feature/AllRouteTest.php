@@ -7,12 +7,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Spatie\RouteTesting\routeTesting;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 // Smoke test for public web routes only.
 routeTesting('public web routes are accessible')
     ->exclude([
-        // vendor/internal routes (don't need testing)
+        // vendor/internal routes (don't need testing).
         '_debugbar*',
         'livewire*',
         'logs*',
@@ -22,7 +22,7 @@ routeTesting('public web routes are accessible')
         'filament*',
         'up',
 
-        // Routes with dedicated feature tests
+        // Routes with dedicated feature tests.
         'api*',
         'admin*',
         'docs*',

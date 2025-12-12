@@ -44,7 +44,7 @@ tasks:
       - a:t
     cmds:
       - task: artisan
-        vars: { CLI_ARGS: 'test -c {{.CONFIG_DIR}}/phpunit.xml --parallel {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: 'test {{.CLI_ARGS}} -c {{.CONFIG_DIR}}/phpunit.xml' }
         silent: true
 
   pint:
@@ -304,8 +304,8 @@ tasks:
       - f
     cmds:
       - defer: { task: fix:prettier }
-      - defer: { task: fix:rector }
       - defer: { task: fix:pint }
+      - defer: { task: fix:rector }
       - defer: { task: fix:composer }
 
   fix:composer:
@@ -401,7 +401,7 @@ tasks:
       - task: pest
         vars: { CLI_ARGS: '--version' }
       - task: artisan:test
-        vars: { CLI_ARGS: '--testsuite=Feature {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '--testsuite=Feature {{.CLI_ARGS}} --parallel' }
 
   test:unit:
     desc: 'Run unit tests.'
@@ -415,7 +415,7 @@ tasks:
       - task: pest
         vars: { CLI_ARGS: '--version' }
       - task: artisan:test
-        vars: { CLI_ARGS: '--testsuite=Unit {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '--testsuite=Unit {{.CLI_ARGS}} --parallel' }
 
   test:mutate:
     desc: 'Run mutate tests.'

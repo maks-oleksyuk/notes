@@ -1,3 +1,99 @@
+<ddev-guidelines>
+
+## CRITICAL RULES
+
+**NEVER run commands directly. ALWAYS use DDEV prefix.**
+
+### ❌ FORBIDDEN (will fail):
+
+```bash
+php artisan migrate
+composer install
+npm run dev
+vendor/bin/pint
+```
+
+### ✅ REQUIRED (correct way):
+
+```bash
+ddev art migrate      # artisan commands
+ddev co install       # composer commands
+ddev pnpm dev         # pnpm commands
+ddev t l:pint         # taskfile tasks (preferred)
+```
+
+## DDEV Aliases (use these)
+
+```bash
+ddev art  = ddev artisan
+ddev co   = ddev composer
+ddev t    = ddev task
+ddev .    = ddev exec (run inside container)
+```
+
+## Taskfile Commands (PREFERRED)
+
+### Primary Workflow
+
+```bash
+ddev t l        # Lint everything (before commit)
+ddev t f        # Fix everything (auto-fix issues)
+ddev t t        # Test everything (before push)
+```
+
+### Specific Tasks
+
+```bash
+# Linting
+ddev t l:pint       # PHP code style check
+ddev t l:stan       # PHPStan analysis
+ddev t l:rector     # Rector check
+ddev t l:prettier   # Frontend formatting check
+
+# Auto-fixing
+ddev t f:pint       # Fix PHP style
+ddev t f:rector     # Apply Rector
+ddev t f:prettier   # Fix formatting
+
+# Testing
+ddev t t:f          # Feature tests
+ddev t t:u          # Unit tests
+ddev t t:m          # Mutation tests
+ddev t t:c          # Coverage
+
+# Database
+ddev t db:fresh     # Drop + migrate
+ddev t cc           # Clear cache
+
+# Other
+ddev t i            # Install
+ddev t u            # Update dependencies
+ddev t docs         # Generate docs
+```
+
+## Command Priority
+
+1. **Taskfile** (best) → `ddev t <task>`
+2. **Artisan** → `ddev art <command>`
+3. **Composer** → `ddev co <command>`
+4. **Direct exec** (last resort) → `ddev . <command>`
+
+## Workflow for AI Agent
+
+### When making code changes:
+
+1. Make changes
+2. Run `ddev t f` (auto-fix)
+3. Run `ddev t l` (validate)
+4. Run `ddev t t` (test)
+
+### When unsure about command:
+
+- Check if Taskfile task exists → `ddev t --list`
+- Use Taskfile if available
+- Otherwise, use DDEV aliases: `art`, `co`, `npm`
+
+</ddev-guidelines>
 <laravel-boost-guidelines>
 === foundation rules ===
 

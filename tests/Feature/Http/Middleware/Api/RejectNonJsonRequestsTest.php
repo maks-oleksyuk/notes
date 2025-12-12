@@ -3,13 +3,14 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\Api\RejectNonJsonRequests;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\Response;
 
 covers(RejectNonJsonRequests::class);
 
 beforeEach(fn () => Route::middleware(RejectNonJsonRequests::class)
-    ->get('/test-middleware', fn () => response()->json(['ok' => true]))
+    ->get('/test-middleware', fn (): JsonResponse => new JsonResponse(['ok' => true]))
 );
 
 it('correctly handles requests based on Accept header', function (?string $accept, int $status, ?string $view = null): void {

@@ -40,7 +40,7 @@ final class ScalarOpenApiGenerator extends OpenApiGenerator
                 /** @var Metadata $metadata */
                 $metadata = $endpoint['metadata'];
 
-                if (empty($metadata->subgroup)) {
+                if (blank($metadata->subgroup)) {
                     continue;
                 }
 

@@ -164,9 +164,10 @@ jobs:
           directory: ./var/report
 
       - name: '☂️ Upload test results to Codecov'
-        uses: codecov/test-results-action@v1
+        uses: codecov/codecov-action@v5
         if: ${{ matrix.command.report }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ matrix.command.name }}
           directory: ./var/report
+          report_type: test_results

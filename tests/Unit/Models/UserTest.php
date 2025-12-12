@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 covers(User::class);
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 describe('User Model', function (): void {
     it('can create a user', function (): void {

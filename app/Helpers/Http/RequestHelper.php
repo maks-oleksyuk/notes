@@ -12,7 +12,7 @@ final readonly class RequestHelper
     }
 
     /**
-     * @return array<string>
+     * @return string[]
      */
     public static function parseStringIntoArray(string $inputString): array
     {
@@ -24,7 +24,7 @@ final readonly class RequestHelper
     }
 
     /**
-     * @return array<int>
+     * @return int[]
      */
     public static function parseStringIntoIntArray(string $inputString): array
     {

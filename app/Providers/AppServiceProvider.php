@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Scribe;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureCommands();
         $this->configureDates();
         $this->configureModels();
+        $this->configurePassword();
         $this->configureUrls();
         $this->configureScribeDocumentation();
 
@@ -49,6 +51,15 @@ final class AppServiceProvider extends ServiceProvider
     private function configureModels(): void
     {
         Model::shouldBeStrict();
+    }
+
+    private function configurePassword(): void
+    {
+        Password::defaults(fn () => Password::min(8)
+            ->numbers()
+            ->symbols()
+            ->mixedCase()
+            ->uncompromised());
     }
 
     private function configureUrls(): void

@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Hash;
 
 covers(AuthController::class);
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 describe('API | V1 | Auth', function (): void {
     it('login a user and returns a token', function (): void {
-        $password = 'password123';
+        $password = '!Password123';
         $user = User::factory()->create([
             'email' => 'test@example.com',
             'password' => Hash::make($password),

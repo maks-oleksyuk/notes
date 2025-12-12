@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 describe('Between Dates Scope ', function (): void {
     it('filters models between dates', function (): void {
