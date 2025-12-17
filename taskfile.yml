@@ -113,6 +113,16 @@ tasks:
 
   # Work commands:
 
+  cache:clear:
+    label: 'Cache clear'
+    desc: 'Rebuild Drupal caches'
+    aliases:
+      - cc
+      - cr
+    cmds:
+      - task: drush
+        vars: { CLI_ARGS: 'cr' }
+
   install:
     desc: 'Installs a fresh website from existing configuration for development and testing.'
     prompt: |
@@ -313,6 +323,8 @@ tasks:
 
   fix:
     desc: 'Run all automated fixers.'
+    aliases:
+      - f
     cmds:
       - defer: { task: fix:phpcs }
       - defer: { task: fix:js }

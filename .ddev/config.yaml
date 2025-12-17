@@ -4,7 +4,7 @@ docroot: web
 database:
   type: mariadb
   version: '11.4'
-php_version: '8.4'
+php_version: '8.5'
 nodejs_version: '24'
 webserver_type: nginx-fpm
 xdebug_enabled: false
