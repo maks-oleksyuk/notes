@@ -6,7 +6,8 @@ use App\Support\Scribe\Extracting\Strategies\Responses\AppDefaultResponses;
 use App\Support\Scribe\Writing\OpenApiSpecGenerators\ScalarOpenApiGenerator;
 use Knuckles\Scribe\Config\AuthIn;
 use Knuckles\Scribe\Config\Defaults;
-use Knuckles\Scribe\Extracting\Strategies;
+use Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls;
+use Knuckles\Scribe\Extracting\Strategies\StaticData;
 
 use function Knuckles\Scribe\Config\configureStrategy;
 
@@ -215,7 +216,7 @@ return [
         ],
         'headers' => [
             ...Defaults::HEADERS_STRATEGIES,
-            Strategies\StaticData::withSettings(data: [
+            StaticData::withSettings(data: [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
             ]),
@@ -232,7 +233,7 @@ return [
         'responses' => configureStrategy([
             ...Defaults::RESPONSES_STRATEGIES,
             AppDefaultResponses::class,
-        ], Strategies\Responses\ResponseCalls::withSettings(
+        ], ResponseCalls::withSettings(
             // Recommended: disable debug mode in response calls to avoid error stack traces in responses
             config: [
                 'app.debug' => false,

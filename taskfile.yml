@@ -138,9 +138,13 @@ tasks:
     desc: 'Deploy project'
     aliases:
       - d
+    vars:
+      BRANCH: '{{.BRANCH | default "main"}}'
     cmds:
       - task: artisan
-        vars: { CLI_ARGS: 'down' }
+        vars: { CLI_ARGS: 'down --retry=60 --refresh=60' }
+      - git fetch origin {{.BRANCH}} --prune
+      - git switch -C {{.BRANCH}} origin/{{.BRANCH}}
       - task: composer
         vars: { CLI_ARGS: 'i --no-dev' }
       - task: artisan

@@ -28,6 +28,9 @@ if (defined('ARTISAN_BINARY') || ! class_exists(RectorConfig::class)) {
 return RectorConfig::configure()
     ->withPaths([
         __DIR__.'/../../app',
+        __DIR__.'/../../bootstrap/app.php',
+        __DIR__.'/../../bootstrap/providers.php',
+        __DIR__.'/../../config',
         __DIR__.'/../../database',
         __DIR__.'/../../routes',
         __DIR__.'/../../tests',
