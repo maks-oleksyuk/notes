@@ -44,14 +44,14 @@ tasks:
       - a:t
     cmds:
       - task: artisan
-        vars: { CLI_ARGS: 'test {{.CLI_ARGS}} -c {{.CONFIG_DIR}}/phpunit.xml' }
+        vars: { CLI_ARGS: 'test {{.CLI_ARGS}} -c {{.CONFIG_DIR}}/pest.xml' }
         silent: true
 
   pint:
     desc: 'Run `pint` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/pint
-      --config={{.CONFIG_DIR}}/pint.json
+      --config={{.CONFIG_DIR}}/pint.json --parallel
       {{.CLI_ARGS}} --ansi'
     silent: true
 
@@ -93,7 +93,7 @@ tasks:
     desc: 'Run `pest` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/pest
-      --configuration={{.CONFIG_DIR}}/phpunit.xml
+      --configuration={{.CONFIG_DIR}}/pest.xml
       {{.CLI_ARGS}} --colors=always'
     silent: true
 
@@ -136,6 +136,7 @@ tasks:
 
   deploy:
     desc: 'Deploy project'
+    prompt: 'This will discard all local changes and force-pull from origin/{{.BRANCH}}. Continue?'
     aliases:
       - d
     vars:
@@ -143,8 +144,12 @@ tasks:
     cmds:
       - task: artisan
         vars: { CLI_ARGS: 'down --retry=60 --refresh=60' }
-      - git fetch origin {{.BRANCH}} --prune
-      - git switch -C {{.BRANCH}} origin/{{.BRANCH}}
+      - cmd: git fetch origin {{.BRANCH}} --prune
+        silent: true
+      - cmd: git switch -C {{.BRANCH}} origin/{{.BRANCH}} --force
+        silent: true
+      - cmd: git clean -df
+        silent: true
       - task: composer
         vars: { CLI_ARGS: 'i --no-dev' }
       - task: artisan

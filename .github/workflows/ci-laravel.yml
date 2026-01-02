@@ -14,7 +14,7 @@ on:
       - README.md
       - LICENSE.md
 
-  # Allows to run this workflow manually from the Actions tab.
+  # Allows running this workflow manually from the Actions tab.
   workflow_dispatch:
 
 jobs:
@@ -46,7 +46,7 @@ jobs:
               php: true,
             }
           - {
-              name: '🧽 Laravel Pint',
+              name: '🧽 Pint',
               command: 'lint:pint -- --format=checkstyle | tail -n +2 | cs2pr',
               php: true,
             }
@@ -80,7 +80,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:17
+        image: postgres:18
         ports:
           - 5432:5432
         env:

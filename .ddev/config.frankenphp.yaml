@@ -8,13 +8,12 @@ web_extra_exposed_ports:
     container_port: 80
     http_port: 80
     https_port: 443
-# See https://pkg.henderkes.com/84/php-zts/packages?type=debian
+# See https://pkg.henderkes.com/85/php-zts/packages?type=debian
 webimage_extra_packages:
   - frankenphp
   - php-zts-apcu
   - php-zts-bcmath
   - php-zts-cli
-  - php-zts-fileinfo
   - php-zts-ftp
   - php-zts-gd
   - php-zts-gettext

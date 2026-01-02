@@ -16,7 +16,7 @@ final class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureRateLimiting();
-        $this->configureApiRoutes();
+        $this->configureApiDocsRoutes();
     }
 
     private function configureRateLimiting(): void
@@ -29,15 +29,10 @@ final class RouteServiceProvider extends ServiceProvider
         );
     }
 
-    private function configureApiRoutes(): void
+    private function configureApiDocsRoutes(): void
     {
         $this->routes(function (): void {
             Route::group([], base_path('routes/api/docs.php'));
-
-            Route::prefix('api/v1')
-                ->as('api.v1.')
-                ->middleware(['api', 'auth:sanctum'])
-                ->group(base_path('routes/api/v1.php'));
         });
     }
 }

@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\V1\Auth\AuthController;
 use Illuminate\Foundation\Testing\WithCachedConfig;
 use Illuminate\Foundation\Testing\WithCachedRoutes;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Testing\TestResponse;
+use Tests\ApiV1TestCase;
 use Tests\TestCase;
 
 /*
@@ -25,7 +27,22 @@ pest()
     ->use(WithCachedConfig::class)
     ->use(WithCachedRoutes::class)
     ->beforeEach(fn () => Http::preventStrayRequests())
-    ->in('Feature', 'Unit');
+    ->in(
+        'Feature/Filament',
+        'Feature/Http/Middleware/',
+        'Feature/Http/Requests/',
+        'Feature/Pages',
+        'Feature/AllRouteTest.php',
+        'Unit',
+    );
+
+// https://github.com/pestphp/pest/issues/1303
+pest()
+    ->extend(ApiV1TestCase::class)
+    ->use(WithCachedConfig::class)
+    ->use(WithCachedRoutes::class)
+    ->beforeEach(fn () => Http::preventStrayRequests())
+    ->in('Feature/Http/Controllers/Api/V1');
 
 /*
 |--------------------------------------------------------------------------
@@ -58,4 +75,12 @@ arch()->preset()->php();
 |
 */
 
-function something(): void {}
+/**
+ * Assert that the response contains API version headers.
+ */
+function assertApiVersionHeaders(
+    TestResponse $response,
+    string $status = 'active',
+): TestResponse {
+    return $response->assertHeaderContains('x-api-version-status', $status);
+}

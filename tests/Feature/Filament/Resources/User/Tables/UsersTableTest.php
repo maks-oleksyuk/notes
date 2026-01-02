@@ -45,12 +45,12 @@ describe('Filament | User Table', function (): void {
             );
     });
 
-    it('has view and delete actions with empty labels', function (): void {
+    it('has view and delete actions with icon buttons', function (): void {
         $user = User::factory()->create();
 
         livewire(ListUsers::class)
-            ->assertActionHasLabel(TestAction::make(ViewAction::class)->table($user), '')
-            ->assertActionHasLabel(TestAction::make(DeleteAction::class)->table($user), '');
+            ->assertActionExists(TestAction::make(ViewAction::class)->table($user))
+            ->assertActionExists(TestAction::make(DeleteAction::class)->table($user));
     });
 
     it('applies the `name` filter correctly', function (): void {

@@ -25,6 +25,13 @@ describe('API | V1 | Auth', function (): void {
         ]);
 
         $response->assertOk()
-            ->assertJsonStructure(['data' => ['token', 'expires_at']]);
+            ->assertJsonStructure([
+                'data' => [
+                    'token',
+                    'token_type',
+                    'expires_at',
+                ],
+            ])
+            ->assertJsonPath('data.token_type', 'Bearer');
     });
 });

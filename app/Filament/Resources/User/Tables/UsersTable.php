@@ -50,8 +50,8 @@ final readonly class UsersTable
             ], layout: FiltersLayout::AboveContent)
             ->deferFilters()
             ->recordActions([
-                ViewAction::make()->label(''),
-                DeleteAction::make()->label(''),
+                ViewAction::make()->iconButton(),
+                DeleteAction::make()->iconButton(),
             ])
             ->groupedBulkActions([
                 DeleteBulkAction::make(),

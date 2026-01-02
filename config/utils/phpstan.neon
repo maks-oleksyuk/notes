@@ -10,3 +10,14 @@ parameters:
   tmpDir: ../../var/cache/phpstan
   scanFiles:
     - ../../_ide_helper_models.php
+  # Larastan parameters:
+  checkOctaneCompatibility: true
+  checkModelProperties: true
+  # checkUnusedViews: true
+  # checkMissingTranslations: true
+  checkModelMethodVisibility: true
+  generalizeEnvReturnType: true
+  checkConfigTypes: true
+  checkAuthCallsWhenInRequestScope: true
+  parseModelCastsMethod: true
+  enableMigrationCache: true

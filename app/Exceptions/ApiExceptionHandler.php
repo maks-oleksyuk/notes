@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
-use Throwable;
 
 final readonly class ApiExceptionHandler
 {
@@ -19,7 +18,7 @@ final readonly class ApiExceptionHandler
         private ResponseFactory $responseFactory,
     ) {}
 
-    public function __invoke(Throwable $e, Request $request): ?JsonResponse
+    public function __invoke(\Throwable $e, Request $request): ?JsonResponse
     {
         if (! $request->expectsJson() || ! $request->is('api/v*')) {
             return null;

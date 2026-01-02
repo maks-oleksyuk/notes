@@ -18,6 +18,7 @@ final class ListUsers extends ListRecords
     /**
      * @return ExportAction[]
      */
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [

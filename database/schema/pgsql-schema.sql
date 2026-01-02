@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.5 (Debian 17.5-1.pgdg120+1)
--- Dumped by pg_dump version 17.5 (Debian 17.5-1.pgdg120+1)
+-- Dumped from database version 18.1 (Debian 18.1-1.pgdg13+2)
+-- Dumped by pg_dump version 18.0 (Debian 18.0-1.pgdg12+3)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -757,8 +757,8 @@ ALTER TABLE ONLY public.exports
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.5 (Debian 17.5-1.pgdg120+1)
--- Dumped by pg_dump version 17.5 (Debian 17.5-1.pgdg120+1)
+-- Dumped from database version 18.1 (Debian 18.1-1.pgdg13+2)
+-- Dumped by pg_dump version 18.0 (Debian 18.0-1.pgdg12+3)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;

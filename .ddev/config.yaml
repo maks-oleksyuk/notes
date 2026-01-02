@@ -3,7 +3,7 @@ type: laravel
 docroot: public
 database:
   type: postgres
-  version: '17'
+  version: '18'
 php_version: '8.5'
 host_db_port: '14674'
 nodejs_version: '24'
@@ -21,6 +21,8 @@ web_extra_daemons:
   - name: 'pulse'
     command: 'php artisan pulse:check'
     directory: /var/www/html
+web_environment:
+  - USE_ZEND_ALLOC=0
 webimage_extra_packages:
   - aspell
   - aspell-en
