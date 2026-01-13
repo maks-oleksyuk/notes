@@ -12,7 +12,6 @@ module:
   file: 0
   filter: 0
   gin_login: 0
-  gin_toolbar: 0
   layout_builder: 0
   layout_discovery: 0
   mysql: 0

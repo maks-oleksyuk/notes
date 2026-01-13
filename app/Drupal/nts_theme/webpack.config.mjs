@@ -76,10 +76,6 @@ export default {
                 plugins: [
                   autoprefixer(),
                   postcssRtlLogicalProperties(),
-                  // todo: setup
-                  // postcssRTLCSS({
-                  //   blacklist: postcssRtlLogicalProperties.ignoreDeclarationList
-                  // }),
                   [
                     'postcss-perfectionist',
                     {

@@ -6,6 +6,12 @@ nts_core.admin:
   route_name: nts_core.admin
   parent: system.admin
   weight: -15
+  options:
+    icon:
+      pack_id: nts_core
+      icon_id: notes
+      settings:
+        size: 25
 
 # Basic categories.
 

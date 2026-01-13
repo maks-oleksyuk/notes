@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: monthly
+      interval: quarterly
     commit-message:
       prefix: '⬆️ '
     groups:
@@ -14,18 +14,18 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: monthly
+      interval: quarterly
     commit-message:
       prefix: '⬆️ '
     groups:
-      theme-dependencies:
+      pnpm-dependencies:
         patterns:
           - '*'
 
   - package-ecosystem: npm
     directory: /app/Drupal/nts_theme
     schedule:
-      interval: monthly
+      interval: quarterly
     commit-message:
       prefix: '⬆️ '
     groups:

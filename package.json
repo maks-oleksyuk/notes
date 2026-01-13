@@ -1,42 +1,32 @@
 {
-  "homepage": "https://maks-oleksyuk.github.io/notes",
   "license": "GPL-3.0-or-later",
-  "author": {
-    "name": "Maks Oleksyuk",
-    "url": "https://github.com/maks-oleksyuk"
-  },
   "type": "module",
   "private": true,
   "scripts": {
-    "spellcheck": "cspell -c config/.cspell.json '**' --quiet --color",
-    "lint:js": "eslint -c ./config/.eslintrc.json --no-error-on-unmatched-pattern --color",
-    "lint:js:fix": "eslint -c ./config/.eslintrc.json --no-error-on-unmatched-pattern --fix",
     "lint:yml": "eslint -c ./config/.eslintrc.json --ext .yml --ext .yaml --no-error-on-unmatched-pattern --color",
     "lint:yml:fix": "eslint -c ./config/.eslintrc.json --ext .yml --ext .yaml --no-error-on-unmatched-pattern --fix",
     "lint:style": "stylelint app/**/*.css --aei --cache --cache-location node_modules/.cache/stylelint/ --color",
-    "lint:style:fix": "stylelint app/**/*.css --aei --cache --cache-location node_modules/.cache/stylelint/ --fix",
-    "lint:format": "prettier app !**/pnpm-lock.yaml -c --cache --no-error-on-unmatched-pattern --color",
-    "lint:format:fix": "prettier app !**/pnpm-lock.yaml -wl --cache --no-error-on-unmatched-pattern"
+    "lint:style:fix": "stylelint app/**/*.css --aei --cache --cache-location node_modules/.cache/stylelint/ --fix"
   },
   "devDependencies": {
-    "cspell": "^8.17.1",
+    "cspell": "^9.6.0",
     "eslint": "8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.31.0",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jquery": "^1.5.1",
-    "eslint-plugin-prettier": "^5.2.1",
-    "eslint-plugin-yml": "^1.16.0",
-    "prettier": "^3.4.2",
-    "stylelint": "^16.12.0",
-    "stylelint-config-standard": "^36.0.1",
-    "stylelint-order": "^6.0.4",
-    "stylelint-prettier": "^5.0.2"
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-yml": "^1.19.1",
+    "prettier": "^3.7.4",
+    "stylelint": "^16.26.1",
+    "stylelint-config-standard": "^39.0.1",
+    "stylelint-order": "^7.0.1",
+    "stylelint-prettier": "^5.0.3"
   },
-  "packageManager": "pnpm@9.15.1",
+  "packageManager": "pnpm@10.28.0",
   "engines": {
-    "pnpm": ">=9",
-    "node": ">=22"
+    "pnpm": ">=10",
+    "node": ">=24"
   },
   "prettier": {
     "singleQuote": true,
