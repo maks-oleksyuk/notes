@@ -17,7 +17,7 @@ beforeEach(function (): void {
 
 describe('API | V1 | Users', function (): void {
     it('returns paginated user list for authenticated user', function (): void {
-        User::factory()->count(3)->create();
+        User::factory()->makeMany(3);
 
         $response = $this->getJson($this->baseUrl);
 

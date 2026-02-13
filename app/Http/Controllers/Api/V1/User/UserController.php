@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\User;
 
+use App\Http\Requests\Api\V1\User\IndexUserRequest;
 use App\Http\Requests\Api\V1\User\StoreUserRequest;
 use App\Http\Requests\Api\V1\User\UpdateUserRequest;
 use App\Http\Resources\Api\V1\User\UserResource;
@@ -30,12 +31,12 @@ final class UserController extends Controller
      * @throws \Throwable
      */
     #[Endpoint('List users')]
-    public function index(): ResourceCollection
+    public function index(IndexUserRequest $request): ResourceCollection
     {
         return $this->userRepository
             ->query()
             ->latest('id')
-            ->paginate()
+            ->paginate(perPage: $request->perPage(), page: $request->page())
             ->toResourceCollection(UserResource::class);
     }
 

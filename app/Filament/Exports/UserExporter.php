@@ -11,6 +11,7 @@ use Filament\Actions\Exports\Models\Export;
 
 final class UserExporter extends Exporter
 {
+    #[\Override]
     protected static ?string $model = User::class;
 
     /**

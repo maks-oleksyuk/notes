@@ -30,12 +30,14 @@ final class User extends Authenticatable implements FilamentUser
 
     use Notifiable;
 
+    #[\Override]
     protected $fillable = [
         'name',
         'email',
         'password',
     ];
 
+    #[\Override]
     protected $hidden = [
         'password',
         'remember_token',

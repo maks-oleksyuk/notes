@@ -75,6 +75,7 @@ return RectorConfig::configure()
         LaravelSetList::LARAVEL_TYPE_DECLARATIONS,
         PestLevelSetList::UP_TO_PEST_40,
         PestSetList::PEST_CODE_QUALITY,
+        PestSetList::PEST_CHAIN,
     ])
     ->withConfiguredRule(RemoveDumpDataDeadCodeRector::class, [])
     ->withConfiguredRule(RouteActionCallableRector::class, [])
