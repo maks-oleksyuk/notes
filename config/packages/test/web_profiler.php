@@ -3,14 +3,9 @@
 declare(strict_types=1);
 
 return [
-    'web_profiler' => [
-        'toolbar' => [
-            'enabled' => true,
-            'ajax_replace' => true,
-        ],
-    ],
     'framework' => [
         'profiler' => [
+            'collect' => false,
             'collect_serializer_data' => true,
         ],
     ],

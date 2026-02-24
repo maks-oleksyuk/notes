@@ -3,70 +3,37 @@
 declare(strict_types=1);
 
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Config\Doctrine\Orm\EntityManagerConfig\MappingConfig;
-use Symfony\Config\DoctrineConfig;
-use Symfony\Config\FrameworkConfig;
 
-use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
-
-return static function (
-    ContainerConfigurator $containerConfigurator,
-    DoctrineConfig $doctrineConfig,
-    FrameworkConfig $frameworkConfig,
-): void {
-    $dbalConfig = $doctrineConfig->dbal();
-    $ormConfig = $doctrineConfig->orm();
-    $entityManagerConfig = $ormConfig->entityManager('default');
-
-    $dbalConfig
-        ->connection('default')
-        ->url(env('DATABASE_URL')->resolve())
-        ->profilingCollectBacktrace(param('kernel.debug'))
-        ->useSavepoints(true);
-
-    $ormConfig
-        ->enableLazyGhostObjects(true)
-        ->controllerResolver()
-        ->autoMapping(false);
-
-    $entityManagerConfig
-        ->enableNativeLazyObjects(true)
-        ->reportFieldsWhereDeclared(true)
-        ->validateXmlMapping(true)
-        ->namingStrategy('doctrine.orm.naming_strategy.underscore_number_aware')
-        ->identityGenerationPreference(PostgreSQLPlatform::class, 'identity')
-        ->autoMapping(true);
-
-    $appMapping = $entityManagerConfig->mapping('App');
-    assert($appMapping instanceof MappingConfig);
-
-    $appMapping
-        ->type('attribute')
-        ->isBundle(false)
-        ->dir(param('kernel.project_dir').'/src/Entity')
-        ->prefix('App\Entity')
-        ->alias('App');
-
-    if ('test' === $containerConfigurator->env()) {
-        $dbalConfig
-            ->connection('default')
-            ->dbnameSuffix('_test'.env('TEST_TOKEN')->default(''));
-    }
-
-    if ('prod' === $containerConfigurator->env()) {
-        $entityManagerConfig->queryCacheDriver([
-            'type' => 'pool',
-            'pool' => 'doctrine.system_cache_pool',
-        ]);
-        $entityManagerConfig->resultCacheDriver([
-            'type' => 'pool',
-            'pool' => 'doctrine.result_cache_pool',
-        ]);
-
-        $cache = $frameworkConfig->cache();
-        $cache->pool('doctrine.system_cache_pool')->adapters(['cache.system']);
-        $cache->pool('doctrine.result_cache_pool')->adapters(['cache.app']);
-    }
-};
+return [
+    'doctrine' => [
+        'dbal' => [
+            'connections' => [
+                'default' => [
+                    'url' => '%env(resolve:DATABASE_URL)%',
+                    'profiling_collect_backtrace' => '%kernel.debug%',
+                ],
+            ],
+        ],
+        'orm' => [
+            'entity_managers' => [
+                'default' => [
+                    'validate_xml_mapping' => true,
+                    'naming_strategy' => 'doctrine.orm.naming_strategy.underscore_number_aware',
+                    'identity_generation_preferences' => [
+                        PostgreSQLPlatform::class => 'identity',
+                    ],
+                    'auto_mapping' => true,
+                    'mappings' => [
+                        'App' => [
+                            'type' => 'attribute',
+                            'is_bundle' => false,
+                            'dir' => '%kernel.project_dir%/src/Entity',
+                            'prefix' => 'App\Entity',
+                            'alias' => 'App',
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+];

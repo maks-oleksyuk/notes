@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 return [
     'framework' => [
-        'property_info' => [
-            'with_constructor_extractor' => true,
+        'router' => [
+            'strict_requirements' => null,
         ],
     ],
 ];

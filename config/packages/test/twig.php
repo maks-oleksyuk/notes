@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 return [
-    'framework' => [
-        'cache' => [],
+    'twig' => [
+        'strict_variables' => true,
     ],
 ];

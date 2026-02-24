@@ -2,19 +2,15 @@
 
 declare(strict_types=1);
 
-use Symfony\Config\FrameworkConfig;
-
-return static function (FrameworkConfig $frameworkConfig): void {
-    $frameworkConfig
-        ->form()
-        ->csrfProtection()
-        ->tokenId('submit');
-
-    $frameworkConfig
-        ->csrfProtection()
-        ->statelessTokenIds([
-            'submit',
-            'authenticate',
-            'logout',
-        ]);
-};
+return [
+    'framework' => [
+        'form' => [
+            'csrf_protection' => [
+                'token_id' => 'submit',
+            ],
+        ],
+        'csrf_protection' => [
+            'stateless_token_ids' => ['submit', 'authenticate', 'logout'],
+        ],
+    ],
+];
