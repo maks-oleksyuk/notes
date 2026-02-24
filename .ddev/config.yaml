@@ -4,7 +4,7 @@ docroot: web
 database:
   type: mariadb
   version: '11.8'
-php_version: '8.4'
+php_version: '8.5'
 host_db_port: '54374'
 nodejs_version: '22'
 webserver_type: nginx-fpm
