@@ -9,8 +9,8 @@ return new PhpCsFixer\Config()
     ->setRules([
         '@Symfony' => true,
         '@Symfony:risky' => true,
-        '@PHP84Migration' => true,
-        '@PHP82Migration:risky' => true,
+        '@PHP8x5Migration' => true,
+        '@PHP8x5Migration:risky' => true,
 
         'date_time_immutable' => true,
         'mb_str_functions' => true,

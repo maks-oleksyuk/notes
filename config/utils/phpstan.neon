@@ -17,10 +17,6 @@ parameters:
     reportDynamicQueryBuilders: true
     reportUnknownTypes: true
     literalString: true
-  symfony:
-    containerXmlPath: ../../var/cache/dev/App_KernelDevDebugContainer.xml
   tmpDir: ../../var/cache/phpstan
-  scanDirectories:
-    - ../../var/cache/dev/Symfony/Config
   scanFiles:
     - ../../vendor/symfony/dependency-injection/Loader/Configurator/ContainerConfigurator.php
