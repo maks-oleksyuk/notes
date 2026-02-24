@@ -68,7 +68,7 @@ final class ApiExceptionListenerTest extends KernelTestCase
             ->with(
                 LogLevel::ERROR,
                 'Internal Server Error',
-                self::callback(fn (array $context): bool => isset($context['status_code'], $context['exception_class'], $context['method'], $context['uri'])
+                self::callback(static fn (array $context): bool => isset($context['status_code'], $context['exception_class'], $context['method'], $context['uri'])
                         && Response::HTTP_INTERNAL_SERVER_ERROR === $context['status_code']
                         && \RuntimeException::class === $context['exception_class']
                         && Request::METHOD_POST === $context['method']
@@ -106,7 +106,7 @@ final class ApiExceptionListenerTest extends KernelTestCase
             ->with(
                 LogLevel::WARNING,
                 'Not Found Error',
-                self::callback(fn (array $context): bool => Response::HTTP_NOT_FOUND === $context['status_code']
+                self::callback(static fn (array $context): bool => Response::HTTP_NOT_FOUND === $context['status_code']
                         && HttpException::class === $context['exception_class']
                         && Request::METHOD_GET === $context['method']
                         && '/api/v1/example' === $context['uri'])

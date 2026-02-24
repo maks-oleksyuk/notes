@@ -12,15 +12,20 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 final class SecurityController extends AbstractController
 {
+    public function __construct(
+        private readonly AuthenticationUtils $authenticationUtils
+    ) {
+    }
+
     #[Route(path: '/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(): Response
     {
         if ($this->getUser() instanceof UserInterface) {
             return $this->redirectToRoute('admin');
         }
 
-        $error = $authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $authenticationUtils->getLastUsername();
+        $error = $this->authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $this->authenticationUtils->getLastUsername();
 
         return $this->render('@EasyAdmin/page/login.html.twig', [
             // parameters usually defined in Symfony login forms

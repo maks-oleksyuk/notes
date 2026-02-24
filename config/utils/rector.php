@@ -28,7 +28,6 @@ return RectorConfig::configure()
         privatization: true,
         instanceOf: true,
         earlyReturn: true,
-        strictBooleans: true,
         doctrineCodeQuality: true,
         symfonyCodeQuality: true,
     )
@@ -42,7 +41,7 @@ return RectorConfig::configure()
         removeUnusedImports: true,
     )
     ->withPHPStanConfigs([__DIR__.'/phpstan.neon'])
-    ->withSymfonyContainerXml(__DIR__.'/../../var/cache/dev/App_KernelDevDebugContainer.xml')
+//    ->withSymfonyContainerXml(__DIR__.'/../../var/cache/dev/App_KernelDevDebugContainer.xml')
     ->withParallel()
     ->withCache(
         __DIR__.'/../../var/cache/rector',
