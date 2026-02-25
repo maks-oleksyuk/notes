@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Http\Middleware\Api\RejectNonJsonRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 covers(RejectNonJsonRequests::class);
 
@@ -25,8 +25,8 @@ it('correctly handles requests based on Accept header', function (?string $accep
         $response->assertJson(['ok' => true]);
     }
 })->with([
-    ['application/json', Response::HTTP_OK],
-    ['text/html', Response::HTTP_NOT_ACCEPTABLE, 'errors.406'],
-    [null, Response::HTTP_NOT_ACCEPTABLE, 'errors.406'],
-    ['text/csv', Response::HTTP_OK],
+    ['application/json', HttpFoundationResponse::HTTP_OK],
+    ['text/html', HttpFoundationResponse::HTTP_NOT_ACCEPTABLE, 'errors.406'],
+    [null, HttpFoundationResponse::HTTP_NOT_ACCEPTABLE, 'errors.406'],
+    ['text/csv', HttpFoundationResponse::HTTP_OK],
 ]);

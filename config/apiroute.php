@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 return [
     /*
@@ -105,7 +105,7 @@ return [
     */
     'sunset' => [
         'action' => 'reject',      // 'reject', 'warn', 'allow'
-        'status_code' => SymfonyResponse::HTTP_GONE,
+        'status_code' => HttpFoundationResponse::HTTP_GONE,
         'include_migration_url' => true,
     ],
 

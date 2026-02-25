@@ -35,12 +35,14 @@ final class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
+        'google_id',
     ];
 
     #[\Override]
     protected $hidden = [
         'password',
         'remember_token',
+        'google_id',
     ];
 
     /**
@@ -52,6 +54,7 @@ final class User extends Authenticatable implements FilamentUser
         return [
             'password' => 'hashed',
             'email_verified_at' => 'datetime',
+            'google_id' => 'string',
         ];
     }
 

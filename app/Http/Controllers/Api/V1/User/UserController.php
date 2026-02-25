@@ -17,7 +17,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 #[Group('User')]
 final class UserController extends Controller
@@ -49,7 +49,7 @@ final class UserController extends Controller
 
         return new UserResource($user)
             ->response()
-            ->setStatusCode(SymfonyResponse::HTTP_CREATED);
+            ->setStatusCode(HttpFoundationResponse::HTTP_CREATED);
     }
 
     #[Endpoint('Get user')]

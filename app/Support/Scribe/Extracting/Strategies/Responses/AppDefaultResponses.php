@@ -7,7 +7,7 @@ namespace App\Support\Scribe\Extracting\Strategies\Responses;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Extraction\Response as ScribeResponse;
 use Knuckles\Scribe\Extracting\Strategies\Strategy;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 final class AppDefaultResponses extends Strategy
 {
@@ -24,24 +24,24 @@ final class AppDefaultResponses extends Strategy
     {
         $responses = [];
 
-        $this->setDescriptionForStatus($endpointData, Response::HTTP_OK);
-        $this->setDescriptionForStatus($endpointData, Response::HTTP_CREATED);
-        $this->setDescriptionForStatus($endpointData, Response::HTTP_NO_CONTENT);
+        $this->setDescriptionForStatus($endpointData, HttpFoundationResponse::HTTP_OK);
+        $this->setDescriptionForStatus($endpointData, HttpFoundationResponse::HTTP_CREATED);
+        $this->setDescriptionForStatus($endpointData, HttpFoundationResponse::HTTP_NO_CONTENT);
 
         if ($endpointData->metadata->authenticated) {
-            $responses[] = $this->makeSimpleErrorResponse($endpointData, Response::HTTP_UNAUTHORIZED);
+            $responses[] = $this->makeSimpleErrorResponse($endpointData, HttpFoundationResponse::HTTP_UNAUTHORIZED);
         }
 
         if (array_key_exists('id', $endpointData->urlParameters)) {
-            $responses[] = $this->makeSimpleErrorResponse($endpointData, Response::HTTP_NOT_FOUND);
+            $responses[] = $this->makeSimpleErrorResponse($endpointData, HttpFoundationResponse::HTTP_NOT_FOUND);
         }
 
         if ($endpointData->bodyParameters || $endpointData->queryParameters) {
             $responses[] = $this->makeValidationErrorResponse($endpointData);
         }
 
-        $responses[] = $this->makeSimpleErrorResponse($endpointData, Response::HTTP_TOO_MANY_REQUESTS);
-        $responses[] = $this->makeSimpleErrorResponse($endpointData, Response::HTTP_SERVICE_UNAVAILABLE);
+        $responses[] = $this->makeSimpleErrorResponse($endpointData, HttpFoundationResponse::HTTP_TOO_MANY_REQUESTS);
+        $responses[] = $this->makeSimpleErrorResponse($endpointData, HttpFoundationResponse::HTTP_SERVICE_UNAVAILABLE);
 
         return $responses;
     }
@@ -50,7 +50,7 @@ final class AppDefaultResponses extends Strategy
     {
         if ($response = $endpointData->responses->firstWhere('status', $status)) {
             /** @var ScribeResponse $response */
-            $response->description = Response::$statusTexts[$status];
+            $response->description = HttpFoundationResponse::$statusTexts[$status];
         }
     }
 
@@ -66,9 +66,9 @@ final class AppDefaultResponses extends Strategy
     {
         return [
             'status' => $status,
-            'description' => Response::$statusTexts[$status],
+            'description' => HttpFoundationResponse::$statusTexts[$status],
             'content' => (string) json_encode([
-                'title' => Response::$statusTexts[$status],
+                'title' => HttpFoundationResponse::$statusTexts[$status],
                 'status' => $status,
                 'detail' => 'string',
                 'instance' => '/'.$endpointData->uri,
@@ -89,7 +89,7 @@ final class AppDefaultResponses extends Strategy
      */
     private function makeValidationErrorResponse(ExtractedEndpointData $endpointData): array
     {
-        $response = $this->makeSimpleErrorResponse($endpointData, Response::HTTP_UNPROCESSABLE_ENTITY);
+        $response = $this->makeSimpleErrorResponse($endpointData, HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY);
         /** @var array<string, array<string, mixed>> $content */
         $content = json_decode($response['content'], true);
 

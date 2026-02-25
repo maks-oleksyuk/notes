@@ -25,6 +25,7 @@ routeTesting('public web routes are accessible')
         // Routes with dedicated feature tests.
         'api*',
         'admin*',
+        'auth*',
         'docs*',
     ])
     ->bind('user', fn () => User::factory()->create())

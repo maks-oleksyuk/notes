@@ -36,6 +36,7 @@ describe('User Model', function (): void {
             'name',
             'email',
             'password',
+            'google_id',
         ]);
     });
 
@@ -46,6 +47,7 @@ describe('User Model', function (): void {
             'id' => 'int',
             'password' => 'hashed',
             'email_verified_at' => 'datetime',
+            'google_id' => 'string',
         ]);
     });
 
@@ -59,7 +61,7 @@ describe('User Model', function (): void {
         $user = User::factory()->make();
         $array = $user->toArray();
 
-        expect($array)->not->toHaveKeys(['password', 'remember_token']);
+        expect($array)->not->toHaveKeys(['password', 'remember_token', 'google_id']);
     });
 
     it('casts email_verified_at as datetime', function (): void {

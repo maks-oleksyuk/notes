@@ -24,7 +24,7 @@ final readonly class LoginAction
     {
         $user = User::query()->whereEmail($email)->first();
 
-        throw_if(! $user || ! $this->hasher->check($password, $user->password), ValidationException::withMessages([
+        throw_if(! $user || ! $user->password || ! $this->hasher->check($password, $user->password), ValidationException::withMessages([
             'password' => [__('auth.failed')],
         ]));
 

@@ -9,7 +9,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 final readonly class ApiExceptionHandler
@@ -26,13 +26,13 @@ final readonly class ApiExceptionHandler
 
         $status = match (true) {
             $e instanceof HttpExceptionInterface => $e->getStatusCode(),
-            $e instanceof AuthenticationException => Response::HTTP_UNAUTHORIZED,
-            $e instanceof ValidationException => Response::HTTP_UNPROCESSABLE_ENTITY,
+            $e instanceof AuthenticationException => HttpFoundationResponse::HTTP_UNAUTHORIZED,
+            $e instanceof ValidationException => HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY,
             default => $e->getCode(),
         };
 
         $problem = [
-            'title' => Response::$statusTexts[$status],
+            'title' => HttpFoundationResponse::$statusTexts[$status],
             'status' => $status,
             'detail' => $e->getMessage(),
             'instance' => $request->getRequestUri(),

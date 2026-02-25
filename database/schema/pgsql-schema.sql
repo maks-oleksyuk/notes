@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 18.1 (Debian 18.1-1.pgdg13+2)
--- Dumped by pg_dump version 18.0 (Debian 18.0-1.pgdg12+3)
+-- Dumped by pg_dump version 18.2 (Debian 18.2-1.pgdg13+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -387,8 +387,9 @@ CREATE TABLE public.users (
     name character varying(255) NOT NULL,
     email character varying(255) NOT NULL,
     email_verified_at timestamp(0) without time zone,
-    password character varying(255) NOT NULL,
+    password character varying(255),
     remember_token character varying(100),
+    google_id character varying(30),
     created_at timestamp(0) without time zone,
     updated_at timestamp(0) without time zone
 );
@@ -629,6 +630,14 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: users users_google_id_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_google_id_unique UNIQUE (google_id);
+
+
+--
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -758,7 +767,7 @@ ALTER TABLE ONLY public.exports
 --
 
 -- Dumped from database version 18.1 (Debian 18.1-1.pgdg13+2)
--- Dumped by pg_dump version 18.0 (Debian 18.0-1.pgdg12+3)
+-- Dumped by pg_dump version 18.2 (Debian 18.2-1.pgdg13+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;

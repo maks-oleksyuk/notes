@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Exceptions\ApiExceptionHandler;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Auth\GoogleController;
 use Illuminate\Foundation\Testing\WithCachedConfig;
 use Illuminate\Foundation\Testing\WithCachedRoutes;
 use Illuminate\Support\Facades\Http;
@@ -61,6 +62,7 @@ arch()->preset()->security();
 arch()->preset()->laravel()->ignoring([
     AuthController::class,
     ApiExceptionHandler::class,
+    GoogleController::class,
 ]);
 arch()->preset()->php();
 
