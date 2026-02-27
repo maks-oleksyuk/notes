@@ -57,12 +57,12 @@
         </bootstrap>
     </extensions>
 
-    <coverage>
-        <report>
-            <html outputDirectory="../../var/coverage"/>
-            <clover outputFile="../../var/report/coverage.xml"/>
-        </report>
-    </coverage>
+<!--    <coverage>-->
+<!--        <report>-->
+<!--            <html outputDirectory="../../var/coverage"/>-->
+<!--            <clover outputFile="../../var/report/coverage.xml"/>-->
+<!--        </report>-->
+<!--    </coverage>-->
 
     <logging>
         <junit outputFile="../../var/report/junit.xml"/>
