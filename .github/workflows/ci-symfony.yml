@@ -52,7 +52,7 @@ jobs:
             }
           - {
               name: '🪶 PHP CS Fixer',
-              command: 'lint:php-cs-fixer -- --format=checkstyle | cs2pr',
+              command: 'lint:php-cs-fixer -- --quiet --format=checkstyle | cs2pr',
               use-php: true,
             }
           - {
@@ -99,10 +99,8 @@ jobs:
         ports:
           - 3306:3306
         env:
+          MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: db_test
-          MARIADB_USER: db
-          MARIADB_PASSWORD: db
-          MARIADB_ROOT_PASSWORD: root
         options: >-
           --health-cmd="healthcheck.sh --connect --innodb_initialized"
           --health-interval=10s
