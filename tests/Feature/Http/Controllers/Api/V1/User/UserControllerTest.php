@@ -15,7 +15,7 @@ beforeEach(function (): void {
     $this->actingAs(User::factory()->create());
 });
 
-describe('API | V1 | Users', function (): void {
+describe('API | V1 | Actions | Users', function (): void {
     it('returns paginated user list for authenticated user', function (): void {
         User::factory()->makeMany(3);
 

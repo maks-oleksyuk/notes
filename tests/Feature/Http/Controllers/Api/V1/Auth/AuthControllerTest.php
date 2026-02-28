@@ -11,7 +11,7 @@ covers(AuthController::class);
 
 pest()->use(RefreshDatabase::class);
 
-describe('API | V1 | Auth', function (): void {
+describe('API | V1 | Actions | Auth', function (): void {
     it('login a user and returns a token', function (): void {
         $password = '!Password123';
         $user = User::factory()->create([
