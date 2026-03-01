@@ -2,7 +2,7 @@
 {# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
 {# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
 
-{% if field.customOptions.get('renderAsLinkToEntity')|default(false) and ea.crud.currentAction == 'index' %}
+{% if field.customOptions.get('renderAsLinkToEntity')|default(false) and ea().crud.currentAction == 'index' %}
     {% set url = ea_url()
         .setAction('detail')
         .setEntityId(entity.instance.id)

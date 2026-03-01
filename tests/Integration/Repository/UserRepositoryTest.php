@@ -44,15 +44,15 @@ final class UserRepositoryTest extends KernelTestCase
 
         $found = $this->repository->findOneByUsername('maks');
 
-        self::assertInstanceOf(User::class, $found);
-        self::assertSame('maks', $found->getUsername());
+        $this->assertInstanceOf(User::class, $found);
+        $this->assertSame('maks', $found->getUsername());
     }
 
     public function testFindOneByUsernameReturnsNullWhenNotExists(): void
     {
         $result = $this->repository->findOneByUsername('ghost');
 
-        self::assertNull($result);
+        $this->assertNotInstanceOf(User::class, $result);
     }
 
     public function testPaginateReturnsCorrectUsersForPages(): void
@@ -60,24 +60,24 @@ final class UserRepositoryTest extends KernelTestCase
         $this->createUsers($this->em, 5);
 
         $result = $this->repository->paginate(1, 2);
-        self::assertCount(2, $result);
-        self::assertSame('user1', $result[0]->getUsername());
-        self::assertSame('user2', $result[1]->getUsername());
+        $this->assertCount(2, $result);
+        $this->assertSame('user1', $result[0]->getUsername());
+        $this->assertSame('user2', $result[1]->getUsername());
 
         $result = $this->repository->paginate(2, 2);
-        self::assertCount(2, $result);
-        self::assertSame('user3', $result[0]->getUsername());
-        self::assertSame('user4', $result[1]->getUsername());
+        $this->assertCount(2, $result);
+        $this->assertSame('user3', $result[0]->getUsername());
+        $this->assertSame('user4', $result[1]->getUsername());
 
         $result = $this->repository->paginate(5, 2);
-        self::assertEmpty($result);
+        $this->assertEmpty($result);
     }
 
     public function testUpgradePasswordThrowsForUnsupportedUser(): void
     {
         $this->expectException(UnsupportedUserException::class);
 
-        $unsupportedUser = $this->createMock(PasswordAuthenticatedUserInterface::class);
+        $unsupportedUser = $this->createStub(PasswordAuthenticatedUserInterface::class);
         $this->repository->upgradePassword($unsupportedUser, 'new_hashed_password');
     }
 
@@ -91,6 +91,6 @@ final class UserRepositoryTest extends KernelTestCase
         $this->repository->upgradePassword($user, 'new_hashed_password');
 
         $reloaded = $this->repository->find($user->getId());
-        self::assertSame('new_hashed_password', $reloaded?->getPassword());
+        $this->assertSame('new_hashed_password', $reloaded?->getPassword());
     }
 }

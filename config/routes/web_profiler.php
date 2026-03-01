@@ -2,15 +2,17 @@
 
 declare(strict_types=1);
 
-use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
+namespace Symfony\Component\Routing\Loader\Configurator;
 
-return static function (RoutingConfigurator $routingConfigurator): void {
-    if ('dev' === $routingConfigurator->env()) {
-        $routingConfigurator
-            ->import('@WebProfilerBundle/Resources/config/routing/wdt.php')
-            ->prefix('/_wdt');
-        $routingConfigurator
-            ->import('@WebProfilerBundle/Resources/config/routing/profiler.php')
-            ->prefix('/_profiler');
-    }
-};
+return Routes::config([
+    'when@dev' => [
+        'wdt' => [
+            'resource' => '@WebProfilerBundle/Resources/config/routing/wdt.php',
+            'prefix' => '/_wdt',
+        ],
+        'profiler' => [
+            'resource' => '@WebProfilerBundle/Resources/config/routing/profiler.php',
+            'prefix' => '/_profiler',
+        ],
+    ],
+]);

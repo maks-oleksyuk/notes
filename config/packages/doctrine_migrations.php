@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
-return [
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+
+return App::config([
     'doctrine_migrations' => [
         'migrations_paths' => [
-            'DoctrineMigrations' => '%kernel.project_dir%/migrations',
+            'DoctrineMigrations' => param('kernel.project_dir').'/migrations',
         ],
+
         'enable_profiler' => false,
     ],
-];
+]);

@@ -33,7 +33,7 @@ final class UserTest extends KernelTestCase
         $user = new User()->setUsername('valid_user');
         $violations = $this->validator->validate($user);
 
-        self::assertCount(0, $violations);
+        $this->assertCount(0, $violations);
     }
 
     public function testShortUsername(): void
@@ -41,8 +41,8 @@ final class UserTest extends KernelTestCase
         $user = new User()->setUsername('ab');
         $violations = $this->validator->validate($user);
 
-        self::assertCount(1, $violations);
-        self::assertSame('Username must be at least 3 characters', $violations->get(0)->getMessage());
+        $this->assertCount(1, $violations);
+        $this->assertSame('Username must be at least 3 characters', $violations->get(0)->getMessage());
     }
 
     public function testUsernameWithSpaces(): void
@@ -50,8 +50,8 @@ final class UserTest extends KernelTestCase
         $user = new User()->setUsername('user name');
         $violations = $this->validator->validate($user);
 
-        self::assertCount(1, $violations);
-        self::assertSame('Username must not contain spaces', $violations->get(0)->getMessage());
+        $this->assertCount(1, $violations);
+        $this->assertSame('Username must not contain spaces', $violations->get(0)->getMessage());
     }
 
     public function testUniqueUsernameConstraint(): void
@@ -64,7 +64,7 @@ final class UserTest extends KernelTestCase
 
         $violations = $this->validator->validate($user2);
 
-        self::assertCount(1, $violations);
-        self::assertSame('There is already an account with this username', $violations->get(0)->getMessage());
+        $this->assertCount(1, $violations);
+        $this->assertSame('There is already an account with this username', $violations->get(0)->getMessage());
     }
 }

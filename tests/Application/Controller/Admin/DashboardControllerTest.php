@@ -76,8 +76,8 @@ final class DashboardControllerTest extends WebTestCase
             ->configureDashboard()
             ->getAsDto();
 
-        self::assertSame('Symfony Notes', $dashboard->getTitle());
-        self::assertSame(ColorScheme::AUTO, $dashboard->getDefaultColorScheme());
+        $this->assertSame('Symfony Notes', $dashboard->getTitle());
+        $this->assertSame(ColorScheme::AUTO, $dashboard->getDefaultColorScheme());
     }
 
     public function testConfigureMenuItemsReturnsExpectedStructure(): void
@@ -85,17 +85,17 @@ final class DashboardControllerTest extends WebTestCase
         $dashboard = $this->adminDashboardController;
         $menuItems = iterator_to_array($dashboard->configureMenuItems());
 
-        self::assertNotEmpty($menuItems);
+        $this->assertNotEmpty($menuItems);
 
         /** @var MenuItemDto $dto */
         $dto = $menuItems[0]->getAsDto();
-        self::assertSame(MenuItemDto::TYPE_DASHBOARD, $dto->getType());
-        self::assertSame('Dashboard', $dto->getLabel());
-        self::assertSame('fa fa-home', $dto->getIcon());
+        $this->assertSame(MenuItemDto::TYPE_DASHBOARD, $dto->getType());
+        $this->assertSame('Dashboard', $dto->getLabel());
+        $this->assertSame('fa fa-home', $dto->getIcon());
 
         $dto = $menuItems[1]->getAsDto();
-        self::assertSame(MenuItemDto::TYPE_CRUD, $dto->getType());
-        self::assertSame('Users', $dto->getLabel());
-        self::assertSame('fa fa-users', $dto->getIcon());
+        $this->assertSame(MenuItemDto::TYPE_CONTROLLER, $dto->getType());
+        $this->assertSame('Users', $dto->getLabel());
+        $this->assertSame('fa fa-users', $dto->getIcon());
     }
 }

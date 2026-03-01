@@ -27,24 +27,24 @@ runs:
       run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
     - name: '💽 Cache composer dependencies'
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
-        key: "composer-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}-${{ hashFiles('**/composer.lock') }}"
+        key: "${{ runner.os }}-${{ github.ref_name }}-composer-${{ hashFiles('**/composer.lock') }}"
         restore-keys: |
-          composer-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}
-          composer-cache-${{ runner.os }}-${{ github.base_ref }}
-          composer-cache-${{ runner.os }}-symfony
+          ${{ runner.os }}-${{ github.head_ref || github.ref_name }}-composer-
+          ${{ runner.os }}-${{ github.base_ref }}-composer-
+          ${{ runner.os }}-symfony-composer-
 
     - name: '💽 Cache var directory'
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: var/cache
-        key: "var-${{ runner.os }}-${{ github.head_ref || github.ref_name }}"
+        key: "${{ runner.os }}-${{ github.ref_name }}-var"
         restore-keys: |
-          var-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}
-          var-cache-${{ runner.os }}-${{ github.base_ref }}
-          var-cache-${{ runner.os }}-symfony
+          ${{ runner.os }}-${{ github.head_ref || github.ref_name }}-var
+          ${{ runner.os }}-${{ github.base_ref }}-var
+          ${{ runner.os }}-symfony-var
 
     - name: '📦 Install composer dependencies'
       shell: bash

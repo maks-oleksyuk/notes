@@ -6,6 +6,7 @@ namespace App\Tests\Integration\Form\User;
 
 use App\Entity\User;
 use App\Form\User\RegistrationFormType;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormInterface;
@@ -13,9 +14,13 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\Test\TypeTestCase;
 use Symfony\Component\Validator\Validation;
 
+#[AllowMockObjectsWithoutExpectations]
 #[CoversClass(RegistrationFormType::class)]
 final class RegistrationFormTypeTest extends TypeTestCase
 {
+    /**
+     * @return ValidatorExtension[]
+     */
     #[\Override]
     protected function getExtensions(): array
     {
@@ -44,8 +49,8 @@ final class RegistrationFormTypeTest extends TypeTestCase
     {
         $form = $this->submitRegistrationForm('Valid123!');
 
-        self::assertTrue($form->isSynchronized());
-        self::assertTrue($form->isValid());
+        $this->assertTrue($form->isSynchronized());
+        $this->assertTrue($form->isValid());
     }
 
     public function testPasswordTooShort(): void
@@ -84,8 +89,8 @@ final class RegistrationFormTypeTest extends TypeTestCase
             ],
         ]);
 
-        self::assertFalse($form->isValid());
-        self::assertGreaterThan(0, $form->get('password')->getErrors(true)->count());
+        $this->assertFalse($form->isValid());
+        $this->assertGreaterThan(0, $form->get('password')->getErrors(true)->count());
     }
 
     /**
@@ -108,8 +113,8 @@ final class RegistrationFormTypeTest extends TypeTestCase
     private function assertPasswordInvalid(string $password, string $expectedError): void
     {
         $form = $this->submitRegistrationForm($password);
-        self::assertFalse($form->isValid());
-        self::assertStringContainsString($expectedError, (string) $form->get('password')->getErrors(true));
+        $this->assertFalse($form->isValid());
+        $this->assertStringContainsString($expectedError, (string) $form->get('password')->getErrors(true));
     }
 
     /**
@@ -117,7 +122,7 @@ final class RegistrationFormTypeTest extends TypeTestCase
      */
     private function assertFieldAttributes(FormView $fieldView, array $expected): void
     {
-        self::assertIsArray($fieldView->vars['attr']);
-        self::assertSame($expected, array_intersect_key($fieldView->vars['attr'], $expected));
+        $this->assertIsArray($fieldView->vars['attr']);
+        $this->assertSame($expected, array_intersect_key($fieldView->vars['attr'], $expected));
     }
 }

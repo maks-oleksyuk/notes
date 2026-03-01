@@ -12,6 +12,9 @@ return RectorConfig::configure()
         __DIR__.'/../../src',
         __DIR__.'/../../tests',
     ])
+    ->withSkip([
+        __DIR__.'/../../config/reference.php',
+    ])
     ->withPhpVersion(PhpVersion::PHP_85)
     ->withPhpSets(php85: true)
     ->withComposerBased(
@@ -25,11 +28,15 @@ return RectorConfig::configure()
         codeQuality: true,
         codingStyle: true,
         typeDeclarations: true,
+        typeDeclarationDocblocks: true,
         privatization: true,
         instanceOf: true,
         earlyReturn: true,
+        rectorPreset: true,
+        phpunitCodeQuality: true,
         doctrineCodeQuality: true,
         symfonyCodeQuality: true,
+        symfonyConfigs: true,
     )
     ->withAttributesSets(
         symfony: true,
@@ -41,7 +48,7 @@ return RectorConfig::configure()
         removeUnusedImports: true,
     )
     ->withPHPStanConfigs([__DIR__.'/phpstan.neon'])
-//    ->withSymfonyContainerXml(__DIR__.'/../../var/cache/dev/App_KernelDevDebugContainer.xml')
+    ->withSymfonyContainerXml(__DIR__.'/../../var/cache/dev/App_KernelDevDebugContainer.xml')
     ->withParallel()
     ->withCache(
         __DIR__.'/../../var/cache/rector',

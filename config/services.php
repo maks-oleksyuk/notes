@@ -21,9 +21,8 @@ return static function (ContainerConfigurator $containerConfigurator): void {
 
     $services->load('App\\', __DIR__.'/../src/');
 
-    // Event listeners.
-    $services->set(MaintenanceKernelRequestSubscriber::class)
-        ->args([env('MAINTENANCE_MODE')->bool()]);
+    // Event listeners:
+    $services->set(MaintenanceKernelRequestSubscriber::class)->arg('$isMaintenance', env('MAINTENANCE_MODE')->bool());
 
     if ('dev' === $containerConfigurator->env()) {
         $services->alias(Profiler::class, 'profiler');

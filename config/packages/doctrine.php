@@ -2,18 +2,21 @@
 
 declare(strict_types=1);
 
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 
-return [
+return App::config([
     'doctrine' => [
         'dbal' => [
             'connections' => [
                 'default' => [
-                    'url' => '%env(resolve:DATABASE_URL)%',
-                    'profiling_collect_backtrace' => '%kernel.debug%',
+                    'url' => env('DATABASE_URL')->resolve(),
+                    'profiling_collect_backtrace' => param('kernel.debug'),
                 ],
             ],
         ],
+
         'orm' => [
             'entity_managers' => [
                 'default' => [
@@ -27,7 +30,7 @@ return [
                         'App' => [
                             'type' => 'attribute',
                             'is_bundle' => false,
-                            'dir' => '%kernel.project_dir%/src/Entity',
+                            'dir' => param('kernel.project_dir').'/src/Entity',
                             'prefix' => 'App\Entity',
                             'alias' => 'App',
                         ],
@@ -36,4 +39,4 @@ return [
             ],
         ],
     ],
-];
+]);

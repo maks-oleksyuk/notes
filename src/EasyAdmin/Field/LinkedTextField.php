@@ -15,10 +15,7 @@ final class LinkedTextField implements FieldInterface
 
     public const string OPTION_RENDER_AS_LINK_TO_ENTITY = 'renderAsLinkToEntity';
 
-    /**
-     * @param TranslatableInterface|string|false|null $label
-     */
-    public static function new(string $propertyName, $label = null): self
+    public static function new(string $propertyName, TranslatableInterface|bool|string|null $label = null): self
     {
         return new self()
             ->setProperty($propertyName)

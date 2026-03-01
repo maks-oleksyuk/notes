@@ -30,6 +30,10 @@ return new PhpCsFixer\Config()
         ->in(__DIR__ . '/../../src')
         ->in(__DIR__ . '/../../tests')
         ->in(__DIR__ . '/../../translations')
+        ->notPath([
+            'bundles.php',
+            'reference.php',
+        ])
     )
     ->setParallelConfig(ParallelConfigFactory::detect())
     ->setCacheFile(__DIR__ . '/../../var/cache/php-cs-fixer/.php-cs-fixer.cache')

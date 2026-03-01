@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-return [
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+
+return App::config([
     'lexik_jwt_authentication' => [
-        'secret_key' => '%env(resolve:JWT_SECRET_KEY)%',
-        'public_key' => '%env(resolve:JWT_PUBLIC_KEY)%',
-        'pass_phrase' => '%env(JWT_PASSPHRASE)%',
+        'secret_key' => env('JWT_SECRET_KEY')->resolve(),
+        'public_key' => env('JWT_PUBLIC_KEY')->resolve(),
+        'pass_phrase' => env('JWT_PASSPHRASE'),
     ],
-];
+]);

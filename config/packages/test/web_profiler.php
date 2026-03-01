@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-return [
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+
+return App::config([
     'framework' => [
         'profiler' => [
             'collect' => false,
             'collect_serializer_data' => true,
         ],
     ],
-];
+]);

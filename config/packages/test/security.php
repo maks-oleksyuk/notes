@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
-return [
+return App::config([
     'security' => [
         'password_hashers' => [
             PasswordAuthenticatedUserInterface::class => [
@@ -15,4 +17,4 @@ return [
             ],
         ],
     ],
-];
+]);

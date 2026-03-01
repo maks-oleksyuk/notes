@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-return [
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+
+return App::config([
     'twig_component' => [
         'anonymous_template_directory' => 'components/',
         'defaults' => [
             'App\Twig\Components\\' => 'components/',
         ],
     ],
-];
+]);

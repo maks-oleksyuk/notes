@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
+namespace Symfony\Component\Routing\Loader\Configurator;
 
-return static function (RoutingConfigurator $routingConfigurator): void {
-    $routingConfigurator->add('app.swagger_ui', '/api/docs')
-        ->methods([Request::METHOD_GET])
-        ->controller('nelmio_api_doc.controller.swagger_ui');
-};
+return Routes::config([
+    'app.swagger_ui' => [
+        'path' => '/api/docs',
+        'methods' => ['GET'],
+        'controller' => 'nelmio_api_doc.controller.swagger_ui',
+    ],
+]);

@@ -13,7 +13,7 @@
             <div id="header-logo">
                 {% block header_logo %}
                     {% if page_title %}
-                        {% if ea.hasContext %}
+                        {% if ea.context is not null %}
                             <a class="logo {{ page_title|length > 14 ? 'logo-long' }}" title="{{ page_title|striptags }}" href="{{ path(ea.dashboardRouteName) }}">
                                 {{ page_title|raw }}
                             </a>

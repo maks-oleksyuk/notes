@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+
 use Symfony\Component\HttpFoundation\Response;
 
-return [
+return App::config([
     'nelmio_api_doc' => [
         'type_info' => true,
         'documentation' => [
@@ -68,4 +70,4 @@ return [
             'default' => ['name_patterns' => ['^api_v']],
         ],
     ],
-];
+]);

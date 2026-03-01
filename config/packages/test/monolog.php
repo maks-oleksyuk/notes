@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+
 use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\Response;
 
-return [
+return App::config([
     'monolog' => [
         'handlers' => [
             'main' => [
@@ -19,12 +21,13 @@ return [
                 ],
                 'channels' => ['!event'],
             ],
+
             'nested' => [
                 'type' => 'stream',
                 'level' => LogLevel::DEBUG,
                 'filename_format' => '{date}',
-                'path' => '%kernel.logs_dir%/%kernel.environment%/.log',
+                'path' => \sprintf('%s/%s/.log', param('kernel.logs_dir'), param('kernel.environment')),
             ],
         ],
     ],
-];
+]);

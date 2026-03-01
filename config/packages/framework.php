@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-return [
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+
+return App::config([
     'framework' => [
-        'secret' => '%env(APP_SECRET)%',
+        'secret' => env('APP_SECRET'),
+        'session' => true,
     ],
-];
+]);

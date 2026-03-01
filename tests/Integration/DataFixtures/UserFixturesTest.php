@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Integration\DataFixtures;
 
 use App\DataFixtures\UserFixtures;
+use App\Entity\User;
 use App\Enum\UserRole;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,16 +41,16 @@ final class UserFixturesTest extends KernelTestCase
 
         $users = $this->userRepository->findAll();
 
-        self::assertCount(2, $users);
+        $this->assertCount(2, $users);
 
         $admin = $this->userRepository->findOneByUsername('admin');
-        self::assertNotNull($admin);
-        self::assertContains(UserRole::ADMIN->value, $admin->getRoles());
-        self::assertTrue($this->passwordHasher->isPasswordValid($admin, 'admin'));
+        $this->assertInstanceOf(User::class, $admin);
+        $this->assertContains(UserRole::ADMIN->value, $admin->getRoles());
+        $this->assertTrue($this->passwordHasher->isPasswordValid($admin, 'admin'));
 
         $testUser = $this->userRepository->findOneByUsername('test');
-        self::assertNotNull($testUser);
-        self::assertContains(UserRole::USER->value, $testUser->getRoles());
-        self::assertTrue($this->passwordHasher->isPasswordValid($testUser, 'test'));
+        $this->assertInstanceOf(User::class, $testUser);
+        $this->assertContains(UserRole::USER->value, $testUser->getRoles());
+        $this->assertTrue($this->passwordHasher->isPasswordValid($testUser, 'test'));
     }
 }

@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-return [
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
+
+return App::config([
     'doctrine' => [
         'orm' => [
             'entity_managers' => [
@@ -19,16 +21,17 @@ return [
             ],
         ],
     ],
+
     'framework' => [
         'cache' => [
             'pools' => [
-                'doctrine.system_cache_pool' => [
-                    'adapters' => ['cache.system'],
-                ],
                 'doctrine.result_cache_pool' => [
                     'adapters' => ['cache.app'],
+                ],
+                'doctrine.system_cache_pool' => [
+                    'adapters' => ['cache.system'],
                 ],
             ],
         ],
     ],
-];
+]);

@@ -27,15 +27,15 @@ final class UserCrudControllerTest extends TestCase
 
     public function testGetEntityFqcnReturnsUserClass(): void
     {
-        self::assertSame(User::class, UserCrudController::getEntityFqcn());
+        $this->assertSame(User::class, UserCrudController::getEntityFqcn());
     }
 
     public function testConfigureCrudReturnsCrudInstance(): void
     {
         $result = $this->controller->configureCrud(Crud::new())->getAsDto();
 
-        self::assertSame('Users', $result->getEntityLabelInPlural());
-        self::assertSame($result->getContentWidth(), Crud::LAYOUT_CONTENT_FULL);
+        $this->assertSame('Users', $result->getEntityLabelInPlural());
+        $this->assertSame(Crud::LAYOUT_CONTENT_FULL, $result->getContentWidth());
     }
 
     #[DataProvider('pageNameProvider')]
@@ -44,41 +44,39 @@ final class UserCrudControllerTest extends TestCase
         $fieldsIterable = $this->controller->configureFields($pageName);
         $fields = \is_array($fieldsIterable) ? $fieldsIterable : iterator_to_array($fieldsIterable);
 
-        self::assertCount(3, $fields);
+        $this->assertCount(3, $fields);
 
-        self::assertInstanceOf(IdField::class, $fields[0]);
-        self::assertInstanceOf(LinkedTextField::class, $fields[1]);
-        self::assertInstanceOf(ChoiceField::class, $fields[2]);
+        $this->assertInstanceOf(IdField::class, $fields[0]);
+        $this->assertInstanceOf(LinkedTextField::class, $fields[1]);
+        $this->assertInstanceOf(ChoiceField::class, $fields[2]);
 
         $idFieldDto = $fields[0]->getAsDto();
-        self::assertSame('id', $idFieldDto->getProperty());
-        self::assertTrue($idFieldDto->isDisplayedOn(Crud::PAGE_INDEX));
-        self::assertTrue($idFieldDto->isDisplayedOn(Crud::PAGE_DETAIL));
-        self::assertFalse($idFieldDto->isDisplayedOn(Crud::PAGE_NEW));
-        self::assertFalse($idFieldDto->isDisplayedOn(Crud::PAGE_EDIT));
+        $this->assertSame('id', $idFieldDto->getProperty());
+        $this->assertTrue($idFieldDto->isDisplayedOn(Crud::PAGE_INDEX));
+        $this->assertTrue($idFieldDto->isDisplayedOn(Crud::PAGE_DETAIL));
+        $this->assertFalse($idFieldDto->isDisplayedOn(Crud::PAGE_NEW));
+        $this->assertFalse($idFieldDto->isDisplayedOn(Crud::PAGE_EDIT));
 
         $usernameFieldDto = $fields[1]->getAsDto();
-        self::assertSame('username', $usernameFieldDto->getProperty());
-        self::assertTrue($usernameFieldDto->getCustomOption(LinkedTextField::OPTION_RENDER_AS_LINK_TO_ENTITY));
+        $this->assertSame('username', $usernameFieldDto->getProperty());
+        $this->assertTrue($usernameFieldDto->getCustomOption(LinkedTextField::OPTION_RENDER_AS_LINK_TO_ENTITY));
 
         $rolesFieldDto = $fields[2]->getAsDto();
-        self::assertSame('roles', $rolesFieldDto->getProperty());
-        self::assertSame(array_column(UserRole::cases(), 'value', 'name'), $rolesFieldDto->getCustomOption(ChoiceField::OPTION_CHOICES));
-        self::assertTrue($rolesFieldDto->getCustomOption(ChoiceField::OPTION_ALLOW_MULTIPLE_CHOICES));
-        self::assertTrue($rolesFieldDto->getCustomOption(ChoiceField::OPTION_RENDER_EXPANDED));
-        self::assertFalse($rolesFieldDto->isSortable());
+        $this->assertSame('roles', $rolesFieldDto->getProperty());
+        $this->assertSame(array_column(UserRole::cases(), 'value', 'name'), $rolesFieldDto->getCustomOption(ChoiceField::OPTION_CHOICES));
+        $this->assertTrue($rolesFieldDto->getCustomOption(ChoiceField::OPTION_ALLOW_MULTIPLE_CHOICES));
+        $this->assertTrue($rolesFieldDto->getCustomOption(ChoiceField::OPTION_RENDER_EXPANDED));
+        $this->assertFalse($rolesFieldDto->isSortable());
     }
 
     /**
-     * @return array<array{string}>
+     * @return \Iterator<(int | string), array{string}>
      */
-    public static function pageNameProvider(): array
+    public static function pageNameProvider(): \Iterator
     {
-        return [
-            ['index'],
-            ['detail'],
-            ['edit'],
-            ['new'],
-        ];
+        yield ['index'];
+        yield ['detail'];
+        yield ['edit'];
+        yield ['new'];
     }
 }
