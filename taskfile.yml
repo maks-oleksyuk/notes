@@ -1,0 +1,116 @@
+version: 3
+
+env:
+  NODE_BIN: '{{.NODE_BIN | default "$(which node)"}}'
+  PNPM_BIN: '{{.PNPM_BIN | default "$(which pnpm)"}}'
+
+vars:
+  CONFIG_DIR: '{{.TASKFILE_DIR}}/config/utils'
+  NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
+
+tasks:
+  default:
+    desc: 'List all commands.'
+    cmd: 'task -l'
+
+  # Utils:
+
+  pnpm:
+    desc: 'Run `pnpm` command.'
+    cmd: '{{.PNPM_BIN}} --color {{.CLI_ARGS}}'
+    silent: true
+
+  biome:
+    desc: 'Run `biome` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/biome {{.CLI_ARGS}} --colors=force'
+    env:
+      BIOME_CONFIG_PATH: '{{.CONFIG_DIR}}/biome.json'
+    silent: true
+
+  # Work commands:
+
+  build:
+    desc: 'Run `next build`'
+    aliases:
+      - b
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'next build' }
+
+  dev:
+    desc: 'Run `next dev`'
+    aliases:
+      - d
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'next dev' }
+
+  prod:
+    desc: 'Run `next start`'
+    aliases:
+      - p
+    cmds:
+      - task: build
+      - task: pnpm
+        vars: { CLI_ARGS: 'next start' }
+
+  update:
+    desc: 'Updates project dependencies withing constraints.'
+    prompt: |
+      This command can break website. Do it independently without any other active changes.
+      Make sure you have a backup. Never run it on production.
+    aliases:
+      - u
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'up --save --latest' }
+
+  # Linters:
+
+  lint:
+    desc: 'Run all linters and validators.'
+    aliases:
+      - l
+    cmds:
+      - defer: { task: lint:biome }
+
+  lint:biome:
+    desc: 'Run TypeScript type checking'
+    aliases:
+      - l:b
+      - l:biome
+      - lint:b
+    cmds:
+      - task: biome
+        vars: { CLI_ARGS: '-V' }
+      - task: biome
+        vars: { CLI_ARGS: 'format' }
+      - task: biome
+        vars: { CLI_ARGS: 'lint' }
+      - task: biome
+        vars: { CLI_ARGS: 'check' }
+
+  # Fixing:
+
+  fix:
+    desc: 'Run all automated fixers.'
+    aliases:
+      - f
+    cmds:
+      - defer: { task: fix:biome }
+
+  fix:biome:
+    desc: 'Auto-fix code formatting with Biome.'
+    aliases:
+      - f:b
+      - f:biome
+      - fix:b
+    cmds:
+      - task: biome
+        vars: { CLI_ARGS: '-V' }
+      - task: biome
+        vars: { CLI_ARGS: 'format --write' }
+      - task: biome
+        vars: { CLI_ARGS: 'lint --write --unsafe' }
+      - task: biome
+        vars: { CLI_ARGS: 'check --write --unsafe' }

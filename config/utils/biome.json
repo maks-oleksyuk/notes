@@ -1,13 +1,15 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.6/schema.json",
+  "root": true,
   "vcs": {
     "enabled": true,
     "clientKind": "git",
-    "useIgnoreFile": true
+    "useIgnoreFile": true,
+    "root": ".."
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build"]
+    "includes": ["**", "!node_modules", "!.next", "!dist", "!build", "!!config/utils/biome.json"]
   },
   "formatter": {
     "enabled": true,
@@ -25,6 +27,11 @@
     "domains": {
       "next": "recommended",
       "react": "recommended"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   },
   "assist": {

@@ -1,4 +1,4 @@
-name: 🔄 CI | ⚡️ Next.js
+name: '🔄 CI | 🔳 Next.js'
 
 on:
   push:
@@ -21,23 +21,23 @@ concurrency:
   group: ci
   cancel-in-progress: false
 
-#jobs:
-#  lint:
-#    name: '🪄 Lint | ${{ matrix.command.name }}'
-#    runs-on: ubuntu-latest
-#
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        command:
-#          - { name: '🅿️ Prettier', command: 'lint:prettier' }
-#
-#    steps:
-#      - name: '🛎 Checkout'
-#        uses: actions/checkout@v6
-#
-#      - name: '⚙️ Prepare environment'
-#        uses: ./.github/actions/setup-environment
-#
-#      - name: '${{ matrix.command.name }} validate'
-#        run: task ${{ matrix.command.command }}
+jobs:
+  lint:
+    name: '🪄 Lint | ${{ matrix.command.name }}'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - { name: '💠 Biome', command: 'lint:biome' }
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@v6
+
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-environment
+
+      - name: '${{ matrix.command.name }} validate'
+        run: task ${{ matrix.command.command }}
