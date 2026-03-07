@@ -1,0 +1,43 @@
+name: 🔄 CI | ⚡️ Next.js
+
+on:
+  push:
+    branches:
+      - next-js
+    paths-ignore:
+      - README.md
+      - LICENSE.md
+  pull_request:
+    branches:
+      - next-js
+    paths-ignore:
+      - README.md
+      - LICENSE.md
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+concurrency:
+  group: ci
+  cancel-in-progress: false
+
+#jobs:
+#  lint:
+#    name: '🪄 Lint | ${{ matrix.command.name }}'
+#    runs-on: ubuntu-latest
+#
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        command:
+#          - { name: '🅿️ Prettier', command: 'lint:prettier' }
+#
+#    steps:
+#      - name: '🛎 Checkout'
+#        uses: actions/checkout@v6
+#
+#      - name: '⚙️ Prepare environment'
+#        uses: ./.github/actions/setup-environment
+#
+#      - name: '${{ matrix.command.name }} validate'
+#        run: task ${{ matrix.command.command }}
