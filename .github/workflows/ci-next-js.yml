@@ -22,6 +22,20 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  cleanup:
+    name: '🧹 Clean up GitHub repo'
+    runs-on: ubuntu-latest
+    permissions: write-all
+    if: github.event_name != 'pull_request'
+
+    steps:
+      - name: '🗑 Delete workflow runs'
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          retain_days: 7
+          keep_minimum_runs: 1
+          delete_workflow_pattern: ci-next-js.yml
+
   lint:
     name: '🪄 Lint | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
