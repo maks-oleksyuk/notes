@@ -4,7 +4,12 @@ FROM serversideup/php:8.5-fpm-nginx
 USER root
 
 # Install the intl and bcmath extensions with root permissions
-RUN install-php-extensions intl
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/* \
+    && install-php-extensions intl
+
+# Symfony startup script
+COPY .dokploy/autorun.sh /etc/cont-init.d/10-symfony
+RUN chmod +x /etc/cont-init.d/10-symfony
 
 # Drop back to our unprivileged user
 USER www-data
@@ -15,5 +20,5 @@ COPY --chown=www-data:www-data . .
 
 ENV APP_RUNTIME_OPTIONS='{"disable_dotenv":true}'
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --ansi \
+RUN composer install --no-scripts --optimize-autoloader --no-interaction --ansi \
     && composer recipes:install --force --no-interaction

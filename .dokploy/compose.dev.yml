@@ -12,10 +12,11 @@ services:
     environment:
       APP_ENV: dev
       APP_SECRET: ${APP_SECRET}
-      DATABASE_URL: mysql://app:${DB_PASSWORD}@db:3306/app?serverVersion=mariadb-11.8.1&charset=utf8mb4
       PHP_OPCACHE_ENABLE: "0"
-      AUTORUN_ENABLED: "true"
+      AUTORUN_ENABLED: "false"
       APP_RUNTIME_OPTIONS: '{"disable_dotenv":true}'
+      DEFAULT_URI: ${DEFAULT_URI}
+      DATABASE_URL: mysql://notes:${DB_PASSWORD}@db:3306/symfony?serverVersion=mariadb-11.8.1&charset=utf8mb4
     depends_on:
       db:
         condition: service_healthy
@@ -31,6 +32,8 @@ services:
       MARIADB_DATABASE: symfony
       MARIADB_PASSWORD: ${DB_PASSWORD}
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    expose:
+      - 3306
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
@@ -41,6 +44,7 @@ services:
       start_period: 30s
     networks:
       - internal
+      - dokploy-network
 
 volumes:
   db_data:
