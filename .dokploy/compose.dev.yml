@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: ..
-      dockerfile: Dockerfile
+      dockerfile: .docker/dev/Dockerfile
     restart: unless-stopped
     expose:
       - 8080
@@ -11,21 +11,24 @@ services:
       - .env
     environment:
       APP_ENV: dev
-      APP_SECRET: ${APP_SECRET}
-      PHP_OPCACHE_ENABLE: "0"
-      AUTORUN_ENABLED: "false"
+      PHP_OPCACHE_ENABLE: '0'
+      AUTORUN_ENABLED: 'false'
       APP_RUNTIME_OPTIONS: '{"disable_dotenv":true}'
-      DEFAULT_URI: ${DEFAULT_URI}
-      DATABASE_URL: mysql://notes:${DB_PASSWORD}@db:3306/symfony?serverVersion=mariadb-11.8.1&charset=utf8mb4
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ../files/var/log:/var/www/html/var/log
+    post_start:
+      - command: chown -R www-data:www-data /var/www/html/var
+        user: root
     networks:
       - internal
       - dokploy-network
 
   db:
     image: mariadb:11.8
+    hostname: notes-db
     restart: unless-stopped
     environment:
       MARIADB_USER: notes
@@ -37,14 +40,13 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
     networks:
       - internal
-      - dokploy-network
 
 volumes:
   db_data:

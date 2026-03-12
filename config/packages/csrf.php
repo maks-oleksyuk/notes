@@ -13,7 +13,11 @@ return App::config([
         ],
 
         'csrf_protection' => [
-            'stateless_token_ids' => ['submit', 'authenticate', 'logout'],
+            'stateless_token_ids' => [
+                'submit',
+                'authenticate',
+                'logout',
+            ],
         ],
     ],
 ]);

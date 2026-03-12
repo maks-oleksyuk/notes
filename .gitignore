@@ -2,6 +2,7 @@
 web
 vendor
 public
+!public/index.php
 node_modules
 
 # Ignore final build files.

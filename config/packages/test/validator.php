@@ -7,7 +7,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 return App::config([
     'framework' => [
         'validation' => [
-            'not_compromised_password' => ['enabled' => false],
+            'not_compromised_password' => false,
         ],
     ],
 ]);
