@@ -2,6 +2,7 @@
 
 cd /var/www/html
 
+echo "Running as: $(whoami)"
 echo "Running Symfony startup tasks..."
 
 php bin/console cache:clear --no-warmup
