@@ -1,6 +1,6 @@
 name: symfony
 type: php
-docroot: web
+docroot: public
 database:
   type: mariadb
   version: '11.8'

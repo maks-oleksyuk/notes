@@ -26,7 +26,7 @@ return App::config([
             'paths' => [
                 '/api/v1/login' => [
                     'post' => [
-                        'summary' => 'JWT login',
+                        'summary' => 'Login',
                         'security' => [],
                         'requestBody' => [
                             'required' => true,
@@ -45,7 +45,7 @@ return App::config([
                         ],
                         'responses' => [
                             Response::HTTP_OK => [
-                                'description' => 'JWT Token',
+                                'description' => Response::$statusTexts[Response::HTTP_OK],
                                 'content' => [
                                     'application/json' => [
                                         'schema' => [
@@ -60,7 +60,7 @@ return App::config([
                                     ],
                                 ],
                             ],
-                            Response::HTTP_UNAUTHORIZED => ['description' => 'Invalid credentials'],
+                            Response::HTTP_UNAUTHORIZED => ['description' => Response::$statusTexts[Response::HTTP_UNAUTHORIZED]],
                         ],
                     ],
                 ],

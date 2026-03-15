@@ -1,4 +1,5 @@
 .ddev
+.dokploy
 .github
 .pnpm-store
 LICENSE.md

@@ -132,6 +132,14 @@ tasks:
       - task: sf:console
         vars: { CLI_ARGS: 'cache:warmup' }
 
+  init:
+    desc: 'Run post-start initialization (migrations, cache).'
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:migrate -n' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'cache:warmup' }
+
   update:
     desc: 'Updates project dependencies withing constraints.'
     prompt: |

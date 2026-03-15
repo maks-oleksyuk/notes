@@ -8,6 +8,8 @@ use App\Controller\Admin\UserCrudController;
 use App\EasyAdmin\Field\LinkedTextField;
 use App\Entity\User;
 use App\Enum\UserRole;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
@@ -35,7 +37,16 @@ final class UserCrudControllerTest extends TestCase
         $result = $this->controller->configureCrud(Crud::new())->getAsDto();
 
         $this->assertSame('Users', $result->getEntityLabelInPlural());
+        $this->assertSame(Action::DETAIL, $result->getDefaultRowAction());
         $this->assertSame(Crud::LAYOUT_CONTENT_FULL, $result->getContentWidth());
+    }
+
+    public function testConfigureActions(): void
+    {
+        $actions = $this->controller->configureActions(Actions::new());
+        $actionsDto = $actions->getAsDto(Crud::PAGE_INDEX);
+
+        $this->assertArrayHasKey(Action::DETAIL, $actionsDto->getActions());
     }
 
     #[DataProvider('pageNameProvider')]

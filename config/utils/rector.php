@@ -13,6 +13,7 @@ return RectorConfig::configure()
         __DIR__.'/../../tests',
     ])
     ->withSkip([
+        __DIR__.'/../../config/bundles.php',
         __DIR__.'/../../config/reference.php',
     ])
     ->withPhpVersion(PhpVersion::PHP_85)

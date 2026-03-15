@@ -1,6 +1,7 @@
 services:
   app:
     image: ghcr.io/maks-oleksyuk/notes-symfony:dev
+    pull_policy: always
     restart: unless-stopped
     expose:
       - 8080
@@ -9,9 +10,6 @@ services:
       - .env
     environment:
       APP_ENV: dev
-      PHP_OPCACHE_ENABLE: '0'
-      AUTORUN_ENABLED: 'false'
-      APP_RUNTIME_OPTIONS: '{"disable_dotenv":true}'
     depends_on:
       db:
         condition: service_healthy
@@ -20,9 +18,9 @@ services:
     post_start:
       - command: chown -R www-data:www-data /var/www/html/var && chmod -R 775 /var/www/html/var
         user: root
-    networks:
-      - internal
-#      - dokploy-network
+      - command: task init
+        user: www-data
+        working_dir: /var/www/html
 
   db:
     image: mariadb:11.8
@@ -42,17 +40,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    networks:
-#      - internal
-      internal:
-        aliases:
-          - notes-db
 
 volumes:
   db_data:
-
-networks:
-  internal:
-    driver: bridge
-#  dokploy-network:
-#    external: true

@@ -32,113 +32,113 @@ jobs:
           keep_minimum_runs: 1
           delete_workflow_pattern: ci-symfony.yml
 
-#  lint:
-#    name: '🪄 Lint | ${{ matrix.command.name }}'
-#    runs-on: ubuntu-latest
-#
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        command:
-#          - {
-#              name: '📦 Composer',
-#              command: 'lint:composer',
-#              use-php: true,
-#            }
-#          - {
-#              name: '🔍 PHPStan',
-#              command: 'lint:phpstan -- --no-progress',
-#              use-php: true,
-#            }
-#          - {
-#              name: '🪶 PHP CS Fixer',
-#              command: "lint:php-cs-fixer -- --format=checkstyle | sed -n '/^<?xml/,$p' | cs2pr",
-#              use-php: true,
-#            }
-#          - {
-#              name: '🅿️ Prettier',
-#              command: 'lint:prettier',
-#              use-node: true,
-#            }
-#          - {
-#              name: '🏠 Rector',
-#              command: 'lint:rector -- --no-progress-bar --output-format=github',
-#              use-php: true,
-#            }
-#          - {
-#              name: '🎼 Symfony Lint',
-#              command: 'lint:symfony',
-#              use-php: true,
-#          }
-#          - {
-#            name: '🌿 Twig CS Fixer',
-#            command: 'lint:twig -- --report=github',
-#            use-php: true,
-#          }
-#
-#    steps:
-#      - name: '🛎 Checkout'
-#        uses: actions/checkout@v6
-#
-#      - name: '⚙️ Prepare environment'
-#        uses: ./.github/actions/setup-validation
-#        with:
-#          use-php: ${{ matrix.command.use-php }}
-#          use-node: ${{ matrix.command.use-node }}
-#
-#      - name: '${{ matrix.command.name }} validate'
-#        run: task ${{ matrix.command.command }}
-#
-#  test:
-#    name: '♻️ Test | ${{ matrix.command.name }}'
-#    runs-on: ubuntu-latest
-#
-#    services:
-#      db:
-#        image: mariadb:11.4
-#        ports:
-#          - 3306:3306
-#        env:
-#          MYSQL_DATABASE: db_test
-#          MARIADB_USER: db
-#          MARIADB_PASSWORD: db
-#          MARIADB_ROOT_PASSWORD: root
-#        options: >-
-#          --health-cmd="healthcheck.sh --connect --innodb_initialized"
-#          --health-interval=10s
-#          --health-timeout=5s
-#          --health-retries=5
-#
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        command:
-#          - { name: '🔮 Application', command: 'test:application -- --no-progress' }
-#          - { name: '🧬 Integration', command: 'test:integration -- --no-progress' }
-#          - { name: '🔬 Unit',        command: 'test:unit -- --no-progress' }
-#
-#    steps:
-#      - name: '🛎 Checkout'
-#        uses: actions/checkout@v6
-#
-#      - name: '⚙️ Prepare environment'
-#        uses: ./.github/actions/setup-testing
-#
-#      - name: '${{ matrix.command.name }} tests'
-#        run: task ${{ matrix.command.command }}
-#
-#      - name: '☂️ Upload results to Codecov'
-#        uses: codecov/codecov-action@v5
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-#          slug: maks-oleksyuk/notes
-#          flags: ${{ matrix.command.name }}
-#          directory: ./var/report
-#
-#      - name: '☂️ Upload test results to Codecov'
-#        uses: codecov/codecov-action@v5
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-#          flags: ${{ matrix.command.name }}
-#          directory: ./var/report
-#          report_type: test_results
+  lint:
+    name: '🪄 Lint | ${{ matrix.command.name }}'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - {
+              name: '📦 Composer',
+              command: 'lint:composer',
+              use-php: true,
+            }
+          - {
+              name: '🔍 PHPStan',
+              command: 'lint:phpstan -- --no-progress',
+              use-php: true,
+            }
+          - {
+              name: '🪶 PHP CS Fixer',
+              command: "lint:php-cs-fixer -- --format=checkstyle | sed -n '/^<?xml/,$p' | cs2pr",
+              use-php: true,
+            }
+          - {
+              name: '🅿️ Prettier',
+              command: 'lint:prettier',
+              use-node: true,
+            }
+          - {
+              name: '🏠 Rector',
+              command: 'lint:rector -- --no-progress-bar --output-format=github',
+              use-php: true,
+            }
+          - {
+              name: '🎼 Symfony Lint',
+              command: 'lint:symfony',
+              use-php: true,
+          }
+          - {
+            name: '🌿 Twig CS Fixer',
+            command: 'lint:twig -- --report=github',
+            use-php: true,
+          }
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@v6
+
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-validation
+        with:
+          use-php: ${{ matrix.command.use-php }}
+          use-node: ${{ matrix.command.use-node }}
+
+      - name: '${{ matrix.command.name }} validate'
+        run: task ${{ matrix.command.command }}
+
+  test:
+    name: '♻️ Test | ${{ matrix.command.name }}'
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: mariadb:11.4
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_DATABASE: db_test
+          MARIADB_USER: db
+          MARIADB_PASSWORD: db
+          MARIADB_ROOT_PASSWORD: root
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - { name: '🔮 Application', command: 'test:application -- --no-progress' }
+          - { name: '🧬 Integration', command: 'test:integration -- --no-progress' }
+          - { name: '🔬 Unit',        command: 'test:unit -- --no-progress' }
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@v6
+
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-testing
+
+      - name: '${{ matrix.command.name }} tests'
+        run: task ${{ matrix.command.command }}
+
+      - name: '☂️ Upload results to Codecov'
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: maks-oleksyuk/notes
+          flags: ${{ matrix.command.name }}
+          directory: ./var/report
+
+      - name: '☂️ Upload test results to Codecov'
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.command.name }}
+          directory: ./var/report
+          report_type: test_results

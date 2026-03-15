@@ -7,6 +7,8 @@ namespace App\Controller\Admin;
 use App\EasyAdmin\Field\LinkedTextField;
 use App\Entity\User;
 use App\Enum\UserRole;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -27,7 +29,15 @@ final class UserCrudController extends AbstractCrudController
     {
         return parent::configureCrud($crud)
             ->setEntityLabelInPlural('Users')
+            ->setDefaultRowAction(Action::DETAIL)
             ->renderContentMaximized();
+    }
+
+    #[\Override]
+    public function configureActions(Actions $actions): Actions
+    {
+        return parent::configureActions($actions)
+            ->add(Crud::PAGE_INDEX, Action::DETAIL);
     }
 
     #[\Override]
