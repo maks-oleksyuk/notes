@@ -46,7 +46,7 @@ final class ScalarOpenApiGenerator extends OpenApiGenerator
 
                 $tagName = $this->generateTagNameFromMetadata($metadata);
 
-                if (in_array($tagName, $tagsHashmap)) {
+                if (in_array($tagName, $tagsHashmap, true)) {
                     continue;
                 }
 

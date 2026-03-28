@@ -39,7 +39,7 @@ CREATE TABLE public.cache (
 CREATE TABLE public.cache_locks (
     key character varying(255) NOT NULL,
     owner character varying(255) NOT NULL,
-    expiration integer NOT NULL
+    expiration bigint NOT NULL
 );
 
 

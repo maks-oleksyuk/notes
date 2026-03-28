@@ -76,6 +76,7 @@ return RectorConfig::configure()
         PestLevelSetList::UP_TO_PEST_40,
         PestSetList::PEST_CODE_QUALITY,
         PestSetList::PEST_CHAIN,
+        PestSetList::PEST_LARAVEL,
     ])
     ->withConfiguredRule(RemoveDumpDataDeadCodeRector::class, [])
     ->withConfiguredRule(RouteActionCallableRector::class, [])

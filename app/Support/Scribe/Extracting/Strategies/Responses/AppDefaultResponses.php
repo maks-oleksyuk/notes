@@ -94,8 +94,8 @@ final class AppDefaultResponses extends Strategy
         $content = json_decode($response['content'], true);
 
         $parameters = array_merge(
-            iterator_to_array($endpointData->queryParameters ?? []),
-            iterator_to_array($endpointData->bodyParameters ?? [])
+            iterator_to_array($endpointData->queryParameters),
+            iterator_to_array($endpointData->bodyParameters)
         );
 
         foreach ($parameters as $parameter) {
