@@ -48,9 +48,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Log Viewer Assets Path
+    | Log Viewer Assets Path (Deprecated)
     |--------------------------------------------------------------------------
-    | The path to the Log Viewer assets.
+    | The path to the published Log Viewer assets.
+    |
+    | Note: Publishing assets is no longer required. Assets are now served
+    | directly from the vendor directory. This option only applies if you
+    | have published assets using `php artisan log-viewer:publish`.
+    | This option will be removed in the next major version.
     |
     */
 
@@ -67,7 +72,7 @@ return [
     |
     */
 
-    'back_to_system_url' => config('app.url', null),
+    'back_to_system_url' => config('app.url'),
 
     'back_to_system_label' => null, // Displayed by default: "Back to {{ app.name }}"
 
@@ -120,7 +125,7 @@ return [
         AuthorizeLogViewer::class,
     ],
 
-    'api_stateful_domains' => env('LOG_VIEWER_API_STATEFUL_DOMAINS') ? explode(',', env('LOG_VIEWER_API_STATEFUL_DOMAINS')) : null,
+    'api_stateful_domains' => env('LOG_VIEWER_API_STATEFUL_DOMAINS') ? explode(',', (string) env('LOG_VIEWER_API_STATEFUL_DOMAINS')) : null,
 
     /*
     |--------------------------------------------------------------------------
@@ -134,7 +139,7 @@ return [
 
     'hosts' => [
         'local' => [
-            'name' => ucfirst(env('APP_ENV', 'local')),
+            'name' => ucfirst((string) env('APP_ENV', 'local')),
         ],
 
         // 'staging' => [
@@ -235,7 +240,7 @@ return [
     |
     */
 
-    'cache_driver' => env('LOG_VIEWER_CACHE_DRIVER', null),
+    'cache_driver' => env('LOG_VIEWER_CACHE_DRIVER'),
 
     /*
     |--------------------------------------------------------------------------

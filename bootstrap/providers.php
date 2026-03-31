@@ -2,9 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Providers\AppServiceProvider;
+use App\Providers\Filament\AdminPanelServiceProvider;
+use App\Providers\RepositoryServiceProvider;
+use App\Providers\RouteServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\Filament\AdminPanelServiceProvider::class,
-    App\Providers\RepositoryServiceProvider::class,
-    App\Providers\RouteServiceProvider::class,
+    AppServiceProvider::class,
+    AdminPanelServiceProvider::class,
+    RepositoryServiceProvider::class,
+    RouteServiceProvider::class,
 ];

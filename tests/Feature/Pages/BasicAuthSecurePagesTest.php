@@ -4,16 +4,6 @@ declare(strict_types=1);
 
 use function Pest\Laravel\get;
 
-beforeEach(
-    fn (): string => $this->validCredentials = base64_encode(
-        sprintf(
-            '%s:%s',
-            config('very_basic_auth.user'),
-            config('very_basic_auth.password'),
-        )
-    )
-);
-
 // You can't use `config()` here, although you really want to.
 dataset('protected routes', [
     'logs' => 'logs',
@@ -21,6 +11,16 @@ dataset('protected routes', [
 ]);
 
 describe('Basic Auth', function (): void {
+    beforeEach(
+        fn (): string => $this->validCredentials = base64_encode(
+            sprintf(
+                '%s:%s',
+                config('very_basic_auth.user'),
+                config('very_basic_auth.password'),
+            )
+        )
+    );
+
     it('denies access without authentication for `:dataset`',
         fn (string $route) => get($route)->assertUnauthorized()
     )->with('protected routes');

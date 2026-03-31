@@ -10,21 +10,24 @@ use Filament\Actions\ExportAction;
 use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 
 final class ListUsers extends ListRecords
 {
+    #[\Override]
     protected static string $resource = UserResource::class;
 
     /**
      * @return ExportAction[]
      */
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
             ExportAction::make('export_csv')
                 ->label('Export CSV')
                 ->exporter(UserExporter::class)
-                ->icon('heroicon-m-document-arrow-down')
+                ->icon(Heroicon::OutlinedDocumentArrowDown)
                 ->formats([ExportFormat::Csv])
                 ->columnMapping(false)
                 ->color(Color::Sky)
@@ -34,7 +37,7 @@ final class ListUsers extends ListRecords
             ExportAction::make('export_xls')
                 ->label('Export XLSX')
                 ->exporter(UserExporter::class)
-                ->icon('heroicon-m-document-arrow-down')
+                ->icon(Heroicon::OutlinedDocumentArrowDown)
                 ->formats([ExportFormat::Xlsx])
                 ->columnMapping(false)
                 ->color(Color::Green)

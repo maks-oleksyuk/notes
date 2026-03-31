@@ -20,11 +20,11 @@ final readonly class LoginAction
      *
      * @throws \Throwable
      */
-    public function __invoke(string $email, string $password): array
+    public function __invoke(string $email, #[\SensitiveParameter] string $password): array
     {
         $user = User::query()->whereEmail($email)->first();
 
-        throw_if(! $user || ! $this->hasher->check($password, $user->password), ValidationException::withMessages([
+        throw_if(! $user || ! $user->password || ! $this->hasher->check($password, $user->password), ValidationException::withMessages([
             'password' => [__('auth.failed')],
         ]));
 

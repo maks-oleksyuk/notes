@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 
 covers([UserRepository::class, UserFilters::class]);
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 beforeEach(fn (): UserRepository => $this->repository = new UserRepository(new User));
 

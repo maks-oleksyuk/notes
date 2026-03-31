@@ -1,13 +1,10 @@
 {
     "name": "notes-laravel",
-    "image": "ddev/ddev-gitpod-base:latest",
+    "image": "mcr.microsoft.com/devcontainers/base:debian-12",
     "features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        "ghcr.io/ddev/ddev/install-ddev:latest": {}
     },
-    "remoteUser": "gitpod",
-    "containerUser": "gitpod",
-    "workspaceFolder": "/workspace/notes",
-    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/notes,type=bind",
     "forwardPorts": [3306, 6942, 8027, 8036, 8080, 8443, 9003, 9999],
     "portsAttributes": {
         "3306": {
@@ -63,14 +60,6 @@
             ]
         }
     },
-    "postCreateCommand": [
-        "ddev start -y",
-        "ddev artisan key:generate --ansi",
-        "ddev task db:fresh",
-        "cp .env.example .env.testing",
-        "ddev artisan key:generate --env=testing --ansi",
-        "ddev psql -U db -d db -c \"CREATE DATABASE IF NOT EXISTS testing;\" || true",
-        "ddev psql -U db -d db -c \"GRANT ALL PRIVILEGES ON DATABASE testing TO db;\" || true"
-    ],
-    "postStartCommand": ["ddev describe >/dev/null 2>&1 || ddev start -y"]
+    "postCreateCommand": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
+    "postStartCommand": "ddev start -y"
 }

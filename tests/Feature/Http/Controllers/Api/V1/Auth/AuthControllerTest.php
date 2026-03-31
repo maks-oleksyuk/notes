@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Hash;
 
 covers(AuthController::class);
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
-describe('API | V1 | Auth', function (): void {
+describe('API | V1 | Actions | Auth', function (): void {
     it('login a user and returns a token', function (): void {
-        $password = 'password123';
+        $password = '!Password123';
         $user = User::factory()->create([
             'email' => 'test@example.com',
             'password' => Hash::make($password),
@@ -25,6 +25,13 @@ describe('API | V1 | Auth', function (): void {
         ]);
 
         $response->assertOk()
-            ->assertJsonStructure(['data' => ['token', 'expires_at']]);
+            ->assertJsonStructure([
+                'data' => [
+                    'token',
+                    'token_type',
+                    'expires_at',
+                ],
+            ])
+            ->assertJsonPath('data.token_type', 'Bearer');
     });
 });

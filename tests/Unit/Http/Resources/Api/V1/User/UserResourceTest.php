@@ -8,17 +8,19 @@ use Illuminate\Http\Request;
 
 covers(UserResource::class);
 
-it('returns expected user data array', function (): void {
-    $user = new User([
-        'name' => 'John Doe',
-        'email' => 'john@example.com',
-    ]);
+describe('API | V1 | Resource | User', function (): void {
+    it('returns expected user data array', function (): void {
+        $user = new User([
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+        ]);
 
-    $resource = new UserResource($user);
+        $resource = new UserResource($user);
 
-    expect($resource->toArray(new Request))->toBe([
-        'id' => $user->id,
-        'name' => 'John Doe',
-        'email' => 'john@example.com',
-    ]);
+        expect($resource->toArray(new Request))->toBe([
+            'id' => $user->id,
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+        ]);
+    });
 });

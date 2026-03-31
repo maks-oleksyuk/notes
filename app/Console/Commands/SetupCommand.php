@@ -24,7 +24,6 @@ final class SetupCommand extends Command
         'public',
         'laravel-assets',
         'scribe-external',
-        'log-viewer-assets',
     ];
 
     public function handle(): int

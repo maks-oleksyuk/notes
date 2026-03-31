@@ -11,7 +11,7 @@ use Knuckles\Camel\Extraction\Response as ScribeResponse;
 use Knuckles\Camel\Extraction\ResponseCollection as ScribeResponseCollection;
 use Knuckles\Scribe\Tools\DocumentationConfig;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 covers(AppDefaultResponses::class);
 
@@ -27,7 +27,7 @@ beforeEach(fn (): array => [
 describe('Scribe | AppDefaultResponses', function (): void {
     it('assigns descriptions for standard successful responses', function (): void {
         $endpointData = ExtractedEndpointData::fromRoute($this->route);
-        $statuses = [Response::HTTP_OK, Response::HTTP_CREATED, Response::HTTP_NO_CONTENT];
+        $statuses = [HttpFoundationResponse::HTTP_OK, HttpFoundationResponse::HTTP_CREATED, HttpFoundationResponse::HTTP_NO_CONTENT];
 
         $endpointData->responses = new ScribeResponseCollection(array_map(
             fn (int $status): ScribeResponse => new ScribeResponse(['status' => $status]),
@@ -38,7 +38,7 @@ describe('Scribe | AppDefaultResponses', function (): void {
 
         foreach ($statuses as $status) {
             expect($endpointData->responses->firstWhere('status', $status)->description)
-                ->toBe(Response::$statusTexts[$status]);
+                ->toBe(HttpFoundationResponse::$statusTexts[$status]);
         }
     });
 
@@ -48,7 +48,7 @@ describe('Scribe | AppDefaultResponses', function (): void {
 
         $responses = $this->scribeStrategy->__invoke($endpointData);
 
-        assertErrorResponseStructure($responses, Response::HTTP_UNAUTHORIZED);
+        assertErrorResponseStructure($responses, HttpFoundationResponse::HTTP_UNAUTHORIZED);
     });
 
     it('adds not found error response when url parameters exist', function (): void {
@@ -58,9 +58,9 @@ describe('Scribe | AppDefaultResponses', function (): void {
         ];
 
         $responses = $this->scribeStrategy->__invoke($endpointData);
-        $response = new Collection($responses)->firstWhere('status', Response::HTTP_NOT_FOUND);
+        $response = new Collection($responses)->firstWhere('status', HttpFoundationResponse::HTTP_NOT_FOUND);
 
-        assertErrorResponseStructure($responses, Response::HTTP_NOT_FOUND);
+        assertErrorResponseStructure($responses, HttpFoundationResponse::HTTP_NOT_FOUND);
         expect($response['content'])
             ->not->toContain('\/')
             ->not->toContain('\u')
@@ -85,12 +85,12 @@ describe('Scribe | AppDefaultResponses', function (): void {
 
         $responses = $this->scribeStrategy->__invoke($endpointData);
 
-        $found = new Collection($responses)->firstWhere('status', Response::HTTP_UNPROCESSABLE_ENTITY);
+        $found = new Collection($responses)->firstWhere('status', HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY);
         expect($found)->not()->toBeNull()
-            ->and($found['description'])->toBe(Response::$statusTexts[Response::HTTP_UNPROCESSABLE_ENTITY])
+            ->and($found['description'])->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY])
             ->and(json_decode((string) $found['content'], true))->toBe([
-                'title' => Response::$statusTexts[Response::HTTP_UNPROCESSABLE_ENTITY],
-                'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
+                'title' => HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY],
+                'status' => HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY,
                 'detail' => 'string',
                 'instance' => '/test-uri',
                 'errors' => [
@@ -109,7 +109,7 @@ describe('Scribe | AppDefaultResponses', function (): void {
         ];
 
         $responsesBodyOnly = $this->scribeStrategy->__invoke($endpointData);
-        $foundBody = new Collection($responsesBodyOnly)->firstWhere('status', Response::HTTP_UNPROCESSABLE_ENTITY);
+        $foundBody = new Collection($responsesBodyOnly)->firstWhere('status', HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY);
         expect($foundBody)->not()->toBeNull();
 
         $endpointData = ExtractedEndpointData::fromRoute($this->route);
@@ -118,7 +118,7 @@ describe('Scribe | AppDefaultResponses', function (): void {
         ];
 
         $responsesQueryOnly = $this->scribeStrategy->__invoke($endpointData);
-        $foundQuery = new Collection($responsesQueryOnly)->firstWhere('status', Response::HTTP_UNPROCESSABLE_ENTITY);
+        $foundQuery = new Collection($responsesQueryOnly)->firstWhere('status', HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY);
         expect($foundQuery)->not()->toBeNull();
     });
 
@@ -126,7 +126,7 @@ describe('Scribe | AppDefaultResponses', function (): void {
         $endpointData = ExtractedEndpointData::fromRoute($this->route);
         $responses = $this->scribeStrategy->__invoke($endpointData);
 
-        foreach ([Response::HTTP_TOO_MANY_REQUESTS, Response::HTTP_SERVICE_UNAVAILABLE] as $status) {
+        foreach ([HttpFoundationResponse::HTTP_TOO_MANY_REQUESTS, HttpFoundationResponse::HTTP_SERVICE_UNAVAILABLE] as $status) {
             assertErrorResponseStructure($responses, $status);
         }
     });
@@ -145,9 +145,9 @@ describe('Scribe | AppDefaultResponses', function (): void {
 
         foreach (['makeSimpleErrorResponse', 'makeValidationErrorResponse'] as $methodName) {
             $method = $ref->getMethod($methodName);
-            $response = $method->invoke($this->scribeStrategy, $endpointData, Response::HTTP_BAD_REQUEST);
+            $response = $method->invoke($this->scribeStrategy, $endpointData, HttpFoundationResponse::HTTP_BAD_REQUEST);
 
-            expect($response['content'])->toBeString()->toBe('');
+            expect($response['content'])->toBeString()->toBeEmpty();
         }
     });
 });
@@ -156,9 +156,9 @@ function assertErrorResponseStructure(array $responses, int $status): void
 {
     $found = new Collection($responses)->firstWhere('status', $status);
     expect($found)->not()->toBeNull()
-        ->and($found['description'])->toBe(Response::$statusTexts[$status])
+        ->and($found['description'])->toBe(HttpFoundationResponse::$statusTexts[$status])
         ->and(json_decode((string) $found['content'], true))->toBe([
-            'title' => Response::$statusTexts[$status],
+            'title' => HttpFoundationResponse::$statusTexts[$status],
             'status' => $status,
             'detail' => 'string',
             'instance' => '/test-uri',

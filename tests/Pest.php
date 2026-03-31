@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 use App\Exceptions\ApiExceptionHandler;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Auth\GoogleController;
+use Illuminate\Foundation\Testing\WithCachedConfig;
+use Illuminate\Foundation\Testing\WithCachedRoutes;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Testing\TestResponse;
+use Tests\ApiV1TestCase;
 use Tests\TestCase;
 
 /*
@@ -17,7 +24,36 @@ use Tests\TestCase;
 |
 */
 
-pest()->extend(TestCase::class)->in('Feature', 'Unit');
+pest()
+    ->extend(TestCase::class)
+    ->use(WithCachedConfig::class)
+    ->use(WithCachedRoutes::class)
+    ->beforeEach(function (): void {
+        Http::fake(['https://api.pwnedpasswords.com/*' => Http::response('')]);
+        Http::preventStrayRequests();
+        Mail::fake();
+    })
+    ->in(
+        'Feature/Filament',
+        'Feature/Http/Controllers/Auth/',
+        'Feature/Http/Middleware/',
+        'Feature/Http/Requests/',
+        'Feature/Pages',
+        'Feature/AllRouteTest.php',
+        'Unit',
+    );
+
+// https://github.com/pestphp/pest/issues/1303
+pest()
+    ->extend(ApiV1TestCase::class)
+    ->use(WithCachedConfig::class)
+    ->use(WithCachedRoutes::class)
+    ->beforeEach(function (): void {
+        Http::fake(['https://api.pwnedpasswords.com/*' => Http::response('')]);
+        Http::preventStrayRequests();
+        Mail::fake();
+    })
+    ->in('Feature/Http/Controllers/Api/V1');
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +72,7 @@ arch()->preset()->security();
 arch()->preset()->laravel()->ignoring([
     AuthController::class,
     ApiExceptionHandler::class,
+    GoogleController::class,
 ]);
 arch()->preset()->php();
 
@@ -50,4 +87,12 @@ arch()->preset()->php();
 |
 */
 
-function something(): void {}
+/**
+ * Assert that the response contains API version headers.
+ */
+function assertApiVersionHeaders(
+    TestResponse $response,
+    string $status = 'active',
+): TestResponse {
+    return $response->assertHeaderContains('x-api-version-status', $status);
+}

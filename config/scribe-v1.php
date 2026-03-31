@@ -6,7 +6,8 @@ use App\Support\Scribe\Extracting\Strategies\Responses\AppDefaultResponses;
 use App\Support\Scribe\Writing\OpenApiSpecGenerators\ScalarOpenApiGenerator;
 use Knuckles\Scribe\Config\AuthIn;
 use Knuckles\Scribe\Config\Defaults;
-use Knuckles\Scribe\Extracting\Strategies;
+use Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls;
+use Knuckles\Scribe\Extracting\Strategies\StaticData;
 
 use function Knuckles\Scribe\Config\configureStrategy;
 
@@ -180,12 +181,17 @@ return [
         ],
     ],
 
-    // Generate an OpenAPI spec (v3.0.1) in addition to docs webpage.
+    // Generate an OpenAPI spec in addition to docs webpage.
     // For 'static' docs, the collection will be generated to public/docs/openapi.yaml.
     // For 'laravel' docs, it will be generated to storage/app/scribe/openapi.yaml.
     // Setting `laravel.add_routes` to true (above) will also add a route for the spec.
     'openapi' => [
         'enabled' => true,
+
+        // The OpenAPI spec version to generate. Supported versions: '3.0.3', '3.1.0'.
+        // OpenAPI 3.1 is more compatible with JSON Schema and is becoming the dominant version.
+        // See https://spec.openapis.org/oas/v3.1.0 for details on 3.1 changes.
+        'version' => '3.2.0',
 
         'overrides' => [
             // 'info.version' => '2.0.0',
@@ -245,7 +251,7 @@ return [
         ],
         'headers' => [
             ...Defaults::HEADERS_STRATEGIES,
-            Strategies\StaticData::withSettings(data: [
+            StaticData::withSettings(data: [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
             ]),
@@ -262,7 +268,7 @@ return [
         'responses' => configureStrategy([
             ...Defaults::RESPONSES_STRATEGIES,
             AppDefaultResponses::class,
-        ], Strategies\Responses\ResponseCalls::withSettings(
+        ], ResponseCalls::withSettings(
             // Recommended: disable debug mode in response calls to avoid error stack traces in responses
             config: [
                 'app.debug' => false,

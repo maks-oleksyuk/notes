@@ -7,6 +7,7 @@ use App\Filament\Resources\User\Pages\ListUsers;
 use Filament\Actions\ExportAction;
 use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Support\Colors\Color;
+use Filament\Support\Icons\Heroicon;
 
 covers(ListUsers::class);
 
@@ -24,7 +25,7 @@ describe('Filament | User List', function (): void {
         expect($csvAction->getName())->toBe('export_csv')
             ->and($csvAction->getLabel())->toBe('Export CSV')
             ->and($csvAction->getExporter())->toBe(UserExporter::class)
-            ->and($csvAction->getIcon())->toEqual('heroicon-m-document-arrow-down')
+            ->and($csvAction->getIcon())->toEqual(Heroicon::OutlinedDocumentArrowDown)
             ->and($csvAction->getFormats())->toEqual([ExportFormat::Csv])
             ->and($csvAction->hasColumnMapping())->toBeFalse()
             ->and($csvAction->getColor())->toBe(Color::Sky)
@@ -36,7 +37,7 @@ describe('Filament | User List', function (): void {
         expect($xlsAction->getName())->toBe('export_xls')
             ->and($xlsAction->getLabel())->toBe('Export XLSX')
             ->and($xlsAction->getExporter())->toBe(UserExporter::class)
-            ->and($xlsAction->getIcon())->toEqual('heroicon-m-document-arrow-down')
+            ->and($xlsAction->getIcon())->toEqual(Heroicon::OutlinedDocumentArrowDown)
             ->and($xlsAction->getFormats())->toEqual([ExportFormat::Xlsx])
             ->and($xlsAction->hasColumnMapping())->toBeFalse()
             ->and($xlsAction->getColor())->toBe(Color::Green)

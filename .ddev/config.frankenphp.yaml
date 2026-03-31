@@ -1,0 +1,27 @@
+webserver_type: generic
+web_extra_daemons:
+  - name: 'octane'
+    command: 'php artisan octane:start --host=0.0.0.0 --port=80 --admin-port=2019 --watch'
+    directory: /var/www/html
+web_extra_exposed_ports:
+  - name: 'octane'
+    container_port: 80
+    http_port: 80
+    https_port: 443
+# See https://pkg.henderkes.com/85/php-zts/packages?type=debian
+webimage_extra_packages:
+  - frankenphp
+  - php-zts-apcu
+  - php-zts-bcmath
+  - php-zts-cli
+  - php-zts-ftp
+  - php-zts-gd
+  - php-zts-gettext
+  - php-zts-imagick
+  - php-zts-intl
+  - php-zts-pdo-pgsql
+  - php-zts-pgsql
+  - php-zts-redis
+  - php-zts-xdebug
+  - php-zts-xhprof
+  - php-zts-zip

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\User;
 
+use App\Http\Requests\Api\V1\User\IndexUserRequest;
 use App\Http\Requests\Api\V1\User\StoreUserRequest;
 use App\Http\Requests\Api\V1\User\UpdateUserRequest;
 use App\Http\Resources\Api\V1\User\UserResource;
 use App\Models\User;
+use App\Repositories\Contracts\Models\UserRepositoryInterface;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -15,31 +17,39 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 #[Group('User')]
 final class UserController extends Controller
 {
     public function __construct(
         private readonly ResponseFactory $responseFactory,
+        private readonly UserRepositoryInterface $userRepository,
     ) {}
 
     /**
      * @throws \Throwable
      */
     #[Endpoint('List users')]
-    public function index(): ResourceCollection
+    public function index(IndexUserRequest $request): ResourceCollection
     {
-        return User::query()->latest('id')->paginate()->toResourceCollection(UserResource::class);
+        return $this->userRepository
+            ->query()
+            ->latest('id')
+            ->paginate(perPage: $request->perPage(), page: $request->page())
+            ->toResourceCollection(UserResource::class);
     }
 
     #[Endpoint('Create user')]
     public function store(StoreUserRequest $request): JsonResponse
     {
-        $user = User::query()->create($request->validated());
+        $user = $this->userRepository
+            ->query()
+            ->create($request->validated());
 
         return new UserResource($user)
             ->response()
-            ->setStatusCode(201);
+            ->setStatusCode(HttpFoundationResponse::HTTP_CREATED);
     }
 
     #[Endpoint('Get user')]

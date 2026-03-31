@@ -21,7 +21,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 covers(SetupCommand::class);
 
-uses(PHPMock::class);
+pest()->use(PHPMock::class);
 
 dataset('envs', [
     'production',

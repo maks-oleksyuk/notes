@@ -6,9 +6,20 @@ use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\Transform\Rector\StaticCall\StaticCallToMethodCallRector;
 use Rector\ValueObject\PhpVersion;
+use RectorLaravel\Rector\Class_\RemoveModelPropertyFromFactoriesRector;
+use RectorLaravel\Rector\Class_\UseForwardsCallsTraitRector;
+use RectorLaravel\Rector\Empty_\EmptyToBlankAndFilledFuncRector;
 use RectorLaravel\Rector\FuncCall\ArgumentFuncCallToMethodCallRector;
+use RectorLaravel\Rector\FuncCall\RemoveDumpDataDeadCodeRector;
+use RectorLaravel\Rector\MethodCall\ResponseHelperCallToJsonResponseRector;
+use RectorLaravel\Rector\MethodCall\UseComponentPropertyWithinCommandsRector;
+use RectorLaravel\Rector\MethodCall\WhereToWhereLikeRector;
+use RectorLaravel\Rector\StaticCall\RouteActionCallableRector;
 use RectorLaravel\Set\LaravelLevelSetList;
 use RectorLaravel\Set\LaravelSetList;
+use RectorLaravel\Set\LaravelSetProvider;
+use RectorPest\Set\PestLevelSetList;
+use RectorPest\Set\PestSetList;
 
 if (defined('ARTISAN_BINARY') || ! class_exists(RectorConfig::class)) {
     return;
@@ -17,12 +28,16 @@ if (defined('ARTISAN_BINARY') || ! class_exists(RectorConfig::class)) {
 return RectorConfig::configure()
     ->withPaths([
         __DIR__.'/../../app',
+        __DIR__.'/../../bootstrap/app.php',
+        __DIR__.'/../../bootstrap/providers.php',
+        __DIR__.'/../../config',
         __DIR__.'/../../database',
         __DIR__.'/../../routes',
         __DIR__.'/../../tests',
     ])
-    ->withPhpVersion(PhpVersion::PHP_84)
-    ->withPhpSets(php84: true)
+    ->withPhpVersion(PhpVersion::PHP_85)
+    ->withPhpSets(php85: true)
+    ->withSetProviders(LaravelSetProvider::class)
     ->withComposerBased(
         laravel: true,
     )
@@ -36,9 +51,12 @@ return RectorConfig::configure()
         codingStyle: true,
         typeDeclarations: true,
         typeDeclarationDocblocks: true,
+        privatization: true,
+        // naming: true,
         instanceOf: true,
         earlyReturn: true,
         carbon: true,
+        rectorPreset: true,
     )
     ->withSets([
         LaravelLevelSetList::UP_TO_LARAVEL_120,
@@ -55,6 +73,22 @@ return RectorConfig::configure()
         LaravelSetList::LARAVEL_STATIC_TO_INJECTION,
         LaravelSetList::LARAVEL_TESTING,
         LaravelSetList::LARAVEL_TYPE_DECLARATIONS,
+        PestLevelSetList::UP_TO_PEST_40,
+        PestSetList::PEST_CODE_QUALITY,
+        PestSetList::PEST_CHAIN,
+        PestSetList::PEST_LARAVEL,
+    ])
+    ->withConfiguredRule(RemoveDumpDataDeadCodeRector::class, [])
+    ->withConfiguredRule(RouteActionCallableRector::class, [])
+    ->withConfiguredRule(WhereToWhereLikeRector::class, [
+        WhereToWhereLikeRector::USING_POSTGRES_DRIVER => true,
+    ])
+    ->withRules([
+        RemoveModelPropertyFromFactoriesRector::class,
+        ResponseHelperCallToJsonResponseRector::class,
+        UseComponentPropertyWithinCommandsRector::class,
+        UseForwardsCallsTraitRector::class,
+        EmptyToBlankAndFilledFuncRector::class,
     ])
     ->withSkip([
         StaticCallToMethodCallRector::class => [

@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.5 (Debian 17.5-1.pgdg120+1)
--- Dumped by pg_dump version 17.5 (Debian 17.5-1.pgdg120+1)
+-- Dumped from database version 18.1 (Debian 18.1-1.pgdg13+2)
+-- Dumped by pg_dump version 18.2 (Debian 18.2-1.pgdg13+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -28,7 +28,7 @@ SET default_table_access_method = heap;
 CREATE TABLE public.cache (
     key character varying(255) NOT NULL,
     value text NOT NULL,
-    expiration integer NOT NULL
+    expiration bigint NOT NULL
 );
 
 
@@ -39,7 +39,7 @@ CREATE TABLE public.cache (
 CREATE TABLE public.cache_locks (
     key character varying(255) NOT NULL,
     owner character varying(255) NOT NULL,
-    expiration integer NOT NULL
+    expiration bigint NOT NULL
 );
 
 
@@ -387,8 +387,9 @@ CREATE TABLE public.users (
     name character varying(255) NOT NULL,
     email character varying(255) NOT NULL,
     email_verified_at timestamp(0) without time zone,
-    password character varying(255) NOT NULL,
+    password character varying(255),
     remember_token character varying(100),
+    google_id character varying(30),
     created_at timestamp(0) without time zone,
     updated_at timestamp(0) without time zone
 );
@@ -629,6 +630,14 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: users users_google_id_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_google_id_unique UNIQUE (google_id);
+
+
+--
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -757,8 +766,8 @@ ALTER TABLE ONLY public.exports
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.5 (Debian 17.5-1.pgdg120+1)
--- Dumped by pg_dump version 17.5 (Debian 17.5-1.pgdg120+1)
+-- Dumped from database version 18.1 (Debian 18.1-1.pgdg13+2)
+-- Dumped by pg_dump version 18.2 (Debian 18.2-1.pgdg13+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;

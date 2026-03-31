@@ -40,13 +40,13 @@ final class ScalarOpenApiGenerator extends OpenApiGenerator
                 /** @var Metadata $metadata */
                 $metadata = $endpoint['metadata'];
 
-                if (empty($metadata->subgroup)) {
+                if (blank($metadata->subgroup)) {
                     continue;
                 }
 
                 $tagName = $this->generateTagNameFromMetadata($metadata);
 
-                if (in_array($tagName, $tagsHashmap)) {
+                if (in_array($tagName, $tagsHashmap, true)) {
                     continue;
                 }
 

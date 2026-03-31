@@ -1,5 +1,6 @@
 includes:
   - ../../vendor/larastan/larastan/extension.neon
+  - ../../vendor/phpstan/phpstan/conf/bleedingEdge.neon
   - ../../vendor/phpstan/phpstan-deprecation-rules/rules.neon
 
 parameters:
@@ -10,3 +11,14 @@ parameters:
   tmpDir: ../../var/cache/phpstan
   scanFiles:
     - ../../_ide_helper_models.php
+  # Larastan parameters:
+  checkOctaneCompatibility: true
+  checkModelProperties: true
+  # checkUnusedViews: true
+  # checkMissingTranslations: true
+  checkModelMethodVisibility: true
+  generalizeEnvReturnType: true
+  checkConfigTypes: true
+  checkAuthCallsWhenInRequestScope: true
+  parseModelCastsMethod: true
+  enableMigrationCache: true

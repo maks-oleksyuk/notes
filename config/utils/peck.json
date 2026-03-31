@@ -1,0 +1,6 @@
+{
+    "preset": "laravel",
+    "ignore": {
+        "words": ["js", "pgsql", "pnpm", "taskfile", "utils"]
+    }
+}

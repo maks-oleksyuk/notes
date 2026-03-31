@@ -5,13 +5,14 @@ declare(strict_types=1);
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Filament\Panel;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 covers(User::class);
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
-describe('User Model', function (): void {
+describe('Model | User', function (): void {
     it('can create a user', function (): void {
         $user = User::factory()->create([
             'name' => 'John Doe',
@@ -36,6 +37,7 @@ describe('User Model', function (): void {
             'name',
             'email',
             'password',
+            'google_id',
         ]);
     });
 
@@ -46,6 +48,7 @@ describe('User Model', function (): void {
             'id' => 'int',
             'password' => 'hashed',
             'email_verified_at' => 'datetime',
+            'google_id' => 'string',
         ]);
     });
 
@@ -59,7 +62,7 @@ describe('User Model', function (): void {
         $user = User::factory()->make();
         $array = $user->toArray();
 
-        expect($array)->not->toHaveKeys(['password', 'remember_token']);
+        expect($array)->not->toHaveKeys(['password', 'remember_token', 'google_id']);
     });
 
     it('casts email_verified_at as datetime', function (): void {
@@ -72,5 +75,13 @@ describe('User Model', function (): void {
         $panel = Mockery::mock(Panel::class);
 
         expect($user->canAccessPanel($panel))->toBeTrue();
+    });
+
+    it('implements HasLocalePreference and returns null by default', function (): void {
+        $user = User::factory()->make();
+
+        expect($user)
+            ->toBeInstanceOf(HasLocalePreference::class)
+            ->and($user->preferredLocale())->toBeNull();
     });
 });

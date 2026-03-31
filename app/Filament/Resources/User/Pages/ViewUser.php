@@ -9,5 +9,6 @@ use Filament\Resources\Pages\ViewRecord;
 
 final class ViewUser extends ViewRecord
 {
+    #[\Override]
     protected static string $resource = UserResource::class;
 }

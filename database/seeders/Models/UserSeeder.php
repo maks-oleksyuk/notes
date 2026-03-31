@@ -15,11 +15,11 @@ final class UserSeeder extends Seeder
         $users = [[
             'name' => 'admin',
             'email' => 'admin@example.com',
-            'password' => Hash::make('admin_pass'),
+            'password' => Hash::make('admin_Pass1'),
         ], [
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'password' => Hash::make('test_pass'),
+            'password' => Hash::make('test_Pass2'),
         ], ];
 
         foreach ($users as $user) {

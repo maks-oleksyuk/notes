@@ -18,10 +18,13 @@ use Illuminate\Database\Eloquent\Model;
 
 final class UserResource extends Resource
 {
+    #[\Override]
     protected static ?string $model = User::class;
 
+    #[\Override]
     protected static ?string $slug = 'users';
 
+    #[\Override]
     protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-users';
 
     #[\Override]
