@@ -28,7 +28,7 @@
         "laravel/boost": "^2.4.1",
         "laravel/pint": "^1.29",
         "mockery/mockery": "^1.6.12",
-        "mrpunyapal/rector-pest": "^0.2.4",
+        "mrpunyapal/rector-pest": "^0.2.5",
         "peckphp/peck": "^0.2",
         "pestphp/pest": "^4.4.3",
         "pestphp/pest-plugin-laravel": "^4.1",

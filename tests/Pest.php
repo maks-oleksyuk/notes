@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\GoogleController;
 use Illuminate\Foundation\Testing\WithCachedConfig;
 use Illuminate\Foundation\Testing\WithCachedRoutes;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Testing\TestResponse;
 use Tests\ApiV1TestCase;
 use Tests\TestCase;
@@ -27,9 +28,14 @@ pest()
     ->extend(TestCase::class)
     ->use(WithCachedConfig::class)
     ->use(WithCachedRoutes::class)
-    ->beforeEach(fn () => Http::preventStrayRequests())
+    ->beforeEach(function (): void {
+        Http::fake(['https://api.pwnedpasswords.com/*' => Http::response('')]);
+        Http::preventStrayRequests();
+        Mail::fake();
+    })
     ->in(
         'Feature/Filament',
+        'Feature/Http/Controllers/Auth/',
         'Feature/Http/Middleware/',
         'Feature/Http/Requests/',
         'Feature/Pages',
@@ -42,7 +48,11 @@ pest()
     ->extend(ApiV1TestCase::class)
     ->use(WithCachedConfig::class)
     ->use(WithCachedRoutes::class)
-    ->beforeEach(fn () => Http::preventStrayRequests())
+    ->beforeEach(function (): void {
+        Http::fake(['https://api.pwnedpasswords.com/*' => Http::response('')]);
+        Http::preventStrayRequests();
+        Mail::fake();
+    })
     ->in('Feature/Http/Controllers/Api/V1');
 
 /*

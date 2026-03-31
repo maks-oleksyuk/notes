@@ -28,7 +28,7 @@ SET default_table_access_method = heap;
 CREATE TABLE public.cache (
     key character varying(255) NOT NULL,
     value text NOT NULL,
-    expiration integer NOT NULL
+    expiration bigint NOT NULL
 );
 
 
