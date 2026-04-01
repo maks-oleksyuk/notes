@@ -95,7 +95,7 @@ jobs:
 
     services:
       db:
-        image: mariadb:11.4
+        image: mariadb:11.8
         ports:
           - 3306:3306
         env:
@@ -128,7 +128,7 @@ jobs:
         run: task ${{ matrix.command.command }}
 
       - name: '☂️ Upload results to Codecov'
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: maks-oleksyuk/notes
@@ -136,7 +136,7 @@ jobs:
           directory: ./var/report
 
       - name: '☂️ Upload test results to Codecov'
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ matrix.command.name }}

@@ -107,17 +107,20 @@ jobs:
           keep_minimum_runs: 1
           delete_workflow_pattern: cd-symfony.yml
 
-#  deploy:
-#    name: '🚀 Deploy'
-#    runs-on: ubuntu-latest
-#    needs: [resolve, cleanup]
-#    environment: ${{ needs.resolve.outputs.environment }}
-#
-#    steps:
-#      - name: '🌐 Dokploy | ${{ needs.resolve.outputs.deploy_name }}'
-#        uses: benbristow/dokploy-deploy-action@0.2.2
-#        with:
-#          dokploy_url: ${{ secrets.DOKPLOY_URL }}
-#          api_token: ${{ secrets.DOKPLOY_TOKEN }}
-#          application_id: ${{ secrets.DOKPLOY_COMPOSE_ID }}
-#          service_type: compose
+  deploy:
+    name: '🚀 Deploy | ${{ needs.resolve.outputs.deploy_name }}'
+    runs-on: ubuntu-latest
+    needs: [resolve, cleanup]
+    environment: ${{ needs.resolve.outputs.environment }}
+
+    steps:
+      - name: '🌐 Demo Deploy Step'
+        run: echo "Trigger deploy here (demo mode)"
+
+      # - name: '🌐 Dokploy | ${{ needs.resolve.outputs.deploy_name }}'
+      #  uses: benbristow/dokploy-deploy-action@0.2.2
+      #  with:
+      #    dokploy_url: ${{ secrets.DOKPLOY_URL }}
+      #    api_token: ${{ secrets.DOKPLOY_TOKEN }}
+      #    application_id: ${{ secrets.DOKPLOY_COMPOSE_ID }}
+      #    service_type: compose
