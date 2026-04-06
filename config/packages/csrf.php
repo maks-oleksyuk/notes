@@ -2,19 +2,22 @@
 
 declare(strict_types=1);
 
-use Symfony\Config\FrameworkConfig;
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-return static function (FrameworkConfig $frameworkConfig): void {
-    $frameworkConfig
-        ->form()
-        ->csrfProtection()
-        ->tokenId('submit');
+return App::config([
+    'framework' => [
+        'form' => [
+            'csrf_protection' => [
+                'token_id' => 'submit',
+            ],
+        ],
 
-    $frameworkConfig
-        ->csrfProtection()
-        ->statelessTokenIds([
-            'submit',
-            'authenticate',
-            'logout',
-        ]);
-};
+        'csrf_protection' => [
+            'stateless_token_ids' => [
+                'submit',
+                'authenticate',
+                'logout',
+            ],
+        ],
+    ],
+]);

@@ -5,12 +5,12 @@ inputs:
   php:
     description: 'PHP version to install'
     required: true
-    default: '8.4'
+    default: '8.5'
 
   node:
     description: 'Node.js version to install'
     required: true
-    default: '22.x'
+    default: '24.x'
 
   use-php:
     description: 'Whether to install PHP and dependencies'
@@ -45,24 +45,24 @@ runs:
 
     - name: '💽 Cache composer dependencies'
       if: ${{ inputs.use-php == 'true' }}
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
-        key: "composer-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}-${{ hashFiles('**/composer.lock') }}"
+        key: "${{ runner.os }}-${{ github.ref_name }}-composer-${{ hashFiles('**/composer.lock') }}"
         restore-keys: |
-          composer-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}
-          composer-cache-${{ runner.os }}-${{ github.base_ref }}
-          composer-cache-${{ runner.os }}-symfony
+          ${{ runner.os }}-${{ github.head_ref || github.ref_name }}-composer
+          ${{ runner.os }}-${{ github.base_ref }}-composer
+          ${{ runner.os }}-symfony-composer
 
     - name: '💽 Cache var directory'
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: var/cache
-        key: "var-${{ runner.os }}-${{ github.head_ref || github.ref_name }}"
+        key: "${{ runner.os }}-${{ github.ref_name }}-var"
         restore-keys: |
-          var-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}
-          var-cache-${{ runner.os }}-${{ github.base_ref }}
-          var-cache-${{ runner.os }}-symfony
+          ${{ runner.os }}-${{ github.head_ref || github.ref_name }}-var
+          ${{ runner.os }}-${{ github.base_ref }}-var
+          ${{ runner.os }}-symfony-var
 
     - name: '📦 Install composer dependencies'
       if: ${{ inputs.use-php == 'true' }}
@@ -71,11 +71,11 @@ runs:
 
     - name: '🟧 Setup pnpm'
       if: ${{ inputs.use-node == 'true' }}
-      uses: pnpm/action-setup@v4
+      uses: pnpm/action-setup@v5
 
     - name: '❇️ Setup Node.js ${{ inputs.node }}'
       if: ${{ inputs.use-node == 'true' }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         cache: pnpm
         node-version: ${{ inputs.node }}

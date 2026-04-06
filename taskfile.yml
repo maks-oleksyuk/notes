@@ -15,27 +15,24 @@ dotenv: ['.env.local', '.env']
 
 tasks:
   default:
-    desc: 'List all command.'
+    desc: 'List all commands.'
     cmd: 'task -l'
 
   # Utils:
 
   composer:
-    label: 'Composer'
     desc: 'Runs `composer` command.'
     cmd: '{{.PHP_BIN}} {{.COMPOSER_BIN}} {{.CLI_ARGS}} --ansi'
     internal: true
     silent: true
 
   pnpm:
-    label: 'pnpm'
     desc: 'Runs `pnpm` command.'
     cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
     internal: true
     silent: true
 
   bin/console:
-    label: 'Symfony console'
     desc: 'Runs Symfony `bin/console` command.'
     aliases:
       - c
@@ -47,7 +44,6 @@ tasks:
     silent: true
 
   bin/phpunit:
-    label: 'Symfony phpunit'
     desc: 'Runs `bin/phpunit` command.'
     aliases:
       - unit
@@ -61,7 +57,6 @@ tasks:
     silent: true
 
   php-cs-fixer:
-    label: 'PHP CS Fixer'
     desc: 'Runs `php-cs-fixer` command.'
     aliases:
       - csf
@@ -73,7 +68,6 @@ tasks:
     silent: true
 
   phpstan:
-    label: 'PHPStan'
     desc: 'Runs `phpstan` command.'
     aliases:
       - php:stan
@@ -83,7 +77,6 @@ tasks:
     silent: true
 
   rector:
-    label: 'Rector'
     desc: 'Runs `rector` command.'
     aliases:
       - r
@@ -93,7 +86,6 @@ tasks:
     silent: true
 
   twig-cs-fixer:
-    label: 'Twig CS Fixer'
     desc: 'Runs `twig-cs-fixer` command.'
     aliases:
       - tcsf
@@ -105,18 +97,17 @@ tasks:
     silent: true
 
   prettier:
-    label: 'Prettier'
     desc: 'Runs `prettier` command.'
     cmd:
       '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
       --config={{.CONFIG_DIR}}/.prettierrc.json
-      --ignore-path={{.CONFIG_DIR}}/.prettierignore'
+      --ignore-path={{.CONFIG_DIR}}/.prettierignore
+      --cache --cache-location=var/cache/prettier/prettier.cache'
     silent: true
 
   # Work commands:
 
   cache:clear:
-    label: 'Clear the cache'
     desc: ' Clears the application cache for a given environment.'
     aliases:
       - cc
@@ -127,7 +118,6 @@ tasks:
     silent: true
 
   deploy:
-    label: 'Deploy'
     desc: 'Deploy code'
     aliases:
       - d
@@ -142,8 +132,15 @@ tasks:
       - task: sf:console
         vars: { CLI_ARGS: 'cache:warmup' }
 
+  init:
+    desc: 'Run post-start initialization (migrations, cache).'
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:migrate -n' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'cache:warmup' }
+
   update:
-    label: 'Update project'
     desc: 'Updates project dependencies withing constraints.'
     prompt: |
       This command can break website. Do it independently without any other active changes.
@@ -159,7 +156,6 @@ tasks:
   # Migrations:
 
   migrations:create:
-    label: 'Create migration'
     desc: 'Generate a new migration based on current schema'
     aliases:
       - m:c
@@ -168,25 +164,21 @@ tasks:
         vars: { CLI_ARGS: 'doctrine:migrations:diff --formatted {{.CLI_ARGS}}' }
 
   migrations:run:
-    label: 'Run migrations'
     desc: 'Apply all pending migrations'
     aliases:
       - m
       - m:s
       - m:r
+      - migrate
     cmds:
       - task: sf:console
         vars: { CLI_ARGS: 'doctrine:migrations:migrate {{.CLI_ARGS}}' }
 
   migrations:rerun-last:
-    label: 'Rerun last migration'
     desc: 'Rollback and re-apply the last migration'
     aliases:
       - m:l
-      - m:rr
-      - m:rl
-      - m:lrr
-      - m:rrl
+      - m:last
     cmds:
       - task: sf:console
         vars: { CLI_ARGS: 'doctrine:migrations:migrate prev -n' }
@@ -194,10 +186,9 @@ tasks:
         vars: { CLI_ARGS: 'doctrine:migrations:migrate next -n' }
 
   migrations:reset:
-    label: 'Reset DB'
     desc: 'Drop schema, clear versions, rerun migrations and load fixtures.'
     aliases:
-      - m:rst
+      - m:reset
     cmds:
       - task: sf:console
         vars: { CLI_ARGS: 'doctrine:schema:drop --force' }
@@ -211,8 +202,7 @@ tasks:
   # Linters:
 
   lint:
-    label: 'Project lint'
-    desc: 'Validates project files.'
+    desc: 'Run all linters and validators.'
     aliases:
       - l
     cmds:
@@ -221,13 +211,12 @@ tasks:
       - defer: { task: lint:rector }
       - defer: { task: lint:phpstan }
       - defer: { task: lint:php-cs-fixer }
-      - defer: { task: lint:composer }
       - defer: { task: lint:symfony }
+      - defer: { task: lint:composer }
       - defer: { task: lint:commit }
       - defer: { task: lint:branch }
 
   lint:branch:
-    label: 'Lint git branch name'
     desc: 'Validates the current git branch name.'
     aliases:
       - l:b
@@ -239,7 +228,6 @@ tasks:
         vars: { CLI_ARGS: 'validate-branch-name' }
 
   lint:commit:
-    label: 'Lint last git commits'
     desc: 'Run commit message validation using commitlint.'
     aliases:
       - l:cmt
@@ -252,7 +240,6 @@ tasks:
         vars: { CLI_ARGS: 'commitlint --from=HEAD~1 --to=HEAD' }
 
   lint:symfony:
-    label: 'Symfony lint'
     desc: 'Runs default Symfony lint commands to validate project'
     aliases:
       - l:sf
@@ -275,8 +262,7 @@ tasks:
         vars: { CLI_ARGS: 'doctrine:schema:validate --skip-sync' }
 
   lint:composer:
-    label: 'Composer validation'
-    desc: 'Validates composer.json file and checks platform requirements.'
+    desc: 'Validates composer.json and platform requirements.'
     aliases:
       - l:co
       - l:composer
@@ -290,7 +276,6 @@ tasks:
         vars: { CLI_ARGS: 'check-platform-req' }
 
   lint:php-cs-fixer:
-    label: 'PHP CS Fixer validation'
     desc: 'Lint php files.'
     aliases:
       - l:p
@@ -305,7 +290,6 @@ tasks:
         vars: { CLI_ARGS: '--dry-run --diff {{.CLI_ARGS}}' }
 
   lint:phpstan:
-    label: 'PHPStan analyze'
     desc: 'Analyze PHP code for bugs and errors.'
     aliases:
       - l:s
@@ -320,8 +304,7 @@ tasks:
         vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}}' }
 
   lint:rector:
-    label: 'Rector check'
-    desc: 'Check Rector issues.'
+    desc: 'Check for Rector refactoring suggestions.'
     aliases:
       - l:r
       - l:rector
@@ -333,7 +316,6 @@ tasks:
         vars: { CLI_ARGS: '--dry-run {{.CLI_ARGS}}' }
 
   lint:twig:
-    label: 'Twig linter'
     desc: 'Lints Twig files.'
     aliases:
       - l:t
@@ -346,7 +328,6 @@ tasks:
         vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
   lint:prettier:
-    label: 'Prettier'
     desc: 'Checks for common format issues with prettier.'
     aliases:
       - l:f
@@ -364,7 +345,6 @@ tasks:
   # Fixing:
 
   fix:
-    label: 'Fixing found issues'
     desc: 'Trying for automated fixes for found problems.'
     aliases:
       - f
@@ -376,7 +356,6 @@ tasks:
       - defer: { task: fix:composer }
 
   fix:composer:
-    label: 'Composer fix'
     desc: 'Try to fix composer errors.'
     aliases:
       - f:co
@@ -389,7 +368,6 @@ tasks:
         vars: { CLI_ARGS: 'bump' }
 
   fix:php-cs-fixer:
-    label: 'PHP CS Fixer'
     desc: 'Fix PHP CS Fixer issues.'
     aliases:
       - f:p
@@ -403,7 +381,6 @@ tasks:
       - task: php-cs-fixer
 
   fix:rector:
-    label: 'Rector'
     desc: 'Fix Rector issues.'
     aliases:
       - f:r
@@ -413,7 +390,6 @@ tasks:
         vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
   fix:twig:
-    label: 'Twig CS Fixer '
     desc: 'Fix Twig CS Fixer issues.'
     aliases:
       - f:t
@@ -424,7 +400,6 @@ tasks:
         vars: { CLI_ARGS: '--fix' }
 
   fix:prettier:
-    label: 'Prettier'
     desc: 'Fix format issues.'
     aliases:
       - f:f
@@ -440,7 +415,6 @@ tasks:
   # Testing:
 
   test:
-    label: 'Project test'
     desc: 'Run project test.'
     aliases:
       - t
@@ -450,7 +424,6 @@ tasks:
         vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
   test:application:
-    label: 'application test'
     desc: 'Run application tests.'
     aliases:
       - t:a
@@ -464,7 +437,6 @@ tasks:
         vars: { CLI_ARGS: '--testsuite=Application {{.CLI_ARGS}}' }
 
   test:integration:
-    label: 'Integration test'
     desc: 'Run integration tests.'
     aliases:
       - t:i
@@ -476,7 +448,6 @@ tasks:
         vars: { CLI_ARGS: '--testsuite=Integration {{.CLI_ARGS}}' }
 
   test:unit:
-    label: 'Unit test'
     desc: 'Run unit tests.'
     aliases:
       - t:u

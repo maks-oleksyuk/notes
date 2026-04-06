@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
+namespace Symfony\Component\Routing\Loader\Configurator;
 
-return static function (RoutingConfigurator $routingConfigurator): void {
-    $routingConfigurator->import('.', 'easyadmin.routes');
-};
+return Routes::config([
+    'easyadmin' => [
+        'resource' => '.',
+        'type' => 'easyadmin.routes',
+    ],
+]);

@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
+namespace Symfony\Component\Routing\Loader\Configurator;
 
-return static function (RoutingConfigurator $routingConfigurator): void {
-    if ('dev' === $routingConfigurator->env()) {
-        $routingConfigurator->import('@FrameworkBundle/Resources/config/routing/errors.php')
-            ->prefix('/_error');
-    }
-};
+return Routes::config([
+    'when@dev' => [
+        'errors' => [
+            'resource' => '@FrameworkBundle/Resources/config/routing/errors.php',
+            'prefix' => '/_error',
+        ],
+    ],
+]);

@@ -37,7 +37,7 @@ final class MaintenanceKernelRequestSubscriberTest extends KernelTestCase
 
         $listener($event);
 
-        self::assertFalse($event->hasResponse());
+        $this->assertFalse($event->hasResponse());
     }
 
     public function testSets503ResponseAndStopsPropagation(): void
@@ -47,21 +47,21 @@ final class MaintenanceKernelRequestSubscriberTest extends KernelTestCase
 
         $listener($event);
 
-        self::assertTrue($event->hasResponse());
+        $this->assertTrue($event->hasResponse());
         $response = $event->getResponse();
-        self::assertSame(Response::HTTP_SERVICE_UNAVAILABLE, $response->getStatusCode());
+        $this->assertSame(Response::HTTP_SERVICE_UNAVAILABLE, $response->getStatusCode(), (string) $response->getContent());
     }
 
     public function testDisablesProfilerIfExists(): void
     {
         $profiler = $this->createMock(Profiler::class);
-        $profiler->expects(self::once())->method('disable');
+        $profiler->expects($this->once())->method('disable');
 
         $listener = new MaintenanceKernelRequestSubscriber(true, $this->twig, $profiler);
         $event = new RequestEvent($this->httpKernel, new Request(), HttpKernelInterface::MAIN_REQUEST);
 
         $listener($event);
 
-        self::assertTrue($event->hasResponse());
+        $this->assertTrue($event->hasResponse());
     }
 }

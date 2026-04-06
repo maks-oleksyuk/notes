@@ -2,15 +2,12 @@
 
 declare(strict_types=1);
 
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Config\Framework\RouterConfig;
-use Symfony\Config\FrameworkConfig;
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-return static function (ContainerConfigurator $containerConfigurator, FrameworkConfig $frameworkConfig): void {
-    $routerConfig = $frameworkConfig->router();
-    assert($routerConfig instanceof RouterConfig);
-
-    if ('prod' === $containerConfigurator->env()) {
-        $routerConfig->strictRequirements(null);
-    }
-};
+return App::config([
+    'framework' => [
+        'router' => [
+            'default_uri' => env('DEFAULT_URI'),
+        ],
+    ],
+]);

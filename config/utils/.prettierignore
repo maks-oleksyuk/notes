@@ -1,5 +1,7 @@
 .ddev
+.dokploy
 .github
+.pnpm-store
 LICENSE.md
 composer.lock
 dist

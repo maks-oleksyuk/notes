@@ -2,8 +2,12 @@
 
 declare(strict_types=1);
 
-use Symfony\Config\FrameworkConfig;
+namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-return static function (FrameworkConfig $frameworkConfig): void {
-    $frameworkConfig->propertyInfo()->withConstructorExtractor(true);
-};
+return App::config([
+    'framework' => [
+        'property_info' => [
+            'with_constructor_extractor' => true,
+        ],
+    ],
+]);

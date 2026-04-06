@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
+namespace Symfony\Component\Routing\Loader\Configurator;
 
-return static function (RoutingConfigurator $routingConfigurator): void {
-    $routingConfigurator->import('security.route_loader.logout', 'service');
-};
+return Routes::config([
+    'logout' => [
+        'resource' => 'security.route_loader.logout',
+        'type' => 'service',
+    ],
+]);

@@ -40,13 +40,13 @@ final class SecurityControllerTest extends WebTestCase
         $this->client->request(Request::METHOD_GET, '/login');
 
         self::assertResponseIsSuccessful();
-        self::assertPageTitleSame('Symfony Notes | Login');
+        self::assertPageTitleSame('Sign in');
         self::assertSelectorExists('.content>form');
         self::assertInputValueSame('_csrf_token', 'csrf-token');
         self::assertInputValueSame('_target_path', '/admin');
         self::assertSelectorTextSame('.content>form label[for="username"]', 'Username');
         self::assertSelectorTextSame('.content>form label[for="password"]', 'Password');
-        self::assertSelectorTextSame('.content>form>button[type="submit"]', 'Log in');
+        self::assertSelectorTextSame('.content>form>button[type="submit"]', 'Sign in');
         self::assertSelectorExists('.content>form #remember_me');
         self::assertCheckboxChecked('_remember_me');
         self::assertSelectorTextSame('.content>form label[for="remember_me"]', 'Remember me');
@@ -57,7 +57,7 @@ final class SecurityControllerTest extends WebTestCase
         self::createAdminUser($this->em, $this->hasher);
 
         $crawler = $this->client->request(Request::METHOD_GET, '/login');
-        $form = $crawler->selectButton('Log in')->form([
+        $form = $crawler->selectButton('Sign in')->form([
             '_username' => 'admin',
             '_password' => 'admin',
         ]);
@@ -82,7 +82,7 @@ final class SecurityControllerTest extends WebTestCase
     public function testLoginWithInvalidCredentialsShowsError(): void
     {
         $crawler = $this->client->request(Request::METHOD_GET, '/login');
-        $form = $crawler->selectButton('Log in')->form([
+        $form = $crawler->selectButton('Sign in')->form([
             '_username' => 'test',
             '_password' => 'wrong_password',
         ]);

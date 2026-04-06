@@ -12,15 +12,20 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 final class SecurityController extends AbstractController
 {
+    public function __construct(
+        private readonly AuthenticationUtils $authenticationUtils
+    ) {
+    }
+
     #[Route(path: '/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(): Response
     {
         if ($this->getUser() instanceof UserInterface) {
             return $this->redirectToRoute('admin');
         }
 
-        $error = $authenticationUtils->getLastAuthenticationError();
-        $lastUsername = $authenticationUtils->getLastUsername();
+        $error = $this->authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $this->authenticationUtils->getLastUsername();
 
         return $this->render('@EasyAdmin/page/login.html.twig', [
             // parameters usually defined in Symfony login forms
@@ -44,7 +49,7 @@ final class SecurityController extends AbstractController
             // the title visible above the login form (define this option only if you are
             // rendering the login template in a regular Symfony controller; when rendering
             // it from an EasyAdmin Dashboard this is automatically set as the Dashboard title)
-            'page_title' => 'Symfony Notes | Login',
+            'page_title' => 'Sign in',
 
             // the string used to generate the CSRF token. If you don't define
             // this parameter, the login form won't include a CSRF token
@@ -60,7 +65,7 @@ final class SecurityController extends AbstractController
             'password_label' => 'Password',
 
             // the label displayed for the Sign In form button (the |trans filter is applied to it)
-            'sign_in_label' => 'Log in',
+            'sign_in_label' => 'Sign in',
 
             // whether to enable or not the "forgot password?" link (default: false)
             // 'forgot_password_enabled' => true,

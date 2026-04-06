@@ -6,9 +6,9 @@ namespace App\Tests\Integration\EventListener;
 
 use App\EventListener\ApiExceptionListener;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,21 +22,17 @@ final class ApiExceptionListenerTest extends KernelTestCase
 {
     private HttpKernelInterface $httpKernel;
 
-    private ApiExceptionListener $listener;
-
-    private MockObject&LoggerInterface $logger;
-
     protected function setUp(): void
     {
         self::bootKernel();
 
-        $this->logger = $this->createMock(LoggerInterface::class);
-        $this->listener = new ApiExceptionListener($this->logger);
         $this->httpKernel = self::getContainer()->get(HttpKernelInterface::class);
     }
 
     public function testNonApiPathDoesNotSetResponse(): void
     {
+        $listener = new ApiExceptionListener(new NullLogger());
+
         $request = Request::create('/home');
         $exception = new \RuntimeException('Should not be handled');
         $event = new ExceptionEvent(
@@ -46,13 +42,16 @@ final class ApiExceptionListenerTest extends KernelTestCase
             $exception
         );
 
-        ($this->listener)($event);
+        ($listener)($event);
 
-        self::assertNull($event->getResponse());
+        $this->assertNotInstanceOf(Response::class, $event->getResponse());
     }
 
     public function testGenericExceptionProduces500JsonProblemAndLogsError(): void
     {
+        $logger = $this->createMock(LoggerInterface::class);
+        $listener = new ApiExceptionListener($logger);
+
         $request = Request::create('/api/v1/test', Request::METHOD_POST);
         $exception = new \RuntimeException('Something went wrong');
         $event = new ExceptionEvent(
@@ -62,27 +61,27 @@ final class ApiExceptionListenerTest extends KernelTestCase
             $exception
         );
 
-        $this->logger
+        $logger
             ->expects($this->once())
             ->method('log')
             ->with(
                 LogLevel::ERROR,
                 'Internal Server Error',
-                self::callback(fn (array $context): bool => isset($context['status_code'], $context['exception_class'], $context['method'], $context['uri'])
+                self::callback(static fn (array $context): bool => isset($context['status_code'], $context['exception_class'], $context['method'], $context['uri'])
                         && Response::HTTP_INTERNAL_SERVER_ERROR === $context['status_code']
                         && \RuntimeException::class === $context['exception_class']
                         && Request::METHOD_POST === $context['method']
                         && '/api/v1/test' === $context['uri'])
             );
 
-        ($this->listener)($event);
+        ($listener)($event);
 
         $response = $event->getResponse();
-        self::assertInstanceOf(JsonResponse::class, $response);
-        self::assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode(), (string) $response->getContent());
 
         $data = json_decode((string) $response->getContent(), true);
-        self::assertSame([
+        $this->assertSame([
             'title' => 'Internal Server Error',
             'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
             'instance' => '/api/v1/test',
@@ -91,6 +90,9 @@ final class ApiExceptionListenerTest extends KernelTestCase
 
     public function testHttpExceptionProducesCustomStatusJsonProblemAndLogsWarning(): void
     {
+        $logger = $this->createMock(LoggerInterface::class);
+        $listener = new ApiExceptionListener($logger);
+
         $request = Request::create('/api/v1/example');
         $exception = new HttpException(Response::HTTP_NOT_FOUND, 'Not Found Error');
         $event = new ExceptionEvent(
@@ -100,26 +102,26 @@ final class ApiExceptionListenerTest extends KernelTestCase
             $exception
         );
 
-        $this->logger
+        $logger
             ->expects($this->once())
             ->method('log')
             ->with(
                 LogLevel::WARNING,
                 'Not Found Error',
-                self::callback(fn (array $context): bool => Response::HTTP_NOT_FOUND === $context['status_code']
+                self::callback(static fn (array $context): bool => Response::HTTP_NOT_FOUND === $context['status_code']
                         && HttpException::class === $context['exception_class']
                         && Request::METHOD_GET === $context['method']
                         && '/api/v1/example' === $context['uri'])
             );
 
-        ($this->listener)($event);
+        ($listener)($event);
 
         $response = $event->getResponse();
-        self::assertInstanceOf(JsonResponse::class, $response);
-        self::assertSame(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertSame(Response::HTTP_NOT_FOUND, $response->getStatusCode(), (string) $response->getContent());
 
         $data = json_decode((string) $response->getContent(), true);
-        self::assertSame([
+        $this->assertSame([
             'title' => 'Not Found Error',
             'status' => Response::HTTP_NOT_FOUND,
             'instance' => '/api/v1/example',

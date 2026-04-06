@@ -1,35 +1,18 @@
 <?php
 
-declare(strict_types=1);
-
-use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle;
-use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
-use EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle;
-use Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle;
-use Nelmio\ApiDocBundle\NelmioApiDocBundle;
-use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
-use Symfony\Bundle\MakerBundle\MakerBundle;
-use Symfony\Bundle\MonologBundle\MonologBundle;
-use Symfony\Bundle\SecurityBundle\SecurityBundle;
-use Symfony\Bundle\TwigBundle\TwigBundle;
-use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
-use Symfony\UX\TwigComponent\TwigComponentBundle;
-use Twig\Extra\TwigExtraBundle\TwigExtraBundle;
-
 return [
-    DoctrineBundle::class => ['all' => true],
-    DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
-    DoctrineMigrationsBundle::class => ['all' => true],
-    EasyAdminBundle::class => ['all' => true],
-    LexikJWTAuthenticationBundle::class => ['all' => true],
-    NelmioApiDocBundle::class => ['all' => true],
-    FrameworkBundle::class => ['all' => true],
-    MakerBundle::class => ['dev' => true],
-    MonologBundle::class => ['all' => true],
-    SecurityBundle::class => ['all' => true],
-    TwigBundle::class => ['all' => true],
-    WebProfilerBundle::class => ['dev' => true, 'test' => true],
-    TwigComponentBundle::class => ['all' => true],
-    TwigExtraBundle::class => ['all' => true],
+    Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class => ['all' => true],
+    Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
+    Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle::class => ['all' => true],
+    EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle::class => ['all' => true],
+    Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle::class => ['all' => true],
+    Nelmio\ApiDocBundle\NelmioApiDocBundle::class => ['all' => true],
+    Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
+    Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
+    Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
+    Symfony\Bundle\SecurityBundle\SecurityBundle::class => ['all' => true],
+    Symfony\Bundle\TwigBundle\TwigBundle::class => ['all' => true],
+    Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true],
+    Symfony\UX\TwigComponent\TwigComponentBundle::class => ['all' => true],
+    Twig\Extra\TwigExtraBundle\TwigExtraBundle::class => ['all' => true],
 ];

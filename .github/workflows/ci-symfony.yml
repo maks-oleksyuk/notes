@@ -52,7 +52,7 @@ jobs:
             }
           - {
               name: '🪶 PHP CS Fixer',
-              command: 'lint:php-cs-fixer -- --format=checkstyle | cs2pr',
+              command: "lint:php-cs-fixer -- --format=checkstyle | sed -n '/^<?xml/,$p' | cs2pr",
               use-php: true,
             }
           - {
@@ -78,7 +78,7 @@ jobs:
 
     steps:
       - name: '🛎 Checkout'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: '⚙️ Prepare environment'
         uses: ./.github/actions/setup-validation
@@ -95,7 +95,7 @@ jobs:
 
     services:
       db:
-        image: mariadb:11.4
+        image: mariadb:11.8
         ports:
           - 3306:3306
         env:
@@ -119,7 +119,7 @@ jobs:
 
     steps:
       - name: '🛎 Checkout'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: '⚙️ Prepare environment'
         uses: ./.github/actions/setup-testing
@@ -128,7 +128,7 @@ jobs:
         run: task ${{ matrix.command.command }}
 
       - name: '☂️ Upload results to Codecov'
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: maks-oleksyuk/notes
@@ -136,8 +136,9 @@ jobs:
           directory: ./var/report
 
       - name: '☂️ Upload test results to Codecov'
-        uses: codecov/test-results-action@v1
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ matrix.command.name }}
           directory: ./var/report
+          report_type: test_results

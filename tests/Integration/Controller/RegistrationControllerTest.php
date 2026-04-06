@@ -49,10 +49,10 @@ final class RegistrationControllerTest extends WebTestCase
         $this->client->followRedirect();
 
         $user = $this->userRepository->findOneByUsername('john_doe');
-        self::assertInstanceOf(User::class, $user);
-        self::assertNotSame('Strong123!', $user->getPassword());
-        self::assertIsString($user->getPassword());
-        self::assertStringStartsWith('$', $user->getPassword());
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertNotSame('Strong123!', $user->getPassword());
+        $this->assertIsString($user->getPassword());
+        $this->assertStringStartsWith('$', $user->getPassword());
     }
 
     public function testFailedRegistrationDueToInvalidPassword(): void
@@ -69,6 +69,6 @@ final class RegistrationControllerTest extends WebTestCase
         $this->client->submit($form);
 
         self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        self::assertNull($this->userRepository->findOneByUsername('jane_doe'));
+        $this->assertNotInstanceOf(User::class, $this->userRepository->findOneByUsername('jane_doe'));
     }
 }

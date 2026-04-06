@@ -9,8 +9,8 @@ return new PhpCsFixer\Config()
     ->setRules([
         '@Symfony' => true,
         '@Symfony:risky' => true,
-        '@PHP84Migration' => true,
-        '@PHP82Migration:risky' => true,
+        '@PHP8x5Migration' => true,
+        '@PHP8x5Migration:risky' => true,
 
         'date_time_immutable' => true,
         'mb_str_functions' => true,
@@ -30,6 +30,10 @@ return new PhpCsFixer\Config()
         ->in(__DIR__ . '/../../src')
         ->in(__DIR__ . '/../../tests')
         ->in(__DIR__ . '/../../translations')
+        ->notPath([
+            'bundles.php',
+            'reference.php',
+        ])
     )
     ->setParallelConfig(ParallelConfigFactory::detect())
     ->setCacheFile(__DIR__ . '/../../var/cache/php-cs-fixer/.php-cs-fixer.cache')

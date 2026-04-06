@@ -12,8 +12,12 @@ return RectorConfig::configure()
         __DIR__.'/../../src',
         __DIR__.'/../../tests',
     ])
-    ->withPhpVersion(PhpVersion::PHP_84)
-    ->withPhpSets(php84: true)
+    ->withSkip([
+        __DIR__.'/../../config/bundles.php',
+        __DIR__.'/../../config/reference.php',
+    ])
+    ->withPhpVersion(PhpVersion::PHP_85)
+    ->withPhpSets(php85: true)
     ->withComposerBased(
         twig: true,
         doctrine: true,
@@ -25,12 +29,15 @@ return RectorConfig::configure()
         codeQuality: true,
         codingStyle: true,
         typeDeclarations: true,
+        typeDeclarationDocblocks: true,
         privatization: true,
         instanceOf: true,
         earlyReturn: true,
-        strictBooleans: true,
+        rectorPreset: true,
+        phpunitCodeQuality: true,
         doctrineCodeQuality: true,
         symfonyCodeQuality: true,
+        symfonyConfigs: true,
     )
     ->withAttributesSets(
         symfony: true,
