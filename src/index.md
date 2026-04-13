@@ -12,4 +12,7 @@ features:
   - icon: 🧰
     title: 'Laravel'
     link: /laravel
+  - icon: 🆙
+    title: 'Server'
+    link: /server
 ---

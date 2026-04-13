@@ -1,12 +1,15 @@
 .vp-doc {
   p {
     text-align: justify;
-    text-wrap-style: pretty;
+    text-wrap-style: stable;
   }
 
   table {
-    border: 1px solid var(--vp-c-divider);
+    display: table;
+    outline: 1px solid var(--vp-c-divider);
     border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
   }
 
   thead tr {
@@ -20,10 +23,6 @@
     &:not(:last-child) {
       border-right: 1px solid var(--vp-c-divider);
     }
-  }
-
-  th:last-child {
-    width: 100%;
   }
 
   kbd {

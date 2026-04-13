@@ -19,13 +19,18 @@ export default defineConfig({
   outDir: './dist',
   cleanUrls: true,
   lastUpdated: true,
-  head: [['link', { rel: 'icon', href: '/notes/favicon.ico' }]],
-  themeConfig: {
-    nav: [
-      { text: 'Drupal', link: '/drupal/' },
-      { text: 'Laravel', link: '/laravel/' },
-      { text: 'mono', link: '//send.monobank.ua/jar/72Yj5TxSg9' },
+  head: [
+    ['link', { rel: 'icon', href: '/notes/favicon.ico' }],
+    [
+      'meta',
+      {
+        name: 'google-site-verification',
+        content: 'rlUG433kTlrcrV82ha4dXv636Cf-UJtzNrcB2g1BO4o',
+      },
     ],
+  ],
+  themeConfig: {
+    nav: [{ text: 'mono', link: '//send.monobank.ua/jar/72Yj5TxSg9' }],
     socialLinks: [
       { icon: 'github', link: '//github.com/maks-oleksyuk/notes' },
       { icon: 'linkedin', link: '//linkedin.com/in/maks-oleksyuk' },
