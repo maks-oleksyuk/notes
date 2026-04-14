@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
@@ -23,6 +24,7 @@ final class AppServiceProvider extends ServiceProvider
     {
         $this->configureCommands();
         $this->configureDates();
+        $this->configureFormRequest();
         $this->configureModels();
         $this->configurePassword();
         $this->configureUrls();
@@ -46,6 +48,11 @@ final class AppServiceProvider extends ServiceProvider
     private function configureDates(): void
     {
         Date::use(CarbonImmutable::class);
+    }
+
+    private function configureFormRequest(): void
+    {
+        FormRequest::failOnUnknownFields(! $this->app->isProduction());
     }
 
     private function configureModels(): void

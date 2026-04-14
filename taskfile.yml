@@ -82,13 +82,6 @@ tasks:
       --cache --cache-location=var/cache/prettier/prettier.cache'
     silent: true
 
-  peck:
-    desc: 'Run `peck` command.'
-    cmd:
-      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/peck
-      --config={{.CONFIG_DIR}}/peck.json {{.CLI_ARGS}} --ansi'
-    silent: true
-
   pest:
     desc: 'Run `pest` command.'
     cmd:
@@ -279,15 +272,6 @@ tasks:
         vars: { CLI_ARGS: '-V' }
       - task: rector
         vars: { CLI_ARGS: '--dry-run {{.CLI_ARGS}}' }
-
-  lint:peck:
-    desc: 'Check pure wording or spelling (grammar) mistakes.'
-    aliases:
-      - l:peck
-    cmds:
-      - task: peck
-        vars: { CLI_ARGS: '-V' }
-      - task: peck
 
   lint:prettier:
     desc: 'Check code formatting with Prettier.'

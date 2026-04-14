@@ -23,9 +23,6 @@ web_extra_daemons:
     directory: /var/www/html
 web_environment:
   - USE_ZEND_ALLOC=0
-webimage_extra_packages:
-  - aspell
-  - aspell-en
 hooks:
   pre-start:
     # Add frankenphp, pnpm and task to ddev if not already installed.
