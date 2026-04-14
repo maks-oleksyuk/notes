@@ -15,14 +15,15 @@ web_extra_daemons:
   - name: 'queue'
     command: 'php artisan queue:work'
     directory: /var/www/html
+  - name: 'scheduler'
+    command: 'php artisan schedule:work'
+    directory: /var/www/html
   - name: 'nightwatch'
     command: 'php artisan nightwatch:agent'
     directory: /var/www/html
   - name: 'pulse'
     command: 'php artisan pulse:check'
     directory: /var/www/html
-web_environment:
-  - USE_ZEND_ALLOC=0
 hooks:
   pre-start:
     # Add frankenphp, pnpm and task to ddev if not already installed.

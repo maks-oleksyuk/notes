@@ -14,6 +14,7 @@ use RectorLaravel\Rector\FuncCall\RemoveDumpDataDeadCodeRector;
 use RectorLaravel\Rector\MethodCall\ResponseHelperCallToJsonResponseRector;
 use RectorLaravel\Rector\MethodCall\UseComponentPropertyWithinCommandsRector;
 use RectorLaravel\Rector\MethodCall\WhereToWhereLikeRector;
+use RectorLaravel\Rector\StaticCall\RequestStaticValidateToInjectRector;
 use RectorLaravel\Rector\StaticCall\RouteActionCallableRector;
 use RectorLaravel\Set\LaravelLevelSetList;
 use RectorLaravel\Set\LaravelSetList;
@@ -77,6 +78,7 @@ return RectorConfig::configure()
         PestSetList::PEST_CODE_QUALITY,
         PestSetList::PEST_CHAIN,
         PestSetList::PEST_LARAVEL,
+        PestSetList::PEST_BROWSER,
     ])
     ->withConfiguredRule(RemoveDumpDataDeadCodeRector::class, [])
     ->withConfiguredRule(RouteActionCallableRector::class, [])
@@ -97,6 +99,10 @@ return RectorConfig::configure()
         ],
         ArgumentFuncCallToMethodCallRector::class => [
             __DIR__.'/../../app/Providers/Filament',
+        ],
+        // @see https://github.com/driftingly/rector-laravel/issues/496
+        RequestStaticValidateToInjectRector::class => [
+            __DIR__.'/../../app/Providers/AppServiceProvider.php',
         ],
     ])
     ->withParallel()

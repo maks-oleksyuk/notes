@@ -60,15 +60,19 @@ abstract readonly class BaseRepository implements BaseRepositoryInterface
 
     /**
      * @param  Builder<TModel>  $query
-     * @param  array<int|string, string>  $order
+     * @param  array<int, string>|array<string, \SortDirection|'asc'|'desc'>  $order
      * @return Builder<TModel>
      */
     protected function addQueryOrder(Builder $query, array $order): Builder
     {
         foreach ($order as $column => $direction) {
-            is_int($column)
-                ? $query->orderBy($direction)
-                : $query->orderBy($column, $direction);
+            if (is_int($column)) {
+                /** @var string $direction */
+                $query->orderBy($direction);
+            } else {
+                /** @var 'asc'|'desc'|\SortDirection $direction */
+                $query->orderBy($column, $direction);
+            }
         }
 
         return $query;

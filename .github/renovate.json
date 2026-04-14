@@ -1,0 +1,26 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": ["config:recommended"],
+    "timezone": "Europe/Kyiv",
+    "schedule": ["before 6am on Monday"],
+    "labels": ["dependencies"],
+    "commitMessagePrefix": "⬆️ ",
+    "packageRules": [
+        {
+            "matchManagers": ["github-actions"],
+            "groupName": "GitHub Actions",
+            "schedule": ["every quarter"],
+            "automerge": true,
+            "automergeType": "pr"
+        },
+        {
+            "matchManagers": ["composer"],
+            "groupName": "PHP dependencies",
+            "schedule": ["before 6am on the first day of the month"]
+        },
+        {
+            "matchManagers": ["npm"],
+            "groupName": "npm dependencies"
+        }
+    ]
+}
