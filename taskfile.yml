@@ -17,7 +17,7 @@ tasks:
 
   pnpm:
     desc: 'Run `pnpm` command.'
-    cmd: '{{.PNPM_BIN}} --color {{.CLI_ARGS}}'
+    cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
     silent: true
 
   biome:
@@ -75,7 +75,7 @@ tasks:
       - defer: { task: lint:biome }
 
   lint:biome:
-    desc: 'Run TypeScript type checking'
+    desc: 'Run biome checks'
     aliases:
       - l:b
       - l:biome
@@ -89,6 +89,18 @@ tasks:
         vars: { CLI_ARGS: 'lint' }
       - task: biome
         vars: { CLI_ARGS: 'check' }
+
+  lint:type:
+    desc: 'Run TypeScript type checking'
+    aliases:
+      - l:t
+      - l:type
+      - lint:t
+    cmds:
+      - task: pnpm
+        vars: { CLI_ARGS: 'tsc -V' }
+      - task: pnpm
+        vars: { CLI_ARGS: 'tsc --noEmit --incremental --pretty' }
 
   # Fixing:
 
