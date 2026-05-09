@@ -1,6 +1,10 @@
 .translations {
   text-align: center;
 
+  & .link {
+    text-align: center;
+  }
+
   & .title,
   & .trans-title {
     padding: 0 12px;

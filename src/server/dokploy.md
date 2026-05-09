@@ -1,8 +1,18 @@
 ---
-title: 'Dokploy'
+title: 'Dokploy Guide: Docker Compose Deployment'
 description:
-  'A practical guide: from server installation to full deploy (with docker
-  compose)'
+  'Complete Dokploy tutorial: install on your VPS, deploy apps with Docker
+  Compose, set up SSL, CI/CD pipelines, and manage multiple services from one
+  dashboard.'
+head:
+  - - meta
+    - name: keywords
+      content:
+        'dokploy, self-hosted deployment, docker, compose, vercel alternative,
+        vps hosting, cd, deployment automation'
+  - - meta
+    - name: author
+      content: 'Maks Oleksyuk'
 ---
 
 # Deploying projects with Dokploy (compose)
@@ -53,7 +63,7 @@ convenience and security, it's best to switch to your own domain.
    dokploy.my-project.com
    ```
 
-2. [**Disable IP-based access** _(recommended)_](//docs.dokploy.com/docs/core/installation#disable-access-via-ipport-optional-but-recommended)
+2. [**Disable IP-based access** _(recommended)_](//docs.dokploy.com/docs/core/installation#disable-access-via-ipport-optional-but-recommended 'Read more in the official documentation')
 
    Once the domain has been configured and verified, you can remove direct
    access via `<SERVER_IP>:3000`:
@@ -71,7 +81,7 @@ convenience and security, it's best to switch to your own domain.
    After that, the server will return a `404` error when accessed via IP, but
    everything works correctly via the domain.
 
-## [Docker Compose](//docs.dokploy.com/docs/core/docker-compose)
+## [Docker Compose](//docs.dokploy.com/docs/core/docker-compose 'Read more in the official documentation')
 
 Let's say we want to deploy a simple Symfony or Laravel application running in a
 container. A typical setup includes services like `app`, `db`, and something
@@ -89,14 +99,15 @@ To add services, click `Create Service → Compose` and fill in the required
 fields.
 
 To connect a repository, you first need to add a git provider. See the docs:
-[GitHub setup](//docs.dokploy.com/docs/core/github).
+[GitHub setup](//docs.dokploy.com/docs/core/github 'Read more in the official documentation').
 
 > [!WARNING]
 >
 > Only the user who configured the git provider will be able to select a branch
-> and compose file for the project. Other admin users will not have that access.
+> and compose a file for the project. Other admin users will not have that
+> access.
 
-During setup you can choose the repository, branch, and `compose.yml` file.
+During setup, you can choose the repository, branch, and `compose.yml` file.
 
 > [!TIP]
 >
@@ -115,12 +126,13 @@ During setup you can choose the repository, branch, and `compose.yml` file.
 Dokploy stores each project at the following path:
 
 ```
-/etc/dokploy/compose/<app>/
-├── code/                    ← git clone (removed on redeploy)
-│   ├── .dokploy/
+/etc/dokploy/compose/<app>/  ← on the server
+├── code/                    ← git clone project (removed on redeploy)
+│   ├── .dokploy/            ← the suggested format for storing compose files
+│   │   ├── compose.dev.yml
 │   │   └── compose.prod.yml ← your compose file
 │   └── src/
-└── files/                   ← persistent storage (logs, configs)
+└── files/                   ← persistent storage (logs, files)
 ```
 
 | Directory | Description        | Persists between deploys |
@@ -130,9 +142,9 @@ Dokploy stores each project at the following path:
 
 > [!WARNING]
 >
-> **The `code/` directory is fully removed on every redeploy.** Anything that
-> needs to persist between deploys must be stored in `files/` or in a named
-> volume.
+> **The `code/` directory is fully removed on every redeployment.** Anything
+> that needs to persist between deployments must be stored in `files/` or in a
+> named volume.
 
 ### Paths in the compose file
 
@@ -218,9 +230,9 @@ services:
 >       - '3306'
 > ```
 >
-> By default, Docker assigns a random host port on every redeploy, which breaks
-> external connections (e.g. a database connection in PhpStorm). To keep the
-> port stable, pin it via an env variable:
+> By default, Docker assigns a random host port on every redeployment, which
+> breaks external connections (e.g., a database connection in PhpStorm). To keep
+> the port stable, pin it via an env variable:
 >
 > ```yml [.dokploy/compose.prod.yml]
 > services:
@@ -230,7 +242,20 @@ services:
 > ```
 >
 > Set `DB_EXTERNAL_PORT=33060` (or any free port) in Dokploy's env settings —
-> the port will stay the same across redeploys.
+> the port will stay the same across redeployments.
+
+### [Domains](https://docs.dokploy.com/docs/core/docker-compose/domains 'Read more in the official documentation')
+
+Domain configuration is performed in the corresponding project tab. Traefik
+manages this process using labels added to the service during deployment.
+
+> [!IMPORTANT]
+>
+> If your service contains `healthcheck` settings, and you plan to add a domain
+> to it, ensure that the `healthcheck` passes successfully. In the event of
+> failure, Traefik will simply skip the creation of the corresponding
+> configuration for this service, as it will consider it non-functional, even if
+> it comes up later.
 
 ### Volumes — persisting data
 
@@ -285,7 +310,7 @@ networks:
 > compose file — traffic routing is handled automatically through the project's
 > unique network.
 
-### [Post-start hooks](//docs.docker.com/compose/how-tos/lifecycle/#post-start-hooks)
+### [Post-start hooks](//docs.docker.com/compose/how-tos/lifecycle/#post-start-hooks 'Read more in the official documentation')
 
 To run commands after the container starts (setting permissions, running
 migrations) — use `post_start`:
@@ -360,3 +385,8 @@ services:
 volumes:
   db_data:
 ```
+
+## Resources
+
+- [Dokploy Docs](//docs.dokploy.com/docs/core 'Dokploy Docs')
+- [Setup Dokploy on your VPS](//community.hetzner.com/tutorials/setup-dokploy-on-your-vps 'Setup Dokploy on your VPS')

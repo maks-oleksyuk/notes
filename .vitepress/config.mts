@@ -22,6 +22,13 @@ export default defineConfig({
   head: [
     ['link', { rel: 'icon', href: '/notes/favicon.ico' }],
     [
+      'link',
+      { rel: 'apple-touch-icon', href: '/notes/favicon.ico', sizes: '180x180' },
+    ],
+    ['meta', { property: 'og:image', href: '/notes/favicon.ico' }],
+    ['meta', { property: 'og:type', href: 'website' }],
+    ['meta', { name: 'theme-color', content: '#30a46c' }],
+    [
       'meta',
       {
         name: 'google-site-verification',
@@ -131,6 +138,7 @@ export default defineConfig({
       ],
     },
     server: {
+      allowedHosts: true,
       https: false,
       host: '0.0.0.0',
       port: 5173,
