@@ -84,11 +84,11 @@ tasks:
       - task: biome
         vars: { CLI_ARGS: '-V' }
       - task: biome
-        vars: { CLI_ARGS: 'format' }
+        vars: { CLI_ARGS: 'format {{.CLI_ARGS}}' }
       - task: biome
-        vars: { CLI_ARGS: 'lint' }
+        vars: { CLI_ARGS: 'lint {{.CLI_ARGS}}' }
       - task: biome
-        vars: { CLI_ARGS: 'check' }
+        vars: { CLI_ARGS: 'check {{.CLI_ARGS}}' }
 
   lint:type:
     desc: 'Run TypeScript type checking'

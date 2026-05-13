@@ -44,7 +44,7 @@ jobs:
       fail-fast: false
       matrix:
         command:
-          - { name: '💠 Biome', command: 'lint:biome' }
+          - { name: '🫐 Biome', command: 'lint:biome -- --reporter=github' }
 
     steps:
       - name: '🛎 Checkout'
