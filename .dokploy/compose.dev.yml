@@ -21,6 +21,7 @@ services:
       - 8080
       - 8443
     environment:
+      APP_ENV: dev
       AUTORUN_ENABLED: 'true'
       AUTORUN_LARAVEL_MIGRATION: 'true'
       AUTORUN_LARAVEL_STORAGE_LINK: 'true'
