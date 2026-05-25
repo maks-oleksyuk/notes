@@ -1,0 +1,52 @@
+name: '🔐 Security | zizmor'
+
+on:
+  push:
+    branches:
+      - laravel
+      - chore/laravel-updates
+    paths:
+      - '.github/**'
+  pull_request:
+    branches:
+      - laravel
+    paths:
+      - '.github/**'
+
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  zizmor:
+    name: '🔍 Scan GitHub Actions'
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: '🌈 Run zizmor'
+        uses: zizmorcore/zizmor-action@5f14fd08f7cf1cb1609c1e344975f152c7ee938d # v0.5.6
+        with:
+          advanced-security: false
+          annotations: true
+
+  cleanup:
+    name: '🧹 Clean up GitHub repo'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    if: github.event_name != 'pull_request'
+
+    steps:
+      - name: '🗑 Delete workflow runs'
+        uses: Mattraks/delete-workflow-runs@b3018382ca039b53d238908238bd35d1fb14f8ee # v2.1.0
+        with:
+          retain_days: 0
+          keep_minimum_runs: 0
+          delete_workflow_pattern: zizmor.yml

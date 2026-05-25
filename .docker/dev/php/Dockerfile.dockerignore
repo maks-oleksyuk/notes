@@ -1,6 +1,8 @@
 # Version control
 .git
 .github
+.gitignore
+.gitattributes
 
 # Dependencies (installed during build)
 vendor
