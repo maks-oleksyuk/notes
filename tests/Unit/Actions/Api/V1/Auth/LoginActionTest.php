@@ -16,7 +16,7 @@ pest()->use(RefreshDatabase::class);
 
 beforeEach(fn (): LoginAction => $this->loginAction = App::make(LoginAction::class));
 
-describe('API | V1 | Auth', function (): void {
+describe('Actions | API | V1 | Auth', function (): void {
     it('throws ValidationException when user not found', function (): void {
         $this->expectException(ValidationException::class);
 

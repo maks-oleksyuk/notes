@@ -6,7 +6,7 @@ use App\Helpers\Http\RequestHelper;
 
 covers(RequestHelper::class);
 
-describe('Request Helper', function (): void {
+describe('Helpers | Http | Request', function (): void {
     it('converts truthy values to boolean true', function (): void {
         expect(RequestHelper::toBoolean('true'))->toBeTrue()
             ->and(RequestHelper::toBoolean(1))->toBeTrue()

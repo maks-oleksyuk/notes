@@ -12,7 +12,7 @@ covers(UserExporter::class);
 
 pest()->use(RefreshDatabase::class);
 
-describe('Filament | User Exporter', function (): void {
+describe('Filament | Export | User', function (): void {
     it('returns the correct model',
         fn (): Expectation => expect(UserExporter::getModel())->toBe(User::class)
     );

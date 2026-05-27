@@ -13,11 +13,11 @@ use Illuminate\Console\OutputStyle;
 use Illuminate\Foundation\Console\VendorPublishCommand;
 use Mockery as m;
 use phpmock\phpunit\PHPMock;
+use PHPUnit\Framework\MockObject\Rule\AnyInvokedCount;
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\BufferedOutput;
 
 covers(SetupCommand::class);
 
@@ -61,16 +61,16 @@ beforeEach(function (): void {
     $this->app->instance(LaravelIdeHelperEloquentCommand::class, $this->ideHelperEloquentMock);
 
     $this->console = new ConsoleApplication;
-    $this->console->add($this->setupCommand);
+    $this->console->addCommand($this->setupCommand);
 
     $this->setupCommand->setLaravel($this->app);
     $this->setupCommand->setApplication($this->console);
 });
 
-describe('Setup Command', function (): void {
+describe('Console | Commands | Setup', function (): void {
     it('executes setup command', function (string $env, bool $classExists): void {
         $this->getFunctionMock('App\Console\Commands', 'class_exists')
-            ->expects($this->any())
+            ->expects(new AnyInvokedCount)
             ->with(LaravelIdeHelperGenerator::class)
             ->willReturn($classExists);
 
@@ -117,7 +117,7 @@ describe('Setup Command', function (): void {
 
     it('calls newLine method exactly once', function (string $env): void {
         $input = new ArrayInput(['--env' => $env], $this->setupCommand->getDefinition());
-        $outputSpy = m::spy(new OutputStyle($input, new BufferedOutput));
+        $outputSpy = m::spy(OutputStyle::class);
         $this->setupCommand->run($input, $outputSpy);
         $outputSpy->shouldHaveReceived('newLine')->once();
     })->with('envs')->after(m::close(...));

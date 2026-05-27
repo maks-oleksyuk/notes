@@ -17,7 +17,7 @@ covers(UserResource::class);
 
 pest()->use(RefreshDatabase::class);
 
-describe('Filament | User Resource', function (): void {
+describe('Filament | Resource | User', function (): void {
     it('allows creating users',
         fn (): Expectation => expect(UserResource::canCreate())->toBeTrue()
     );

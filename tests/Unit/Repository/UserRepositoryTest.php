@@ -15,7 +15,7 @@ pest()->use(RefreshDatabase::class);
 
 beforeEach(fn (): UserRepository => $this->repository = new UserRepository(new User));
 
-describe('User Repository', function (): void {
+describe('Repository | User', function (): void {
     it('finds a user by ID', function (): void {
         $user = User::factory()->create();
         $foundUser = $this->repository->find($user->id);

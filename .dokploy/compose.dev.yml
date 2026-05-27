@@ -67,5 +67,14 @@ services:
       timeout: 10s
       retries: 20
 
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    environment:
+      MP_UI_AUTH: ${MP_UI_AUTH}
+    expose:
+      - '1025'
+      - '8025'
+
 volumes:
   db_data:

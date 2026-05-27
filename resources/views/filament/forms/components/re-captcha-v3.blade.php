@@ -18,15 +18,8 @@
         init() {
             let tokenReady = false;
             this.$wire.$intercept('{{ $getSubmitMethod() }}', ({ action }) => {
-                if (tokenReady) {
-                    tokenReady = false;
-                    return;
-                }
-
-                if (this._loading) {
-                    action.cancel();
-                    return;
-                }
+                if (tokenReady) { tokenReady = false; return; }
+                if (this._loading) { action.cancel(); return; }
 
                 action.cancel();
                 this._loading = true;
@@ -40,16 +33,16 @@
                         ).then(resolve).catch(reject);
                     });
                 })
-                .then(captchaToken => {
-                    this.$wire.set('{{ $getStatePath() }}', captchaToken, false);
-                    this._loading = false;
+                .then(token => {
+                    this.$wire.set('{{ $getStatePath() }}', token, false);
                     tokenReady = true;
                     this.$wire['{{ $getSubmitMethod() }}']();
                 })
-                .catch(err => {
-                    this._loading = false;
+                .catch(() => {
                     this.error = '{{ addslashes(__('filament-panels::auth/pages/login.messages.failed')) }}';
-                    console.error('reCAPTCHA failed', err);
+                })
+                .finally(() => {
+                    this._loading = false;
                 });
             });
         }

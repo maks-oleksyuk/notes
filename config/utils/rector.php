@@ -95,8 +95,6 @@ return RectorConfig::configure()
     ->withSkip([
         StaticCallToMethodCallRector::class => [
             __DIR__.'/../../app/Providers',
-            // @see https://github.com/rectorphp/rector/issues/9766
-            __DIR__.'/../../app/Filament/Forms/Components',
             __DIR__.'/../../database',
         ],
         ArgumentFuncCallToMethodCallRector::class => [
