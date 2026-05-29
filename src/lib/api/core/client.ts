@@ -1,10 +1,13 @@
+import {
+  buildBody,
+  buildHeaders,
+  buildUrl,
+  headersToRecord,
+  parseErrorData,
+  parseResponseData,
+} from '../utils';
 import { ApiError, NetworkError, TimeoutError } from './errors';
-import type {
-  ApiRequestOptions,
-  ApiResponse,
-  HttpMethod,
-  ResponseType,
-} from './types';
+import type { ApiRequestOptions, ApiResponse, HttpMethod } from './types';
 
 export class HttpClient {
   private readonly baseUrl: string;
@@ -27,17 +30,32 @@ export class HttpClient {
     options: ApiRequestOptions = {},
   ): Promise<ApiResponse<T>> {
     const mergedOptions = this.mergeOptions(path, options);
-    const url = this.buildUrl(mergedOptions);
-    const headers = this.buildHeaders(mergedOptions);
-    const body = this.buildBody(mergedOptions, headers);
-
-    const start = performance.now();
 
     try {
-      // 1. Handle Request Hooks (Interceptors)
+      // 1. Run plugins' onRequest hooks
+      if (mergedOptions.plugins) {
+        for (const plugin of mergedOptions.plugins) {
+          if (plugin.onRequest) {
+            await plugin.onRequest(mergedOptions);
+          }
+        }
+      }
+
+      // Run simple onRequest hook
       if (mergedOptions.onRequest) {
         await mergedOptions.onRequest(mergedOptions);
       }
+
+      // 2. Build final request parameters based on potentially mutated options
+      const url = buildUrl(
+        mergedOptions.baseUrl || this.baseUrl,
+        mergedOptions.path || path,
+        mergedOptions.params,
+      );
+      const headers = buildHeaders(mergedOptions.headers, mergedOptions.body);
+      const body = buildBody(mergedOptions.body);
+
+      const start = performance.now();
 
       const response = await fetch(url, {
         ...mergedOptions,
@@ -48,10 +66,10 @@ export class HttpClient {
 
       const duration = Math.round(performance.now() - start);
 
-      // 2. Handle HTTP Errors
+      // 3. Handle HTTP Errors
       if (!response.ok) {
-        const errorData = await this.parseErrorData(response);
-        const error = new ApiError(
+        const errorData = await parseErrorData(response);
+        throw new ApiError(
           `HTTP Error ${response.status}: ${response.statusText}`,
           {
             status: response.status,
@@ -62,16 +80,10 @@ export class HttpClient {
             headers: response.headers,
           },
         );
-
-        if (mergedOptions.onResponseError) {
-          await mergedOptions.onResponseError(error);
-        }
-
-        throw error;
       }
 
-      // 3. Parse Successful Response
-      const data = await this.parseResponseData<T>(
+      // 4. Parse Successful Response
+      const data = await parseResponseData<T>(
         response,
         mergedOptions.responseType || 'json',
       );
@@ -85,26 +97,70 @@ export class HttpClient {
         duration,
       };
 
-      // 4. Handle Response Hooks
+      // 5. Run plugins' onResponse hooks
+      if (mergedOptions.plugins) {
+        for (const plugin of mergedOptions.plugins) {
+          if (plugin.onResponse) {
+            await plugin.onResponse(apiResponse, mergedOptions);
+          }
+        }
+      }
+
+      // Run simple onResponse hook
       if (mergedOptions.onResponse) {
         await mergedOptions.onResponse(apiResponse as ApiResponse<unknown>);
       }
 
       return apiResponse;
-    } catch (error) {
-      // If it's already an ApiError, just re-throw it
-      if (error instanceof ApiError) throw error;
+    } catch (err) {
+      let finalError: Error;
 
-      // Handle native Fetch Abort/Timeout
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        throw new TimeoutError(url, 0);
+      if (err instanceof ApiError) {
+        finalError = err;
+      } else {
+        const fallbackUrl = buildUrl(
+          mergedOptions.baseUrl || this.baseUrl,
+          mergedOptions.path || path,
+          mergedOptions.params,
+        );
+
+        if (err instanceof DOMException && err.name === 'AbortError') {
+          finalError = new TimeoutError(fallbackUrl, 0);
+        } else {
+          finalError = new NetworkError(
+            err instanceof Error ? err.message : 'Unknown network error',
+            fallbackUrl,
+          );
+        }
       }
 
-      // Generic Network Failure
-      throw new NetworkError(
-        error instanceof Error ? error.message : 'Unknown network error',
-        url,
-      );
+      // Execute plugin onError hooks
+      if (mergedOptions.plugins) {
+        for (const plugin of mergedOptions.plugins) {
+          if (plugin.onError) {
+            try {
+              const result = await plugin.onError(finalError, {
+                options: mergedOptions,
+                retry: () => this.request<T>(path, options),
+              });
+              if (result) {
+                return result;
+              }
+            } catch (pluginError) {
+              if (pluginError instanceof Error) {
+                finalError = pluginError;
+              }
+            }
+          }
+        }
+      }
+
+      // Run simple onResponseError hook
+      if (mergedOptions.onResponseError && finalError instanceof ApiError) {
+        await mergedOptions.onResponseError(finalError);
+      }
+
+      throw finalError;
     }
   }
 
@@ -166,124 +222,9 @@ export class HttpClient {
       path,
       method,
       headers: {
-        ...this.headersToRecord(this.defaultOptions.headers),
-        ...this.headersToRecord(options.headers),
+        ...headersToRecord(this.defaultOptions.headers),
+        ...headersToRecord(options.headers),
       },
     };
-  }
-
-  private buildUrl(options: ApiRequestOptions): string {
-    const { baseUrl, path, params } = options;
-    const base = baseUrl || this.baseUrl;
-
-    // Smart URL joining (inspired by ofetch/ufo)
-    // 1. Remove trailing slash from base
-    // 2. Remove leading slash from path
-    // 3. Join with a single slash
-    const cleanBase = base.replace(/\/+$/, '');
-    const cleanPath = path?.replace(/^\/+/, '') || '';
-
-    let urlStr = cleanPath.startsWith('http')
-      ? cleanPath
-      : `${cleanBase}/${cleanPath}`;
-
-    // Fix potential double slashes if base was empty
-    if (!cleanBase && !cleanPath.startsWith('http')) {
-      urlStr = cleanPath;
-    }
-
-    const urlObj = new URL(urlStr, 'http://localhost');
-
-    // Add query parameters
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          urlObj.searchParams.set(key, String(value));
-        }
-      });
-    }
-
-    // If it was a relative path, return the path part, otherwise full URL
-    return cleanPath.startsWith('http') || cleanBase.startsWith('http')
-      ? urlObj.toString()
-      : `${urlObj.pathname}${urlObj.search}`;
-  }
-
-  private buildHeaders(options: ApiRequestOptions): Headers {
-    const headers = new Headers(options.headers as HeadersInit);
-
-    // Auto-set Content-Type for objects, but not for files/blobs
-    if (options.body && !headers.has('Content-Type')) {
-      if (!(options.body instanceof FormData || options.body instanceof Blob)) {
-        headers.set('Content-Type', 'application/json');
-      }
-    }
-
-    return headers;
-  }
-
-  private buildBody(
-    options: ApiRequestOptions,
-    _headers: Headers,
-  ): BodyInit | null {
-    if (!options.body) return null;
-
-    if (options.body instanceof FormData || options.body instanceof Blob) {
-      return options.body;
-    }
-
-    if (typeof options.body === 'object') {
-      return JSON.stringify(options.body);
-    }
-
-    return String(options.body);
-  }
-
-  private async parseResponseData<T>(
-    response: Response,
-    type: ResponseType,
-  ): Promise<T> {
-    if (response.status === 204) return null as unknown as T;
-
-    try {
-      switch (type) {
-        case 'json':
-          return (await response.json()) as T;
-        case 'text':
-          return (await response.text()) as unknown as T;
-        case 'blob':
-          return (await response.blob()) as unknown as T;
-        case 'arraybuffer':
-          return (await response.arrayBuffer()) as unknown as T;
-        case 'stream':
-          return response.body as unknown as T;
-        default:
-          return (await response.json()) as T;
-      }
-    } catch {
-      return null as unknown as T;
-    }
-  }
-
-  private async parseErrorData(response: Response): Promise<unknown> {
-    try {
-      // Try JSON first, fall back to text
-      const text = await response.text();
-      try {
-        return JSON.parse(text);
-      } catch {
-        return text;
-      }
-    } catch {
-      return null;
-    }
-  }
-
-  private headersToRecord(headers?: HeadersInit): Record<string, string> {
-    if (!headers) return {};
-    if (headers instanceof Headers)
-      return Object.fromEntries(headers.entries());
-    if (Array.isArray(headers)) return Object.fromEntries(headers);
-    return headers as Record<string, string>;
   }
 }

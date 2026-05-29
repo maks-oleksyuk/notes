@@ -67,6 +67,30 @@ export interface ApiRequestOptions
   onRequest?: (options: ApiRequestOptions) => void | Promise<void>;
   onResponse?: (response: ApiResponse<unknown>) => void | Promise<void>;
   onResponseError?: (error: Error) => void | Promise<void>;
+
+  /**
+   * List of plugins to extend the request lifecycle.
+   */
+  plugins?: ApiPlugin[];
+}
+
+/**
+ * Interface representing a plugin that hooks into the request lifecycle.
+ */
+export interface ApiPlugin {
+  name: string;
+  onRequest?: (options: ApiRequestOptions) => void | Promise<void>;
+  onResponse?: (
+    response: ApiResponse<any>,
+    options: ApiRequestOptions,
+  ) => void | Promise<void>;
+  onError?: (
+    error: Error,
+    context: {
+      options: ApiRequestOptions;
+      retry: () => Promise<ApiResponse<any>>;
+    },
+  ) => undefined | Promise<any>;
 }
 
 /**

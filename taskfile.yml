@@ -20,11 +20,21 @@ tasks:
     cmd: '{{.PNPM_BIN}} {{.CLI_ARGS}}'
     silent: true
 
+  tsc:
+    desc: 'Run `tsc` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/tsc {{.CLI_ARGS}}'
+    silent: true
+
   biome:
     desc: 'Run `biome` command.'
     cmd: '{{.NODEJS_BIN_DIR}}/biome {{.CLI_ARGS}} --colors=force'
     env:
       BIOME_CONFIG_PATH: '{{.CONFIG_DIR}}/biome.json'
+    silent: true
+
+  next:
+    desc: 'Run `next` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/next {{.CLI_ARGS}}'
     silent: true
 
   # Work commands:
@@ -34,16 +44,16 @@ tasks:
     aliases:
       - b
     cmds:
-      - task: pnpm
-        vars: { CLI_ARGS: 'next build' }
+      - task: next
+        vars: { CLI_ARGS: 'build' }
 
   dev:
     desc: 'Run `next dev`'
     aliases:
       - d
     cmds:
-      - task: pnpm
-        vars: { CLI_ARGS: 'next dev' }
+      - task: next
+        vars: { CLI_ARGS: 'dev' }
 
   prod:
     desc: 'Run `next start`'
@@ -51,8 +61,8 @@ tasks:
       - p
     cmds:
       - task: build
-      - task: pnpm
-        vars: { CLI_ARGS: 'next start' }
+      - task: next
+        vars: { CLI_ARGS: 'start' }
 
   update:
     desc: 'Updates project dependencies withing constraints.'
@@ -73,6 +83,7 @@ tasks:
       - l
     cmds:
       - defer: { task: lint:biome }
+      - defer: { task: lint:type }
 
   lint:biome:
     desc: 'Run biome checks'
@@ -97,10 +108,10 @@ tasks:
       - l:type
       - lint:t
     cmds:
-      - task: pnpm
-        vars: { CLI_ARGS: 'tsc -V' }
-      - task: pnpm
-        vars: { CLI_ARGS: 'tsc --noEmit --incremental --pretty' }
+      - task: tsc
+        vars: { CLI_ARGS: '-V' }
+      - task: tsc
+        vars: { CLI_ARGS: '--noEmit --incremental --pretty' }
 
   # Fixing:
 

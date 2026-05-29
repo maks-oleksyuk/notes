@@ -1,4 +1,5 @@
-import { HttpClient } from '../../core';
+import { HttpClient } from '@/lib/api';
+import { logger } from '@/lib/api/plugins';
 
 /**
  * Client for the JSONPlaceholder Blog API.
@@ -8,22 +9,7 @@ export const blogApi = new HttpClient('https://jsonplaceholder.typicode.com', {
     revalidate: 60,
     tags: ['blog'],
   },
-  onRequest: (options) => {
-    console.log(`🚀 [Blog API] ${options.method} ${options.path}`);
-  },
-  onResponse: (response) => {
-    // Next.js adds this header to help us track cache status
-    const nextCache = response.headers.get('x-nextjs-cache');
-    const cacheStatus = nextCache
-      ? `📦 CACHE: ${nextCache}`
-      : response.duration < 40
-        ? '📦 LIKELY CACHE'
-        : '🌐 NETWORK';
-
-    console.log(
-      `✅ [Blog API] ${response.status} | ${response.duration}ms | ${cacheStatus}`,
-    );
-  },
+  plugins: [logger({ verbose: true, prefix: 'blog' })],
 });
 
 // Types for the blog

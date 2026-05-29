@@ -1,4 +1,4 @@
-import { HttpClient } from '../../core';
+import { HttpClient } from '@/lib/api';
 
 /**
  * Pre-configured instance of HttpClient for our Backend API.
@@ -9,10 +9,6 @@ export const backendApi = new HttpClient(
     // Default headers for all backend requests
     headers: {
       'Accept-Language': 'uk',
-    },
-    // Example of a global request hook (Interceptor)
-    onRequest: (options) => {
-      console.log(`🚀 [Backend API] ${options.method} ${options.path}`);
     },
   },
 );

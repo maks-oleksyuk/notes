@@ -44,6 +44,7 @@ jobs:
       fail-fast: false
       matrix:
         command:
+          - { name: '🗜 TS Types', command: 'lint:type' }
           - { name: '🫐 Biome', command: 'lint:biome -- --reporter=github' }
 
     steps:
