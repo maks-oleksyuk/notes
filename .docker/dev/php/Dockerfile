@@ -2,9 +2,9 @@ FROM serversideup/php:8.5-frankenphp
 
 USER root
 
-RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y postgresql-client-18 && rm -rf /var/lib/apt/lists/*
 
-RUN install-php-extensions intl pdo_pgsql
+RUN install-php-extensions gd intl
 
 RUN sh -c "$(curl -s --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin > /dev/null 2>&1
 

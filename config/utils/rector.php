@@ -57,7 +57,6 @@ return RectorConfig::configure()
         instanceOf: true,
         earlyReturn: true,
         carbon: true,
-        rectorPreset: true,
     )
     ->withSets([
         LaravelLevelSetList::UP_TO_LARAVEL_130,
@@ -93,12 +92,16 @@ return RectorConfig::configure()
         EmptyToBlankAndFilledFuncRector::class,
     ])
     ->withSkip([
-        StaticCallToMethodCallRector::class => [
-            __DIR__.'/../../app/Providers',
-            __DIR__.'/../../database',
-        ],
         ArgumentFuncCallToMethodCallRector::class => [
             __DIR__.'/../../app/Providers/Filament',
+            __DIR__.'/../../app/Imports/Filament/SpreadsheetImporter.php',
+            __DIR__.'/../../app/Filament/Actions/SpreadsheetImportAction.php',
+        ],
+        StaticCallToMethodCallRector::class => [
+            __DIR__.'/../../app/Providers',
+            __DIR__.'/../../app/Imports/Filament/SpreadsheetImporter.php',
+            __DIR__.'/../../app/Filament/Actions/SpreadsheetImportAction.php',
+            __DIR__.'/../../database',
         ],
         // @see https://github.com/driftingly/rector-laravel/issues/496
         RequestStaticValidateToInjectRector::class => [

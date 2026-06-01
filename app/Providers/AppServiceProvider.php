@@ -16,6 +16,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Scribe\Scribe;
+use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 use Symfony\Component\HttpFoundation\Request;
 
 final class AppServiceProvider extends ServiceProvider
@@ -29,6 +30,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configurePassword();
         $this->configureUrls();
         $this->configureScribeDocumentation();
+        $this->configureExcelImports();
 
         $this->publishes([
             $this->app->resourcePath('icons/favicon.ico') => $this->app->publicPath('favicon.ico'),
@@ -72,6 +74,15 @@ final class AppServiceProvider extends ServiceProvider
     private function configureUrls(): void
     {
         URL::forceHttps($this->app->isProduction());
+    }
+
+    /**
+     * Keep imported heading keys identical to the spreadsheet's raw headers so
+     * column mapping (selected from those same raw headers) stays consistent.
+     */
+    private function configureExcelImports(): void
+    {
+        HeadingRowFormatter::default('none');
     }
 
     private function configureScribeDocumentation(): void

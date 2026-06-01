@@ -8,29 +8,31 @@
         "filament/filament": "^5.6.6",
         "grazulex/laravel-apiroute": "^2.1",
         "knuckleswtf/scribe": "^5.10",
-        "laravel/framework": "^13.12",
-        "laravel/nightwatch": "^1.27",
+        "laravel/framework": "^13.13",
+        "laravel/nightwatch": "^1.28",
         "laravel/octane": "^2.17.4",
-        "laravel/pulse": "^1.7.3",
+        "laravel/pulse": "^1.7.4",
         "laravel/sanctum": "^4.3.2",
         "laravel/socialite": "^5.27",
+        "maatwebsite/excel": "^4.0@dev",
         "olssonm/l5-very-basic-auth": "^7.4",
         "opcodesio/log-viewer": "^3.24",
         "sentry/sentry-laravel": "^4.25.1",
-        "spatie/laravel-data": "^4.23"
+        "spatie/laravel-data": "^4.23",
+        "symfony/http-foundation": "v8.0.13"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",
-        "driftingly/rector-laravel": "^2.4",
+        "driftingly/rector-laravel": "^2.5",
         "fakerphp/faker": "^1.24.1",
         "fruitcake/laravel-debugbar": "^4.2.8",
         "larastan/larastan": "^3.10",
         "laravel/boost": "^2.4.8",
-        "laravel/pao": "^1.0.6",
+        "laravel/pao": "^1.1.0",
         "laravel/pint": "^1.29.1",
         "mockery/mockery": "^1.6.12",
         "mrpunyapal/rector-pest": "^0.2.15",
-        "pestphp/pest": "^4.7",
+        "pestphp/pest": "^4.7.2",
         "pestphp/pest-plugin-laravel": "^4.1",
         "pestphp/pest-plugin-livewire": "^4.1",
         "pestphp/pest-plugin-type-coverage": "^4.0.4",
@@ -50,6 +52,8 @@
             "Tests\\": "tests/"
         }
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true,
