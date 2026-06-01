@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\User\Pages;
 
+use App\Filament\Actions\SpreadsheetImportAction;
 use App\Filament\Exports\UserExporter;
 use App\Filament\Resources\User\UserResource;
+use App\Imports\UserImporter;
+use Filament\Actions\Action;
 use Filament\Actions\ExportAction;
 use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Resources\Pages\ListRecords;
@@ -18,7 +21,7 @@ final class ListUsers extends ListRecords
     protected static string $resource = UserResource::class;
 
     /**
-     * @return ExportAction[]
+     * @return Action[]
      */
     #[\Override]
     protected function getHeaderActions(): array
@@ -43,6 +46,12 @@ final class ListUsers extends ListRecords
                 ->color(Color::Green)
                 ->modal(false)
                 ->outlined(),
+
+            SpreadsheetImportAction::make()
+                ->label('Import')
+                ->importer(UserImporter::class)
+                ->icon(Heroicon::OutlinedDocumentArrowUp)
+                ->color(Color::Green),
         ];
     }
 }

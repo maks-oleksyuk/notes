@@ -44,7 +44,6 @@ return RectorConfig::configure()
     )
     ->withImportNames(
         importShortClasses: false,
-        removeUnusedImports: true,
     )
     ->withPreparedSets(
         deadCode: true,
@@ -54,10 +53,10 @@ return RectorConfig::configure()
         typeDeclarationDocblocks: true,
         privatization: true,
         // naming: true,
+        // namedArgs: true,
         instanceOf: true,
         earlyReturn: true,
         carbon: true,
-        rectorPreset: true,
     )
     ->withSets([
         LaravelLevelSetList::UP_TO_LARAVEL_130,
@@ -93,12 +92,17 @@ return RectorConfig::configure()
         EmptyToBlankAndFilledFuncRector::class,
     ])
     ->withSkip([
-        StaticCallToMethodCallRector::class => [
-            __DIR__.'/../../app/Providers',
-            __DIR__.'/../../database',
-        ],
         ArgumentFuncCallToMethodCallRector::class => [
+            // Service providers are a poor fit for constructor injection — keep facades.
             __DIR__.'/../../app/Providers/Filament',
+        ],
+        StaticCallToMethodCallRector::class => [
+            // Service providers use boot()/register(), not constructor injection.
+            __DIR__.'/../../app/Providers',
+            // Application and Factory are not serializable — injecting them would break queue chunk jobs.
+            __DIR__.'/../../app/Imports/Filament/SpreadsheetImporter.php',
+            // Factories have a complex multi-param constructor; Hash:: is idiomatic in seeders/factories.
+            __DIR__.'/../../database',
         ],
         // @see https://github.com/driftingly/rector-laravel/issues/496
         RequestStaticValidateToInjectRector::class => [

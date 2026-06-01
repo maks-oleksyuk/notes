@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Exceptions\ApiExceptionHandler;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleController;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Foundation\Testing\WithCachedConfig;
 use Illuminate\Foundation\Testing\WithCachedRoutes;
 use Illuminate\Support\Facades\Http;
@@ -26,6 +27,7 @@ use Tests\TestCase;
 
 pest()
     ->extend(TestCase::class)
+    ->use(LazilyRefreshDatabase::class)
     ->use(WithCachedConfig::class)
     ->use(WithCachedRoutes::class)
     ->beforeEach(function (): void {
@@ -46,6 +48,7 @@ pest()
 // https://github.com/pestphp/pest/issues/1303
 pest()
     ->extend(ApiV1TestCase::class)
+    ->use(LazilyRefreshDatabase::class)
     ->use(WithCachedConfig::class)
     ->use(WithCachedRoutes::class)
     ->beforeEach(function (): void {

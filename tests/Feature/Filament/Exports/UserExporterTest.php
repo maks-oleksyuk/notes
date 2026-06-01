@@ -5,12 +5,9 @@ declare(strict_types=1);
 use App\Filament\Exports\UserExporter;
 use App\Models\User;
 use Filament\Actions\Exports\Models\Export;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Pest\Expectation;
 
 covers(UserExporter::class);
-
-pest()->use(RefreshDatabase::class);
 
 describe('Filament | Export | User', function (): void {
     it('returns the correct model',

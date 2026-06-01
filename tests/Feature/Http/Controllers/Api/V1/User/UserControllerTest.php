@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\User\UserController;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 covers(UserController::class);
-
-pest()->use(RefreshDatabase::class);
 
 beforeEach(function (): void {
     $this->baseUrl = '/api/v1/users';

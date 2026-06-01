@@ -59,6 +59,12 @@ describe('Services | ReCaptcha', function (): void {
         expect($this->service->verify('token', ''))->toBeTrue();
     });
 
+    it('returns false when Google is unreachable', function (): void {
+        Http::fake(['*' => Http::failedConnection()]);
+
+        expect($this->service->verify('token', 'login'))->toBeFalse();
+    });
+
     it('sends secret, token and remote ip to google siteverify', function (): void {
         Http::fake(['*' => Http::response(['success' => true, 'score' => 0.9, 'action' => 'login'])]);
 

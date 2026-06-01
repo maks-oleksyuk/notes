@@ -10,7 +10,9 @@ nodejs_version: '24'
 webserver_type: generic
 xdebug_enabled: false
 upload_dirs:
-  - ../storage/app/public
+  - ../var
+  - ../storage
+  - ../node_modules
 web_extra_daemons:
   - name: 'queue'
     command: 'php artisan queue:work'

@@ -87,8 +87,8 @@ services:
     environment:
       MP_UI_AUTH: ${MP_UI_AUTH}
     expose:
-      - '1025'
-      - '8025'
+      - 1025
+      - 8025
 
 volumes:
   db_data:

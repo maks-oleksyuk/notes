@@ -8,14 +8,11 @@ use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Features\SupportTesting\Testable;
 use Pest\Expectation;
 use Tests\Feature\Filament\Fixtures\FilamentForm;
 
 covers(UserResource::class);
-
-pest()->use(RefreshDatabase::class);
 
 describe('Filament | Resource | User', function (): void {
     it('allows creating users',

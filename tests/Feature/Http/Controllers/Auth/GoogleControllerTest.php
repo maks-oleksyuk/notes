@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Auth\GoogleController;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Socialite\Contracts\Provider;
 use Laravel\Socialite\Contracts\User as SocialiteUserContract;
 use Laravel\Socialite\Facades\Socialite;
@@ -13,8 +12,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse
 use function Pest\Laravel\assertDatabaseHas;
 
 covers(GoogleController::class);
-
-pest()->use(RefreshDatabase::class);
 
 function mockSocialiteCallback(string $email, string $name, string $googleId): void
 {

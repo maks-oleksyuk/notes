@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 18.1 (Debian 18.1-1.pgdg13+2)
--- Dumped by pg_dump version 18.2 (Debian 18.2-1.pgdg13+1)
+-- Dumped from database version 18.3 (Debian 18.3-1.pgdg13+1)
+-- Dumped by pg_dump version 18.3 (Debian 18.3-1.pgdg13+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -82,14 +82,47 @@ ALTER SEQUENCE public.exports_id_seq OWNED BY public.exports.id;
 
 
 --
+-- Name: failed_import_rows; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.failed_import_rows (
+    id bigint NOT NULL,
+    data json NOT NULL,
+    import_id bigint NOT NULL,
+    validation_error text,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+--
+-- Name: failed_import_rows_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.failed_import_rows_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: failed_import_rows_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.failed_import_rows_id_seq OWNED BY public.failed_import_rows.id;
+
+
+--
 -- Name: failed_jobs; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.failed_jobs (
     id bigint NOT NULL,
     uuid character varying(255) NOT NULL,
-    connection text NOT NULL,
-    queue text NOT NULL,
+    connection character varying(255) NOT NULL,
+    queue character varying(255) NOT NULL,
     payload text NOT NULL,
     exception text NOT NULL,
     failed_at timestamp(0) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
@@ -113,6 +146,44 @@ CREATE SEQUENCE public.failed_jobs_id_seq
 --
 
 ALTER SEQUENCE public.failed_jobs_id_seq OWNED BY public.failed_jobs.id;
+
+
+--
+-- Name: imports; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.imports (
+    id bigint NOT NULL,
+    completed_at timestamp(0) without time zone,
+    file_name character varying(255) NOT NULL,
+    file_path character varying(255) NOT NULL,
+    importer character varying(255) NOT NULL,
+    processed_rows integer DEFAULT 0 NOT NULL,
+    total_rows integer NOT NULL,
+    successful_rows integer DEFAULT 0 NOT NULL,
+    user_id bigint NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+--
+-- Name: imports_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.imports_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: imports_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.imports_id_seq OWNED BY public.imports.id;
 
 
 --
@@ -422,10 +493,24 @@ ALTER TABLE ONLY public.exports ALTER COLUMN id SET DEFAULT nextval('public.expo
 
 
 --
+-- Name: failed_import_rows id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.failed_import_rows ALTER COLUMN id SET DEFAULT nextval('public.failed_import_rows_id_seq'::regclass);
+
+
+--
 -- Name: failed_jobs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.failed_jobs ALTER COLUMN id SET DEFAULT nextval('public.failed_jobs_id_seq'::regclass);
+
+
+--
+-- Name: imports id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.imports ALTER COLUMN id SET DEFAULT nextval('public.imports_id_seq'::regclass);
 
 
 --
@@ -502,6 +587,14 @@ ALTER TABLE ONLY public.exports
 
 
 --
+-- Name: failed_import_rows failed_import_rows_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.failed_import_rows
+    ADD CONSTRAINT failed_import_rows_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: failed_jobs failed_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -515,6 +608,14 @@ ALTER TABLE ONLY public.failed_jobs
 
 ALTER TABLE ONLY public.failed_jobs
     ADD CONSTRAINT failed_jobs_uuid_unique UNIQUE (uuid);
+
+
+--
+-- Name: imports imports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.imports
+    ADD CONSTRAINT imports_pkey PRIMARY KEY (id);
 
 
 --
@@ -646,6 +747,27 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: cache_expiration_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX cache_expiration_index ON public.cache USING btree (expiration);
+
+
+--
+-- Name: cache_locks_expiration_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX cache_locks_expiration_index ON public.cache_locks USING btree (expiration);
+
+
+--
+-- Name: failed_jobs_connection_queue_failed_at_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX failed_jobs_connection_queue_failed_at_index ON public.failed_jobs USING btree (connection, queue, failed_at);
+
+
+--
 -- Name: jobs_queue_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -759,6 +881,22 @@ ALTER TABLE ONLY public.exports
 
 
 --
+-- Name: failed_import_rows failed_import_rows_import_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.failed_import_rows
+    ADD CONSTRAINT failed_import_rows_import_id_foreign FOREIGN KEY (import_id) REFERENCES public.imports(id) ON DELETE CASCADE;
+
+
+--
+-- Name: imports imports_user_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.imports
+    ADD CONSTRAINT imports_user_id_foreign FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -766,8 +904,8 @@ ALTER TABLE ONLY public.exports
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 18.1 (Debian 18.1-1.pgdg13+2)
--- Dumped by pg_dump version 18.2 (Debian 18.2-1.pgdg13+1)
+-- Dumped from database version 18.3 (Debian 18.3-1.pgdg13+1)
+-- Dumped by pg_dump version 18.3 (Debian 18.3-1.pgdg13+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
