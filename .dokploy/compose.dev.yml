@@ -67,6 +67,20 @@ services:
       timeout: 10s
       retries: 20
 
+  valkey:
+    image: valkey/valkey:9-alpine
+    restart: unless-stopped
+    command: valkey-server --requirepass ${REDIS_PASSWORD}
+    expose:
+      - 6379
+    volumes:
+      - valkey_data:/data
+    healthcheck:
+      test: ['CMD', 'valkey-cli', '-a', '${REDIS_PASSWORD}', '--no-auth-warning', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   mailpit:
     image: axllent/mailpit:latest
     restart: unless-stopped
@@ -78,3 +92,4 @@ services:
 
 volumes:
   db_data:
+  valkey_data:
