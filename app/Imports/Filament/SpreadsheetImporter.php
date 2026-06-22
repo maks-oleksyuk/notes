@@ -149,7 +149,7 @@ abstract class SpreadsheetImporter implements ToModel, WithChunkReading, WithEve
         $validator = Validator::make($mapped, $this->validationRules(), $this->validationMessages());
 
         if ($validator->fails()) {
-            $this->recordFailure($mapped, array_values($validator->errors()->all()));
+            $this->recordFailure($mapped, $validator->errors()->all());
 
             return null;
         }
@@ -252,10 +252,10 @@ abstract class SpreadsheetImporter implements ToModel, WithChunkReading, WithEve
 
     public static function getCompletedNotificationBody(Import $import, int $failedCount): string
     {
-        $imported = $import->successful_rows ?? 0; // @pest-mutate-ignore: column is NOT NULL, the default never applies
+        $imported = $import->successful_rows;
         $body = sprintf('Imported %d ', $imported).str('row')->plural($imported).'.';
 
-        $skipped = max(0, ($import->processed_rows ?? 0) - $imported - $failedCount);
+        $skipped = $import->processed_rows - $imported - $failedCount;
 
         if ($skipped > 0) {
             $body .= sprintf(' %s ', $skipped).str('row')->plural($skipped).' skipped.';
@@ -312,7 +312,7 @@ abstract class SpreadsheetImporter implements ToModel, WithChunkReading, WithEve
     protected function validationRules(): array
     {
         if ($this->cachedValidationRules !== null) {
-            return $this->cachedValidationRules; // @pest-mutate-ignore: cache hit/miss is behaviorally identical
+            return $this->cachedValidationRules;
         }
 
         $rules = [];

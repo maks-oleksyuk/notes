@@ -10,7 +10,7 @@ inputs:
   node:
     description: 'Node.js version to install'
     required: true
-    default: '24.x'
+    default: '26.x'
 
   use-php:
     description: 'Whether to install PHP and dependencies'
@@ -50,7 +50,7 @@ runs:
 
     - name: '💽 Cache composer dependencies'
       if: ${{ inputs.use-php == 'true' }}
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
         key: "${{ runner.os }}-${{ github.ref_name }}-composer-${{ hashFiles('**/composer.lock') }}"
@@ -59,7 +59,7 @@ runs:
           ${{ runner.os }}-${{ github.base_ref }}-composer-
 
     - name: '💽 Cache var directory'
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
       if: ${{ inputs.use-php == 'true' }}
       with:
         path: var
@@ -75,7 +75,7 @@ runs:
 
     - name: '🟧 Setup pnpm'
       if: ${{ inputs.use-node == 'true' }}
-      uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+      uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
 
     - name: '❇️ Setup Node.js ${{ inputs.node }}'
       if: ${{ inputs.use-node == 'true' }}

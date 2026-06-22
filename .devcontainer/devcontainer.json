@@ -2,7 +2,7 @@
     "name": "notes-laravel",
     "image": "mcr.microsoft.com/devcontainers/base:debian-13",
     "features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:3": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:4": {},
         "ghcr.io/ddev/ddev/install-ddev:latest": {}
     },
     "forwardPorts": [3306, 6942, 8027, 8036, 8080, 8443, 9003, 9999],

@@ -43,7 +43,7 @@ describe('API | V1 | Actions | Users', function (): void {
                 'email' => 'john@example.com',
             ]]);
 
-        expect(User::whereEmail('john@example.com')->exists())->toBeTrue();
+        $this->assertDatabaseHas(User::class, ['email' => 'john@example.com']);
     });
 
     it('shows a specific user when authenticated', function (): void {

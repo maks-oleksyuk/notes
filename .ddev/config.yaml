@@ -6,7 +6,7 @@ database:
   version: '18'
 php_version: '8.5'
 host_db_port: '14674'
-nodejs_version: '24'
+nodejs_version: '26'
 webserver_type: generic
 xdebug_enabled: false
 upload_dirs:

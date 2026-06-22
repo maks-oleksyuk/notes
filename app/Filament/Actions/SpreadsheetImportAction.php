@@ -118,7 +118,7 @@ final class SpreadsheetImportAction extends Action
                     ->outlined()
                     ->action(fn (): BinaryFileResponse => Excel::download(
                         $this->importer::makeTemplateExport(),
-                        Str::slug((string) $this->getPluralModelLabel()).'-import-template.csv',
+                        Str::slug($this->getPluralModelLabel() ?? 'models').'-import-template.csv',
                         ExcelFormat::CSV,
                     )),
                 Action::make('downloadXlsxTemplate')
@@ -129,10 +129,10 @@ final class SpreadsheetImportAction extends Action
                     ->outlined()
                     ->action(fn (): BinaryFileResponse => Excel::download(
                         $this->importer::makeTemplateExport(),
-                        Str::slug((string) $this->getPluralModelLabel()).'-import-template.xlsx',
+                        Str::slug($this->getPluralModelLabel() ?? 'models').'-import-template.xlsx',
                         ExcelFormat::XLSX,
                     )),
-            ])->fullWidth(),
+            ])->key('downloadTemplates')->fullWidth(),
 
             FileUpload::make('file')
                 ->hiddenLabel()
@@ -159,7 +159,9 @@ final class SpreadsheetImportAction extends Action
                         $headings = $this->detectHeadings($state);
                     } catch (\Throwable) {
                         $relativePath = is_array($state) ? reset($state) : $state;
-                        if (is_string($relativePath) && $relativePath !== '') {
+                        // Only a stored file leaves a relative string path to delete; an unreadable
+                        // temporary upload is a TemporaryUploadedFile the disk never persisted.
+                        if (is_string($relativePath)) {
                             Storage::disk('local')->delete($relativePath);
                         }
 
@@ -168,11 +170,12 @@ final class SpreadsheetImportAction extends Action
                         // FilePond ignores the cleared state while an upload is in flight,
                         // so remove the file on the live instance instead.
                         // Its `removefile` event also re-enables the Submit button.
-                        $livewire->js(<<<'JS'
+                        $resetFilePondScript = <<<'JS'
                             document.querySelectorAll('[x-data^="fileUploadFormComponent"]').forEach((component) => {
                                 window.Alpine.$data(component).pond?.removeFiles({ revert: false });
                             });
-                        JS);
+                            JS;
+                        $livewire->js($resetFilePondScript);
                         Notification::make()
                             ->title(__('filament/import.errors.invalid_file.title'))
                             ->body(__('filament/import.errors.invalid_file.body'))
@@ -186,7 +189,7 @@ final class SpreadsheetImportAction extends Action
 
                     $duplicates = $headings
                         |> array_count_values(...)
-                        |> (fn ($x): array => array_filter($x, fn (int $count): bool => $count > 1))
+                        |> (fn (array $x): array => array_filter($x, fn (int $count): bool => $count > 1))
                         |> array_keys(...);
 
                     if ($duplicates !== []) {
@@ -203,9 +206,9 @@ final class SpreadsheetImportAction extends Action
                 }),
 
             Fieldset::make(__('filament-actions::import.modal.form.columns.label'))
-                ->visibleJs(self::FILE_IS_READABLE_JS)
                 ->columns(1)
-                ->schema($this->mappingFields()),
+                ->schema($this->mappingFields())
+                ->visibleJs(self::FILE_IS_READABLE_JS),
 
             Fieldset::make(__('filament/import.options.heading'))
                 ->statePath('options')

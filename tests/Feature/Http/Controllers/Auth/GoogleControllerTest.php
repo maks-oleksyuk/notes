@@ -9,8 +9,6 @@ use Laravel\Socialite\Contracts\User as SocialiteUserContract;
 use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse;
 
-use function Pest\Laravel\assertDatabaseHas;
-
 covers(GoogleController::class);
 
 function mockSocialiteCallback(string $email, string $name, string $googleId): void
@@ -44,7 +42,7 @@ describe('Http | Controllers | Auth | Google', function (): void {
 
         $this->get(route('auth.google.callback'));
 
-        assertDatabaseHas(User::class, [
+        $this->assertDatabaseHas(User::class, [
             'email' => 'new@example.com',
             'name' => 'New User',
             'google_id' => 'google-123',
@@ -62,9 +60,9 @@ describe('Http | Controllers | Auth | Google', function (): void {
 
         $this->get(route('auth.google.callback'));
 
-        expect(User::query()->count())->toBe(1);
+        $this->assertDatabaseCount(User::class, 1);
 
-        assertDatabaseHas(User::class, [
+        $this->assertDatabaseHas(User::class, [
             'email' => 'existing@example.com',
             'name' => 'Updated Name',
             'google_id' => 'google-456',

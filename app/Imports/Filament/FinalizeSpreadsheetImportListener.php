@@ -55,7 +55,7 @@ final readonly class FinalizeSpreadsheetImportListener
         Notification::make()
             ->title(__('filament/import.errors.failed.title'))
             ->body(__('filament/import.errors.failed.body', [
-                'count' => Number::format($import->processed_rows ?? 0), // @pest-mutate-ignore: column is NOT NULL, the default never applies
+                'count' => Number::format($import->processed_rows),
             ]))
             ->status('danger')
             ->sendToDatabase($import->user);
@@ -92,9 +92,7 @@ final readonly class FinalizeSpreadsheetImportListener
     private function downloadFailedRowsAction(SpreadsheetImporter $importer, Import $import, int $failedCount): Action
     {
         return Action::make('downloadFailedRows')
-            ->label($this->translator->choice('filament-actions::import.notifications.completed.actions.download_failed_rows_csv.label', $failedCount, [
-                'count' => Number::format($failedCount),
-            ]))
+            ->label($this->translator->choice('filament-actions::import.notifications.completed.actions.download_failed_rows_csv.label', $failedCount))
             ->icon(Heroicon::OutlinedArrowDownTray)
             ->color('danger')
             ->url(

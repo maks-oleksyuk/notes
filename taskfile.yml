@@ -77,9 +77,13 @@ tasks:
     desc: 'Run `prettier` command.'
     cmd:
       '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
-      --config={{.CONFIG_DIR}}/.prettierrc.json
+      --config-path={{.CONFIG_DIR}}/.prettierrc.json
       --ignore-path={{.CONFIG_DIR}}/.prettierignore
       --cache --cache-location=var/cache/prettier/prettier.cache'
+    aliases:
+      - prt
+    env:
+      PRETTIER_EXPERIMENTAL_CLI: 1
     silent: true
 
   pest:
@@ -173,7 +177,7 @@ tasks:
       - db:s:d
     cmds:
       - task: artisan
-        vars: { CLI_ARGS: 'schema:dump --prune' }
+        vars: { CLI_ARGS: 'schema:dump --prune --without-migration-data' }
 
   docs:generate:
     desc: 'Generate docs with scribe.'
@@ -353,7 +357,7 @@ tasks:
       - task: prettier
         vars: { CLI_ARGS: '-v' }
       - task: prettier
-        vars: { CLI_ARGS: '. -wl' }
+        vars: { CLI_ARGS: '. -w' }
 
   # Testing:
 

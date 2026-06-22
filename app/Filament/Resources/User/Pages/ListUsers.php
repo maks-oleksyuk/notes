@@ -50,7 +50,6 @@ final class ListUsers extends ListRecords
             SpreadsheetImportAction::make()
                 ->label('Import')
                 ->importer(UserImporter::class)
-                ->icon(Heroicon::OutlinedDocumentArrowUp)
                 ->color(Color::Green),
         ];
     }

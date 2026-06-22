@@ -22,16 +22,16 @@ final class UserImporter extends SpreadsheetImporter implements ShouldQueue
             ImportColumn::make('name')
                 ->label('Name')
                 ->requiredMapping()
-                ->rules(['required', 'string', 'max:255'])
+                ->rules(['required', 'max:255'])
                 ->example('John Doe')
-                ->guess(['full name', 'full_name', 'fullname']), // @pest-mutate-ignore: UI auto-guess hints, exercised only by the Filament modal
+                ->guess(['full_name', 'fullname']),
 
             ImportColumn::make('email')
                 ->label('Email')
                 ->requiredMapping()
-                ->rules(['required', 'email:strict', 'max:255'])
+                ->rules(['required', 'email:strict'])
                 ->example('john@example.com')
-                ->guess(['e-mail', 'mail', 'email address']), // @pest-mutate-ignore: UI auto-guess hints, exercised only by the Filament modal
+                ->guess(['e-mail', 'mail', 'email address']),
         ];
     }
 
@@ -51,17 +51,17 @@ final class UserImporter extends SpreadsheetImporter implements ShouldQueue
     }
 
     /**
-     * @param  array<string, string|null>  $row
+     * @param  array{name: string, email: string}  $row
      */
     public function resolveRecord(array $row): ?Model
     {
         $user = User::query()->firstOrNew(['email' => $row['email']]);
 
-        if ($user->exists && $this->option('skipExisting', false) === true) {
+        if ($user->exists() && $this->option('skipExisting', false) === true) {
             return null;
         }
 
-        $user->name = (string) $row['name']; // @pest-mutate-ignore: name is validated required, the cast only narrows string|null for static analysis
+        $user->name = $row['name'];
 
         return $user;
     }
