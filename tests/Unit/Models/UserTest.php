@@ -6,11 +6,8 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Filament\Panel;
 use Illuminate\Contracts\Translation\HasLocalePreference;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 covers(User::class);
-
-pest()->use(RefreshDatabase::class);
 
 describe('Model | User', function (): void {
     it('can create a user', function (): void {

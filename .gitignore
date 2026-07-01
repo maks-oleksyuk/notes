@@ -6,7 +6,6 @@ node_modules
 # Ignore Laravel files.
 public
 storage
-artisan
 
 # Ignore final build files.
 dist

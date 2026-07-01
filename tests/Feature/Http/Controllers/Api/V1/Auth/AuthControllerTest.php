@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 
 covers(AuthController::class);
-
-pest()->use(RefreshDatabase::class);
 
 describe('API | V1 | Actions | Auth', function (): void {
     it('login a user and returns a token', function (): void {
