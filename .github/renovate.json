@@ -32,6 +32,10 @@
         {
             "matchDepNames": ["php"],
             "enabled": false
+        },
+        {
+            "matchDepTypes": ["engines"],
+            "enabled": false
         }
     ]
 }
