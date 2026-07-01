@@ -20,6 +20,6 @@
             "elements": ["arrays", "parameters"]
         }
     },
-    "exclude": ["local", "public", "var", "web"],
+    "exclude": ["local", "packages", "public", "var", "web"],
     "cache-file": "./var/cache/pint/pint.cache"
 }

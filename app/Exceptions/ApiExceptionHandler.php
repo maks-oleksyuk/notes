@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Exceptions;
 
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 final readonly class ApiExceptionHandler
 {
     public function __construct(
+        private Repository $config,
         private ResponseFactory $responseFactory,
     ) {}
 
@@ -28,13 +30,17 @@ final readonly class ApiExceptionHandler
             $e instanceof HttpExceptionInterface => $e->getStatusCode(),
             $e instanceof AuthenticationException => HttpFoundationResponse::HTTP_UNAUTHORIZED,
             $e instanceof ValidationException => HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY,
-            default => $e->getCode(),
+            default => $this->statusFromCode($e->getCode()),
         };
+
+        $isServerError = $status >= HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR;
 
         $problem = [
             'title' => HttpFoundationResponse::$statusTexts[$status],
             'status' => $status,
-            'detail' => $e->getMessage(),
+            'detail' => $isServerError && ! $this->config->get('app.debug')
+                ? HttpFoundationResponse::$statusTexts[$status]
+                : $e->getMessage(),
             'instance' => $request->getRequestUri(),
         ];
 
@@ -45,5 +51,18 @@ final readonly class ApiExceptionHandler
         return $this->responseFactory->json($problem, $status, [
             'Content-Type' => 'application/problem+json',
         ]);
+    }
+
+    private function statusFromCode(mixed $code): int
+    {
+        if (
+            is_int($code)
+            && isset(HttpFoundationResponse::$statusTexts[$code])
+            && $code >= HttpFoundationResponse::HTTP_BAD_REQUEST
+        ) {
+            return $code;
+        }
+
+        return HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR;
     }
 }

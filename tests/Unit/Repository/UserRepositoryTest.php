@@ -5,17 +5,14 @@ declare(strict_types=1);
 use App\Data\Filters\Models\UserFilters;
 use App\Models\User;
 use App\Repositories\UserRepository;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 covers([UserRepository::class, UserFilters::class]);
 
-pest()->use(RefreshDatabase::class);
-
 beforeEach(fn (): UserRepository => $this->repository = new UserRepository(new User));
 
-describe('User Repository', function (): void {
+describe('Repository | User', function (): void {
     it('finds a user by ID', function (): void {
         $user = User::factory()->create();
         $foundUser = $this->repository->find($user->id);

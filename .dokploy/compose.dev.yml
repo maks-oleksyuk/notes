@@ -1,0 +1,95 @@
+x-app-base: &app-base
+  image: ghcr.io/maks-oleksyuk/notes-laravel:dev
+  pull_policy: always
+  restart: unless-stopped
+  env_file:
+    - .env
+  environment:
+    APP_ENV: dev
+  depends_on:
+    db:
+      condition: service_healthy
+  volumes:
+    - ../../files/storage/app:/var/www/html/storage/app
+    - ../../files/storage/logs:/var/www/html/storage/logs
+
+services:
+  app:
+    <<: *app-base
+    command: ['php', 'artisan', 'octane:start', '--host=0.0.0.0', '--port=8080']
+    expose:
+      - 8080
+      - 8443
+    environment:
+      APP_ENV: dev
+      AUTORUN_ENABLED: 'true'
+      AUTORUN_LARAVEL_MIGRATION: 'true'
+      AUTORUN_LARAVEL_STORAGE_LINK: 'true'
+    healthcheck:
+      test: ['CMD', 'healthcheck-octane']
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    post_start:
+      - command: chown -R www-data:www-data /var/www/html/storage && chmod -R 775 /var/www/html/storage
+        user: root
+
+  queue:
+    <<: *app-base
+    command: ['php', 'artisan', 'queue:work', '--sleep=3', '--tries=3']
+    stop_signal: SIGTERM
+    healthcheck:
+      test: ['CMD', 'healthcheck-queue']
+      start_period: 10s
+
+  scheduler:
+    <<: *app-base
+    command: ['php', 'artisan', 'schedule:work']
+    healthcheck:
+      test: ['CMD', 'healthcheck-schedule']
+      start_period: 10s
+
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    expose:
+      - 5432
+    volumes:
+      - db_data:/var/lib/postgresql
+    healthcheck:
+      test: pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}
+      interval: 5s
+      timeout: 10s
+      retries: 20
+
+  valkey:
+    image: valkey/valkey:9-alpine
+    restart: unless-stopped
+    command: valkey-server --requirepass ${REDIS_PASSWORD}
+    expose:
+      - 6379
+    volumes:
+      - valkey_data:/data
+    healthcheck:
+      test: ['CMD', 'valkey-cli', '-a', '${REDIS_PASSWORD}', '--no-auth-warning', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    environment:
+      MP_UI_AUTH: ${MP_UI_AUTH}
+    expose:
+      - 1025
+      - 8025
+
+volumes:
+  db_data:
+  valkey_data:

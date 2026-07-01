@@ -1,14 +1,23 @@
 {
     "agents": ["claude_code"],
+    "cloud": false,
     "guidelines": true,
-    "herd_mcp": false,
     "mcp": true,
-    "packages": ["filament/filament"],
+    "nightwatch": false,
+    "packages": [
+        "filament/filament",
+        "maatwebsite/excel",
+        "fruitcake/laravel-debugbar"
+    ],
     "sail": false,
     "skills": [
         "laravel-best-practices",
+        "configure-nightwatch",
+        "octane-development",
         "pulse-development",
         "socialite-development",
-        "pest-testing"
+        "pest-testing",
+        "laravel-excel",
+        "debug-using-debugbar"
     ]
 }

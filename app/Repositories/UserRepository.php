@@ -18,6 +18,7 @@ final readonly class UserRepository extends BaseRepository implements UserReposi
 {
     /**
      * @param  UserFilters  $filters
+     * @param  array<int|string, \SortDirection|'asc'|'desc'>  $order
      */
     public function getFilteredQuery(UserFilters|FiltersData $filters, array $order = []): Builder
     {

@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 final readonly class ResolveLocale
 {
     public function __construct(
-        private Repository $configRepository,
+        private Repository $config,
     ) {}
 
     /**
@@ -21,7 +21,7 @@ final readonly class ResolveLocale
     public function handle(Request $request, \Closure $next): HttpFoundationResponse
     {
         /** @var non-empty-list<string> $availableLocales */
-        $availableLocales = $this->configRepository->array('app.available_locales');
+        $availableLocales = $this->config->array('app.available_locales');
 
         $queryLocale = $request->query('lang');
         $userLocale = $request->user() instanceof HasLocalePreference

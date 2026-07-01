@@ -1,10 +1,12 @@
 .claude
 .ddev
+.dokploy
 .github
 .pnpm-store
 .scribe*
 dist
 local
+packages
 public
 storage
 var

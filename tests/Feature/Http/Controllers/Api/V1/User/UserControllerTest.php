@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\User\UserController;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 covers(UserController::class);
-
-pest()->use(RefreshDatabase::class);
 
 beforeEach(function (): void {
     $this->baseUrl = '/api/v1/users';
@@ -46,7 +43,7 @@ describe('API | V1 | Actions | Users', function (): void {
                 'email' => 'john@example.com',
             ]]);
 
-        expect(User::whereEmail('john@example.com')->exists())->toBeTrue();
+        $this->assertDatabaseHas(User::class, ['email' => 'john@example.com']);
     });
 
     it('shows a specific user when authenticated', function (): void {

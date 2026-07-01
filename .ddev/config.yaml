@@ -6,14 +6,19 @@ database:
   version: '18'
 php_version: '8.5'
 host_db_port: '14674'
-nodejs_version: '24'
+nodejs_version: '26'
 webserver_type: generic
 xdebug_enabled: false
 upload_dirs:
-  - ../storage/app/public
+  - ../var
+  - ../storage
+  - node_modules
 web_extra_daemons:
   - name: 'queue'
     command: 'php artisan queue:work'
+    directory: /var/www/html
+  - name: 'scheduler'
+    command: 'php artisan schedule:work'
     directory: /var/www/html
   - name: 'nightwatch'
     command: 'php artisan nightwatch:agent'
@@ -21,16 +26,12 @@ web_extra_daemons:
   - name: 'pulse'
     command: 'php artisan pulse:check'
     directory: /var/www/html
-web_environment:
-  - USE_ZEND_ALLOC=0
-webimage_extra_packages:
-  - aspell
-  - aspell-en
 hooks:
   pre-start:
-    # Add frankenphp, pnpm and task to ddev if not already installed.
+    # Add frankenphp, redis, pnpm and task to ddev if not already installed.
     - exec-host: |
         ddev add-on list --installed | grep -q 'ddev/ddev-pnpm' || ddev add-on get ddev/ddev-pnpm > /dev/null
+        ddev add-on list --installed | grep -q 'ddev/ddev-redis' || ddev add-on get ddev/ddev-redis > /dev/null
         ddev add-on list --installed | grep -q 'ddev/ddev-frankenphp' || ddev add-on get ddev/ddev-frankenphp > /dev/null
         ddev add-on list --installed | grep -q 'gebruederheitz/ddev-taskfile' || ddev add-on get gebruederheitz/ddev-taskfile > /dev/null
   post-start:
