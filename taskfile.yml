@@ -55,14 +55,21 @@ tasks:
       - task: next
         vars: { CLI_ARGS: 'dev' }
 
+  start:
+    desc: 'Run `next start` (no build)'
+    aliases:
+      - s
+    cmds:
+      - task: next
+        vars: { CLI_ARGS: 'start' }
+
   prod:
-    desc: 'Run `next start`'
+    desc: 'Run `next build` then `next start`'
     aliases:
       - p
     cmds:
       - task: build
-      - task: next
-        vars: { CLI_ARGS: 'start' }
+      - task: start
 
   update:
     desc: 'Updates project dependencies withing constraints.'

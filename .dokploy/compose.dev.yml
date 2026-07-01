@@ -1,0 +1,9 @@
+services:
+  app:
+    image: ghcr.io/maks-oleksyuk/notes-next-js:dev
+    pull_policy: always
+    restart: unless-stopped
+    env_file:
+      - .env
+    expose:
+      - '3000'

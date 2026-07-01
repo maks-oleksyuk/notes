@@ -1,6 +1,6 @@
 import type { NextConfig } from 'next';
 
-const getBrowserLogging = () => {
+const getBrowserLogging: () => boolean|'warn'|'error' = (): boolean|'warn'|'error' => {
   const env = process.env.NEXT_LOGGING_BROWSER;
   if (env === 'true') return true;
   if (env === 'false') return false;

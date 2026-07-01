@@ -1,9 +1,11 @@
 name: next-js
 type: generic
 webserver_type: generic
-nodejs_version: '24'
+nodejs_version: '26'
 omit_containers: [db]
 disable_upload_dirs_warning: true
+upload_dirs:
+  - node_modules
 web_extra_exposed_ports:
   - name: next-js
     container_port: 3000
