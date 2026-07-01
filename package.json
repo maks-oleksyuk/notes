@@ -10,8 +10,8 @@
     },
     "packageManager": "pnpm@11.9.0",
     "engines": {
-        "pnpm": ">=11",
-        "node": ">=26"
+        "pnpm": ">=11.9.0",
+        "node": ">=26.4.0"
     },
     "validate-branch-name": {
         "pattern": "^(laravel|(feature|fix|hotfix|chore)/[a-z0-9]+(?:-[a-z0-9]+)*)$",
