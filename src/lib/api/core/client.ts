@@ -2,6 +2,7 @@ import {
   buildBody,
   buildHeaders,
   buildUrl,
+  generateRequestId,
   headersToRecord,
   parseErrorData,
   parseResponseData,
@@ -52,7 +53,11 @@ export class HttpClient {
         mergedOptions.path || path,
         mergedOptions.params,
       );
-      const headers = buildHeaders(mergedOptions.headers, mergedOptions.body);
+      const headers = buildHeaders(
+        mergedOptions.headers,
+        mergedOptions.body,
+        mergedOptions.requestId,
+      );
       const body = buildBody(mergedOptions.body);
 
       const start = performance.now();
@@ -221,6 +226,9 @@ export class HttpClient {
       ...options,
       path,
       method,
+      // Generated once per request so every lifecycle hook shares the same id.
+      // Not inherited from defaultOptions, which would collide across requests.
+      requestId: options.requestId ?? generateRequestId(),
       headers: {
         ...headersToRecord(this.defaultOptions.headers),
         ...headersToRecord(options.headers),

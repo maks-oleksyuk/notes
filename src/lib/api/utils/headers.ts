@@ -18,6 +18,7 @@ export function headersToRecord(headers?: HeadersInit): Record<string, string> {
 export function buildHeaders(
   headersInit?: HeadersInit,
   body?: unknown,
+  requestId?: string,
 ): Headers {
   const headers = new Headers(headersInit);
 
@@ -26,6 +27,11 @@ export function buildHeaders(
     if (!(body instanceof FormData || body instanceof Blob)) {
       headers.set('Content-Type', 'application/json');
     }
+  }
+
+  // Forward the correlation id so the backend can tie its logs to ours.
+  if (requestId && !headers.has('X-Request-Id')) {
+    headers.set('X-Request-Id', requestId);
   }
 
   return headers;

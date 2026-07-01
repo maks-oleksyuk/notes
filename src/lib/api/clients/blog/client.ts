@@ -9,7 +9,7 @@ export const blogApi = new HttpClient('https://jsonplaceholder.typicode.com', {
     revalidate: 60,
     tags: ['blog'],
   },
-  plugins: [logger({ verbose: false, prefix: 'blog' })],
+  plugins: [logger({ level: 'info', prefix: 'blog' })],
 });
 
 // Types for the blog
