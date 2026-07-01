@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Actions\Api\V1\Auth\LoginAction;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
@@ -12,11 +11,9 @@ use Illuminate\Validation\ValidationException;
 
 covers(LoginAction::class);
 
-pest()->use(RefreshDatabase::class);
-
 beforeEach(fn (): LoginAction => $this->loginAction = App::make(LoginAction::class));
 
-describe('API | V1 | Auth', function (): void {
+describe('Actions | API | V1 | Auth', function (): void {
     it('throws ValidationException when user not found', function (): void {
         $this->expectException(ValidationException::class);
 

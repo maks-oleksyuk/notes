@@ -14,6 +14,7 @@ use RectorLaravel\Rector\FuncCall\RemoveDumpDataDeadCodeRector;
 use RectorLaravel\Rector\MethodCall\ResponseHelperCallToJsonResponseRector;
 use RectorLaravel\Rector\MethodCall\UseComponentPropertyWithinCommandsRector;
 use RectorLaravel\Rector\MethodCall\WhereToWhereLikeRector;
+use RectorLaravel\Rector\StaticCall\RequestStaticValidateToInjectRector;
 use RectorLaravel\Rector\StaticCall\RouteActionCallableRector;
 use RectorLaravel\Set\LaravelLevelSetList;
 use RectorLaravel\Set\LaravelSetList;
@@ -43,7 +44,6 @@ return RectorConfig::configure()
     )
     ->withImportNames(
         importShortClasses: false,
-        removeUnusedImports: true,
     )
     ->withPreparedSets(
         deadCode: true,
@@ -53,13 +53,13 @@ return RectorConfig::configure()
         typeDeclarationDocblocks: true,
         privatization: true,
         // naming: true,
+        // namedArgs: true,
         instanceOf: true,
         earlyReturn: true,
         carbon: true,
-        rectorPreset: true,
     )
     ->withSets([
-        LaravelLevelSetList::UP_TO_LARAVEL_120,
+        LaravelLevelSetList::UP_TO_LARAVEL_130,
         LaravelSetList::LARAVEL_ARRAYACCESS_TO_METHOD_CALL,
         LaravelSetList::LARAVEL_ARRAY_STR_FUNCTION_TO_STATIC_CALL,
         LaravelSetList::LARAVEL_CODE_QUALITY,
@@ -77,6 +77,7 @@ return RectorConfig::configure()
         PestSetList::PEST_CODE_QUALITY,
         PestSetList::PEST_CHAIN,
         PestSetList::PEST_LARAVEL,
+        PestSetList::PEST_BROWSER,
     ])
     ->withConfiguredRule(RemoveDumpDataDeadCodeRector::class, [])
     ->withConfiguredRule(RouteActionCallableRector::class, [])
@@ -91,12 +92,21 @@ return RectorConfig::configure()
         EmptyToBlankAndFilledFuncRector::class,
     ])
     ->withSkip([
+        ArgumentFuncCallToMethodCallRector::class => [
+            // Service providers are a poor fit for constructor injection — keep facades.
+            __DIR__.'/../../app/Providers/Filament',
+        ],
         StaticCallToMethodCallRector::class => [
+            // Service providers use boot()/register(), not constructor injection.
             __DIR__.'/../../app/Providers',
+            // Application and Factory are not serializable — injecting them would break queue chunk jobs.
+            __DIR__.'/../../app/Imports/Filament/SpreadsheetImporter.php',
+            // Factories have a complex multi-param constructor; Hash:: is idiomatic in seeders/factories.
             __DIR__.'/../../database',
         ],
-        ArgumentFuncCallToMethodCallRector::class => [
-            __DIR__.'/../../app/Providers/Filament',
+        // @see https://github.com/driftingly/rector-laravel/issues/496
+        RequestStaticValidateToInjectRector::class => [
+            __DIR__.'/../../app/Providers/AppServiceProvider.php',
         ],
     ])
     ->withParallel()

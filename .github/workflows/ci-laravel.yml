@@ -17,16 +17,23 @@ on:
   # Allows running this workflow manually from the Actions tab.
   workflow_dispatch:
 
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   cleanup:
     name: '🧹 Clean up GitHub repo'
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      actions: write
     if: github.event_name != 'pull_request'
 
     steps:
       - name: '🗑 Delete workflow runs'
-        uses: Mattraks/delete-workflow-runs@v2
+        uses: Mattraks/delete-workflow-runs@b3018382ca039b53d238908238bd35d1fb14f8ee # v2.1.0
         with:
           retain_days: 7
           keep_minimum_runs: 1
@@ -35,6 +42,7 @@ jobs:
   lint:
     name: '🪄 Lint | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
+    permissions: {}
 
     strategy:
       fail-fast: false
@@ -63,7 +71,9 @@ jobs:
 
     steps:
       - name: '🛎 Checkout'
-        uses: actions/checkout@v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: '⚙️ Prepare environment'
         uses: ./.github/actions/setup-validation
@@ -77,6 +87,7 @@ jobs:
   lint_phpstan:
     name: '🪄 Lint | 🔍 PHPStan'
     runs-on: ubuntu-latest
+    permissions: {}
 
     services:
       postgres:
@@ -95,7 +106,9 @@ jobs:
 
     steps:
       - name: '🛎 Checkout'
-        uses: actions/checkout@v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: '⚙️ Prepare environment'
         uses: ./.github/actions/setup-validation
@@ -114,10 +127,11 @@ jobs:
   test:
     name: '♻️ Test | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest
+    permissions: {}
 
     services:
       postgres:
-        image: postgres:17
+        image: postgres:18
         ports:
           - 5432:5432
         env:
@@ -135,13 +149,15 @@ jobs:
       matrix:
         command:
           - { name: '🧮 Coverage', command: 'test:coverage -- --ci', report: false }
-          - { name: '🧬 Feature',  command: 'test:feature -- --ci',  report: true  }
-          - { name: '🔬 Unit',     command: 'test:unit -- --ci',     report: true  }
-          - { name: '🦠 Mutate',   command: 'test:mutate -- --ci',   report: false }
+          - { name: '🧬 Feature', command: 'test:feature  -- --ci', report: true }
+          - { name: '🔬 Unit', command: 'test:unit -- --ci', report: true }
+          - { name: '🦠 Mutate', command: 'test:mutate -- --ci', report: false }
 
     steps:
       - name: '🛎 Checkout'
-        uses: actions/checkout@v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: '⚙️ Prepare environment'
         uses: ./.github/actions/setup-testing
@@ -155,7 +171,7 @@ jobs:
           DB_PASSWORD: db
 
       - name: '☂️ Upload results to Codecov'
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         if: ${{ matrix.command.report }}
         with:
           slug: maks-oleksyuk/notes
@@ -164,7 +180,7 @@ jobs:
           directory: ./var/report
 
       - name: '☂️ Upload test results to Codecov'
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         if: ${{ matrix.command.report }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

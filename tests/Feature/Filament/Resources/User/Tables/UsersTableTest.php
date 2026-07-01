@@ -9,13 +9,10 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\Testing\TestAction;
 use Filament\Actions\ViewAction;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Livewire\livewire;
 
 covers(UsersTable::class);
-
-pest()->use(RefreshDatabase::class);
 
 describe('Filament | User Table', function (): void {
     it('renders valid table configuration', function (): void {

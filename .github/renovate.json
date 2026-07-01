@@ -1,0 +1,40 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": ["config:recommended"],
+    "timezone": "Europe/Kyiv",
+    "schedule": ["every 3 months on the first day of the month before 6am"],
+    "labels": ["dependencies"],
+    "commitMessagePrefix": "⬆️ ",
+    "minimumReleaseAge": "3 days",
+    "prConcurrentLimit": 5,
+    "lockFileMaintenance": {
+        "enabled": false
+    },
+    "packageRules": [
+        {
+            "matchManagers": ["github-actions"],
+            "groupName": "GitHub Actions",
+            "automerge": true
+        },
+        {
+            "matchManagers": ["composer"],
+            "groupName": "PHP dependencies"
+        },
+        {
+            "matchManagers": ["npm"],
+            "groupName": "npm dependencies"
+        },
+        {
+            "matchManagers": ["dockerfile", "docker-compose"],
+            "groupName": "Docker images"
+        },
+        {
+            "matchDepNames": ["php"],
+            "enabled": false
+        },
+        {
+            "matchDepTypes": ["engines"],
+            "enabled": false
+        }
+    ]
+}

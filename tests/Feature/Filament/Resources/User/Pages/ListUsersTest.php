@@ -11,14 +11,14 @@ use Filament\Support\Icons\Heroicon;
 
 covers(ListUsers::class);
 
-describe('Filament | User List', function (): void {
+describe('Filament | Resource | User | List', function (): void {
     it('renders export actions with correct configuration', function (): void {
         $actions = new ReflectionMethod(
             ListUsers::class,
             'getHeaderActions',
         )->invoke(new ListUsers);
 
-        expect($actions)->toHaveCount(2);
+        expect($actions)->toHaveCount(3);
 
         /** @var ExportAction $csvAction */
         $csvAction = $actions[0];

@@ -16,7 +16,7 @@ covers(ApiExceptionHandler::class);
 
 beforeEach(fn (): array => [
     $this->responseFactory = App::make(ResponseFactory::class),
-    $this->handler = new ApiExceptionHandler($this->responseFactory),
+    $this->handler = App::make(ApiExceptionHandler::class),
 ]);
 
 describe('API | ExceptionHandler', function (): void {
@@ -106,6 +106,64 @@ describe('API | ExceptionHandler', function (): void {
             ->and($data['status'])->toBe(HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY)
             ->and($data['instance'])->toBe('/api/v1/validate')
             ->and($data['errors'])->toEqual(['field' => ['error message']]);
+    });
+
+    it('falls back to 500 when the exception code is not an HTTP status', function (): void {
+        config(['app.debug' => false]);
+
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('expectsJson')->andReturn(true);
+        $request->shouldReceive('is')->andReturn(true);
+        $request->shouldReceive('getRequestUri')->andReturn('/api/v1/boom');
+
+        $exception = new RuntimeException('Internal details that must stay hidden');
+
+        $response = ($this->handler)($exception, $request);
+
+        expect($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR);
+
+        $data = json_decode((string) $response->getContent(), true);
+        expect($data['status'])->toBe(HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR)
+            ->and($data['detail'])->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR])
+            ->and($data['detail'])->not->toContain('Internal details');
+    });
+
+    it('keeps the exception message for server errors when debug is enabled', function (): void {
+        config(['app.debug' => true]);
+
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('expectsJson')->andReturn(true);
+        $request->shouldReceive('is')->andReturn(true);
+        $request->shouldReceive('getRequestUri')->andReturn('/api/v1/boom');
+
+        $response = ($this->handler)(new RuntimeException('Debug detail'), $request);
+
+        $data = json_decode((string) $response->getContent(), true);
+        expect($data['detail'])->toBe('Debug detail');
+    });
+
+    it('maps exception code 400 to HTTP 400 status', function (): void {
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('expectsJson')->andReturn(true);
+        $request->shouldReceive('is')->andReturn(true);
+        $request->shouldReceive('getRequestUri')->andReturn('/api/v1/test');
+
+        $response = ($this->handler)(new Exception('bad request', HttpFoundationResponse::HTTP_BAD_REQUEST), $request);
+
+        expect($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_BAD_REQUEST);
+    });
+
+    it('falls back to 500 when exception code is int but not a known HTTP status', function (): void {
+        config(['app.debug' => true]);
+
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('expectsJson')->andReturn(true);
+        $request->shouldReceive('is')->andReturn(true);
+        $request->shouldReceive('getRequestUri')->andReturn('/api/v1/test');
+
+        $response = ($this->handler)(new Exception('msg', 499), $request);
+
+        expect($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR);
     });
 
     it('handles default exception properly', function (): void {
