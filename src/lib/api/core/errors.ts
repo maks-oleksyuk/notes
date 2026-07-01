@@ -10,6 +10,7 @@ export class ApiError extends Error {
   readonly url: string;
   readonly method: string;
   readonly data: unknown;
+  readonly headers?: Headers;
 
   constructor(message: string, info: ApiErrorInfo) {
     // Pass the message to the base Error class
@@ -21,6 +22,7 @@ export class ApiError extends Error {
     this.url = info.url;
     this.method = info.method;
     this.data = info.data;
+    this.headers = info.headers;
 
     // This is a TypeScript "gotcha": when extending built-in classes like Error,
     // we need to manually restore the prototype chain so that 'instanceof' works correctly.

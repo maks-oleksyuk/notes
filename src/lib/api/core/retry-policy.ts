@@ -1,0 +1,81 @@
+import { ApiError, NetworkError, TimeoutError } from './errors';
+import type { RetryOptions } from './types';
+
+export interface ResolvedRetry {
+  limit: number;
+  delay: number;
+  maxDelay: number;
+  maxRetryAfter: number;
+  statusCodes: number[];
+  respectRetryAfter: boolean;
+}
+
+export interface RetryDecision {
+  wait: number;
+  fromRetryAfter: boolean;
+}
+
+// Fills defaults. Returns null when retries are disabled.
+export function resolveRetry(
+  input?: RetryOptions | false,
+): ResolvedRetry | null {
+  if (!input) return null;
+  return {
+    limit: input.limit ?? 3,
+    delay: input.delay ?? 1000,
+    maxDelay: input.maxDelay ?? 30_000,
+    maxRetryAfter: input.maxRetryAfter ?? 5 * 60_000,
+    statusCodes: input.statusCodes ?? [408, 429, 500, 502, 503, 504],
+    respectRetryAfter: input.respectRetryAfter ?? true,
+  };
+}
+
+// `Retry-After` is either a number of seconds or an HTTP-date. Returns ms, or
+// null when absent/unparseable.
+function parseRetryAfter(headers?: Headers): number | null {
+  const value = headers?.get('retry-after');
+  if (!value) return null;
+
+  const seconds = Number(value);
+  if (!Number.isNaN(seconds)) return seconds * 1000;
+
+  const date = Date.parse(value);
+  if (!Number.isNaN(date)) return Math.max(0, date - Date.now());
+
+  return null;
+}
+
+// Exponential backoff with equal jitter: half the window is fixed, half random.
+// Jitter spreads retries so many clients don't all hammer the server in sync.
+function backoffDelay(base: number, attempt: number, cap: number): number {
+  const window = Math.min(cap, base * 2 ** attempt);
+  return window / 2 + Math.random() * (window / 2);
+}
+
+// Decides whether (and how long) to wait before retrying. Returns null to give up.
+export function nextRetry(
+  error: Error,
+  attempt: number,
+  cfg: ResolvedRetry,
+): RetryDecision | null {
+  if (attempt >= cfg.limit) return null;
+
+  const retryable =
+    error instanceof ApiError
+      ? cfg.statusCodes.includes(error.status)
+      : error instanceof NetworkError || error instanceof TimeoutError;
+  if (!retryable) return null;
+
+  // A server Retry-After (429/503) overrides local backoff, but if it asks for
+  // longer than we're willing to wait, give up — retrying sooner would just get
+  // rejected again and waste an attempt.
+  if (cfg.respectRetryAfter && error instanceof ApiError) {
+    const retryAfter = parseRetryAfter(error.headers);
+    if (retryAfter != null) {
+      if (retryAfter > cfg.maxRetryAfter) return null;
+      return { wait: retryAfter, fromRetryAfter: true };
+    }
+  }
+
+  return { wait: backoffDelay(cfg.delay, attempt, cfg.maxDelay), fromRetryAfter: false };
+}

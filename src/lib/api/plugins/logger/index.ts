@@ -38,18 +38,26 @@ export function logger({
   );
   const allow = createLevelFilter(level);
 
+  // Groups render nicely in the browser but get mangled (header duplicated) by
+  // Next's RSC console forwarding on the server — so group only in the browser.
+  const isBrowser = typeof window !== 'undefined';
+
   function print(
     level: 'log' | 'warn',
     msg: string,
     meta?: Record<string, unknown>,
   ) {
     const cleanMeta = meta ? cleanMetadata(meta) : undefined;
-    if (cleanMeta && Object.keys(cleanMeta).length > 0) {
+    if (!cleanMeta || Object.keys(cleanMeta).length === 0) {
+      console[level](msg);
+      return;
+    }
+    if (isBrowser) {
       console.groupCollapsed(msg);
       console.dir(cleanMeta, { depth: null });
       console.groupEnd();
     } else {
-      console[level](msg);
+      console[level](msg, cleanMeta);
     }
   }
 
@@ -61,13 +69,17 @@ export function logger({
       const cleanMeta = meta ? cleanMetadata(meta) : undefined;
       const hasMeta = cleanMeta && Object.keys(cleanMeta).length > 0;
 
-      if (err || hasMeta) {
+      if (!err && !hasMeta) {
+        console.error(msg);
+        return;
+      }
+      if (isBrowser) {
         console.groupCollapsed(msg);
         if (err) console.error(err);
         if (hasMeta) console.dir(cleanMeta, { depth: null });
         console.groupEnd();
       } else {
-        console.error(msg);
+        console.error(msg, ...(err ? [err] : []), ...(hasMeta ? [cleanMeta] : []));
       }
     },
   };
@@ -88,6 +100,9 @@ export function logger({
 
     onRequest(options) {
       if (!allow('info')) return;
+
+      // Retried attempts are already announced by onRetry — skip the duplicate line.
+      if ((options.retryAttempt ?? 0) > 0) return;
 
       const method = options.method || 'GET';
       const path = options.path || '/';
@@ -127,20 +142,34 @@ export function logger({
       );
     },
 
-    onError(error, context) {
+    onRetry(info) {
+      if (!allow('info')) return;
+
+      // A retry is expected and recoverable — log level, not warn/error, so the
+      // browser console doesn't attach an alarm icon and a stack trace.
+      const marker = paint('↺', 'yellow', useColors);
+      const label = paint(`retry ${info.attempt}/${info.limit}`, 'yellow', useColors);
+      const source = info.fromRetryAfter ? ' (Retry-After)' : '';
+      const wait = paint(`in ${Math.round(info.wait)}ms${source}`, 'gray', useColors);
+      logFn(
+        `${prefix}${tag(info.requestId)}${marker} ${label} ${colorizeMethod(info.method || 'GET', useColors)} ${info.path || '/'} ${wait} — ${info.error.message}`,
+      );
+    },
+
+    onFinalError(error, options) {
       if (!allow('error')) return;
 
-      const method = context.options.method || 'GET';
-      const path = context.options.path || '/';
+      const method = options.method || 'GET';
+      const path = options.path || '/';
       const metadata = cleanMetadata({
         path,
         method,
-        params: context.options.params,
+        params: options.params,
       });
 
       const label = paint('Error', 'red', useColors);
       activeLogger.error(
-        `${prefix}${tag(context.options.requestId)}${label} ${colorizeMethod(method, useColors)} ${path} - ${error.message}`,
+        `${prefix}${tag(options.requestId)}${label} ${colorizeMethod(method, useColors)} ${path} - ${error.message}`,
         error,
         metadata,
       );

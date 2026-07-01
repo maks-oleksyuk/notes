@@ -54,6 +54,18 @@ export interface ApiRequestOptions
   requestId?: string;
 
   /**
+   * Current attempt index, set by the core retry loop (0 = first try).
+   * Observers (e.g. the logger) read it to mark retried requests.
+   */
+  retryAttempt?: number;
+
+  /**
+   * Retry policy for transient failures. Omit or set `false` to disable.
+   * Retries live in the core request loop, not in a plugin.
+   */
+  retry?: RetryOptions | false;
+
+  /**
    * Next.js specific options for the fetch cache (App Router).
    */
   next?: {
@@ -75,7 +87,44 @@ export interface ApiRequestOptions
 }
 
 /**
+ * Retry policy for transient failures, handled by the core request loop.
+ */
+export interface RetryOptions {
+  limit?: number;
+  /** Base delay in ms; grows exponentially per attempt. */
+  delay?: number;
+  /** Upper bound for a single backoff wait, in ms. */
+  maxDelay?: number;
+  /** Give up (don't retry) if `Retry-After` asks for longer than this, in ms. */
+  maxRetryAfter?: number;
+  statusCodes?: number[];
+  /** Honor the server's `Retry-After` header on 429/503. Default true. */
+  respectRetryAfter?: boolean;
+}
+
+/** Details of a retry, passed to the `onRetry` observer before it is scheduled. */
+export interface RetryInfo {
+  /** Retry number, 1-based (1 = first retry). */
+  attempt: number;
+  limit: number;
+  /** Milliseconds this retry will wait before firing. */
+  wait: number;
+  /** Whether `wait` came from the server's `Retry-After` header. */
+  fromRetryAfter: boolean;
+  error: Error;
+  requestId?: string;
+  method?: string;
+  path?: string;
+}
+
+/**
  * Interface representing a plugin that hooks into the request lifecycle.
+ *
+ * Two roles, kept separate:
+ *  - **recovery** — `onError` may return a value to recover the request (e.g. auth
+ *    refreshing a token). The first plugin that returns stops the chain.
+ *  - **observation** — `onRetry` / `onFinalError` are notifications for observers
+ *    (e.g. the logger); they can't change the outcome, so their order is irrelevant.
  */
 export interface ApiPlugin {
   name: string;
@@ -91,6 +140,13 @@ export interface ApiPlugin {
       retry: () => Promise<ApiResponse<any>>;
     },
   ) => undefined | Promise<any>;
+  /** Notified before a transient error is retried by the core loop. */
+  onRetry?: (info: RetryInfo) => void | Promise<void>;
+  /** Notified when a request fails for good (no recovery, no retries left). */
+  onFinalError?: (
+    error: Error,
+    options: ApiRequestOptions,
+  ) => void | Promise<void>;
 }
 
 /**
