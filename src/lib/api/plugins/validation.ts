@@ -1,12 +1,11 @@
-import type { ZodSchema } from 'zod';
-import { ValidationError } from '../core/errors';
-import type { ApiPlugin } from '../core/types';
+import { ValidationError } from '@/lib/api';
+import type { ApiPlugin } from '@/lib/api';
 
 export function validation(): ApiPlugin {
   return {
     name: 'validation',
     onResponse(response, options) {
-      const schema = (options as any).schema as ZodSchema | undefined;
+      const schema = options.schema;
       if (schema) {
         const parsed = schema.safeParse(response.data);
         if (!parsed.success) {

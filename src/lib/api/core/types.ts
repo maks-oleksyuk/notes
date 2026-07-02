@@ -1,3 +1,5 @@
+import type { ZodType } from 'zod';
+
 /**
  * Supported HTTP methods.
  * Using a union type ensures we don't have typos in our request calls.
@@ -71,6 +73,14 @@ export interface ApiRequestOptions
    * Omit or `0` to disable.
    */
   timeout?: number;
+
+  /**
+   * Zod schema the response body must satisfy (checked by the `validation` plugin's
+   * `onResponse`, thrown as `ValidationError` — never retried, see `nextRetry`). When
+   * present, `HttpClient.get/post/put/patch/delete` infer the response type from it —
+   * see `InferSchema`.
+   */
+  schema?: ZodType;
 
   /**
    * Next.js specific options for the fetch cache (App Router).
@@ -181,6 +191,13 @@ export interface ApiResponse<T = unknown> {
   /** How long the request took in milliseconds */
   duration: number;
 }
+
+/**
+ * Resolves the response type for `HttpClient.get/post/put/...`: if `O` carries a
+ * `schema`, infer from it (better-fetch pattern — no manual generic needed); otherwise
+ * fall back to the explicit `T` the caller passed (or `unknown`).
+ */
+export type InferSchema<O, T> = O extends { schema: ZodType<infer S> } ? S : T;
 
 /**
  * Internal info used to construct rich Error objects.

@@ -9,7 +9,7 @@ import {
 } from '../utils';
 import { ApiError, NetworkError, TimeoutError, ValidationError } from './errors';
 import { nextRetry, resolveRetry } from './retry-policy';
-import type { ApiRequestOptions, ApiResponse, HttpMethod } from './types';
+import type { ApiRequestOptions, ApiResponse, HttpMethod, InferSchema } from './types';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -235,43 +235,56 @@ export class HttpClient {
   }
 
   // --- Convenience Methods ---
+  // `O` carries the options object's literal type so `InferSchema` can pick up a
+  // `schema` field when present; `T` is the fallback for the schema-less call shape
+  // callers already use (`get<Post[]>('/posts')`).
 
-  get<T = unknown>(
+  get<T = unknown, O extends Omit<ApiRequestOptions, 'method' | 'body'> = {}>(
     path: string,
-    options: Omit<ApiRequestOptions, 'method' | 'body'> = {},
-  ): Promise<ApiResponse<T>> {
-    return this.request<T>(path, { ...options, method: 'GET' });
+    options?: O,
+  ): Promise<ApiResponse<InferSchema<O, T>>> {
+    return this.request(path, { ...options, method: 'GET' }) as Promise<
+      ApiResponse<InferSchema<O, T>>
+    >;
   }
 
-  post<T = unknown>(
+  post<T = unknown, O extends Omit<ApiRequestOptions, 'method' | 'body'> = {}>(
     path: string,
     body?: unknown,
-    options: Omit<ApiRequestOptions, 'method' | 'body'> = {},
-  ): Promise<ApiResponse<T>> {
-    return this.request<T>(path, { ...options, method: 'POST', body });
+    options?: O,
+  ): Promise<ApiResponse<InferSchema<O, T>>> {
+    return this.request(path, { ...options, method: 'POST', body }) as Promise<
+      ApiResponse<InferSchema<O, T>>
+    >;
   }
 
-  put<T = unknown>(
+  put<T = unknown, O extends Omit<ApiRequestOptions, 'method' | 'body'> = {}>(
     path: string,
     body?: unknown,
-    options: Omit<ApiRequestOptions, 'method' | 'body'> = {},
-  ): Promise<ApiResponse<T>> {
-    return this.request<T>(path, { ...options, method: 'PUT', body });
+    options?: O,
+  ): Promise<ApiResponse<InferSchema<O, T>>> {
+    return this.request(path, { ...options, method: 'PUT', body }) as Promise<
+      ApiResponse<InferSchema<O, T>>
+    >;
   }
 
-  patch<T = unknown>(
+  patch<T = unknown, O extends Omit<ApiRequestOptions, 'method' | 'body'> = {}>(
     path: string,
     body?: unknown,
-    options: Omit<ApiRequestOptions, 'method' | 'body'> = {},
-  ): Promise<ApiResponse<T>> {
-    return this.request<T>(path, { ...options, method: 'PATCH', body });
+    options?: O,
+  ): Promise<ApiResponse<InferSchema<O, T>>> {
+    return this.request(path, { ...options, method: 'PATCH', body }) as Promise<
+      ApiResponse<InferSchema<O, T>>
+    >;
   }
 
-  delete<T = unknown>(
+  delete<T = unknown, O extends Omit<ApiRequestOptions, 'method' | 'body'> = {}>(
     path: string,
-    options: Omit<ApiRequestOptions, 'method' | 'body'> = {},
-  ): Promise<ApiResponse<T>> {
-    return this.request<T>(path, { ...options, method: 'DELETE' });
+    options?: O,
+  ): Promise<ApiResponse<InferSchema<O, T>>> {
+    return this.request(path, { ...options, method: 'DELETE' }) as Promise<
+      ApiResponse<InferSchema<O, T>>
+    >;
   }
 
   // --- Private Helpers ---
