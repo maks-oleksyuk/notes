@@ -7,7 +7,7 @@ import {
   parseErrorData,
   parseResponseData,
 } from '../utils';
-import { ApiError, NetworkError, TimeoutError } from './errors';
+import { ApiError, NetworkError, TimeoutError, ValidationError } from './errors';
 import { nextRetry, resolveRetry } from './retry-policy';
 import type { ApiRequestOptions, ApiResponse, HttpMethod } from './types';
 
@@ -67,7 +67,7 @@ export class HttpClient {
 
         // Phase 2 — transient retry, owned by the core (not a plugin).
         if (retryPolicy) {
-          const decision = nextRetry(finalError, attempt, retryPolicy);
+          const decision = nextRetry(finalError, attempt, retryPolicy, mergedOptions.method);
           if (decision) {
             for (const plugin of plugins) {
               await plugin.onRetry?.({
@@ -121,13 +121,45 @@ export class HttpClient {
     );
     const body = buildBody(mergedOptions.body);
 
+    // Per-attempt timeout: a fresh controller/timer on every call, combined with
+    // the caller's own signal (if any). Never mutates `mergedOptions` — that object
+    // is shared across retries, so a signal aborted here must not poison later
+    // attempts (that was the A1 bug: the old timeout plugin mutated `options.signal`
+    // in `onRequest`, which runs per attempt, so an already-aborted signal chained
+    // into every subsequent attempt via `AbortSignal.any` and killed retries instantly).
+    const timeoutMs = mergedOptions.timeout;
+    let timeoutController: AbortController | undefined;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let signal = mergedOptions.signal;
+
+    if (timeoutMs) {
+      timeoutController = new AbortController();
+      timer = setTimeout(() => timeoutController!.abort(), timeoutMs);
+      signal = mergedOptions.signal
+        ? AbortSignal.any([mergedOptions.signal, timeoutController.signal])
+        : timeoutController.signal;
+    }
+
     const start = performance.now();
-    const response = await fetch(url, {
-      ...mergedOptions,
-      method: mergedOptions.method,
-      headers,
-      body,
-    });
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        ...mergedOptions,
+        method: mergedOptions.method,
+        headers,
+        body,
+        signal,
+      });
+    } catch (err) {
+      // Only our own timer firing is a TimeoutError (retryable). The caller's own
+      // signal aborting must propagate as-is and must not be retried.
+      if (timeoutController?.signal.aborted) {
+        throw new TimeoutError(url, timeoutMs!);
+      }
+      throw err;
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
     const duration = Math.round(performance.now() - start);
 
     if (!response.ok) {
@@ -172,7 +204,17 @@ export class HttpClient {
     options: ApiRequestOptions,
     path: string,
   ): Error {
-    if (err instanceof ApiError) return err;
+    // TimeoutError is already thrown typed from `attempt()`. ValidationError comes
+    // from the `validation` plugin's `onResponse` (a schema mismatch is never fixed
+    // by refetching). Both pass through as-is — wrapping either into NetworkError
+    // would make `nextRetry` treat them as retryable, which they aren't.
+    if (
+      err instanceof ApiError ||
+      err instanceof TimeoutError ||
+      err instanceof ValidationError
+    ) {
+      return err;
+    }
 
     const url = buildUrl(
       options.baseUrl || this.baseUrl,
@@ -180,8 +222,11 @@ export class HttpClient {
       options.params,
     );
 
+    // The caller's own AbortSignal firing (e.g. user cancelled in the UI) is not a
+    // timeout and not a network failure — propagate as-is so `nextRetry` (which only
+    // recognizes ApiError/NetworkError/TimeoutError) doesn't retry a cancelled request.
     if (err instanceof DOMException && err.name === 'AbortError') {
-      return new TimeoutError(url, 0);
+      return err;
     }
     return new NetworkError(
       err instanceof Error ? err.message : 'Unknown network error',

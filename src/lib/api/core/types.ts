@@ -66,6 +66,13 @@ export interface ApiRequestOptions
   retry?: RetryOptions | false;
 
   /**
+   * Per-attempt timeout in ms. A fresh `AbortController` is created for every
+   * attempt in the core request loop (not a plugin) — see `HttpClient.attempt`.
+   * Omit or `0` to disable.
+   */
+  timeout?: number;
+
+  /**
    * Next.js specific options for the fetch cache (App Router).
    */
   next?: {
@@ -100,6 +107,13 @@ export interface RetryOptions {
   statusCodes?: number[];
   /** Honor the server's `Retry-After` header on 429/503. Default true. */
   respectRetryAfter?: boolean;
+  /**
+   * Methods eligible for retry. Defaults to the idempotent ones — a `POST` that
+   * timed out may already have been executed server-side, and blindly retrying it
+   * can create a duplicate (e.g. a duplicate order). Opt `POST`/`PATCH` in explicitly
+   * only where the endpoint is known to be safe to repeat.
+   */
+  methods?: HttpMethod[];
 }
 
 /** Details of a retry, passed to the `onRetry` observer before it is scheduled. */

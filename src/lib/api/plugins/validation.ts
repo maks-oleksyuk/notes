@@ -1,16 +1,6 @@
 import type { ZodSchema } from 'zod';
-import type { ApiPlugin } from '@/lib/api';
-
-export class ValidationError extends Error {
-  constructor(
-    message: string,
-    public details: { url: string; errors: any[]; data: any },
-  ) {
-    super(message);
-    this.name = 'ValidationError';
-    Object.setPrototypeOf(this, ValidationError.prototype);
-  }
-}
+import { ValidationError } from '../core/errors';
+import type { ApiPlugin } from '../core/types';
 
 export function validation(): ApiPlugin {
   return {

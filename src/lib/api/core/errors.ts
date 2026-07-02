@@ -73,3 +73,20 @@ export class TimeoutError extends Error {
     Object.setPrototypeOf(this, TimeoutError.prototype);
   }
 }
+
+/**
+ * Thrown by the `validation` plugin when a 2xx response fails its Zod schema.
+ * Lives in core (not `plugins/validation.ts`) so `normalizeError` can recognize it
+ * and pass it through unwrapped — otherwise it falls into the generic `NetworkError`
+ * bucket and gets retried, even though re-fetching never fixes a schema mismatch.
+ */
+export class ValidationError extends Error {
+  constructor(
+    message: string,
+    public details: { url: string; errors: unknown[]; data: unknown },
+  ) {
+    super(message);
+    this.name = 'ValidationError';
+    Object.setPrototypeOf(this, ValidationError.prototype);
+  }
+}

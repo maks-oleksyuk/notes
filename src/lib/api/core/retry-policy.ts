@@ -1,5 +1,5 @@
 import { ApiError, NetworkError, TimeoutError } from './errors';
-import type { RetryOptions } from './types';
+import type { HttpMethod, RetryOptions } from './types';
 
 export interface ResolvedRetry {
   limit: number;
@@ -8,7 +8,12 @@ export interface ResolvedRetry {
   maxRetryAfter: number;
   statusCodes: number[];
   respectRetryAfter: boolean;
+  methods: HttpMethod[];
 }
+
+// ky/got default: only methods a server can safely receive twice. POST/PATCH are
+// opt-in only, via `retry.methods`.
+const IDEMPOTENT_METHODS: HttpMethod[] = ['GET', 'PUT', 'HEAD', 'DELETE'];
 
 export interface RetryDecision {
   wait: number;
@@ -27,6 +32,7 @@ export function resolveRetry(
     maxRetryAfter: input.maxRetryAfter ?? 5 * 60_000,
     statusCodes: input.statusCodes ?? [408, 429, 500, 502, 503, 504],
     respectRetryAfter: input.respectRetryAfter ?? true,
+    methods: input.methods ?? IDEMPOTENT_METHODS,
   };
 }
 
@@ -57,8 +63,12 @@ export function nextRetry(
   error: Error,
   attempt: number,
   cfg: ResolvedRetry,
+  method?: HttpMethod,
 ): RetryDecision | null {
   if (attempt >= cfg.limit) return null;
+  // Non-idempotent methods (POST by default) never retry, regardless of the error —
+  // a duplicate side effect is worse than a failed request.
+  if (method && !cfg.methods.includes(method)) return null;
 
   const retryable =
     error instanceof ApiError
