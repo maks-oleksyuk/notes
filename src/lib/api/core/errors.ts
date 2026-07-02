@@ -90,3 +90,20 @@ export class ValidationError extends Error {
     Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }
+
+/**
+ * Thrown when a 2xx response's body can't be parsed as JSON (server bug, proxy
+ * returning HTML, truncated body, etc.). Replaces the old behavior of silently
+ * returning `data: null` typed as `T` — a bad response should be loud, not a
+ * `null` that type-checks and blows up somewhere downstream instead.
+ */
+export class ParseError extends Error {
+  constructor(
+    public url: string,
+    public reason: string,
+  ) {
+    super(`Failed to parse response body as JSON: ${url} (${reason})`);
+    this.name = 'ParseError';
+    Object.setPrototypeOf(this, ParseError.prototype);
+  }
+}

@@ -33,12 +33,16 @@ export interface ApiRequestOptions
    */
   method?: HttpMethod;
 
-  /** 
-   * Query parameters. 
-
-   * Object like { page: 1, search: 'test' } becomes ?page=1&search=test
+  /**
+   * Query parameters.
+   *
+   * Object like { page: 1, search: 'test' } becomes ?page=1&search=test.
+   * An array value repeats the key: { tag: ['a', 'b'] } becomes ?tag=a&tag=b.
    */
-  params?: Record<string, string | number | boolean | undefined | null>;
+  params?: Record<
+    string,
+    string | number | boolean | undefined | null | Array<string | number | boolean>
+  >;
 
   /**
    * Request body. Can be an object (for JSON), FormData, or Blob.
@@ -60,6 +64,14 @@ export interface ApiRequestOptions
    * Observers (e.g. the logger) read it to mark retried requests.
    */
   retryAttempt?: number;
+
+  /**
+   * Set by the `auth` plugin's `onError` after it refreshes the token and replays
+   * the request once. A second 401 on the replay means the session itself is dead
+   * (not just an expired access token) — the plugin checks this flag to stop after
+   * one refresh instead of refreshing forever. Typed field, not `(options as any)`.
+   */
+  authRetried?: boolean;
 
   /**
    * Retry policy for transient failures. Omit or set `false` to disable.

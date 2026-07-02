@@ -6,8 +6,9 @@ import {
   headersToRecord,
   parseErrorData,
   parseResponseData,
+  toRequestInit,
 } from '../utils';
-import { ApiError, NetworkError, TimeoutError, ValidationError } from './errors';
+import { ApiError, NetworkError, ParseError, TimeoutError, ValidationError } from './errors';
 import { nextRetry, resolveRetry } from './retry-policy';
 import type { ApiRequestOptions, ApiResponse, HttpMethod, InferSchema } from './types';
 
@@ -53,9 +54,15 @@ export class HttpClient {
           try {
             const result = await plugin.onError(finalError, {
               options: mergedOptions,
+              // Replays with `mergedOptions`, not the original `options` — a
+              // recovery plugin (e.g. auth) mutates `context.options` (that's
+              // `mergedOptions`) to leave a mark for the replay, such as the
+              // `authRetried` guard against refreshing forever. Spreading the
+              // original `options` here would silently drop that mark and the
+              // guard would never trip.
               retry: () =>
                 this.request<T>(path, {
-                  ...options,
+                  ...mergedOptions,
                   requestId: mergedOptions.requestId,
                 }),
             });
@@ -143,13 +150,10 @@ export class HttpClient {
     const start = performance.now();
     let response: Response;
     try {
-      response = await fetch(url, {
-        ...mergedOptions,
-        method: mergedOptions.method,
-        headers,
-        body,
-        signal,
-      });
+      response = await fetch(
+        url,
+        toRequestInit(mergedOptions, { method: mergedOptions.method || 'GET', headers, body, signal }),
+      );
     } catch (err) {
       // Only our own timer firing is a TimeoutError (retryable). The caller's own
       // signal aborting must propagate as-is and must not be retried.
@@ -206,12 +210,14 @@ export class HttpClient {
   ): Error {
     // TimeoutError is already thrown typed from `attempt()`. ValidationError comes
     // from the `validation` plugin's `onResponse` (a schema mismatch is never fixed
-    // by refetching). Both pass through as-is — wrapping either into NetworkError
+    // by refetching). ParseError comes from `parseResponseData` (malformed JSON on
+    // a 2xx). All three pass through as-is — wrapping any of them into NetworkError
     // would make `nextRetry` treat them as retryable, which they aren't.
     if (
       err instanceof ApiError ||
       err instanceof TimeoutError ||
-      err instanceof ValidationError
+      err instanceof ValidationError ||
+      err instanceof ParseError
     ) {
       return err;
     }

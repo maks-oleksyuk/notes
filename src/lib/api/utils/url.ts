@@ -1,38 +1,42 @@
+// `startsWith('http')` would also match `httpfoo://...` or a path that just happens
+// to start with the letters "http" — an actual scheme needs `://` after it.
+const ABSOLUTE_URL_RE = /^https?:\/\//i;
+
 /**
  * Constructs a fully qualified URL, combining baseUrl, path, and query parameters.
  */
 export function buildUrl(
   baseUrl: string,
   path: string,
-  params?: Record<string, string | number | boolean | undefined | null>,
+  params?: Record<
+    string,
+    string | number | boolean | undefined | null | Array<string | number | boolean>
+  >,
 ): string {
   const cleanBase = baseUrl.replace(/\/+$/, '');
   const cleanPath = path?.replace(/^\/+/, '') || '';
+  const pathIsAbsolute = ABSOLUTE_URL_RE.test(cleanPath);
+  const isAbsolute = pathIsAbsolute || ABSOLUTE_URL_RE.test(cleanBase);
 
-  let urlStr = cleanPath.startsWith('http')
+  const urlStr = pathIsAbsolute
     ? cleanPath
     : cleanBase
       ? `${cleanBase}/${cleanPath}`
       : cleanPath;
 
-  // Fix potential double slashes if base was empty
-  if (!cleanBase && !cleanPath.startsWith('http')) {
-    urlStr = cleanPath;
-  }
-
   const urlObj = new URL(urlStr, 'http://localhost');
 
-  // Add query parameters
   if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
+    for (const [key, value] of Object.entries(params)) {
+      if (value === undefined || value === null) continue;
+      if (Array.isArray(value)) {
+        for (const item of value) urlObj.searchParams.append(key, String(item));
+      } else {
         urlObj.searchParams.set(key, String(value));
       }
-    });
+    }
   }
 
   // If it was a relative path, return the path part, otherwise full URL
-  return cleanPath.startsWith('http') || cleanBase.startsWith('http')
-    ? urlObj.toString()
-    : `${urlObj.pathname}${urlObj.search}`;
+  return isAbsolute ? urlObj.toString() : `${urlObj.pathname}${urlObj.search}`;
 }

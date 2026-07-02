@@ -141,17 +141,142 @@ sequenceDiagram
 
 ---
 
+## Validation (типізована схема + інференс)
+
+```ts
+import { z } from 'zod';
+import { HttpClient } from '@/lib/api';
+import { validation } from '@/lib/api/plugins';
+
+const PostSchema = z.object({ id: z.number(), title: z.string() });
+const api = new HttpClient('https://example.com', { plugins: [validation()] });
+
+const { data } = await api.get('/posts/1', { schema: PostSchema });
+//      ^? { id: number; title: string } — виведено зі схеми, без ручного дженерика
+```
+
+- `schema?: ZodType` — типізоване поле в `ApiRequestOptions` (не `as any`).
+  Валідує **тільки відповідь** (`response.data`) — query-параметри/тіло запиту
+  ніхто не перевіряє, це відповідальність виклику.
+- **Тип виводиться автоматично** через `InferSchema<O, T>` (`core/types.ts`) — один
+  умовний тип на всі методи (`get/post/put/patch/delete`), не перегрузки на кожен.
+  Без `schema` — старий ручний дженерик (`client.get<T>(...)`) працює як раніше.
+- **`schema` без плагіна `validation()` в `plugins` — типізується, але НЕ
+  перевіряється в рантаймі.** Це розв'язані речі: тип виводиться з `options.schema`
+  завжди, рантайм-перевірку робить тільки сам плагін своїм `onResponse`. Легко
+  забути підключити плагін і думати що застрахований — насправді ні.
+- Провалена схема → `ValidationError` (`core/errors.ts`), **ніколи не ретраїться**
+  (`normalizeError` пропускає її без обгортки в `NetworkError`) — битий контракт
+  не полагодиться повторним запитом.
+- **Пастка:** request-level `plugins` **заміняє** дефолтні клієнта, не мерджить
+  (задокументований баг, review.md C1). Якщо на конкретному запиті передаєш свій
+  `plugins: [...]` — `validation()` з клієнта зникає, і схема мовчки перестає
+  перевірятись. Треба або не передавати `plugins` на запиті, або повторити
+  `validation()` в тому масиві явно.
+
+Демо: `/plugin-demo/validation`.
+
+---
+
+## Auth (401 → refresh → replay, single-flight)
+
+```ts
+import { HttpClient } from '@/lib/api';
+import { auth, type TokenProvider } from '@/lib/api/plugins';
+
+const provider: TokenProvider = {
+  getToken: () => accessToken,                 // пам'ять (клієнт) / cookies() (сервер)
+  refreshToken: () => fetch('/auth/refresh', { method: 'POST' })...,  // сирий fetch!
+  onAuthFailure: (error) => { /* logout / redirect */ },
+};
+
+const api = new HttpClient('https://example.com', { plugins: [auth(provider)] });
+```
+
+```mermaid
+sequenceDiagram
+  participant C1 as запит A
+  participant C2 as запит B (паралельно)
+  participant Plugin as auth-плагін
+  participant Server as сервер
+
+  C1->>Server: GET /me (Bearer старий)
+  C2->>Server: GET /me (Bearer старий)
+  Server-->>C1: 401
+  Server-->>C2: 401
+  C1->>Plugin: onError(401)
+  C2->>Plugin: onError(401)
+  Note over Plugin: singleFlightRefresh()<br/>обидва чекають ОДНУ й ту саму promise
+  Plugin->>Server: POST /refresh (лише 1 реальний виклик)
+  Server-->>Plugin: новий access token
+  Plugin-->>C1: context.retry()
+  Plugin-->>C2: context.retry()
+  C1->>Server: GET /me (Bearer новий)
+  C2->>Server: GET /me (Bearer новий)
+  Server-->>C1: 200
+  Server-->>C2: 200
+```
+
+- **Токен ніколи не живе в плагіні** — тільки через `TokenProvider` (get/refresh/
+  onAuthFailure). На сервері module-scope переживає один запит і ділиться між
+  юзерами — токен там тільки з `cookies()` (`next/headers`), ніколи в змінній.
+- **Single-flight refresh** — `refreshPromise` живе в замиканні виклику
+  `auth(provider)` (не в module-scope файлу), тому 5 паралельних 401 роблять
+  **один** реальний refresh, решта чекають ту саму promise. Live-перевірено на
+  демо: 5 запитів одночасно → `справжніх refresh-викликів: 1`, навіть коли
+  refresh проваливсь для всіх п'яти.
+- **Guard проти нескінченного циклу** — `authRetried?: boolean`, типізоване поле в
+  `ApiRequestOptions`, виставляється плагіном одразу після успішного refresh, перед
+  `context.retry()`. Другий 401 на тому самому запиті (після replay) → сесія
+  реально мертва, не просто протух токен → одразу `onAuthFailure`, без другого
+  refresh.
+- **Фікс ядра, потрібний для цього guard'а:** `context.retry()` раніше реплеїв
+  оригінальні `options` (аргумент виклику), не мутований `mergedOptions` —
+  мітка `authRetried`, виставлена плагіном на `context.options` (=`mergedOptions`),
+  губилась, і guard ніколи б не спрацював. `client.ts` тепер реплеїть
+  `mergedOptions`.
+- **Refresh-ендпоінт в обхід плагіна** — `provider.refreshToken()` робить сирий
+  `fetch`, не через `client` з тим самим `auth()` — інакше 401 на самому
+  `/refresh` зациклив би себе через той самий плагін.
+- **401 — не ретраїться ядром** (Фаза 2). Якщо recovery не спрацював (guard або
+  провалений refresh) — 401 не входить у дефолтні `retry.statusCodes`, тож ядро
+  одразу здається, не марнує спроби.
+
+Демо: `/plugin-demo/auth` (мок `/api/mock/auth/{login,refresh,me,logout}`).
+
+**Сервер (RSC / Route Handler / Server Action):** `createServerTokenProvider()`
+з `plugins/auth/server-provider.ts` — токен через `cookies()` (`next/headers`),
+не module-scope. **RSC-рендер не може писати cookie** (обмеження Next.js) — якщо
+всередині рендеру реально знадобиться refresh, `jar.set(...)` кине. Це навмисно:
+краще явна помилка, ніж тихо застряглий у мертвій сесії юзер. Рефреш безпечний
+лише в Route Handler / Server Action, де `cookies().set()` пише у відповідь, яку
+контролює виклик. Це і є Стратегія A з `auth-plugin.md` §4.
+
+**Важливо:** `server-provider.ts` **не** реекспортується з `plugins/auth/index.ts`
+(і тому не з `@/lib/api/plugins`) — він імпортує `next/headers`, який ламає збірку,
+якщо потрапить у клієнтський бандл через баррель, яким користуються браузерні
+клієнтські компоненти. Імпортуй напряму:
+`import { createServerTokenProvider } from '@/lib/api/plugins/auth/server-provider'`.
+
+---
+
 ## Структура
 
 ```
 core/
   client.ts         HttpClient: цикл спроб (+ per-attempt timeout) + 3 фази обробки помилки
   retry-policy.ts   resolveRetry, nextRetry (backoff, Retry-After)
-  errors.ts         ApiError · NetworkError · TimeoutError
-  types.ts          ApiRequestOptions (+ timeout) · ApiPlugin · RetryOptions · RetryInfo
+  errors.ts         ApiError · NetworkError · TimeoutError · ValidationError · ParseError
+  types.ts          ApiRequestOptions (+ timeout, schema, authRetried) · ApiPlugin ·
+                     RetryOptions · RetryInfo · InferSchema
 utils/
-  url · headers (+X-Request-Id) · body · response · sanitize · request-id
+  url (regex абсолютних URL, масиви params) · headers (+X-Request-Id) ·
+  body (== null, URLSearchParams) · request-init (toRequestInit — явний
+  RequestInit замість спреду в fetch) · response (ParseError на битому JSON) ·
+  sanitize · request-id
 plugins/
+  auth/             onRequest (Bearer) + onError (401 recovery, single-flight refresh);
+                     server-provider.ts — окремо, не в барелі (next/headers)
   logger/           observer: onRequest/onResponse/onRetry/onFinalError
   validation
 clients/
@@ -164,8 +289,9 @@ clients/
 
 | Плагін | Хуки | Призначення |
 |--------|------|-------------|
+| `auth` | onRequest, onError (**recovery**) | `Authorization: Bearer`, 401 → single-flight refresh → replay |
 | `logger` | onRequest, onResponse, onRetry, onFinalError | кольорові логи (ANSI в TTY), тег `[requestId]`, рівні `silent…debug`, маскування PII |
-| `validation` | onResponse | Zod-валідація відповіді |
+| `validation` | onResponse | Zod-валідація відповіді, типізована схема + інференс |
 
 Таймаут — **не плагін**, опція ядра `timeout?: number` в `ApiRequestOptions`
 (як `retry`) — див. розділ вище.
