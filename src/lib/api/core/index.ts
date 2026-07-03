@@ -1,4 +1,5 @@
 export * from './client';
 export { HttpClient as ApiClient } from './client';
 export * from './errors';
+export * from './safe';
 export * from './types';

@@ -16,7 +16,9 @@ import {
   ValidationError,
 } from './errors';
 import { nextRetry, resolveRetry } from './retry-policy';
+import { safe } from './safe';
 
+import type { SafeResult } from './safe';
 import type {
   ApiRequestOptions,
   ApiResponse,
@@ -353,6 +355,79 @@ export class HttpClient {
     return this.request(path, { ...options, method: 'DELETE' }) as Promise<
       ApiResponse<InferSchema<O, T>>
     >;
+  }
+
+  /**
+   * `{ data, error }` sugar over `get/post/put/patch/delete` — see `safe()` in
+   * `./safe`. A getter (not a field set in the constructor) so it stays bound to
+   * `this` without extra bookkeeping, at the cost of a new object per access;
+   * `client.safe` is called per-request, not in a hot loop, so that's fine.
+   */
+  get safe() {
+    return {
+      get: <
+        T = unknown,
+        O extends Omit<ApiRequestOptions, 'method' | 'body'> = Omit<
+          ApiRequestOptions,
+          'method' | 'body'
+        >,
+      >(
+        path: string,
+        options?: O,
+      ): Promise<SafeResult<InferSchema<O, T>>> =>
+        safe(this.get<T, O>(path, options)),
+
+      post: <
+        T = unknown,
+        O extends Omit<ApiRequestOptions, 'method' | 'body'> = Omit<
+          ApiRequestOptions,
+          'method' | 'body'
+        >,
+      >(
+        path: string,
+        body?: unknown,
+        options?: O,
+      ): Promise<SafeResult<InferSchema<O, T>>> =>
+        safe(this.post<T, O>(path, body, options)),
+
+      put: <
+        T = unknown,
+        O extends Omit<ApiRequestOptions, 'method' | 'body'> = Omit<
+          ApiRequestOptions,
+          'method' | 'body'
+        >,
+      >(
+        path: string,
+        body?: unknown,
+        options?: O,
+      ): Promise<SafeResult<InferSchema<O, T>>> =>
+        safe(this.put<T, O>(path, body, options)),
+
+      patch: <
+        T = unknown,
+        O extends Omit<ApiRequestOptions, 'method' | 'body'> = Omit<
+          ApiRequestOptions,
+          'method' | 'body'
+        >,
+      >(
+        path: string,
+        body?: unknown,
+        options?: O,
+      ): Promise<SafeResult<InferSchema<O, T>>> =>
+        safe(this.patch<T, O>(path, body, options)),
+
+      delete: <
+        T = unknown,
+        O extends Omit<ApiRequestOptions, 'method' | 'body'> = Omit<
+          ApiRequestOptions,
+          'method' | 'body'
+        >,
+      >(
+        path: string,
+        options?: O,
+      ): Promise<SafeResult<InferSchema<O, T>>> =>
+        safe(this.delete<T, O>(path, options)),
+    };
   }
 
   // --- Private Helpers ---

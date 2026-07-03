@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 
 import { getPosts, getUser } from '@/lib/api/clients/blog';
+import { safe } from '@/lib/api/core';
 
 import { Pagination } from './pagination';
 
@@ -68,24 +69,33 @@ interface PageData {
 }
 
 async function fetchPageData(page: number): Promise<PageData | null> {
+  // Posts are the page's reason to exist, and we need the full `ApiResponse`
+  // for its `X-Total-Count` header — `safe()` unwraps to just the body (see
+  // patterns.md §4), so a plain throw/catch fits better here.
+  let response: Awaited<ReturnType<typeof getPosts>>;
   try {
-    const response = await getPosts(page, POSTS_PER_PAGE);
-
-    // JSONPlaceholder returns X-Total-Count header.
-    // Real APIs might return total in response body instead.
-    const totalCount = Number(response.headers.get('X-Total-Count')) || 0;
-    const totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
-
-    const userIds = [...new Set(response.data.map((p) => p.userId))];
-    const userResults = await Promise.all(userIds.map((id) => getUser(id)));
-
-    const users = new Map<number, string>();
-    for (const result of userResults) {
-      users.set(result.data.id, result.data.name);
-    }
-
-    return { posts: response.data, users, totalPages };
+    response = await getPosts(page, POSTS_PER_PAGE);
   } catch {
     return null;
   }
+
+  // JSONPlaceholder returns X-Total-Count header.
+  // Real APIs might return total in response body instead.
+  const totalCount = Number(response.headers.get('X-Total-Count')) || 0;
+  const totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
+
+  // Author names are decoration, not the point of the page — with try/catch a
+  // single failed lookup would throw and take the whole page down with it.
+  // `safe()` turns each lookup into a value, so one bad user just falls back
+  // to "User #id" (see the JSX below) instead of hiding every post.
+  const userIds = [...new Set(response.data.map((p) => p.userId))];
+  const userResults = await Promise.all(userIds.map((id) => safe(getUser(id))));
+
+  const users = new Map<number, string>();
+  for (const result of userResults) {
+    if (result.error) continue;
+    users.set(result.data.id, result.data.name);
+  }
+
+  return { posts: response.data, users, totalPages };
 }
