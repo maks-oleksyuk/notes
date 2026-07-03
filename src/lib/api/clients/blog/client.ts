@@ -14,7 +14,6 @@ export const blogApi = new HttpClient('https://jsonplaceholder.typicode.com', {
   plugins: [logger({ level: 'info', prefix: 'blog' })],
 });
 
-// Types for the blog
 export interface Post {
   userId: number;
   id: number;
@@ -46,7 +45,6 @@ export interface User {
   };
 }
 
-// API functions for the blog
 export async function getPosts(page = 1, limit = 10) {
   return blogApi.get<Post[]>('/posts', {
     params: { _page: page, _limit: limit },
@@ -63,6 +61,6 @@ export async function getPostComments(postId: number) {
 
 export async function getUser(id: number) {
   return blogApi.get<User>(`/users/${id}`, {
-    next: { revalidate: 3600 }, // Overriding default for users
+    next: { revalidate: 3600 },
   });
 }

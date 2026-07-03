@@ -28,7 +28,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * `mergeOptions()` unconditionally sets `method`/`path`/`requestId` — narrowing them
- * to required here lets callers use them without a non-null assertion.
+ * to require here lets callers use them without a non-null assertion.
  */
 type ResolvedOptions = ApiRequestOptions & {
   method: HttpMethod;
@@ -41,7 +41,6 @@ export class HttpClient {
   private readonly defaultOptions: ApiRequestOptions;
 
   constructor(baseUrl = '', defaultOptions: ApiRequestOptions = {}) {
-    // We normalize the baseUrl so it doesn't end with a trailing slash
     this.baseUrl = baseUrl.replace(/\/+$/, '');
     this.defaultOptions = {
       responseType: 'json',
@@ -69,7 +68,7 @@ export class HttpClient {
       } catch (err) {
         let finalError = this.normalizeError(err, mergedOptions);
 
-        // Phase 1 — recovery. A plugin (e.g. auth) may fix the cause and return
+        // Phase 1 — recovery. A plugin (e.g., auth) may fix the cause and return
         // a response. The first that returns short-circuits the rest.
         for (const plugin of plugins) {
           if (!plugin.onError) continue;
@@ -77,10 +76,10 @@ export class HttpClient {
             const result = await plugin.onError(finalError, {
               options: mergedOptions,
               // Replays with `mergedOptions`, not the original `options` — a
-              // recovery plugin (e.g. auth) mutates `context.options` (that's
+              // recovery plugin (e.g., auth) mutates `context.options` (that's
               // `mergedOptions`) to leave a mark for the replay, such as the
               // `authRetried` guard against refreshing forever. Spreading the
-              // original `options` here would silently drop that mark and the
+              // original `options` here would silently drop that mark, and the
               // guard would never trip.
               retry: () =>
                 this.request<T>(path, {
@@ -190,12 +189,12 @@ export class HttpClient {
         }),
       );
     } catch (err) {
-      // Only our own timer firing is a TimeoutError (retryable). The caller's own
+      // Only our own timer firing is an TimeoutError (retryable). The caller's own
       // signal aborting must propagate as-is and must not be retried.
       if (timeoutController?.signal.aborted) {
-        // `timeoutController` is only ever created below when `timeoutMs` is truthy,
-        // so this fallback is unreachable — it just avoids a non-null assertion.
-        throw new TimeoutError(url, timeoutMs ?? 0);
+        // `timeoutController` is only ever created above when `timeoutMs` is truthy,
+        // so `timeoutMs` is guaranteed to set here.
+        throw new TimeoutError(url, timeoutMs as number);
       }
       throw err;
     } finally {
@@ -237,7 +236,7 @@ export class HttpClient {
         await plugin.onResponse(apiResponse, mergedOptions);
     }
     if (mergedOptions.onResponse) {
-      await mergedOptions.onResponse(apiResponse as ApiResponse<unknown>);
+      await mergedOptions.onResponse(apiResponse as ApiResponse);
     }
 
     return apiResponse;
@@ -246,9 +245,9 @@ export class HttpClient {
   /** Wraps a raw fetch failure into one of our typed errors. */
   private normalizeError(err: unknown, options: ResolvedOptions): Error {
     // TimeoutError is already thrown typed from `attempt()`. ValidationError comes
-    // from the `validation` plugin's `onResponse` (a schema mismatch is never fixed
-    // by refetching). ParseError comes from `parseResponseData` (malformed JSON on
-    // a 2xx). All three pass through as-is — wrapping any of them into NetworkError
+    // from the `validation` plugin's `onResponse` (refetching never fixes a schema mismatch).
+    // ParseError comes from `parseResponseData` (malformed JSON ona 2xx).
+    // All three pass through as-is — wrapping any of them into NetworkError
     // would make `nextRetry` treat them as retryable, which they aren't.
     if (
       err instanceof ApiError ||
@@ -267,9 +266,9 @@ export class HttpClient {
       options.params,
     );
 
-    // The caller's own AbortSignal firing (e.g. user cancelled in the UI) is not a
+    // The caller's own AbortSignal firing (e.g., user canceled in the UI) is not a
     // timeout and not a network failure — propagate as-is so `nextRetry` (which only
-    // recognizes ApiError/NetworkError/TimeoutError) doesn't retry a cancelled request.
+    // recognizes ApiError/NetworkError/TimeoutError) doesn't retry a canceled request.
     if (err instanceof DOMException && err.name === 'AbortError') {
       return err;
     }
@@ -280,7 +279,7 @@ export class HttpClient {
   }
 
   // --- Convenience Methods ---
-  // `O` carries the options object's literal type so `InferSchema` can pick up a
+  // `O` carries the option object's literal type so `InferSchema` can pick up a
   // `schema` field when present; `T` is the fallback for the schema-less call shape
   // callers already use (`get<Post[]>('/posts')`).
 

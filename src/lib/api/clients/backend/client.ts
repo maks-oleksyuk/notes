@@ -29,7 +29,6 @@ const tokenProvider: TokenProvider = {
 export const backendApi = new HttpClient(
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
   {
-    // Default headers for all backend requests
     headers: {
       'Accept-Language': 'uk',
     },

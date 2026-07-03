@@ -45,6 +45,8 @@ export function buildUrl(
     }
   }
 
-  // If it was a relative path, return the path part, otherwise full URL
+  // `urlObj` was parsed against the dummy 'http://localhost' base above just to
+  // get URL's query-string handling — for a relative result that fake host must
+  // not leak into the returned string, so only path+search is used.
   return isAbsolute ? urlObj.toString() : `${urlObj.pathname}${urlObj.search}`;
 }

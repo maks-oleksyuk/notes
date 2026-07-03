@@ -13,7 +13,6 @@ export class ApiError extends Error {
   readonly headers?: Headers;
 
   constructor(message: string, info: ApiErrorInfo) {
-    // Pass the message to the base Error class
     super(message);
 
     this.name = 'ApiError';

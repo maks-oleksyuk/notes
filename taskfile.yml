@@ -39,7 +39,7 @@ tasks:
 
   vitest:
     desc: 'Run `vitest` command.'
-    cmd: '{{.NODEJS_BIN_DIR}}/vitest {{.CLI_ARGS}}'
+    cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.config.ts {{.CLI_ARGS}}'
     silent: true
 
   # Work commands:
@@ -153,9 +153,17 @@ tasks:
   # Testing:
 
   test:
-    desc: 'Run the test suite once with a coverage report.'
+    desc: 'Run project test.'
     aliases:
-      - t:c
+      - t
+      - qa
+    cmds:
+      - defer: { task: test:unit }
+
+  test:unit:
+    desc: 'Run the unit suite once (coverage + JUnit report in var/report/).'
+    aliases:
+      - t:u
     cmds:
       - task: vitest
         vars: { CLI_ARGS: 'run --coverage {{.CLI_ARGS}}' }

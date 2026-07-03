@@ -8,9 +8,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 // order. This only surfaces at runtime, never in `tsc`, so it needs an actual
 // import to catch.
 //
-// Duck-typed checks below, not `instanceof HttpClient` — `vi.resetModules()`
+// The duck-typed checks below, not `instanceof HttpClient` — `vi.resetModules()`
 // (needed so each test re-reads `NEXT_PUBLIC_API_TOKEN`) re-evaluates
-// `core/client.ts` too, so a statically-imported `HttpClient` class reference
+// `core/client.ts` too, so a statically imported `HttpClient` class reference
 // would be a different identity than the one used inside the freshly
 // re-imported module graph. Not a bug, just a test-isolation artifact.
 describe('backendApi', () => {

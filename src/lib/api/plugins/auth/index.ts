@@ -22,7 +22,7 @@ export type { TokenProvider } from './types';
  */
 export function auth(provider: TokenProvider): ApiPlugin {
   // Lives in the closure of this call, not module scope: two `auth(provider)`
-  // instances (e.g. two clients, or tests) never share a refresh in flight.
+  // instances (e.g., two clients, or tests) never share a refresh in flight.
   let refreshPromise: Promise<string> | null = null;
   function singleFlightRefresh(): Promise<string> {
     refreshPromise ??= provider.refreshToken().finally(() => {
@@ -69,7 +69,7 @@ export function auth(provider: TokenProvider): ApiPlugin {
         try {
           await provider.onAuthFailure?.(refreshError as Error);
         } catch {
-          // see above
+          // onAuthFailure must never break the error path it's reporting on.
         }
         throw refreshError;
       }

@@ -49,10 +49,10 @@
     "includes": [
       "**",
       "!.next",
-      "!coverage",
       "!node_modules",
       "!packages",
       "!public",
+      "!var",
       "!next-env.d.ts",
       "!!config/utils/biome.json"
     ]
