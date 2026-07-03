@@ -44,4 +44,33 @@ describe('cleanMetadata', () => {
       items: [{ token: '***REDACTED***' }, { id: 1 }],
     });
   });
+
+  describe('substring matching (CP-8)', () => {
+    it('redacts keys that only contain a sensitive substring, not just exact matches', () => {
+      expect(
+        cleanMetadata({
+          AuthToken: 'x',
+          sessionId: 'y',
+          refreshToken: 'z',
+          'X-Api-Key': 'w',
+        }),
+      ).toEqual({
+        AuthToken: '***REDACTED***',
+        sessionId: '***REDACTED***',
+        refreshToken: '***REDACTED***',
+        'X-Api-Key': '***REDACTED***',
+      });
+    });
+
+    it('normalizes separators before matching, so `api-key`/`apiKey`/`API_KEY` all hit', () => {
+      expect(
+        cleanMetadata({ 'api-key': 'a', apiKey: 'b', API_KEY: 'c', id: 1 }),
+      ).toEqual({
+        'api-key': '***REDACTED***',
+        apiKey: '***REDACTED***',
+        API_KEY: '***REDACTED***',
+        id: 1,
+      });
+    });
+  });
 });

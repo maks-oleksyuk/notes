@@ -92,6 +92,15 @@ export interface ApiRequestOptions
   timeout?: number;
 
   /**
+   * Opt-in: share a single in-flight `GET` request across callers asking for
+   * the same URL at the same time (map keyed by the resolved URL, in
+   * `HttpClient.request`). Off by default — it changes observable behavior
+   * (fewer network calls, one shared response object), so callers must ask
+   * for it explicitly. Ignored for non-`GET` methods.
+   */
+  dedupe?: boolean;
+
+  /**
    * Zod schema the response body must satisfy (checked by the `validation` plugin's
    * `onResponse`, thrown as `ValidationError` — never retried, see `nextRetry`). When
    * present, `HttpClient.get/post/put/patch/delete` infer the response type from it —

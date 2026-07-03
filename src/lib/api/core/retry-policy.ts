@@ -21,6 +21,16 @@ export interface RetryDecision {
   fromRetryAfter: boolean;
 }
 
+// A server `Retry-After` can ask for minutes; honoring that in the browser is
+// fine (the tab just waits), but on the server it blocks an RSC render for the
+// same duration — so the default cap is much smaller there. `typeof window`
+// is the project's established server/client branch (see patterns.md §6.3).
+// Checked per call (not hoisted to a module-level constant), so it reflects
+// the environment `resolveRetry` actually runs in.
+function defaultMaxRetryAfter(): number {
+  return typeof window === 'undefined' ? 15_000 : 3 * 60_000;
+}
+
 // Fills defaults. Returns null when retries are disabled.
 export function resolveRetry(
   input?: RetryOptions | false,
@@ -30,7 +40,7 @@ export function resolveRetry(
     limit: input.limit ?? 3,
     delay: input.delay ?? 1000,
     maxDelay: input.maxDelay ?? 30_000,
-    maxRetryAfter: input.maxRetryAfter ?? 5 * 60_000,
+    maxRetryAfter: input.maxRetryAfter ?? defaultMaxRetryAfter(),
     statusCodes: input.statusCodes ?? [408, 429, 500, 502, 503, 504],
     respectRetryAfter: input.respectRetryAfter ?? true,
     methods: input.methods ?? IDEMPOTENT_METHODS,

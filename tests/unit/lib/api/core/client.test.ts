@@ -476,4 +476,158 @@ describe('HttpClient', () => {
       expect(onFinalError).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('plugins merge policy (CP-8)', () => {
+    it('concatenates request-level plugins with the client default instead of replacing it', async () => {
+      fetchMock.mockResolvedValueOnce(jsonResponse({ ok: true }));
+      const calls: string[] = [];
+      const defaultPlugin: ApiPlugin = {
+        name: 'default',
+        onRequest: () => void calls.push('default'),
+      };
+      const requestPlugin: ApiPlugin = {
+        name: 'per-request',
+        onRequest: () => void calls.push('per-request'),
+      };
+      const client = new HttpClient('https://api.test', {
+        plugins: [defaultPlugin],
+      });
+
+      await client.get('/x', { plugins: [requestPlugin] });
+
+      expect(calls).toEqual(['default', 'per-request']);
+    });
+
+    it('drops a request-level plugin that shares a name with a default one, keeping the default', async () => {
+      fetchMock.mockResolvedValueOnce(jsonResponse({ ok: true }));
+      const calls: string[] = [];
+      const defaultLogger: ApiPlugin = {
+        name: 'logger',
+        onRequest: () => void calls.push('default-logger'),
+      };
+      const shadowingLogger: ApiPlugin = {
+        name: 'logger',
+        onRequest: () => void calls.push('request-logger'),
+      };
+      const client = new HttpClient('https://api.test', {
+        plugins: [defaultLogger],
+      });
+
+      await client.get('/x', { plugins: [shadowingLogger] });
+
+      // First occurrence wins — the client's own `logger` plugin runs, the
+      // same-named one passed at the call site is silently dropped.
+      expect(calls).toEqual(['default-logger']);
+    });
+
+    it('dedupes plugins by name so an auth-recovery replay does not double them', async () => {
+      let calls = 0;
+      fetchMock.mockImplementation(async () =>
+        calls++ === 0 ? jsonResponse({}, 401) : jsonResponse({ ok: true }),
+      );
+      let onRequestCalls = 0;
+      const recovery: ApiPlugin = {
+        name: 'recovery',
+        onRequest: () => void onRequestCalls++,
+        onError: async (_err, { retry }) => {
+          if (calls > 1) return undefined;
+          return retry();
+        },
+      };
+      const client = new HttpClient('https://api.test', {
+        plugins: [recovery],
+      });
+
+      const res = await client.get('/x');
+
+      expect(res.data).toEqual({ ok: true });
+      // One onRequest per attempt (2 attempts), not 2 per attempt — proves the
+      // replay's merged plugin list wasn't duplicated on top of the original.
+      expect(onRequestCalls).toBe(2);
+    });
+  });
+
+  describe('GET dedup (CP-8, opt-in)', () => {
+    it('is off by default: concurrent identical GETs each hit the network', async () => {
+      fetchMock.mockImplementation(async () => jsonResponse({ ok: true }));
+      const client = new HttpClient('https://api.test');
+
+      await Promise.all([client.get('/x'), client.get('/x')]);
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it('shares one in-flight request across concurrent callers when dedupe: true', async () => {
+      let resolveFetch!: (r: Response) => void;
+      fetchMock.mockImplementationOnce(
+        () =>
+          new Promise<Response>((resolve) => {
+            resolveFetch = resolve;
+          }),
+      );
+      const client = new HttpClient('https://api.test');
+
+      const first = client.get('/x', { dedupe: true });
+      const second = client.get('/x', { dedupe: true });
+
+      resolveFetch(jsonResponse({ ok: true }));
+      const [a, b] = await Promise.all([first, second]);
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(a).toBe(b);
+    });
+
+    it('does not dedupe across different URLs or params', async () => {
+      fetchMock.mockImplementation(async () => jsonResponse({ ok: true }));
+      const client = new HttpClient('https://api.test');
+
+      await Promise.all([
+        client.get('/x', { dedupe: true }),
+        client.get('/y', { dedupe: true }),
+      ]);
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it('never dedupes non-GET methods even with dedupe: true', async () => {
+      fetchMock.mockImplementation(async () => jsonResponse({ ok: true }));
+      const client = new HttpClient('https://api.test');
+
+      await Promise.all([
+        client.post('/x', { a: 1 }, { dedupe: true }),
+        client.post('/x', { a: 1 }, { dedupe: true }),
+      ]);
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it('allows a fresh request after the in-flight one settles', async () => {
+      fetchMock.mockImplementation(async () => jsonResponse({ ok: true }));
+      const client = new HttpClient('https://api.test');
+
+      await client.get('/x', { dedupe: true });
+      await client.get('/x', { dedupe: true });
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not deadlock when a deduped GET goes through the recovery/retry path', async () => {
+      let calls = 0;
+      fetchMock.mockImplementation(async () =>
+        calls++ === 0 ? jsonResponse({}, 401) : jsonResponse({ ok: true }),
+      );
+      const recovery: ApiPlugin = {
+        name: 'recovery',
+        onError: async (_err, { retry }) => (calls > 1 ? undefined : retry()),
+      };
+      const client = new HttpClient('https://api.test', {
+        plugins: [recovery],
+      });
+
+      const result = await client.get('/x', { dedupe: true });
+
+      expect(result.data).toEqual({ ok: true });
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+  });
 });

@@ -28,19 +28,47 @@ import type {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Concatenates default + request-level plugins, deduped by `name` (first
+// occurrence wins). See the call site in `mergeOptions` for why dedup matters.
+function mergePlugins(
+  defaults: ApiRequestOptions['plugins'],
+  requested: ApiRequestOptions['plugins'],
+): NonNullable<ApiRequestOptions['plugins']> {
+  const combined = [...(defaults ?? []), ...(requested ?? [])];
+  const seen = new Set<string>();
+  return combined.filter((plugin) => {
+    if (seen.has(plugin.name)) return false;
+    seen.add(plugin.name);
+    return true;
+  });
+}
+
 /**
- * `mergeOptions()` unconditionally sets `method`/`path`/`requestId` — narrowing them
- * to require here lets callers use them without a non-null assertion.
+ * `mergeOptions()` unconditionally sets `method`/`path`/`requestId`/`plugins` —
+ * narrowing them to require here lets callers use them without a non-null
+ * assertion.
  */
 type ResolvedOptions = ApiRequestOptions & {
   method: HttpMethod;
   path: string;
   requestId: string;
+  plugins: NonNullable<ApiRequestOptions['plugins']>;
 };
 
 export class HttpClient {
   private readonly baseUrl: string;
   private readonly defaultOptions: ApiRequestOptions;
+
+  // Keyed by the resolved URL, only ever populated for GET requests that opt
+  // in via `dedupe: true` (see `request()`). Off by default — collapsing
+  // concurrent identical requests is the right call for read-heavy UI code,
+  // but it's a behavior change (fewer network calls, one shared response
+  // object across callers), so it stays opt-in rather than silently changing
+  // what every existing GET does.
+  private readonly inFlightGets = new Map<
+    string,
+    Promise<ApiResponse>
+  >();
 
   constructor(baseUrl = '', defaultOptions: ApiRequestOptions = {}) {
     this.baseUrl = baseUrl.replace(/\/+$/, '');
@@ -58,8 +86,36 @@ export class HttpClient {
     options: ApiRequestOptions = {},
   ): Promise<ApiResponse<T>> {
     const mergedOptions: ResolvedOptions = this.mergeOptions(path, options);
+
+    if (mergedOptions.method === 'GET' && mergedOptions.dedupe) {
+      const key = buildUrl(
+        mergedOptions.baseUrl || this.baseUrl,
+        mergedOptions.path,
+        mergedOptions.params,
+      );
+      const existing = this.inFlightGets.get(key);
+      if (existing) return existing as Promise<ApiResponse<T>>;
+
+      const promise = this.executeWithRetries<T>(path, mergedOptions).finally(
+        () => this.inFlightGets.delete(key),
+      );
+      this.inFlightGets.set(key, promise as Promise<ApiResponse>);
+      return promise;
+    }
+
+    return this.executeWithRetries<T>(path, mergedOptions);
+  }
+
+  /** Retry loop over already-merged options. Split out of `request()` so the
+   * recovery-phase replay below can re-enter the loop directly — going back
+   * through `request()` would re-check the dedup map for the very entry this
+   * call is still resolving, which deadlocks on itself. */
+  private async executeWithRetries<T>(
+    path: string,
+    mergedOptions: ResolvedOptions,
+  ): Promise<ApiResponse<T>> {
     const retryPolicy = resolveRetry(mergedOptions.retry);
-    const plugins = mergedOptions.plugins ?? [];
+    const plugins = mergedOptions.plugins;
 
     // Core retry loop. Each iteration is one attempt; `continue` retries.
     for (let attempt = 0; ; attempt++) {
@@ -84,7 +140,7 @@ export class HttpClient {
               // original `options` here would silently drop that mark, and the
               // guard would never trip.
               retry: () =>
-                this.request<T>(path, {
+                this.executeWithRetries<T>(path, {
                   ...mergedOptions,
                   requestId: mergedOptions.requestId,
                 }),
@@ -454,6 +510,13 @@ export class HttpClient {
         ...headersToRecord(this.defaultOptions.headers),
         ...headersToRecord(options.headers),
       },
+      // Concatenate, don't replace it — a per-request `plugins` array used to
+      // silently drop the client's default plugins (e.g. `logger`). Deduped
+      // by `name`, the first occurrence wins: the auth `onError` recovery path
+      // replays through `mergeOptions` with `options` set to the *already
+      // merged* plugins list, so without dedup a replay would double every
+      // plugin on each retry.
+      plugins: mergePlugins(this.defaultOptions.plugins, options.plugins),
     };
   }
 }

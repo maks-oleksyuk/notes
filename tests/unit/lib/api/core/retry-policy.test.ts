@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
   ApiError,
@@ -27,10 +27,29 @@ describe('resolveRetry', () => {
       limit: 3,
       delay: 1000,
       maxDelay: 30_000,
-      maxRetryAfter: 5 * 60_000,
       statusCodes: [408, 429, 500, 502, 503, 504],
       respectRetryAfter: true,
       methods: ['GET', 'PUT', 'HEAD', 'DELETE'],
+    });
+  });
+
+  describe('maxRetryAfter default (server vs browser, CP-8)', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it('defaults to a small cap on the server (no window) to avoid blocking RSC renders for minutes', () => {
+      expect(typeof window).toBe('undefined');
+      expect(resolveRetry({})?.maxRetryAfter).toBe(15_000);
+    });
+
+    it('defaults to a generous cap in the browser', () => {
+      vi.stubGlobal('window', {});
+      expect(resolveRetry({})?.maxRetryAfter).toBe(3 * 60_000);
+    });
+
+    it('lets the caller override the default in either environment', () => {
+      expect(resolveRetry({ maxRetryAfter: 1234 })?.maxRetryAfter).toBe(1234);
     });
   });
 

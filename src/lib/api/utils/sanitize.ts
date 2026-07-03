@@ -1,21 +1,22 @@
 const REDACTED = '***REDACTED***';
 
-const SENSITIVE_KEYS = new Set([
+// Substrings, not exact keys — catches `AuthToken`, `sessionId`, `X-Api-Key`,
+// `refreshToken`, etc. without listing every casing/prefix combo. Matched
+// against the key with separators stripped, so `api-key`/`apiKey`/`API_KEY`
+// all normalize to `apikey` and hit the same `apikey` entry.
+const SENSITIVE_SUBSTRINGS = [
   'authorization',
   'cookie',
-  'set-cookie',
   'password',
   'token',
-  'access_token',
-  'refresh_token',
   'secret',
-  'api-key',
   'apikey',
-  'x-api-key',
-]);
+  'session',
+];
 
 function isSensitiveKey(key: string): boolean {
-  return SENSITIVE_KEYS.has(key.toLowerCase());
+  const normalized = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return SENSITIVE_SUBSTRINGS.some((needle) => normalized.includes(needle));
 }
 
 // Headers, FormData and URLSearchParams expose values via .entries(), not as own keys.
