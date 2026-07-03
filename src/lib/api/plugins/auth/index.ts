@@ -1,5 +1,11 @@
-import { ApiError } from '@/lib/api';
-import type { ApiPlugin } from '@/lib/api';
+// Import from `../../core` directly, not the root `@/lib/api` barrel — the root
+// index also re-exports `clients/*`, which construct `HttpClient` at module load
+// time. A plugin importing the root barrel creates a real circular import
+// (root -> clients -> core -> back to this plugin via the root re-export) that
+// throws "HttpClient is not a constructor" depending on load order (review.md A4;
+// caught live by this file's own test suite importing `HttpClient` directly).
+import { ApiError } from '../../core/errors';
+import type { ApiPlugin } from '../../core/types';
 import type { TokenProvider } from './types';
 
 export type { TokenProvider } from './types';
@@ -39,7 +45,8 @@ export function auth(provider: TokenProvider): ApiPlugin {
     },
 
     async onError(error, context) {
-      if (!(error instanceof ApiError) || error.status !== 401) return undefined;
+      if (!(error instanceof ApiError) || error.status !== 401)
+        return undefined;
 
       // Second 401 in a row, after we already refreshed once for this request —
       // the session itself is dead, not just an expired access token. Refreshing

@@ -56,3 +56,17 @@ jobs:
 
       - name: '${{ matrix.command.name }} validate'
         run: task ${{ matrix.command.command }}
+
+  test:
+    name: '🧪 Test'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@v6
+
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-environment
+
+      - name: '🧪 Run test suite'
+        run: task test

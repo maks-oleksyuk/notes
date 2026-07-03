@@ -31,12 +31,16 @@ function isEntriesLike(
 
 // Recursively replaces values of sensitive keys with REDACTED.
 function sanitize(value: unknown): unknown {
-  if (isEntriesLike(value)) {
-    return sanitize(Object.fromEntries(value.entries()));
-  }
-
+  // Arrays also expose `.entries()` (it's on Array.prototype), so this check
+  // must come before `isEntriesLike` — otherwise an array would match that
+  // branch first and `Object.fromEntries` would silently turn it into an
+  // index-keyed plain object ({0: ..., 1: ...}) instead of staying an array.
   if (Array.isArray(value)) {
     return value.map(sanitize);
+  }
+
+  if (isEntriesLike(value)) {
+    return sanitize(Object.fromEntries(value.entries()));
   }
 
   if (typeof value === 'object' && value !== null) {

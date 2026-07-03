@@ -7,10 +7,18 @@ const ABSOLUTE_URL_RE = /^https?:\/\//i;
  */
 export function buildUrl(
   baseUrl: string,
-  path: string,
+  // Optional because `ApiRequestOptions.path` is (callers always end up setting
+  // it via `mergeOptions()`, but the type itself doesn't guarantee that) — handled
+  // defensively below via `path?.replace(...)`.
+  path: string | undefined,
   params?: Record<
     string,
-    string | number | boolean | undefined | null | Array<string | number | boolean>
+    | string
+    | number
+    | boolean
+    | undefined
+    | null
+    | Array<string | number | boolean>
   >,
 ): string {
   const cleanBase = baseUrl.replace(/\/+$/, '');

@@ -6,7 +6,11 @@ export function buildBody(body: unknown): BodyInit | null {
   // JSON-encoded primitive), not "no body". Only `null`/`undefined` mean "no body".
   if (body == null) return null;
 
-  if (body instanceof FormData || body instanceof Blob || body instanceof URLSearchParams) {
+  if (
+    body instanceof FormData ||
+    body instanceof Blob ||
+    body instanceof URLSearchParams
+  ) {
     return body;
   }
 

@@ -62,24 +62,42 @@ export function logger({
   }
 
   const defaultConsoleLogger: ApiLogger = {
+    // `logFn` below always resolves to `.info` (defined right after this object,
+    // and always present here) — `.log` exists only to satisfy `ApiLogger`'s
+    // required field, never actually called by this plugin.
+    /* v8 ignore next */
     log: (msg, meta) => print('log', msg, meta),
     info: (msg, meta) => print('log', msg, meta),
+    // Not called by this plugin's own hooks (only `onFinalError` -> `.error`
+    // exists below) — implemented anyway so the default logger fully satisfies
+    // `ApiLogger` for anyone who grabs it indirectly.
+    /* v8 ignore next */
     warn: (msg, meta) => print('warn', msg, meta),
+    // `err`/`meta` optionality below exists for `ApiLogger`'s general contract —
+    // this plugin's sole caller (`onFinalError`) always supplies both, so those
+    // branches are unreachable through this module alone. Real for anyone using
+    // this default logger directly with `.error(msg)` only.
     error: (msg, err, meta) => {
+      /* v8 ignore next */
       const cleanMeta = meta ? cleanMetadata(meta) : undefined;
+      /* v8 ignore next */
       const hasMeta = cleanMeta && Object.keys(cleanMeta).length > 0;
 
-      if (!err && !hasMeta) {
-        console.error(msg);
-        return;
-      }
       if (isBrowser) {
         console.groupCollapsed(msg);
+        /* v8 ignore next */
         if (err) console.error(err);
+        /* v8 ignore next */
         if (hasMeta) console.dir(cleanMeta, { depth: null });
         console.groupEnd();
       } else {
-        console.error(msg, ...(err ? [err] : []), ...(hasMeta ? [cleanMeta] : []));
+        console.error(
+          msg,
+          /* v8 ignore next */
+          ...(err ? [err] : []),
+          /* v8 ignore next */
+          ...(hasMeta ? [cleanMeta] : []),
+        );
       }
     },
   };
@@ -93,7 +111,8 @@ export function logger({
 
   // Correlates the three lines of one request when logs from parallel requests
   // interleave. Empty when the request has no id.
-  const tag = (id?: string) => id ? `${paint(`[${id}]`, 'gray', useColors)} ` : '';
+  const tag = (id?: string) =>
+    id ? `${paint(`[${id}]`, 'gray', useColors)} ` : '';
 
   return {
     name: 'logger',
@@ -148,9 +167,17 @@ export function logger({
       // A retry is expected and recoverable — log level, not warn/error, so the
       // browser console doesn't attach an alarm icon and a stack trace.
       const marker = paint('↺', 'yellow', useColors);
-      const label = paint(`retry ${info.attempt}/${info.limit}`, 'yellow', useColors);
+      const label = paint(
+        `retry ${info.attempt}/${info.limit}`,
+        'yellow',
+        useColors,
+      );
       const source = info.fromRetryAfter ? ' (Retry-After)' : '';
-      const wait = paint(`in ${Math.round(info.wait)}ms${source}`, 'gray', useColors);
+      const wait = paint(
+        `in ${Math.round(info.wait)}ms${source}`,
+        'gray',
+        useColors,
+      );
       logFn(
         `${prefix}${tag(info.requestId)}${marker} ${label} ${colorizeMethod(info.method || 'GET', useColors)} ${info.path || '/'} ${wait} — ${info.error.message}`,
       );

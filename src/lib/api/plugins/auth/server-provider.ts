@@ -24,7 +24,9 @@ export interface ServerAuthCookies {
   refreshUrl: string;
 }
 
-export function createServerTokenProvider(config: ServerAuthCookies): TokenProvider {
+export function createServerTokenProvider(
+  config: ServerAuthCookies,
+): TokenProvider {
   return {
     async getToken() {
       const jar = await cookies();
@@ -41,13 +43,20 @@ export function createServerTokenProvider(config: ServerAuthCookies): TokenProvi
         headers: { Cookie: `${config.refreshCookieName}=${refreshToken}` },
       });
       if (!res.ok) throw new Error(`refresh failed: ${res.status}`);
-      const data: { accessToken: string; refreshToken?: string } = await res.json();
+      const data: { accessToken: string; refreshToken?: string } =
+        await res.json();
 
       // Throws here during an RSC render (Next.js forbids writing cookies outside
       // Route Handlers / Server Actions) — intentional, see the module doc above.
-      jar.set(config.accessCookieName, data.accessToken, { httpOnly: true, path: '/' });
+      jar.set(config.accessCookieName, data.accessToken, {
+        httpOnly: true,
+        path: '/',
+      });
       if (data.refreshToken) {
-        jar.set(config.refreshCookieName, data.refreshToken, { httpOnly: true, path: '/' });
+        jar.set(config.refreshCookieName, data.refreshToken, {
+          httpOnly: true,
+          path: '/',
+        });
       }
       return data.accessToken;
     },

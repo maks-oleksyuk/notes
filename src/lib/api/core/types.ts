@@ -41,7 +41,12 @@ export interface ApiRequestOptions
    */
   params?: Record<
     string,
-    string | number | boolean | undefined | null | Array<string | number | boolean>
+    | string
+    | number
+    | boolean
+    | undefined
+    | null
+    | Array<string | number | boolean>
   >;
 
   /**

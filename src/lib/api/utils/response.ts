@@ -15,12 +15,23 @@ export async function parseResponseData<T>(
 ): Promise<T> {
   // 204/205 have no body by spec; a HEAD response's body is also always null —
   // `response.body === null` covers all three without needing the method passed in.
-  if (response.status === 204 || response.status === 205 || response.body === null) {
+  if (
+    response.status === 204 ||
+    response.status === 205 ||
+    response.body === null
+  ) {
     return null as unknown as T;
   }
 
   switch (type) {
-    case 'json':
+    case 'text':
+      return (await response.text()) as unknown as T;
+    case 'blob':
+      return (await response.blob()) as unknown as T;
+    case 'arraybuffer':
+      return (await response.arrayBuffer()) as unknown as T;
+    case 'stream':
+      return response.body as unknown as T;
     default:
       try {
         return (await response.json()) as T;
@@ -30,14 +41,6 @@ export async function parseResponseData<T>(
           err instanceof Error ? err.message : 'invalid JSON',
         );
       }
-    case 'text':
-      return (await response.text()) as unknown as T;
-    case 'blob':
-      return (await response.blob()) as unknown as T;
-    case 'arraybuffer':
-      return (await response.arrayBuffer()) as unknown as T;
-    case 'stream':
-      return response.body as unknown as T;
   }
 }
 

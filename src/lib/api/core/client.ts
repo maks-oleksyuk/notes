@@ -8,9 +8,20 @@ import {
   parseResponseData,
   toRequestInit,
 } from '../utils';
-import { ApiError, NetworkError, ParseError, TimeoutError, ValidationError } from './errors';
+import {
+  ApiError,
+  NetworkError,
+  ParseError,
+  TimeoutError,
+  ValidationError,
+} from './errors';
 import { nextRetry, resolveRetry } from './retry-policy';
-import type { ApiRequestOptions, ApiResponse, HttpMethod, InferSchema } from './types';
+import type {
+  ApiRequestOptions,
+  ApiResponse,
+  HttpMethod,
+  InferSchema,
+} from './types';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -45,7 +56,7 @@ export class HttpClient {
       try {
         return await this.attempt<T>(path, mergedOptions, plugins);
       } catch (err) {
-        let finalError = this.normalizeError(err, mergedOptions, path);
+        let finalError = this.normalizeError(err, mergedOptions);
 
         // Phase 1 — recovery. A plugin (e.g. auth) may fix the cause and return
         // a response. The first that returns short-circuits the rest.
@@ -74,7 +85,12 @@ export class HttpClient {
 
         // Phase 2 — transient retry, owned by the core (not a plugin).
         if (retryPolicy) {
-          const decision = nextRetry(finalError, attempt, retryPolicy, mergedOptions.method);
+          const decision = nextRetry(
+            finalError,
+            attempt,
+            retryPolicy,
+            mergedOptions.method,
+          );
           if (decision) {
             for (const plugin of plugins) {
               await plugin.onRetry?.({
@@ -84,7 +100,9 @@ export class HttpClient {
                 fromRetryAfter: decision.fromRetryAfter,
                 error: finalError,
                 requestId: mergedOptions.requestId,
-                method: mergedOptions.method,
+                // `mergeOptions()` always sets `.method` — the type stays optional only
+                // because `ApiRequestOptions.method` is optional for callers.
+                method: mergedOptions.method!,
                 path: mergedOptions.path,
               });
             }
@@ -107,7 +125,7 @@ export class HttpClient {
 
   /** A single request attempt: hooks, fetch, response parsing. */
   private async attempt<T>(
-    path: string,
+    _path: string,
     mergedOptions: ApiRequestOptions,
     plugins: NonNullable<ApiRequestOptions['plugins']>,
   ): Promise<ApiResponse<T>> {
@@ -116,9 +134,12 @@ export class HttpClient {
     }
     if (mergedOptions.onRequest) await mergedOptions.onRequest(mergedOptions);
 
+    // `mergedOptions.path`/`.method` are always set by `mergeOptions()` below (it
+    // reassigns them unconditionally after the spread) — no `|| path`/`|| 'GET'`
+    // fallback needed here, that path is unreachable through this class's API.
     const url = buildUrl(
       mergedOptions.baseUrl || this.baseUrl,
-      mergedOptions.path || path,
+      mergedOptions.path,
       mergedOptions.params,
     );
     const headers = buildHeaders(
@@ -141,7 +162,7 @@ export class HttpClient {
 
     if (timeoutMs) {
       timeoutController = new AbortController();
-      timer = setTimeout(() => timeoutController!.abort(), timeoutMs);
+      timer = setTimeout(() => timeoutController?.abort(), timeoutMs);
       signal = mergedOptions.signal
         ? AbortSignal.any([mergedOptions.signal, timeoutController.signal])
         : timeoutController.signal;
@@ -152,7 +173,14 @@ export class HttpClient {
     try {
       response = await fetch(
         url,
-        toRequestInit(mergedOptions, { method: mergedOptions.method || 'GET', headers, body, signal }),
+        toRequestInit(mergedOptions, {
+          // `mergeOptions()` always sets `.method` — the type stays optional only
+          // because `ApiRequestOptions.method` is optional for callers.
+          method: mergedOptions.method!,
+          headers,
+          body,
+          signal,
+        }),
       );
     } catch (err) {
       // Only our own timer firing is a TimeoutError (retryable). The caller's own
@@ -168,14 +196,19 @@ export class HttpClient {
 
     if (!response.ok) {
       const errorData = await parseErrorData(response);
-      throw new ApiError(`HTTP Error ${response.status}: ${response.statusText}`, {
-        status: response.status,
-        statusText: response.statusText,
-        url,
-        method: mergedOptions.method || 'GET',
-        data: errorData,
-        headers: response.headers,
-      });
+      throw new ApiError(
+        `HTTP Error ${response.status}: ${response.statusText}`,
+        {
+          status: response.status,
+          statusText: response.statusText,
+          url,
+          // `mergeOptions()` always sets `.method` — the type stays optional only
+          // because `ApiRequestOptions.method` is optional for callers.
+          method: mergedOptions.method!,
+          data: errorData,
+          headers: response.headers,
+        },
+      );
     }
 
     const data = await parseResponseData<T>(
@@ -193,7 +226,8 @@ export class HttpClient {
     };
 
     for (const plugin of plugins) {
-      if (plugin.onResponse) await plugin.onResponse(apiResponse, mergedOptions);
+      if (plugin.onResponse)
+        await plugin.onResponse(apiResponse, mergedOptions);
     }
     if (mergedOptions.onResponse) {
       await mergedOptions.onResponse(apiResponse as ApiResponse<unknown>);
@@ -203,11 +237,7 @@ export class HttpClient {
   }
 
   /** Wraps a raw fetch failure into one of our typed errors. */
-  private normalizeError(
-    err: unknown,
-    options: ApiRequestOptions,
-    path: string,
-  ): Error {
+  private normalizeError(err: unknown, options: ApiRequestOptions): Error {
     // TimeoutError is already thrown typed from `attempt()`. ValidationError comes
     // from the `validation` plugin's `onResponse` (a schema mismatch is never fixed
     // by refetching). ParseError comes from `parseResponseData` (malformed JSON on
@@ -222,9 +252,11 @@ export class HttpClient {
       return err;
     }
 
+    // `options` here is always `mergedOptions` (see the sole call site below),
+    // whose `.path` is unconditionally set by `mergeOptions()` — no fallback needed.
     const url = buildUrl(
       options.baseUrl || this.baseUrl,
-      options.path || path,
+      options.path,
       options.params,
     );
 
@@ -284,10 +316,10 @@ export class HttpClient {
     >;
   }
 
-  delete<T = unknown, O extends Omit<ApiRequestOptions, 'method' | 'body'> = {}>(
-    path: string,
-    options?: O,
-  ): Promise<ApiResponse<InferSchema<O, T>>> {
+  delete<
+    T = unknown,
+    O extends Omit<ApiRequestOptions, 'method' | 'body'> = {},
+  >(path: string, options?: O): Promise<ApiResponse<InferSchema<O, T>>> {
     return this.request(path, { ...options, method: 'DELETE' }) as Promise<
       ApiResponse<InferSchema<O, T>>
     >;

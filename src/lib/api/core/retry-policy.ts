@@ -87,5 +87,8 @@ export function nextRetry(
     }
   }
 
-  return { wait: backoffDelay(cfg.delay, attempt, cfg.maxDelay), fromRetryAfter: false };
+  return {
+    wait: backoffDelay(cfg.delay, attempt, cfg.maxDelay),
+    fromRetryAfter: false,
+  };
 }

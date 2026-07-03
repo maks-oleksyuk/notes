@@ -1,4 +1,6 @@
-import { HttpClient } from '@/lib/api';
+// Same reasoning as clients/backend/client.ts — import from `@/lib/api/core`
+// directly, never the root barrel (real circular import, review.md A4).
+import { HttpClient } from '@/lib/api/core';
 import { logger } from '@/lib/api/plugins';
 
 /**
