@@ -66,7 +66,7 @@ export interface ApiRequestOptions
 
   /**
    * Current attempt index, set by the core retry loop (0 = first try).
-   * Observers (e.g. the logger) read it to mark retried requests.
+   * Observers (e.g., the logger) read it to mark retried requests.
    */
   retryAttempt?: number;
 
@@ -88,6 +88,11 @@ export interface ApiRequestOptions
    * Per-attempt timeout in ms. A fresh `AbortController` is created for every
    * attempt in the core request loop (not a plugin) — see `HttpClient.attempt`.
    * Omit or `0` to disable.
+   *
+   * Bounds only the time to response *headers*: the timer is cleared once
+   * `fetch` resolves, so reading a slow body (`response.json()`) is not
+   * covered (same trade-off as ofetch). A caller-supplied `signal` still
+   * aborts the body read.
    */
   timeout?: number;
 
@@ -97,13 +102,19 @@ export interface ApiRequestOptions
    * `HttpClient.request`). Off by default — it changes observable behavior
    * (fewer network calls, one shared response object), so callers must ask
    * for it explicitly. Ignored for non-`GET` methods.
+   *
+   * Also ignored (silently) when the request carries a per-user identity —
+   * the `auth` plugin or an `Authorization` header. The map is keyed by URL
+   * only and lives on the client instance, which on the server is a
+   * module-scope singleton shared across users; deduping authenticated GETs
+   * would hand one user's response to another.
    */
   dedupe?: boolean;
 
   /**
    * Zod schema the response body must satisfy (checked by the `validation` plugin's
    * `onResponse`, thrown as `ValidationError` — never retried, see `nextRetry`). When
-   * present, `HttpClient.get/post/put/patch/delete` infer the response type from it —
+   * present, `HttpClient.get/post/put/patch/delete` infers the response type from it —
    * see `InferSchema`.
    */
   schema?: ZodType;
@@ -120,7 +131,12 @@ export interface ApiRequestOptions
    * Hooks (Interceptors) - simple version
    */
   onRequest?: (options: ApiRequestOptions) => void | Promise<void>;
-  onResponse?: (response: ApiResponse<unknown>) => void | Promise<void>;
+  onResponse?: (response: ApiResponse) => void | Promise<void>;
+  /**
+   * Called only when the *final* error is an `ApiError` (an HTTP error
+   * status) — not for network/timeout/validation/abort failures. For every
+   * final error regardless of type, use a plugin's `onFinalError` instead.
+   */
   onResponseError?: (error: Error) => void | Promise<void>;
 
   /**
@@ -146,7 +162,7 @@ export interface RetryOptions {
   /**
    * Methods eligible for retry. Defaults to the idempotent ones — a `POST` that
    * timed out may already have been executed server-side, and blindly retrying it
-   * can create a duplicate (e.g. a duplicate order). Opt `POST`/`PATCH` in explicitly
+   * can create a duplicate (e.g., a duplicate order). Opt `POST`/`PATCH` in explicitly
    * only where the endpoint is known to be safe to repeat.
    */
   methods?: HttpMethod[];
@@ -171,26 +187,26 @@ export interface RetryInfo {
  * Interface representing a plugin that hooks into the request lifecycle.
  *
  * Two roles, kept separate:
- *  - **recovery** — `onError` may return a value to recover the request (e.g. auth
+ *  - **recovery** — `onError` may return a value to recover the request (e.g., auth
  *    refreshing a token). The first plugin that returns stops the chain.
  *  - **observation** — `onRetry` / `onFinalError` are notifications for observers
- *    (e.g. the logger); they can't change the outcome, so their order is irrelevant.
+ *    (e.g., the logger); they can't change the outcome, so their order is irrelevant.
  */
 export interface ApiPlugin {
   name: string;
   onRequest?: (options: ApiRequestOptions) => void | Promise<void>;
   onResponse?: (
-    response: ApiResponse<unknown>,
+    response: ApiResponse,
     options: ApiRequestOptions,
   ) => void | Promise<void>;
   onError?: (
     error: Error,
     context: {
       options: ApiRequestOptions;
-      retry: () => Promise<ApiResponse<unknown>>;
+      retry: () => Promise<ApiResponse>;
     },
   ) => undefined | Promise<unknown>;
-  /** Notified before a transient error is retried by the core loop. */
+  /** Notified before the core loop retries a transient error. */
   onRetry?: (info: RetryInfo) => void | Promise<void>;
   /** Notified when a request fails for good (no recovery, no retries left). */
   onFinalError?: (

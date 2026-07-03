@@ -8,13 +8,7 @@ import {
   parseResponseData,
   toRequestInit,
 } from '../utils';
-import {
-  ApiError,
-  NetworkError,
-  ParseError,
-  TimeoutError,
-  ValidationError,
-} from './errors';
+import { ApiError, NetworkError, TimeoutError } from './errors';
 import { nextRetry, resolveRetry } from './retry-policy';
 import { safe } from './safe';
 
@@ -26,7 +20,32 @@ import type {
   InferSchema,
 } from './types';
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+// Backoff wait the caller's own AbortSignal can interrupt. Without this a
+// canceled request would silently sit out the full wait (a server Retry-After
+// can ask for minutes) before making one more doomed attempt — with TanStack
+// Query that means the queryFn's signal (unmount, page change) is ignored for
+// the whole backoff window.
+const sleep = (ms: number, signal?: AbortSignal) =>
+  new Promise<void>((resolve, reject) => {
+    // The `??` arm is for hand-rolled AbortSignal-likes without a reason —
+    // `AbortController.abort()` itself always sets one.
+    const abortError = () =>
+      signal?.reason ??
+      new DOMException('This operation was aborted', 'AbortError');
+    if (signal?.aborted) {
+      reject(abortError());
+      return;
+    }
+    const onAbort = () => {
+      clearTimeout(timer);
+      reject(abortError());
+    };
+    const timer = setTimeout(() => {
+      signal?.removeEventListener('abort', onAbort);
+      resolve();
+    }, ms);
+    signal?.addEventListener('abort', onAbort, { once: true });
+  });
 
 // Concatenates default + request-level plugins, deduped by `name` (first
 // occurrence wins). See the call site in `mergeOptions` for why dedup matters.
@@ -65,10 +84,7 @@ export class HttpClient {
   // but it's a behavior change (fewer network calls, one shared response
   // object across callers), so it stays opt-in rather than silently changing
   // what every existing GET does.
-  private readonly inFlightGets = new Map<
-    string,
-    Promise<ApiResponse>
-  >();
+  private readonly inFlightGets = new Map<string, Promise<ApiResponse>>();
 
   constructor(baseUrl = '', defaultOptions: ApiRequestOptions = {}) {
     this.baseUrl = baseUrl.replace(/\/+$/, '');
@@ -87,7 +103,18 @@ export class HttpClient {
   ): Promise<ApiResponse<T>> {
     const mergedOptions: ResolvedOptions = this.mergeOptions(path, options);
 
-    if (mergedOptions.method === 'GET' && mergedOptions.dedupe) {
+    if (
+      mergedOptions.method === 'GET' &&
+      mergedOptions.dedupe &&
+      // Dedup silently steps aside when the request carries a per-user
+      // identity: on the server this client (and this map) is a module-scope
+      // singleton shared by every incoming request, so handing user A's
+      // in-flight response to user B's identical GET would leak data across
+      // users. Any sign of auth (the `auth` plugin, or an explicit
+      // Authorization header) disables it — the URL-only map key can't tell
+      // two users apart.
+      !this.hasAuthIdentity(mergedOptions)
+    ) {
       const key = buildUrl(
         mergedOptions.baseUrl || this.baseUrl,
         mergedOptions.path,
@@ -124,7 +151,7 @@ export class HttpClient {
       try {
         return await this.attempt<T>(path, mergedOptions, plugins);
       } catch (err) {
-        let finalError = this.normalizeError(err, mergedOptions);
+        let finalError = this.normalizeError(err);
 
         // Phase 1 — recovery. A plugin (e.g., auth) may fix the cause and return
         // a response. The first that returns short-circuits the rest.
@@ -139,10 +166,16 @@ export class HttpClient {
               // `authRetried` guard against refreshing forever. Spreading the
               // original `options` here would silently drop that mark, and the
               // guard would never trip.
+              // `retry: false` on the replay: recovery gets exactly one clean
+              // re-run. The replay is a full inner `executeWithRetries` — if it
+              // kept a transient-retry budget of its own, its final error would
+              // land back here as `finalError` and Phase 2 below would retry
+              // the *outer* loop too, multiplying real fetches up to
+              // limit×(limit+1) in the worst case.
               retry: () =>
                 this.executeWithRetries<T>(path, {
                   ...mergedOptions,
-                  requestId: mergedOptions.requestId,
+                  retry: false,
                 }),
             });
             if (result) return result as ApiResponse<T>;
@@ -172,8 +205,20 @@ export class HttpClient {
                 path: mergedOptions.path,
               });
             }
-            await sleep(decision.wait);
-            continue;
+            try {
+              // `?? undefined`: RequestInit types `signal` as possibly null.
+              await sleep(decision.wait, mergedOptions.signal ?? undefined);
+              continue;
+            } catch (abortErr) {
+              // Caller canceled during the backoff wait. Fall through to
+              // Phase 3 with the abort as the final error, so observers
+              // (logger) still see the request end — same path a mid-fetch
+              // abort takes.
+              finalError =
+                abortErr instanceof Error
+                  ? abortErr
+                  : new Error(String(abortErr));
+            }
           }
         }
 
@@ -254,7 +299,20 @@ export class HttpClient {
         // so `timeoutMs` is guaranteed to set here.
         throw new TimeoutError(url, timeoutMs as number);
       }
-      throw err;
+      // `name` check, not `instanceof DOMException` — some runtimes/polyfills
+      // reject with a plain Error named AbortError. A caller cancel is not a
+      // network failure and must not be wrapped into a retryable type.
+      if (err instanceof Error && err.name === 'AbortError') {
+        throw err;
+      }
+      // NetworkError wraps *only* what `fetch` itself threw (DNS, refused
+      // connection, ...). Classifying right here — not in a catch-all around
+      // the whole attempt — is what keeps a throwing user hook from being
+      // mislabeled as a (retryable) network failure.
+      throw new NetworkError(
+        err instanceof Error ? err.message : 'Unknown network error',
+        url,
+      );
     } finally {
       if (timer) clearTimeout(timer);
     }
@@ -300,40 +358,18 @@ export class HttpClient {
     return apiResponse;
   }
 
-  /** Wraps a raw fetch failure into one of our typed errors. */
-  private normalizeError(err: unknown, options: ResolvedOptions): Error {
-    // TimeoutError is already thrown typed from `attempt()`. ValidationError comes
-    // from the `validation` plugin's `onResponse` (refetching never fixes a schema mismatch).
-    // ParseError comes from `parseResponseData` (malformed JSON ona 2xx).
-    // All three pass through as-is — wrapping any of them into NetworkError
-    // would make `nextRetry` treat them as retryable, which they aren't.
-    if (
-      err instanceof ApiError ||
-      err instanceof TimeoutError ||
-      err instanceof ValidationError ||
-      err instanceof ParseError
-    ) {
-      return err;
-    }
-
-    // `options` here is always `mergedOptions` (see the sole call site below),
-    // whose `.path` is unconditionally set by `mergeOptions()` — no fallback needed.
-    const url = buildUrl(
-      options.baseUrl || this.baseUrl,
-      options.path,
-      options.params,
-    );
-
-    // The caller's own AbortSignal firing (e.g., user canceled in the UI) is not a
-    // timeout and not a network failure — propagate as-is so `nextRetry` (which only
-    // recognizes ApiError/NetworkError/TimeoutError) doesn't retry a canceled request.
-    if (err instanceof DOMException && err.name === 'AbortError') {
-      return err;
-    }
-    return new NetworkError(
-      err instanceof Error ? err.message : 'Unknown network error',
-      url,
-    );
+  /**
+   * Errors reaching the retry loop are already typed at their source: the
+   * fetch call in `attempt()` classifies its own failures (TimeoutError /
+   * AbortError / NetworkError), `ApiError`/`ParseError` are thrown typed, and
+   * `ValidationError` comes from the validation plugin. Everything else — a
+   * user hook or plugin throwing its own error — passes through *unwrapped*:
+   * wrapping it in NetworkError would make `nextRetry` re-run a request whose
+   * network part already succeeded and would lie about the error's type.
+   * The only guarantee left to enforce is `Error`-ness for non-Error throws.
+   */
+  private normalizeError(err: unknown): Error {
+    return err instanceof Error ? err : new Error(String(err));
   }
 
   // --- Convenience Methods ---
@@ -350,6 +386,19 @@ export class HttpClient {
   >(path: string, options?: O): Promise<ApiResponse<InferSchema<O, T>>> {
     return this.request(path, { ...options, method: 'GET' }) as Promise<
       ApiResponse<InferSchema<O, T>>
+    >;
+  }
+
+  /** A HEAD response never has a body (`response.body === null`), so `data`
+   * resolves to `null` — the useful parts are `status` and `headers`. */
+  head<
+    O extends Omit<ApiRequestOptions, 'method' | 'body'> = Omit<
+      ApiRequestOptions,
+      'method' | 'body'
+    >,
+  >(path: string, options?: O): Promise<ApiResponse<null>> {
+    return this.request(path, { ...options, method: 'HEAD' }) as Promise<
+      ApiResponse<null>
     >;
   }
 
@@ -487,6 +536,17 @@ export class HttpClient {
   }
 
   // --- Private Helpers ---
+
+  /** See the dedup gate in `request()` — URL-keyed dedup can't tell two users'
+   * identical GETs apart, so any per-user identity opts the request out. */
+  private hasAuthIdentity(options: ResolvedOptions): boolean {
+    return (
+      options.plugins.some((plugin) => plugin.name === 'auth') ||
+      Object.keys(headersToRecord(options.headers)).some(
+        (key) => key.toLowerCase() === 'authorization',
+      )
+    );
+  }
 
   private mergeOptions(
     path: string,

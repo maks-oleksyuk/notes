@@ -1,13 +1,13 @@
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { redirect } from 'next/navigation';
 
-import { getPosts, getUser } from '@/lib/api/clients/blog';
-import { safe } from '@/lib/api/core';
+import { blogQueries } from '@/lib/api/clients/blog';
+import { makeQueryClient } from '@/lib/api/query-client';
 
 import { Pagination } from './pagination';
+import { PostsList } from './posts-list';
 
-import type { Post } from '@/lib/api/clients/blog';
-
-const POSTS_PER_PAGE = 5;
+import type { BlogPageData } from '@/lib/api/clients/blog';
 
 interface PageProps {
   searchParams: Promise<{ page?: string }>;
@@ -17,9 +17,16 @@ export default async function BlogExamplePage({ searchParams }: PageProps) {
   const params = await searchParams;
   const currentPage = Math.max(1, Number(params.page) || 1);
 
-  const result = await fetchPageData(currentPage);
+  // A fresh QueryClient per request (see query-client.ts) — `fetchQuery`
+  // populates it *and* returns the data directly, unlike `prefetchQuery`
+  // (which returns void), so this page.tsx can read `totalPages` for
+  // `<Pagination>` without a second fetch.
+  const queryClient = makeQueryClient();
 
-  if (!result) {
+  let data: BlogPageData;
+  try {
+    data = await queryClient.fetchQuery(blogQueries.pageData(currentPage));
+  } catch {
     return (
       <main className='max-w-2xl mx-auto p-8'>
         <h1 className='text-3xl font-bold mb-4'>Blog API Example</h1>
@@ -30,7 +37,7 @@ export default async function BlogExamplePage({ searchParams }: PageProps) {
     );
   }
 
-  if (result.posts.length === 0 && currentPage > 1) {
+  if (data.posts.length === 0 && currentPage > 1) {
     const preserved = new URLSearchParams(params as Record<string, string>);
     preserved.delete('page');
     const qs = preserved.toString();
@@ -41,61 +48,16 @@ export default async function BlogExamplePage({ searchParams }: PageProps) {
     <main className='max-w-2xl mx-auto p-8 space-y-6'>
       <h1 className='text-3xl font-bold'>Blog API Example</h1>
       <p className='text-sm text-gray-500'>
-        Server Component — fetched from JSONPlaceholder with pagination (page{' '}
-        {currentPage} of {result.totalPages})
+        Server Component prefetch + client-side TanStack Query — fetched from
+        JSONPlaceholder with pagination (page {currentPage} of {data.totalPages}
+        )
       </p>
 
-      <ul className='space-y-4'>
-        {result.posts.map((post) => (
-          <li key={post.id} className='border rounded-lg p-4 space-y-1'>
-            <h2 className='font-semibold'>{post.title}</h2>
-            <p className='text-sm text-gray-500'>
-              by {result.users.get(post.userId) ?? `User #${post.userId}`}
-            </p>
-            <p className='text-gray-700 text-sm line-clamp-2'>{post.body}</p>
-          </li>
-        ))}
-      </ul>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <PostsList page={currentPage} />
+      </HydrationBoundary>
 
-      <Pagination currentPage={currentPage} totalPages={result.totalPages} />
+      <Pagination currentPage={currentPage} totalPages={data.totalPages} />
     </main>
   );
-}
-
-interface PageData {
-  posts: Post[];
-  users: Map<number, string>;
-  totalPages: number;
-}
-
-async function fetchPageData(page: number): Promise<PageData | null> {
-  // Posts are the page's reason to exist, and we need the full `ApiResponse`
-  // for its `X-Total-Count` header — `safe()` unwraps to just the body (see
-  // patterns.md §4), so a plain throw/catch fits better here.
-  let response: Awaited<ReturnType<typeof getPosts>>;
-  try {
-    response = await getPosts(page, POSTS_PER_PAGE);
-  } catch {
-    return null;
-  }
-
-  // JSONPlaceholder returns X-Total-Count header.
-  // Real APIs might return total in response body instead.
-  const totalCount = Number(response.headers.get('X-Total-Count')) || 0;
-  const totalPages = Math.ceil(totalCount / POSTS_PER_PAGE);
-
-  // Author names are decoration, not the point of the page — with try/catch a
-  // single failed lookup would throw and take the whole page down with it.
-  // `safe()` turns each lookup into a value, so one bad user just falls back
-  // to "User #id" (see the JSX below) instead of hiding every post.
-  const userIds = [...new Set(response.data.map((p) => p.userId))];
-  const userResults = await Promise.all(userIds.map((id) => safe(getUser(id))));
-
-  const users = new Map<number, string>();
-  for (const result of userResults) {
-    if (result.error) continue;
-    users.set(result.data.id, result.data.name);
-  }
-
-  return { posts: response.data, users, totalPages };
 }

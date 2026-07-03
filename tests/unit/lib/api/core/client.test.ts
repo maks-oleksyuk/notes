@@ -68,6 +68,17 @@ describe('HttpClient', () => {
 
       expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: 'DELETE' });
     });
+
+    it('head sends method HEAD and resolves data: null (no body by spec)', async () => {
+      fetchMock.mockResolvedValueOnce(new Response(null, { status: 200 }));
+      const client = new HttpClient('https://api.test');
+
+      const res = await client.head('/x');
+
+      expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: 'HEAD' });
+      expect(res.data).toBeNull();
+      expect(res.status).toBe(200);
+    });
   });
 
   describe('simple (non-plugin) hooks', () => {
@@ -611,6 +622,34 @@ describe('HttpClient', () => {
       expect(fetchMock).toHaveBeenCalledTimes(2);
     });
 
+    it('does not dedupe when an auth plugin is present — the URL key cannot tell users apart (B2)', async () => {
+      fetchMock.mockImplementation(async () => jsonResponse({ ok: true }));
+      const client = new HttpClient('https://api.test', {
+        plugins: [{ name: 'auth' }],
+      });
+
+      await Promise.all([
+        client.get('/me', { dedupe: true }),
+        client.get('/me', { dedupe: true }),
+      ]);
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not dedupe when an Authorization header is set (B2)', async () => {
+      fetchMock.mockImplementation(async () => jsonResponse({ ok: true }));
+      const client = new HttpClient('https://api.test', {
+        headers: { Authorization: 'Bearer user-1' },
+      });
+
+      await Promise.all([
+        client.get('/me', { dedupe: true }),
+        client.get('/me', { dedupe: true }),
+      ]);
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
     it('does not deadlock when a deduped GET goes through the recovery/retry path', async () => {
       let calls = 0;
       fetchMock.mockImplementation(async () =>
@@ -628,6 +667,174 @@ describe('HttpClient', () => {
 
       expect(result.data).toEqual({ ok: true });
       expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('hook errors are not network errors (A2)', () => {
+    it('does not retry when a user onResponse hook throws, and preserves the error type', async () => {
+      fetchMock.mockResolvedValue(jsonResponse({ ok: true }));
+      const client = new HttpClient('https://api.test', {
+        retry: { limit: 3, delay: 1 },
+      });
+
+      // The network part succeeded — a bug in the caller's own hook must not
+      // re-run the request, and must surface as itself, not as NetworkError.
+      await expect(
+        client.get('/x', {
+          onResponse: () => {
+            throw new TypeError('hook bug');
+          },
+        }),
+      ).rejects.toBeInstanceOf(TypeError);
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not retry when a plugin onRequest hook throws', async () => {
+      const boom = new Error('plugin setup failed');
+      const broken: ApiPlugin = {
+        name: 'broken',
+        onRequest() {
+          throw boom;
+        },
+      };
+      const client = new HttpClient('https://api.test', {
+        retry: { limit: 3, delay: 1 },
+        plugins: [broken],
+      });
+
+      await expect(client.get('/x')).rejects.toBe(boom);
+      // onRequest runs before fetch — the network is never touched.
+      expect(fetchMock).toHaveBeenCalledTimes(0);
+    });
+
+    it('wraps a non-Error hook throw into an Error', async () => {
+      const client = new HttpClient('https://api.test');
+
+      await expect(
+        client.get('/x', {
+          onRequest: () => {
+            // eslint-disable-next-line no-throw-literal
+            throw 'string-boom';
+          },
+        }),
+      ).rejects.toMatchObject({ message: 'string-boom' });
+    });
+  });
+
+  describe('abort during backoff (A3)', () => {
+    it('rejects immediately when the signal is already aborted as the wait starts', async () => {
+      fetchMock.mockResolvedValue(jsonResponse({}, 503));
+      const controller = new AbortController();
+      const onFinalError = vi.fn();
+      // Aborts from the onRetry observer — after the retry decision, right
+      // before the backoff sleep would start.
+      const aborter: ApiPlugin = {
+        name: 'aborter',
+        onRetry: () => controller.abort(),
+        onFinalError,
+      };
+      const client = new HttpClient('https://api.test', {
+        // A wait this long would blow the test timeout if it weren't interrupted.
+        retry: { limit: 3, delay: 60_000 },
+        plugins: [aborter],
+      });
+
+      await expect(
+        client.get('/x', { signal: controller.signal }),
+      ).rejects.toMatchObject({ name: 'AbortError' });
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      // The abort still flows through Phase 3, so observers see the request end.
+      expect(onFinalError).toHaveBeenCalledTimes(1);
+    });
+
+    it('falls back to a DOMException AbortError when the signal carries no reason', async () => {
+      fetchMock.mockResolvedValue(jsonResponse({}, 503));
+      const controller = new AbortController();
+      // Simulates a hand-rolled AbortSignal-like without a reason — a real
+      // AbortController.abort() always sets one.
+      Object.defineProperty(controller.signal, 'reason', { value: undefined });
+      const aborter: ApiPlugin = {
+        name: 'aborter',
+        onRetry: () => controller.abort(),
+      };
+      const client = new HttpClient('https://api.test', {
+        retry: { limit: 3, delay: 60_000 },
+        plugins: [aborter],
+      });
+
+      await expect(
+        client.get('/x', { signal: controller.signal }),
+      ).rejects.toMatchObject({ name: 'AbortError' });
+    });
+
+    it('wraps a non-Error abort reason (abort("why")) into an Error', async () => {
+      fetchMock.mockResolvedValue(jsonResponse({}, 503));
+      const controller = new AbortController();
+      const aborter: ApiPlugin = {
+        name: 'aborter',
+        // `abort(reason)` with a plain string: the signal's reason is not an
+        // Error, so the backoff catch must wrap it before Phase 3.
+        onRetry: () => controller.abort('user navigated away'),
+      };
+      const client = new HttpClient('https://api.test', {
+        retry: { limit: 3, delay: 60_000 },
+        plugins: [aborter],
+      });
+
+      await expect(
+        client.get('/x', { signal: controller.signal }),
+      ).rejects.toMatchObject({ message: 'user navigated away' });
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('interrupts a backoff sleep already in progress', async () => {
+      fetchMock.mockResolvedValue(jsonResponse({}, 503));
+      const controller = new AbortController();
+      const aborter: ApiPlugin = {
+        name: 'aborter',
+        // Fires a few ms into the 60s backoff wait.
+        onRetry: () => void setTimeout(() => controller.abort(), 10),
+      };
+      const client = new HttpClient('https://api.test', {
+        retry: { limit: 3, delay: 60_000 },
+        plugins: [aborter],
+      });
+
+      await expect(
+        client.get('/x', { signal: controller.signal }),
+      ).rejects.toMatchObject({ name: 'AbortError' });
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('recovery replay budget (B5)', () => {
+    it('gives a recovery replay exactly one attempt — no transient retries inside the replay', async () => {
+      let call = 0;
+      fetchMock.mockImplementation(async () =>
+        call++ === 0 ? jsonResponse({}, 401) : jsonResponse({}, 503),
+      );
+      const recovery: ApiPlugin = {
+        name: 'recovery',
+        onError: async (error, { retry }) =>
+          error instanceof ApiError && error.status === 401
+            ? retry()
+            : undefined,
+      };
+      const client = new HttpClient('https://api.test', {
+        retry: { limit: 2, delay: 1 },
+        plugins: [recovery],
+      });
+
+      await expect(client.get('/x')).rejects.toMatchObject({ status: 503 });
+
+      // 1 (401) + 1 replay (503, retry: false inside) + 2 outer transient
+      // retries = 4. Without the replay's `retry: false`, the replay would
+      // also retry the 503 on its own budget, multiplying to 7 fetches.
+      expect(fetchMock).toHaveBeenCalledTimes(4);
     });
   });
 });

@@ -31,28 +31,48 @@ function isEntriesLike(
 }
 
 // Recursively replaces values of sensitive keys with REDACTED.
-function sanitize(value: unknown): unknown {
-  // Arrays also expose `.entries()` (it's on Array.prototype), so this check
-  // must come before `isEntriesLike` — otherwise an array would match that
-  // branch first and `Object.fromEntries` would silently turn it into an
-  // index-keyed plain object ({0: ..., 1: ...}) instead of staying an array.
-  if (Array.isArray(value)) {
-    return value.map(sanitize);
-  }
+function sanitize(value: unknown, seen: WeakSet<object>): unknown {
+  if (typeof value !== 'object' || value === null) return value;
 
-  if (isEntriesLike(value)) {
-    return sanitize(Object.fromEntries(value.entries()));
-  }
+  // Cycle guard — metadata is arbitrary caller data, and recursing into a
+  // circular structure would blow the stack *inside the logger*, killing the
+  // very request it was only supposed to observe.
+  if (seen.has(value)) return '[Circular]';
+  seen.add(value);
 
-  if (typeof value === 'object' && value !== null) {
+  try {
+    // Arrays also expose `.entries()` (it's on Array.prototype), so this check
+    // must come before `isEntriesLike` — otherwise an array would match that
+    // branch first and `Object.fromEntries` would silently turn it into an
+    // index-keyed plain object ({0: ..., 1: ...}) instead of staying an array.
+    if (Array.isArray(value)) {
+      return value.map((item) => sanitize(item, seen));
+    }
+
+    if (value instanceof Date) return value.toISOString();
+
+    if (isEntriesLike(value)) {
+      return sanitize(Object.fromEntries(value.entries()), seen);
+    }
+
+    // Non-plain instances (URL, custom classes, ...) rarely carry their own
+    // enumerable keys — Object.entries would flatten them into a misleading
+    // `{}` that cleanMetadata then drops. Their string form logs better.
+    const proto = Object.getPrototypeOf(value);
+    if (proto !== Object.prototype && proto !== null) {
+      return String(value);
+    }
+
     const result: Record<string, unknown> = {};
     for (const [key, val] of Object.entries(value)) {
-      result[key] = isSensitiveKey(key) ? REDACTED : sanitize(val);
+      result[key] = isSensitiveKey(key) ? REDACTED : sanitize(val, seen);
     }
     return result;
+  } finally {
+    // Path-scoped, not visited-forever: the same object referenced from two
+    // sibling keys is legitimate (not a cycle) and gets sanitized both times.
+    seen.delete(value);
   }
-
-  return value;
 }
 
 // Masks sensitive fields and drops empty/nullish entries before logging.
@@ -65,7 +85,9 @@ export function cleanMetadata(
   for (const [key, rawValue] of Object.entries(meta)) {
     if (rawValue === undefined || rawValue === null) continue;
 
-    const value = isSensitiveKey(key) ? REDACTED : sanitize(rawValue);
+    const value = isSensitiveKey(key)
+      ? REDACTED
+      : sanitize(rawValue, new WeakSet());
 
     if (typeof value === 'object') {
       if (Object.keys(value as object).length > 0) clean[key] = value;

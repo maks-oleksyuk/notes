@@ -42,6 +42,23 @@ describe('buildHeaders', () => {
     expect(headers.has('Content-Type')).toBe(false);
   });
 
+  it('does not set Content-Type for URLSearchParams — fetch supplies form-urlencoded itself (A1)', () => {
+    const headers = buildHeaders(undefined, new URLSearchParams({ a: '1' }));
+    expect(headers.has('Content-Type')).toBe(false);
+  });
+
+  it('does not set Content-Type for binary/stream bodies', () => {
+    expect(
+      buildHeaders(undefined, new ArrayBuffer(4)).has('Content-Type'),
+    ).toBe(false);
+    expect(buildHeaders(undefined, new Uint8Array(4)).has('Content-Type')).toBe(
+      false,
+    );
+    expect(
+      buildHeaders(undefined, new ReadableStream()).has('Content-Type'),
+    ).toBe(false);
+  });
+
   it('adds X-Request-Id when given and not already present', () => {
     const headers = buildHeaders(undefined, undefined, 'req-1');
     expect(headers.get('X-Request-Id')).toBe('req-1');

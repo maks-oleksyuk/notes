@@ -45,6 +45,41 @@ describe('cleanMetadata', () => {
     });
   });
 
+  describe('robustness (B3)', () => {
+    it('breaks circular references with [Circular] instead of blowing the stack', () => {
+      const meta: Record<string, unknown> = { a: 1 };
+      meta.self = meta;
+
+      expect(cleanMetadata({ body: meta })).toEqual({
+        body: { a: 1, self: '[Circular]' },
+      });
+    });
+
+    it('does not flag the same object referenced from two sibling keys (shared ref ≠ cycle)', () => {
+      const shared = { id: 1 };
+
+      expect(cleanMetadata({ body: { a: shared, b: shared } })).toEqual({
+        body: { a: { id: 1 }, b: { id: 1 } },
+      });
+    });
+
+    it('serializes Date to ISO instead of dropping it as an empty object', () => {
+      const created = new Date('2026-07-04T00:00:00.000Z');
+
+      expect(cleanMetadata({ body: { created } })).toEqual({
+        body: { created: '2026-07-04T00:00:00.000Z' },
+      });
+    });
+
+    it('stringifies non-plain class instances instead of flattening them to {}', () => {
+      const url = new URL('https://example.com/path');
+
+      expect(cleanMetadata({ body: { url } })).toEqual({
+        body: { url: 'https://example.com/path' },
+      });
+    });
+  });
+
   describe('substring matching (CP-8)', () => {
     it('redacts keys that only contain a sensitive substring, not just exact matches', () => {
       expect(

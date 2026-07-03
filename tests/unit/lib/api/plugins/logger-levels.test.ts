@@ -17,6 +17,11 @@ describe('resolveLevel', () => {
   it('falls back for a non-string value (e.g. undefined env var)', () => {
     expect(resolveLevel(undefined, 'warn')).toBe('warn');
   });
+
+  it('falls back for inherited object keys (C1 — e.g. API_LOG_LEVEL=toString)', () => {
+    expect(resolveLevel('toString', 'info')).toBe('info');
+    expect(resolveLevel('hasOwnProperty', 'info')).toBe('info');
+  });
 });
 
 describe('createLevelFilter', () => {

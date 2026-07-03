@@ -54,19 +54,16 @@ describe('backendApi', () => {
     expect(headers.get('Authorization')).toBe('Bearer test-token');
   });
 
-  it('has no refresh endpoint — a 401 fails through refreshToken(), not a loop', async () => {
+  it('has no refresh endpoint — a 401 propagates as the original ApiError, not a loop', async () => {
     vi.stubEnv('NEXT_PUBLIC_API_TOKEN', 'test-token');
     fetchMock.mockResolvedValue(new Response('{}', { status: 401 }));
     const { backendApi } = await import('@/lib/api/clients/backend/client');
 
-    // The auth plugin's onError catches the refresh failure and it becomes the
-    // final error (client.ts: a thrown pluginError replaces finalError) — so the
-    // caller sees *this* message, not the original 401.
-    await expect(backendApi.get('/x')).rejects.toThrow(
-      'backendApi has no refresh endpoint configured (static token only)',
-    );
-    // Exactly one call: the auth plugin tried to refresh, refreshToken() threw
-    // immediately (api_old parity — no refresh endpoint), no replay happened.
+    // The provider has no `refreshToken`, so the auth plugin leaves the 401
+    // untouched: the caller sees the real status (and server data), not a
+    // masked "no refresh endpoint" error (B1).
+    await expect(backendApi.get('/x')).rejects.toMatchObject({ status: 401 });
+    // Exactly one call: nothing to refresh with, so no replay happened.
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

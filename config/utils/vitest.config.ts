@@ -52,9 +52,12 @@ export default defineConfig({
         'src/lib/api/plugins/index.ts',
         'src/lib/api/clients/index.ts',
         'src/lib/api/clients/*/index.ts',
+        // Entity barrels nested one level deeper, e.g. clients/blog/posts/index.ts.
+        'src/lib/api/clients/*/*/index.ts',
         // Pure type/interface declarations — no runtime statements to cover.
         'src/lib/api/core/types.ts',
         'src/lib/api/plugins/auth/types.ts',
+        'src/lib/api/clients/*/*/types.ts',
       ],
     },
   },

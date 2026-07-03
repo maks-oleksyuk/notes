@@ -8,10 +8,12 @@ const RANK: Record<LogLevel, number> = {
   debug: 4,
 };
 
-// Falls back to `fallback` when the value is not a known level (e.g. a typo in
-// the API_LOG_LEVEL env var).
+// Falls back to `fallback` when the value is not a known level (e.g., a typo in
+// the API_LOG_LEVEL env var). `Object.hasOwn`, not `in` — `in` also matches
+// inherited keys, so API_LOG_LEVEL=toString would pass the check and then
+// resolve to an undefined rank in the filter.
 export function resolveLevel(value: unknown, fallback: LogLevel): LogLevel {
-  return typeof value === 'string' && value in RANK
+  return typeof value === 'string' && Object.hasOwn(RANK, value)
     ? (value as LogLevel)
     : fallback;
 }

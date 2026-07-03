@@ -167,6 +167,21 @@ describe('logger plugin', () => {
     errorSpy.mockRestore();
   });
 
+  it('colors browser logs via %c CSS (the TTY check alone left them colorless)', () => {
+    vi.stubGlobal('window', {});
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const plugin = logger({ level: 'info' }); // default console logger
+
+    plugin.onRequest?.(options());
+
+    const args = logSpy.mock.calls[0];
+    expect(args[0]).toContain('%c'); // CSS directives present
+    expect(args[0]).not.toContain('\x1b['); // no raw ANSI reaches the browser
+    // Cyan GET, in the same palette DevTools uses for ANSI (theme-aware).
+    expect(args.slice(1)).toContain('color:light-dark(#0aa, rgb(18 181 203))');
+    vi.restoreAllMocks();
+  });
+
   it('default console logger groups output in a simulated browser environment', () => {
     vi.stubGlobal('window', {});
     const groupSpy = vi

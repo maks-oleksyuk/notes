@@ -25,9 +25,12 @@ export interface ServerAuthCookies {
   refreshUrl: string;
 }
 
+// `refreshToken` is optional on TokenProvider (static-token providers omit it),
+// but this provider always has one — the narrowed return type saves callers
+// from a needless optional-call dance.
 export function createServerTokenProvider(
   config: ServerAuthCookies,
-): TokenProvider {
+): TokenProvider & Required<Pick<TokenProvider, 'refreshToken'>> {
   return {
     async getToken() {
       const jar = await cookies();

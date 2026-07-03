@@ -1,9 +1,15 @@
 import { cleanMetadata } from '@/lib/api/utils/sanitize';
 
-import { colorizeMethod, colorizeStatus, paint, supportsColor } from './colors';
+import {
+  ansiToConsoleFormat,
+  colorizeMethod,
+  colorizeStatus,
+  paint,
+  supportsColor,
+} from './colors';
 import { createLevelFilter, resolveLevel } from './levels';
 
-import type { ApiPlugin } from '@/lib/api';
+import type { ApiPlugin } from '../../core/types';
 import type { LogLevel } from './levels';
 
 export type { LogLevel } from './levels';
@@ -45,6 +51,15 @@ export function logger({
   // Next's RSC console forwarding on the server — so group only in the browser.
   const isBrowser = typeof window !== 'undefined';
 
+  // Browser consoles render `%c` CSS, not raw ANSI (Chromium tolerates ANSI,
+  // Firefox/Safari show the escapes as garbage) — convert at this boundary so
+  // the message-building code above stays sink-agnostic.
+  function toConsoleArgs(msg: string): [string, ...string[]] {
+    if (!isBrowser) return [msg];
+    const { text, styles } = ansiToConsoleFormat(msg);
+    return [text, ...styles];
+  }
+
   function print(
     level: 'log' | 'warn',
     msg: string,
@@ -52,11 +67,11 @@ export function logger({
   ) {
     const cleanMeta = meta ? cleanMetadata(meta) : undefined;
     if (!cleanMeta || Object.keys(cleanMeta).length === 0) {
-      console[level](msg);
+      console[level](...toConsoleArgs(msg));
       return;
     }
     if (isBrowser) {
-      console.groupCollapsed(msg);
+      console.groupCollapsed(...toConsoleArgs(msg));
       console.dir(cleanMeta, { depth: null });
       console.groupEnd();
     } else {
@@ -87,7 +102,7 @@ export function logger({
       const hasMeta = cleanMeta && Object.keys(cleanMeta).length > 0;
 
       if (isBrowser) {
-        console.groupCollapsed(msg);
+        console.groupCollapsed(...toConsoleArgs(msg));
         /* v8 ignore next */
         if (err) console.error(err);
         /* v8 ignore next */
@@ -109,8 +124,11 @@ export function logger({
   const logFn = activeLogger.info || activeLogger.log;
 
   // Custom loggers get plain text (they format/ship structured logs themselves);
-  // the default console logger gets ANSI only when the sink is a real terminal.
-  const useColors = !customLogger && supportsColor();
+  // the default console logger gets colors when the sink can render them — a
+  // real TTY on the server, or browser devtools (where the ANSI is converted
+  // to %c CSS in `toConsoleArgs`; the TTY check alone would leave browser logs
+  // colorless, since a browser has no process.stdout).
+  const useColors = !customLogger && (isBrowser || supportsColor());
 
   // Correlates the three lines of one request when logs from parallel requests
   // interleave. Empty when the request has no id.

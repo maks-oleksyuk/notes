@@ -1,6 +1,6 @@
-import { ValidationError } from '@/lib/api';
+import { ValidationError } from '../core/errors';
 
-import type { ApiPlugin } from '@/lib/api';
+import type { ApiPlugin } from '../core/types';
 
 export function validation(): ApiPlugin {
   return {

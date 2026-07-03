@@ -170,6 +170,45 @@ describe('auth plugin', () => {
     expect(headers.has('Authorization')).toBe(false);
   });
 
+  describe('provider without refreshToken (static token, B1)', () => {
+    it('lets the original 401 ApiError propagate and reports via onAuthFailure', async () => {
+      fetchMock.mockResolvedValue(jsonResponse({ reason: 'expired' }, 401));
+      const onAuthFailure = vi.fn();
+      const provider: TokenProvider = {
+        getToken: () => 'static-token',
+        onAuthFailure,
+      };
+      const client = new HttpClient('https://api.test', {
+        plugins: [auth(provider)],
+      });
+
+      // The caller sees the real 401 (status + server data), not a masked
+      // "no refresh endpoint" error.
+      await expect(client.get('/me')).rejects.toMatchObject({
+        status: 401,
+        data: { reason: 'expired' },
+      });
+
+      expect(fetchMock).toHaveBeenCalledTimes(1); // nothing to refresh with — no replay
+      expect(onAuthFailure).toHaveBeenCalledTimes(1);
+    });
+
+    it('survives an onAuthFailure that itself throws', async () => {
+      fetchMock.mockResolvedValue(jsonResponse({}, 401));
+      const provider: TokenProvider = {
+        getToken: () => 'static-token',
+        onAuthFailure: () => {
+          throw new Error('reporting blew up');
+        },
+      };
+      const client = new HttpClient('https://api.test', {
+        plugins: [auth(provider)],
+      });
+
+      await expect(client.get('/me')).rejects.toMatchObject({ status: 401 });
+    });
+  });
+
   it('ignores non-401 errors entirely (e.g. leaves a 500 to the core retry policy)', async () => {
     fetchMock.mockResolvedValue(jsonResponse({}, 500));
     const { provider, getRefreshCalls } = createTestProvider(async () => 'x');

@@ -24,8 +24,10 @@ export function auth(provider: TokenProvider): ApiPlugin {
   // Lives in the closure of this call, not module scope: two `auth(provider)`
   // instances (e.g., two clients, or tests) never share a refresh in flight.
   let refreshPromise: Promise<string> | null = null;
-  function singleFlightRefresh(): Promise<string> {
-    refreshPromise ??= provider.refreshToken().finally(() => {
+  function singleFlightRefresh(
+    refreshToken: () => Promise<string>,
+  ): Promise<string> {
+    refreshPromise ??= refreshToken().finally(() => {
       refreshPromise = null;
     });
     return refreshPromise;
@@ -49,6 +51,20 @@ export function auth(provider: TokenProvider): ApiPlugin {
       if (!(error instanceof ApiError) || error.status !== 401)
         return undefined;
 
+      // No refresh configured (static-token provider): the 401 is final.
+      // Report the dead session, but return undefined so the original
+      // ApiError (status 401, server data) propagates — throwing a "can't
+      // refresh" error here would replace it with something less useful.
+      const refreshToken = provider.refreshToken?.bind(provider);
+      if (!refreshToken) {
+        try {
+          await provider.onAuthFailure?.(error);
+        } catch {
+          // onAuthFailure must never break the error path it's reporting on.
+        }
+        return undefined;
+      }
+
       // Second 401 in a row, after we already refreshed once for this request —
       // the session itself is dead, not just an expired access token. Refreshing
       // again would loop forever if the server keeps saying 401.
@@ -64,7 +80,7 @@ export function auth(provider: TokenProvider): ApiPlugin {
       // Refresh failing is reported the same way and propagates as the final
       // error (thrown here, caught by the core's plugin loop as `finalError`).
       try {
-        await singleFlightRefresh();
+        await singleFlightRefresh(refreshToken);
       } catch (refreshError) {
         try {
           await provider.onAuthFailure?.(refreshError as Error);

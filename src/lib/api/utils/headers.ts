@@ -1,3 +1,5 @@
+import { isRawBody } from './body';
+
 /**
  * Normalizes headers of type HeadersInit to a plain Record object.
  */
@@ -22,11 +24,12 @@ export function buildHeaders(
 ): Headers {
   const headers = new Headers(headersInit);
 
-  // Auto-set Content-Type for objects, but not for files/blobs
-  if (body && !headers.has('Content-Type')) {
-    if (!(body instanceof FormData || body instanceof Blob)) {
-      headers.set('Content-Type', 'application/json');
-    }
+  // Auto-set Content-Type for objects, but never for raw bodies (FormData,
+  // URLSearchParams, Blob, binary, stream) — fetch supplies the right one
+  // itself where it can (e.g., form-urlencoded for URLSearchParams), and a
+  // wrong `application/json` here would make the server misparse the body.
+  if (body && !headers.has('Content-Type') && !isRawBody(body)) {
+    headers.set('Content-Type', 'application/json');
   }
 
   // Forward the correlation id so the backend can tie its logs to ours.

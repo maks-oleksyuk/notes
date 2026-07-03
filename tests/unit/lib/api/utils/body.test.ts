@@ -36,4 +36,17 @@ describe('buildBody', () => {
     const usp = new URLSearchParams({ a: '1' });
     expect(buildBody(usp)).toBe(usp);
   });
+
+  it('passes binary bodies through unchanged instead of JSON-stringifying them', () => {
+    const buf = new ArrayBuffer(4);
+    expect(buildBody(buf)).toBe(buf);
+
+    const view = new Uint8Array([1, 2, 3]);
+    expect(buildBody(view)).toBe(view);
+  });
+
+  it('passes a ReadableStream through unchanged', () => {
+    const stream = new ReadableStream();
+    expect(buildBody(stream)).toBe(stream);
+  });
 });

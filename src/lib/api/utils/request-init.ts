@@ -16,7 +16,7 @@ export function toRequestInit(
     body: BodyInit | null;
     signal?: AbortSignal | null;
   },
-): RequestInit {
+): RequestInit & { duplex?: 'half' } {
   return {
     method: overrides.method,
     headers: overrides.headers,
@@ -33,5 +33,12 @@ export function toRequestInit(
     // Next.js App Router's fetch cache extension — not standard `RequestInit`,
     // but the only way to reach `revalidate`/`tags` from inside `fetch()`.
     next: options.next,
+    // A streaming request body requires half-duplex mode (undici/Node throws
+    // without it; browsers that support upload streaming require it too).
+    // `duplex` isn't in TS's RequestInit yet, hence the widened return type.
+    ...(typeof ReadableStream !== 'undefined' &&
+    overrides.body instanceof ReadableStream
+      ? { duplex: 'half' as const }
+      : {}),
   };
 }
