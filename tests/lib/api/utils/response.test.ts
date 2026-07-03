@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { ParseError } from '@/lib/api/core/errors';
 import { parseErrorData, parseResponseData } from '@/lib/api/utils/response';
 

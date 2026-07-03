@@ -1,9 +1,36 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.1/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.2/schema.json",
   "assist": {
     "actions": {
       "source": {
-        "organizeImports": "on",
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "sortBareImports": true,
+            "groups": [
+              { "type": false, "source": [":NODE:", ":BUN:"] },
+              ":BLANK_LINE:",
+              {
+                "type": false,
+                "source": [":PACKAGE_WITH_PROTOCOL:", ":PACKAGE:"]
+              },
+              ":BLANK_LINE:",
+              {
+                "type": false,
+                "source": [":ALIAS:", "!*.css", "!*.scss", "!*.sass", "!*.less"]
+              },
+              ":BLANK_LINE:",
+              {
+                "type": false,
+                "source": [":PATH:", "!*.css", "!*.scss", "!*.sass", "!*.less"]
+              },
+              ":BLANK_LINE:",
+              ":STYLE:",
+              ":BLANK_LINE:",
+              { "type": true }
+            ]
+          }
+        },
         "useSortedProperties": "on",
         "noDuplicateClasses": "on"
       }
@@ -22,8 +49,10 @@
     "includes": [
       "**",
       "!.next",
+      "!coverage",
       "!node_modules",
       "!packages",
+      "!public",
       "!next-env.d.ts",
       "!!config/utils/biome.json"
     ]
@@ -46,7 +75,13 @@
     },
     "enabled": true,
     "rules": {
-      "recommended": true
+      "recommended": true,
+      "style": {
+        "useImportType": {
+          "level": "error",
+          "options": { "style": "separatedType" }
+        }
+      }
     }
   },
   "root": true,

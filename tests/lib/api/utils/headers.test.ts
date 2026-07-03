@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { buildHeaders, headersToRecord } from '@/lib/api/utils/headers';
 
 describe('headersToRecord', () => {

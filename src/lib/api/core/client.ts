@@ -16,6 +16,7 @@ import {
   ValidationError,
 } from './errors';
 import { nextRetry, resolveRetry } from './retry-policy';
+
 import type {
   ApiRequestOptions,
   ApiResponse,
@@ -24,6 +25,16 @@ import type {
 } from './types';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * `mergeOptions()` unconditionally sets `method`/`path`/`requestId` — narrowing them
+ * to required here lets callers use them without a non-null assertion.
+ */
+type ResolvedOptions = ApiRequestOptions & {
+  method: HttpMethod;
+  path: string;
+  requestId: string;
+};
 
 export class HttpClient {
   private readonly baseUrl: string;
@@ -45,7 +56,7 @@ export class HttpClient {
     path: string,
     options: ApiRequestOptions = {},
   ): Promise<ApiResponse<T>> {
-    const mergedOptions = this.mergeOptions(path, options);
+    const mergedOptions: ResolvedOptions = this.mergeOptions(path, options);
     const retryPolicy = resolveRetry(mergedOptions.retry);
     const plugins = mergedOptions.plugins ?? [];
 
@@ -100,9 +111,7 @@ export class HttpClient {
                 fromRetryAfter: decision.fromRetryAfter,
                 error: finalError,
                 requestId: mergedOptions.requestId,
-                // `mergeOptions()` always sets `.method` — the type stays optional only
-                // because `ApiRequestOptions.method` is optional for callers.
-                method: mergedOptions.method!,
+                method: mergedOptions.method,
                 path: mergedOptions.path,
               });
             }
@@ -126,7 +135,7 @@ export class HttpClient {
   /** A single request attempt: hooks, fetch, response parsing. */
   private async attempt<T>(
     _path: string,
-    mergedOptions: ApiRequestOptions,
+    mergedOptions: ResolvedOptions,
     plugins: NonNullable<ApiRequestOptions['plugins']>,
   ): Promise<ApiResponse<T>> {
     for (const plugin of plugins) {
@@ -174,9 +183,7 @@ export class HttpClient {
       response = await fetch(
         url,
         toRequestInit(mergedOptions, {
-          // `mergeOptions()` always sets `.method` — the type stays optional only
-          // because `ApiRequestOptions.method` is optional for callers.
-          method: mergedOptions.method!,
+          method: mergedOptions.method,
           headers,
           body,
           signal,
@@ -186,7 +193,9 @@ export class HttpClient {
       // Only our own timer firing is a TimeoutError (retryable). The caller's own
       // signal aborting must propagate as-is and must not be retried.
       if (timeoutController?.signal.aborted) {
-        throw new TimeoutError(url, timeoutMs!);
+        // `timeoutController` is only ever created below when `timeoutMs` is truthy,
+        // so this fallback is unreachable — it just avoids a non-null assertion.
+        throw new TimeoutError(url, timeoutMs ?? 0);
       }
       throw err;
     } finally {
@@ -202,9 +211,7 @@ export class HttpClient {
           status: response.status,
           statusText: response.statusText,
           url,
-          // `mergeOptions()` always sets `.method` — the type stays optional only
-          // because `ApiRequestOptions.method` is optional for callers.
-          method: mergedOptions.method!,
+          method: mergedOptions.method,
           data: errorData,
           headers: response.headers,
         },
@@ -237,7 +244,7 @@ export class HttpClient {
   }
 
   /** Wraps a raw fetch failure into one of our typed errors. */
-  private normalizeError(err: unknown, options: ApiRequestOptions): Error {
+  private normalizeError(err: unknown, options: ResolvedOptions): Error {
     // TimeoutError is already thrown typed from `attempt()`. ValidationError comes
     // from the `validation` plugin's `onResponse` (a schema mismatch is never fixed
     // by refetching). ParseError comes from `parseResponseData` (malformed JSON on
@@ -277,16 +284,25 @@ export class HttpClient {
   // `schema` field when present; `T` is the fallback for the schema-less call shape
   // callers already use (`get<Post[]>('/posts')`).
 
-  get<T = unknown, O extends Omit<ApiRequestOptions, 'method' | 'body'> = {}>(
-    path: string,
-    options?: O,
-  ): Promise<ApiResponse<InferSchema<O, T>>> {
+  get<
+    T = unknown,
+    O extends Omit<ApiRequestOptions, 'method' | 'body'> = Omit<
+      ApiRequestOptions,
+      'method' | 'body'
+    >,
+  >(path: string, options?: O): Promise<ApiResponse<InferSchema<O, T>>> {
     return this.request(path, { ...options, method: 'GET' }) as Promise<
       ApiResponse<InferSchema<O, T>>
     >;
   }
 
-  post<T = unknown, O extends Omit<ApiRequestOptions, 'method' | 'body'> = {}>(
+  post<
+    T = unknown,
+    O extends Omit<ApiRequestOptions, 'method' | 'body'> = Omit<
+      ApiRequestOptions,
+      'method' | 'body'
+    >,
+  >(
     path: string,
     body?: unknown,
     options?: O,
@@ -296,7 +312,13 @@ export class HttpClient {
     >;
   }
 
-  put<T = unknown, O extends Omit<ApiRequestOptions, 'method' | 'body'> = {}>(
+  put<
+    T = unknown,
+    O extends Omit<ApiRequestOptions, 'method' | 'body'> = Omit<
+      ApiRequestOptions,
+      'method' | 'body'
+    >,
+  >(
     path: string,
     body?: unknown,
     options?: O,
@@ -306,7 +328,13 @@ export class HttpClient {
     >;
   }
 
-  patch<T = unknown, O extends Omit<ApiRequestOptions, 'method' | 'body'> = {}>(
+  patch<
+    T = unknown,
+    O extends Omit<ApiRequestOptions, 'method' | 'body'> = Omit<
+      ApiRequestOptions,
+      'method' | 'body'
+    >,
+  >(
     path: string,
     body?: unknown,
     options?: O,
@@ -318,7 +346,10 @@ export class HttpClient {
 
   delete<
     T = unknown,
-    O extends Omit<ApiRequestOptions, 'method' | 'body'> = {},
+    O extends Omit<ApiRequestOptions, 'method' | 'body'> = Omit<
+      ApiRequestOptions,
+      'method' | 'body'
+    >,
   >(path: string, options?: O): Promise<ApiResponse<InferSchema<O, T>>> {
     return this.request(path, { ...options, method: 'DELETE' }) as Promise<
       ApiResponse<InferSchema<O, T>>
@@ -330,7 +361,7 @@ export class HttpClient {
   private mergeOptions(
     path: string,
     options: ApiRequestOptions,
-  ): ApiRequestOptions {
+  ): ResolvedOptions {
     const method = (
       options.method ||
       this.defaultOptions.method ||

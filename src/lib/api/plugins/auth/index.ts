@@ -5,6 +5,7 @@
 // throws "HttpClient is not a constructor" depending on load order (review.md A4;
 // caught live by this file's own test suite importing `HttpClient` directly).
 import { ApiError } from '../../core/errors';
+
 import type { ApiPlugin } from '../../core/types';
 import type { TokenProvider } from './types';
 

@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import type { ApiResponse } from '@/lib/api/core/types';
+
 import { ValidationError } from '@/lib/api/core/errors';
 import { validation } from '@/lib/api/plugins/validation';
+
+import type { ApiResponse } from '@/lib/api/core/types';
 
 const PostSchema = z.object({ id: z.number(), title: z.string() });
 

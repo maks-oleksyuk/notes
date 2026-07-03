@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   ApiError,
   NetworkError,
@@ -6,6 +7,13 @@ import {
   ValidationError,
 } from '@/lib/api/core/errors';
 import { nextRetry, resolveRetry } from '@/lib/api/core/retry-policy';
+
+/** Unwraps a resolveRetry() result, failing loudly instead of using `!`. */
+function must<T>(value: T | null): T {
+  if (value === null)
+    throw new Error('expected resolveRetry() to return a value');
+  return value;
+}
 
 describe('resolveRetry', () => {
   it('returns null when retries are disabled', () => {
@@ -44,7 +52,7 @@ function apiError(status: number, headers?: Headers) {
 }
 
 describe('nextRetry', () => {
-  const cfg = resolveRetry({ limit: 3, delay: 100, maxDelay: 1000 })!;
+  const cfg = must(resolveRetry({ limit: 3, delay: 100, maxDelay: 1000 }));
 
   it('gives up once the attempt count reaches the limit', () => {
     expect(nextRetry(apiError(503), 3, cfg, 'GET')).toBeNull();
@@ -89,7 +97,7 @@ describe('nextRetry', () => {
   });
 
   it('retries a non-idempotent method when explicitly opted in', () => {
-    const optedIn = resolveRetry({ limit: 3, methods: ['GET', 'POST'] })!;
+    const optedIn = must(resolveRetry({ limit: 3, methods: ['GET', 'POST'] }));
     expect(nextRetry(apiError(503), 0, optedIn, 'POST')).not.toBeNull();
   });
 
@@ -118,11 +126,13 @@ describe('nextRetry', () => {
     });
 
     it('ignores Retry-After when respectRetryAfter is false', () => {
-      const noRespect = resolveRetry({
-        limit: 3,
-        delay: 100,
-        respectRetryAfter: false,
-      })!;
+      const noRespect = must(
+        resolveRetry({
+          limit: 3,
+          delay: 100,
+          respectRetryAfter: false,
+        }),
+      );
       const headers = new Headers({ 'retry-after': '2' });
       const decision = nextRetry(apiError(503, headers), 0, noRespect, 'GET');
       expect(decision?.fromRetryAfter).toBe(false);
@@ -136,7 +146,9 @@ describe('nextRetry', () => {
   });
 
   it('caps backoff at maxDelay for high attempt numbers', () => {
-    const highLimit = resolveRetry({ limit: 20, delay: 100, maxDelay: 1000 })!;
+    const highLimit = must(
+      resolveRetry({ limit: 20, delay: 100, maxDelay: 1000 }),
+    );
     const decision = nextRetry(apiError(503), 10, highLimit, 'GET');
     // attempt 10 would blow past maxDelay uncapped; window must clamp to 1000.
     expect(decision?.wait).toBeLessThanOrEqual(1000);

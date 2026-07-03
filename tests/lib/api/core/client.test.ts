@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { HttpClient } from '@/lib/api/core/client';
 import {
   ApiError,
@@ -6,6 +7,7 @@ import {
   TimeoutError,
   ValidationError,
 } from '@/lib/api/core/errors';
+
 import type { ApiPlugin } from '@/lib/api/core/types';
 
 function jsonResponse(body: unknown, status = 200): Response {

@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { logger } from '@/lib/api/plugins/logger';
+
 import type { ApiRequestOptions, ApiResponse } from '@/lib/api/core/types';
 
 function fakeLogger() {

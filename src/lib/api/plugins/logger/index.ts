@@ -1,7 +1,10 @@
-import type { ApiPlugin } from '@/lib/api';
 import { cleanMetadata } from '@/lib/api/utils/sanitize';
+
 import { colorizeMethod, colorizeStatus, paint, supportsColor } from './colors';
-import { createLevelFilter, resolveLevel, type LogLevel } from './levels';
+import { createLevelFilter, resolveLevel } from './levels';
+
+import type { ApiPlugin } from '@/lib/api';
+import type { LogLevel } from './levels';
 
 export type { LogLevel } from './levels';
 

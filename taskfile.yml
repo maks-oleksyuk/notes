@@ -76,30 +76,6 @@ tasks:
       - task: build
       - task: start
 
-  test:
-    desc: 'Run the test suite once (CI mode).'
-    aliases:
-      - t
-    cmds:
-      - task: vitest
-        vars: { CLI_ARGS: 'run {{.CLI_ARGS}}' }
-
-  test:coverage:
-    desc: 'Run the test suite once with a coverage report (text + HTML in coverage/).'
-    aliases:
-      - t:c
-    cmds:
-      - task: vitest
-        vars: { CLI_ARGS: 'run --coverage {{.CLI_ARGS}}' }
-
-  test:watch:
-    desc: 'Run the test suite in watch mode.'
-    aliases:
-      - t:w
-    cmds:
-      - task: vitest
-        vars: { CLI_ARGS: 'watch {{.CLI_ARGS}}' }
-
   update:
     desc: 'Updates project dependencies withing constraints.'
     prompt: |
@@ -173,3 +149,21 @@ tasks:
         vars: { CLI_ARGS: 'lint --write --unsafe' }
       - task: biome
         vars: { CLI_ARGS: 'check --write --unsafe' }
+
+  # Testing:
+
+  test:
+    desc: 'Run the test suite once with a coverage report.'
+    aliases:
+      - t:c
+    cmds:
+      - task: vitest
+        vars: { CLI_ARGS: 'run --coverage {{.CLI_ARGS}}' }
+
+  test:watch:
+    desc: 'Run the test suite in watch mode.'
+    aliases:
+      - t:w
+    cmds:
+      - task: vitest
+        vars: { CLI_ARGS: 'watch {{.CLI_ARGS}}' }

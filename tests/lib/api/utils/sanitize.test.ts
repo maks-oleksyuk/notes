@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { cleanMetadata } from '@/lib/api/utils/sanitize';
 
 describe('cleanMetadata', () => {

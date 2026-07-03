@@ -4,7 +4,9 @@
 // "HttpClient is not a constructor" at module-load time (review.md A4; caught
 // live by tests/lib/api/clients/backend.test.ts).
 import { HttpClient } from '@/lib/api/core';
-import { auth, type TokenProvider } from '@/lib/api/plugins';
+import { auth } from '@/lib/api/plugins';
+
+import type { TokenProvider } from '@/lib/api/plugins';
 
 // api_old parity: a static bearer token from env, no refresh endpoint — matches
 // the old client's `auth: { type: 'bearer', token: env.NEXT_PUBLIC_API_TOKEN }`.

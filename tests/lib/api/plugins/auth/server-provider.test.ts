@@ -4,8 +4,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 // Mock it with an in-memory jar so the provider's logic can run in isolation.
 const store = new Map<string, string>();
 const jar = {
-  get: (name: string) =>
-    store.has(name) ? { value: store.get(name)! } : undefined,
+  get: (name: string) => {
+    const value = store.get(name);
+    return value === undefined ? undefined : { value };
+  },
   set: (name: string, value: string) => {
     store.set(name, value);
   },

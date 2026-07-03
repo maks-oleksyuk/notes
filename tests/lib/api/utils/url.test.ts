@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { buildUrl } from '@/lib/api/utils/url';
 
 describe('buildUrl', () => {

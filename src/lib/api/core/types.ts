@@ -171,16 +171,16 @@ export interface ApiPlugin {
   name: string;
   onRequest?: (options: ApiRequestOptions) => void | Promise<void>;
   onResponse?: (
-    response: ApiResponse<any>,
+    response: ApiResponse<unknown>,
     options: ApiRequestOptions,
   ) => void | Promise<void>;
   onError?: (
     error: Error,
     context: {
       options: ApiRequestOptions;
-      retry: () => Promise<ApiResponse<any>>;
+      retry: () => Promise<ApiResponse<unknown>>;
     },
-  ) => undefined | Promise<any>;
+  ) => undefined | Promise<unknown>;
   /** Notified before a transient error is retried by the core loop. */
   onRetry?: (info: RetryInfo) => void | Promise<void>;
   /** Notified when a request fails for good (no recovery, no retries left). */

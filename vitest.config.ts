@@ -1,4 +1,5 @@
 import path from 'node:path';
+
 import { defineConfig } from 'vitest/config';
 
 // Mirrors tsconfig.json's "@/*" -> "./src/*" path alias, since vitest resolves

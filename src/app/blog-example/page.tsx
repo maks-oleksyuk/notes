@@ -1,7 +1,10 @@
 import { redirect } from 'next/navigation';
-import type { Post } from '@/lib/api/clients/blog';
+
 import { getPosts, getUser } from '@/lib/api/clients/blog';
+
 import { Pagination } from './pagination';
+
+import type { Post } from '@/lib/api/clients/blog';
 
 const POSTS_PER_PAGE = 5;
 
