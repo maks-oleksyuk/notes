@@ -121,8 +121,65 @@ describe('logger plugin', () => {
 
     expect(custom.error).toHaveBeenCalledTimes(1);
     const [msg, err] = custom.error.mock.calls[0];
+    // Header carries the message; the Error is still passed for custom sinks.
     expect(msg).toContain('dead');
+    expect(msg).toContain('/x');
     expect(err).toBeInstanceOf(Error);
+  });
+
+  it('skips onFinalError for an AbortError (caller-cancelled, not a failure)', () => {
+    const custom = fakeLogger();
+    const plugin = logger({ level: 'error', logger: custom });
+
+    const aborted = new DOMException('signal is aborted', 'AbortError');
+    plugin.onFinalError?.(aborted, options());
+
+    expect(custom.error).not.toHaveBeenCalled();
+  });
+
+  it('logs a muted cancelled line for an AbortError at info level (not an error)', () => {
+    const custom = fakeLogger();
+    const plugin = logger({ level: 'info', logger: custom });
+
+    const aborted = new DOMException('signal is aborted', 'AbortError');
+    plugin.onFinalError?.(aborted, options());
+
+    expect(custom.error).not.toHaveBeenCalled();
+    expect(custom.info).toHaveBeenCalledTimes(1);
+    expect(custom.info.mock.calls[0][0]).toContain('cancelled');
+  });
+
+  it('default console logger renders errors red via console.error in the browser', () => {
+    vi.stubGlobal('window', {});
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const plugin = logger({ level: 'error' }); // default console logger
+
+    const err = new Error('dead');
+    plugin.onFinalError?.(err, options());
+
+    // Red line = header (with message + %c styles) + cleaned metadata. The Error
+    // object itself is NOT printed (its stack is always transport plumbing, not
+    // the cause), so there's no `at …` noise.
+    const args = errorSpy.mock.calls[0];
+    expect(args[0]).toContain('%c');
+    expect(args[0]).toContain('dead');
+    expect(args).not.toContain(err);
+    expect(args.at(-1)).toMatchObject({ method: 'GET', path: '/x' });
+    vi.restoreAllMocks();
+  });
+
+  it('default console logger errors on the server without %c styling', () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const plugin = logger({ level: 'error' }); // no window → server branch
+
+    const err = new Error('dead');
+    plugin.onFinalError?.(err, options());
+
+    const args = errorSpy.mock.calls[0];
+    expect(args[0]).not.toContain('%c');
+    expect(args[0]).toContain('dead');
+    expect(args).not.toContain(err);
+    vi.restoreAllMocks();
   });
 
   it('respects level filtering: silent suppresses everything', () => {
@@ -207,7 +264,7 @@ describe('logger plugin', () => {
     const custom = fakeLogger();
     const plugin = logger({ logger: custom }); // no explicit level
 
-    plugin.onRequest?.(options()); // info-level, should be suppressed in prod default
+    plugin.onRequest?.(options()); // info-level should be suppressed in prod default
 
     expect(custom.info).not.toHaveBeenCalled();
   });

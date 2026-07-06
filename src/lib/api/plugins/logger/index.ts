@@ -18,10 +18,13 @@ export interface ApiLogger {
   log: (message: string, metadata?: Record<string, unknown>) => void;
   info?: (message: string, metadata?: Record<string, unknown>) => void;
   warn?: (message: string, metadata?: Record<string, unknown>) => void;
+  // `error` and `metadata` are required (not optional): the plugin's only caller
+  // — `onFinalError` — always supplies both, so keeping them non-optional means
+  // no dead "arg missing" branches to ignore-or-untest in the default sink.
   error: (
     message: string,
-    error?: Error,
-    metadata?: Record<string, unknown>,
+    error: Error,
+    metadata: Record<string, unknown>,
   ) => void;
 }
 
@@ -79,49 +82,28 @@ export function logger({
     }
   }
 
+  // Only `log` and `error` — the two the plugin actually drives (`logFn` resolves
+  // to `log`; `onFinalError` calls `error`). No `info`/`warn` stubs that would
+  // never run through this plugin and only exist to be coverage-ignored.
   const defaultConsoleLogger: ApiLogger = {
-    // `logFn` below always resolves to `.info` (defined right after this object,
-    // and always present here) — `.log` exists only to satisfy `ApiLogger`'s
-    // required field, never actually called by this plugin.
-    /* v8 ignore next */
     log: (msg, meta) => print('log', msg, meta),
-    info: (msg, meta) => print('log', msg, meta),
-    // Not called by this plugin's own hooks (only `onFinalError` -> `.error`
-    // exists below) — implemented anyway so the default logger fully satisfies
-    // `ApiLogger` for anyone who grabs it indirectly.
-    /* v8 ignore next */
-    warn: (msg, meta) => print('warn', msg, meta),
-    // `err`/`meta` optionality below exists for `ApiLogger`'s general contract —
-    // this plugin's sole caller (`onFinalError`) always supplies both, so those
-    // branches are unreachable through this module alone. Real for anyone using
-    // this default logger directly with `.error(msg)` only.
-    error: (msg, err, meta) => {
-      /* v8 ignore next */
-      const cleanMeta = meta ? cleanMetadata(meta) : undefined;
-      /* v8 ignore next */
-      const hasMeta = cleanMeta && Object.keys(cleanMeta).length > 0;
-
-      if (isBrowser) {
-        console.groupCollapsed(...toConsoleArgs(msg));
-        /* v8 ignore next */
-        if (err) console.error(err);
-        /* v8 ignore next */
-        if (hasMeta) console.dir(cleanMeta, { depth: null });
-        console.groupEnd();
-      } else {
-        console.error(
-          msg,
-          /* v8 ignore next */
-          ...(err ? [err] : []),
-          /* v8 ignore next */
-          ...(hasMeta ? [cleanMeta] : []),
-        );
-      }
+    // `_err` is intentionally not printed — the header already carries the
+    // message, and the Error's stack is always the same transport plumbing, not
+    // the cause. Only the cleaned metadata rides along as an expandable arg.
+    // (Custom sinks still receive the Error via `activeLogger.error` and can log
+    // its stack themselves.)
+    error: (msg, _err, meta) => {
+      const cleanMeta = cleanMetadata(meta);
+      // `console.error` (not `groupCollapsed`) so the line renders red with
+      // devtools' error styling/icon — a `groupCollapsed` header prints as a
+      // plain log line, which reads as "just a log" for real failures.
+      if (isBrowser) console.error(...toConsoleArgs(msg), cleanMeta);
+      else console.error(msg, cleanMeta);
     },
   };
 
   const activeLogger = customLogger || defaultConsoleLogger;
-  const logFn = activeLogger.info || activeLogger.log;
+  const logFn = activeLogger.info ?? activeLogger.log;
 
   // Custom loggers get plain text (they format/ship structured logs themselves);
   // the default console logger gets colors when the sink can render them — a
@@ -205,19 +187,42 @@ export function logger({
     },
 
     onFinalError(error, options) {
-      if (!allow('error')) return;
-
       const method = options.method || 'GET';
       const path = options.path || '/';
+
+      // An aborted request is a caller-initiated cancellation, not a failure —
+      // TanStack Query aborts the in-flight query when its component unmounts or
+      // re-renders (React 19 Strict Mode double-invokes effects in dev, so the
+      // first request is routinely canceled and a second one succeeds). Don't
+      // red-flag it as an error, but still close the request's lifecycle with a
+      // muted line at info level — otherwise its `-->` line has no matching
+      // terminus and looks like it silently vanished.
+      if (error.name === 'AbortError') {
+        if (!allow('info')) return;
+        const marker = paint('✕', 'gray', useColors);
+        const label = paint('cancelled', 'gray', useColors);
+        logFn(
+          `${prefix}${tag(options.requestId)}${marker} ${colorizeMethod(method, useColors)} ${path} — ${label}`,
+        );
+        return;
+      }
+
+      if (!allow('error')) return;
+
       const metadata = cleanMetadata({
         path,
         method,
         params: options.params,
       });
 
+      // Header carries the message (where + why in one red line). The `error`
+      // object is still passed for custom sinks (Sentry etc. want the stack),
+      // but the default console sink deliberately doesn't print it — its stack
+      // is always the same transport plumbing (`validation` -> `attempt` ->
+      // `executeWithRetries`), never the real cause, so it's pure noise.
       const label = paint('Error', 'red', useColors);
       activeLogger.error(
-        `${prefix}${tag(options.requestId)}${label} ${colorizeMethod(method, useColors)} ${path} - ${error.message}`,
+        `${prefix}${tag(options.requestId)}${label} ${colorizeMethod(method, useColors)} ${path} — ${error.message}`,
         error,
         metadata,
       );

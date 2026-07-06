@@ -52,5 +52,33 @@ describe('validation plugin', () => {
     const err = caught as ValidationError;
     expect(err.details.url).toBe('https://api.test/posts/1');
     expect(err.details.errors.length).toBeGreaterThan(0);
+    // The message names the failing field, so a log line is actionable, not just
+    // "Response validation failed".
+    expect(err.message).toContain('id');
+    expect(err.message).toContain('Response validation failed');
+  });
+
+  it('flattens union issues so the message names real fields, not "invalid union"', () => {
+    // Same shape as the admin locations schema: bare array OR { data: [...] }.
+    const unionSchema = z.union([
+      z.array(z.object({ id: z.number() })),
+      z.object({ data: z.array(z.object({ id: z.number() })) }),
+    ]);
+    const plugin = validation();
+    // A wrong shape (object without `data`, not an array) fails both arms.
+    const res = response({ nope: true });
+
+    let caught: unknown;
+    try {
+      plugin.onResponse?.(res, { schema: unionSchema });
+    } catch (err) {
+      caught = err;
+    }
+
+    const err = caught as ValidationError;
+    expect(err).toBeInstanceOf(ValidationError);
+    // Not a bare top-level "invalid union" — the nested arm issues are surfaced.
+    expect(err.message.toLowerCase()).not.toContain('invalid union');
+    expect(err.message).toContain(':');
   });
 });
