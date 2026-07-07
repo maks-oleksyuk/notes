@@ -79,6 +79,19 @@ export interface ApiRequestOptions
   authRetried?: boolean;
 
   /**
+   * Set by the `auth` plugin's `onError` to the token `provider.refreshToken()`
+   * just returned, so the replay's `onRequest` uses *that* value directly
+   * instead of calling `provider.getToken()` again. Necessary because
+   * `getToken()` isn't guaranteed to observe a refresh that just happened in
+   * the same call chain — e.g. a provider backed by a request-scoped
+   * `headers()` snapshot (Next.js) can't see a cookie the refresh just wrote
+   * into the response, so a naive re-read would return the *pre-refresh*
+   * token and the replay would fail with the same 401 forever. Typed field,
+   * not `(options as any)`.
+   */
+  refreshedToken?: string;
+
+  /**
    * Retry policy for transient failures. Omit or set `false` to disable.
    * Retries live in the core request loop, not in a plugin.
    */
@@ -126,6 +139,18 @@ export interface ApiRequestOptions
     revalidate?: number | false;
     tags?: string[];
   };
+
+  /**
+   * Whether to send the auto-generated `X-Request-Id` correlation header
+   * (default: `true`). Next.js's fetch Data Cache keys a cached response on
+   * the full request — URL *and* headers included — so a header that's a
+   * fresh random value on every call (which `X-Request-Id` always is, see
+   * `requestId` above) makes every request look unique to Next and
+   * permanently defeats `next.revalidate`, no matter its value. Set `false`
+   * on a client whose reads should be cacheable; the backend then simply
+   * won't see a correlation id on those specific calls.
+   */
+  sendRequestIdHeader?: boolean;
 
   /**
    * Hooks (Interceptors) - simple version

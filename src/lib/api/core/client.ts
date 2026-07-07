@@ -256,7 +256,9 @@ export class HttpClient {
     const headers = buildHeaders(
       mergedOptions.headers,
       mergedOptions.body,
-      mergedOptions.requestId,
+      mergedOptions.sendRequestIdHeader === false
+        ? undefined
+        : mergedOptions.requestId,
     );
     const body = buildBody(mergedOptions.body);
 

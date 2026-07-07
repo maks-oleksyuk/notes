@@ -1,5 +1,6 @@
 import { cleanMetadata } from '@/lib/api/utils/sanitize';
 
+import { ApiError } from '../../core/errors';
 import {
   ansiToConsoleFormat,
   colorizeMethod,
@@ -209,10 +210,19 @@ export function logger({
 
       if (!allow('error')) return;
 
+      // `ApiError.data` is the server's actual response body (e.g. a Laravel
+      // 422's `{message, errors: {field: [msg,...]}}`) — without it, a
+      // validation failure only ever showed as "HTTP Error 422", no way to
+      // tell which field or why without re-triggering the request under a
+      // debugger. `status` rides along too, redundant with the header text
+      // but useful for log filtering/aggregation.
       const metadata = cleanMetadata({
         path,
         method,
         params: options.params,
+        ...(error instanceof ApiError
+          ? { status: error.status, data: error.data }
+          : {}),
       });
 
       // Header carries the message (where + why in one red line). The `error`

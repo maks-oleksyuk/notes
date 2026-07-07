@@ -37,7 +37,11 @@ export function auth(provider: TokenProvider): ApiPlugin {
     name: 'auth',
 
     async onRequest(options) {
-      const token = await provider.getToken();
+      // Prefer a token a just-completed refresh (this same call chain) handed
+      // us directly over calling `provider.getToken()` again — see
+      // `refreshedToken`'s doc in `core/types.ts` for why re-reading isn't
+      // reliable here.
+      const token = options.refreshedToken ?? (await provider.getToken());
       if (!token) return;
       // `options.headers` is already a plain Record<string, string> by the time
       // onRequest hooks run — `mergeOptions` normalizes it before the attempt loop.
@@ -79,8 +83,9 @@ export function auth(provider: TokenProvider): ApiPlugin {
 
       // Refresh failing is reported the same way and propagates as the final
       // error (thrown here, caught by the core's plugin loop as `finalError`).
+      let newToken: string;
       try {
-        await singleFlightRefresh(refreshToken);
+        newToken = await singleFlightRefresh(refreshToken);
       } catch (refreshError) {
         try {
           await provider.onAuthFailure?.(refreshError as Error);
@@ -91,6 +96,7 @@ export function auth(provider: TokenProvider): ApiPlugin {
       }
 
       context.options.authRetried = true;
+      context.options.refreshedToken = newToken;
       return context.retry();
     },
   };

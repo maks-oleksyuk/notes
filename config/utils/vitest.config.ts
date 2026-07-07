@@ -58,6 +58,10 @@ export default defineConfig({
         'src/lib/api/core/types.ts',
         'src/lib/api/plugins/auth/types.ts',
         'src/lib/api/clients/*/*/types.ts',
+        // Real-backend integration client — no unit tests against it (would
+        // require the live Evexia backend), so it's excluded from coverage
+        // entirely rather than dragging the ratio down.
+        'src/lib/api/clients/evexia/**',
       ],
     },
   },

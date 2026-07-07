@@ -310,6 +310,28 @@ describe('HttpClient', () => {
       expect(seenIds[0]).toBeDefined();
       expect(seenIds[0]).toBe(seenIds[1]);
     });
+
+    it('sends X-Request-Id by default', async () => {
+      fetchMock.mockResolvedValueOnce(jsonResponse({ ok: true }));
+      const client = new HttpClient('https://api.test');
+
+      await client.get('/x');
+
+      const headers = fetchMock.mock.calls[0][1].headers as Headers;
+      expect(headers.get('X-Request-Id')).toBeTruthy();
+    });
+
+    it('omits X-Request-Id when sendRequestIdHeader is false (Next fetch cache needs a stable header set)', async () => {
+      fetchMock.mockResolvedValueOnce(jsonResponse({ ok: true }));
+      const client = new HttpClient('https://api.test', {
+        sendRequestIdHeader: false,
+      });
+
+      await client.get('/x');
+
+      const headers = fetchMock.mock.calls[0][1].headers as Headers;
+      expect(headers.has('X-Request-Id')).toBe(false);
+    });
   });
 
   describe('timeout', () => {

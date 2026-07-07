@@ -78,6 +78,33 @@ describe('auth plugin', () => {
     expect(replayHeaders.get('Authorization')).toBe('Bearer fresh-token');
   });
 
+  it('replays with the refreshed token even when getToken() itself cannot observe the refresh', async () => {
+    // Reproduces a live bug: a provider backed by an immutable request
+    // snapshot (e.g. Next.js `headers()`) can't see a cookie its own
+    // `refreshToken()` just wrote — a naive replay that calls `getToken()`
+    // again gets the *stale* token and 401s forever. `getToken` here always
+    // returns 'stale-token', no matter what `refreshToken()` just did —
+    // proving the replay must use the *returned* token, not re-ask the
+    // provider for it.
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse({}, 401))
+      .mockResolvedValueOnce(jsonResponse({ ok: true }));
+    const provider: TokenProvider = {
+      getToken: () => 'stale-token',
+      refreshToken: async () => 'fresh-token',
+      onAuthFailure: vi.fn(),
+    };
+    const client = new HttpClient('https://api.test', {
+      plugins: [auth(provider)],
+    });
+
+    const res = await client.get('/me');
+
+    expect(res.data).toEqual({ ok: true });
+    const replayHeaders = fetchMock.mock.calls[1][1].headers as Headers;
+    expect(replayHeaders.get('Authorization')).toBe('Bearer fresh-token');
+  });
+
   it('single-flight: N parallel 401s collapse into exactly one real refresh call', async () => {
     let resolveRefresh!: (token: string) => void;
     const refreshImpl = vi.fn(

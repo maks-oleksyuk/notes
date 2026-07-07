@@ -127,6 +127,42 @@ describe('logger plugin', () => {
     expect(err).toBeInstanceOf(Error);
   });
 
+  it('includes status/data in the metadata when the error is an ApiError (e.g. a 422 validation body)', async () => {
+    const { ApiError } = await import('@/lib/api/core/errors');
+    const custom = fakeLogger();
+    const plugin = logger({ level: 'error', logger: custom });
+
+    const err = new ApiError('HTTP Error 422: Unprocessable Content', {
+      status: 422,
+      statusText: 'Unprocessable Content',
+      url: 'https://api.test/bug-reports',
+      method: 'POST',
+      data: {
+        message: 'The title field must be at least 5 characters.',
+        errors: { title: ['The title field must be at least 5 characters.'] },
+      },
+    });
+
+    plugin.onFinalError?.(err, options());
+
+    const meta = custom.error.mock.calls[0][2];
+    expect(meta.status).toBe(422);
+    expect(meta.data).toMatchObject({
+      errors: { title: ['The title field must be at least 5 characters.'] },
+    });
+  });
+
+  it('does not add status/data metadata for a plain (non-ApiError) failure', () => {
+    const custom = fakeLogger();
+    const plugin = logger({ level: 'error', logger: custom });
+
+    plugin.onFinalError?.(new Error('network down'), options());
+
+    const meta = custom.error.mock.calls[0][2];
+    expect(meta).not.toHaveProperty('status');
+    expect(meta).not.toHaveProperty('data');
+  });
+
   it('skips onFinalError for an AbortError (caller-cancelled, not a failure)', () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'error', logger: custom });

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import { ValidationError } from '@/lib/api/core/errors';
-import { validation } from '@/lib/api/plugins/validation';
+import { summarizeIssues, validation } from '@/lib/api/plugins/validation';
 
 import type { ApiResponse } from '@/lib/api/core/types';
 
@@ -80,5 +80,32 @@ describe('validation plugin', () => {
     // Not a bare top-level "invalid union" — the nested arm issues are surfaced.
     expect(err.message.toLowerCase()).not.toContain('invalid union');
     expect(err.message).toContain(':');
+  });
+
+  it('summarizeIssues dedupes identical path+reason lines', () => {
+    const issue = {
+      code: 'custom',
+      path: ['id'],
+      message: 'Invalid input: expected number, received string',
+    } as never;
+
+    const summary = summarizeIssues([issue, issue]);
+
+    expect(summary).toContain('1 issue:');
+    expect(summary.match(/id: expected/g)).toHaveLength(1);
+  });
+
+  it('summarizeIssues truncates past MAX_ISSUES and reports the remainder', () => {
+    const issues = Array.from({ length: 7 }, (_, i) => ({
+      code: 'custom',
+      path: [`field${i}`],
+      message: 'Invalid input: bad value',
+    })) as never;
+
+    const summary = summarizeIssues(issues);
+
+    expect(summary).toContain('7 issues:');
+    expect(summary).toContain('…and 2 more');
+    expect(summary.match(/field\d: bad value/g)).toHaveLength(5);
   });
 });
