@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.3/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -71,11 +71,12 @@
   "linter": {
     "domains": {
       "next": "recommended",
-      "react": "recommended"
+      "react": "recommended",
+      "test": "recommended"
     },
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "style": {
         "useImportType": {
           "level": "error",

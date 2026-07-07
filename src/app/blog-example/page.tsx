@@ -1,13 +1,13 @@
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { redirect } from 'next/navigation';
 
-import { blogQueries } from '@/lib/api/clients/blog';
-import { makeQueryClient } from '@/lib/api/query-client';
+import { blogQueries } from '@/lib/api/blog';
+import { makeQueryClient } from '@/lib/http-client/query-client';
 
 import { Pagination } from './pagination';
 import { PostsList } from './posts-list';
 
-import type { BlogPageData } from '@/lib/api/clients/blog';
+import type { BlogPageData } from '@/lib/api/blog';
 
 interface PageProps {
   searchParams: Promise<{ page?: string }>;

@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-import { blogQueries } from '@/lib/api/clients/blog';
+import { blogQueries } from '@/lib/api/blog';
 
 interface PostsListProps {
   page: number;

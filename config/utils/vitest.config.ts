@@ -41,27 +41,26 @@ export default defineConfig({
       // Coverage only makes sense for code that has (or should have) tests —
       // scoped to the API client for now, not the whole `src/` tree (pages,
       // routes, etc. aren't under test yet).
-      include: ['src/lib/api/**/*.ts'],
+      include: ['src/lib/http-client/**/*.ts', 'src/lib/api/**/*.ts'],
       // Only the pure re-export barrels — NOT `plugins/auth/index.ts` or
       // `plugins/logger/index.ts`, which are real implementations that happen
       // to be named index.ts, not barrels.
       exclude: [
+        'src/lib/http-client/core/index.ts',
+        'src/lib/http-client/utils/index.ts',
+        'src/lib/http-client/plugins/index.ts',
         'src/lib/api/index.ts',
-        'src/lib/api/core/index.ts',
-        'src/lib/api/utils/index.ts',
-        'src/lib/api/plugins/index.ts',
-        'src/lib/api/clients/index.ts',
-        'src/lib/api/clients/*/index.ts',
+        'src/lib/api/*/index.ts',
         // Entity barrels nested one level deeper, e.g. clients/blog/posts/index.ts.
-        'src/lib/api/clients/*/*/index.ts',
+        'src/lib/api/*/*/index.ts',
         // Pure type/interface declarations — no runtime statements to cover.
-        'src/lib/api/core/types.ts',
-        'src/lib/api/plugins/auth/types.ts',
-        'src/lib/api/clients/*/*/types.ts',
+        'src/lib/http-client/core/types.ts',
+        'src/lib/http-client/plugins/auth/types.ts',
+        'src/lib/api/*/*/types.ts',
         // Real-backend integration client — no unit tests against it (would
         // require the live Evexia backend), so it's excluded from coverage
         // entirely rather than dragging the ratio down.
-        'src/lib/api/clients/evexia/**',
+        'src/lib/api/evexia/**',
       ],
     },
   },
