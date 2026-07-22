@@ -46,7 +46,6 @@ return RectorConfig::configure()
     )
     ->withImportNames(
         importShortClasses: false,
-        removeUnusedImports: true,
     )
     ->withPHPStanConfigs([__DIR__.'/phpstan.neon'])
     ->withSymfonyContainerXml(__DIR__.'/../../var/cache/dev/App_KernelDevDebugContainer.xml')

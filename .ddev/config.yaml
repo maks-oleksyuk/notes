@@ -6,7 +6,7 @@ database:
   version: '11.8'
 php_version: '8.5'
 host_db_port: '54374'
-nodejs_version: '24'
+nodejs_version: '26'
 webserver_type: nginx-fpm
 xdebug_enabled: false
 corepack_enable: true

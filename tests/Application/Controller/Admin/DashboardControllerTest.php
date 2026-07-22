@@ -87,7 +87,6 @@ final class DashboardControllerTest extends WebTestCase
 
         $this->assertNotEmpty($menuItems);
 
-        /** @var MenuItemDto $dto */
         $dto = $menuItems[0]->getAsDto();
         $this->assertSame(MenuItemDto::TYPE_DASHBOARD, $dto->getType());
         $this->assertSame('Dashboard', $dto->getLabel());

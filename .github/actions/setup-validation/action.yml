@@ -10,7 +10,7 @@ inputs:
   node:
     description: 'Node.js version to install'
     required: true
-    default: '24.x'
+    default: '26.x'
 
   use-php:
     description: 'Whether to install PHP and dependencies'
@@ -31,7 +31,7 @@ runs:
 
     - name: '🐘 Setup PHP ${{ inputs.php }}'
       if: ${{ inputs.use-php == 'true' }}
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
       with:
         php-version: ${{ inputs.php }}
         coverage: none
@@ -45,7 +45,7 @@ runs:
 
     - name: '💽 Cache composer dependencies'
       if: ${{ inputs.use-php == 'true' }}
-      uses: actions/cache@v5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
         key: "${{ runner.os }}-${{ github.ref_name }}-composer-${{ hashFiles('**/composer.lock') }}"
@@ -55,7 +55,7 @@ runs:
           ${{ runner.os }}-symfony-composer
 
     - name: '💽 Cache var directory'
-      uses: actions/cache@v5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: var/cache
         key: "${{ runner.os }}-${{ github.ref_name }}-var"
@@ -71,11 +71,11 @@ runs:
 
     - name: '🟧 Setup pnpm'
       if: ${{ inputs.use-node == 'true' }}
-      uses: pnpm/action-setup@v5
+      uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
 
     - name: '❇️ Setup Node.js ${{ inputs.node }}'
       if: ${{ inputs.use-node == 'true' }}
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
       with:
         cache: pnpm
         node-version: ${{ inputs.node }}

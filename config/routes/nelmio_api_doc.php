@@ -10,6 +10,6 @@ return Routes::config([
     'app.swagger_ui' => [
         'path' => '/api/docs',
         'methods' => [Request::METHOD_GET],
-        'controller' => 'nelmio_api_doc.controller.swagger_ui',
+        'controller' => 'nelmio_api_doc.controller.scalar',
     ],
 ]);

@@ -15,7 +15,7 @@ final class SecurityControllerTest extends TestCase
     public function testLogoutMethodThrowsLogicException(): void
     {
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('This method can be blank - it will be intercepted by the logout key on your firewall.');
+        $this->expectExceptionMessageIsOrContains('This method can be blank - it will be intercepted by the logout key on your firewall.');
 
         $authenticationUtilsMock = $this->createStub(AuthenticationUtils::class);
         $controller = new SecurityController($authenticationUtilsMock);
