@@ -12,6 +12,7 @@ const getBrowserLogging: () => boolean | 'warn' | 'error' = ():
 };
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   reactCompiler: true,
   allowedDevOrigins: ['*.ddev.site'],
   logging: {

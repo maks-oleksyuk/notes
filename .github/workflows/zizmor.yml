@@ -5,12 +5,14 @@ on:
     branches:
       - next-js
     paths:
-      - '.github/**'
+      - '.github/actions/**'
+      - '.github/workflows/**'
   pull_request:
     branches:
       - next-js
     paths:
-      - '.github/**'
+      - '.github/actions/**'
+      - '.github/workflows/**'
 
   workflow_dispatch:
 
