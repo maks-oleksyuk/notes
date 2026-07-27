@@ -56,6 +56,18 @@ describe('parseResponseData', () => {
     expect(data).toBe(res.body);
   });
 
+  it('rethrows AbortError as-is instead of wrapping it in ParseError', async () => {
+    const res = new Response('{"partial":', { status: 200 });
+    res.json = () =>
+      Promise.reject(
+        new DOMException('The user aborted a request.', 'AbortError'),
+      );
+
+    await expect(parseResponseData(res, 'json')).rejects.toMatchObject({
+      name: 'AbortError',
+    });
+  });
+
   it('falls back to a generic reason when .json() rejects with a non-Error', async () => {
     // A real fetch Response only ever rejects .json() with a SyntaxError
     // (instanceof Error) — this exercises the defensive fallback for the

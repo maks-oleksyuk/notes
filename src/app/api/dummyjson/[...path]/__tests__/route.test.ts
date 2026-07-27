@@ -30,6 +30,7 @@ describe('dummyjson proxy route', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.useRealTimers();
   });
 
   it('forwards query params and relays a 200 JSON response', async () => {
@@ -134,14 +135,17 @@ describe('dummyjson proxy route', () => {
   });
 
   it('maps a timed-out upstream call to 504', async () => {
-    fetchMock.mockRejectedValueOnce(
+    vi.useFakeTimers();
+    fetchMock.mockRejectedValue(
       Object.assign(new Error('timeout'), { name: 'TimeoutError' }),
     );
 
     const { req: request, params } = req(
       'http://localhost/api/dummyjson/products',
     );
-    const res = await GET(request, { params });
+    const resPromise = GET(request, { params });
+    await vi.runAllTimersAsync();
+    const res = await resPromise;
 
     expect(res.status).toBe(504);
   });

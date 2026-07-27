@@ -91,6 +91,38 @@ describe('logger plugin', () => {
     expect(custom.info.mock.calls[0][1]).toBeDefined();
   });
 
+  it('tags a sub-threshold onResponse as a likely cache hit, without hiding it', () => {
+    const custom = fakeLogger();
+    const plugin = logger({ level: 'info', logger: custom });
+
+    plugin.onResponse?.(response({ duration: 2 }), options());
+
+    expect(custom.info).toHaveBeenCalledTimes(1);
+    expect(custom.info.mock.calls[0][0]).toContain('(cache?)');
+  });
+
+  it('does not tag an onResponse above the cache-hit threshold', () => {
+    const custom = fakeLogger();
+    const plugin = logger({ level: 'info', logger: custom });
+
+    plugin.onResponse?.(response({ duration: 12 }), options());
+
+    expect(custom.info.mock.calls[0][0]).not.toContain('(cache?)');
+  });
+
+  it('respects a custom cacheHitThresholdMs', () => {
+    const custom = fakeLogger();
+    const plugin = logger({
+      level: 'info',
+      logger: custom,
+      cacheHitThresholdMs: 0,
+    });
+
+    plugin.onResponse?.(response({ duration: 2 }), options());
+
+    expect(custom.info.mock.calls[0][0]).not.toContain('(cache?)');
+  });
+
   it('logs onRetry with attempt/limit/wait, including the Retry-After marker', () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'info', logger: custom });

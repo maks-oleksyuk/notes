@@ -20,6 +20,7 @@ import type { ApiRequestOptions } from '@/lib/http-client/core';
  */
 export const dummyJsonApi = new HttpClient(getDummyJsonBaseUrl(), {
   timeout: 10_000,
+  retry: { limit: 3 },
   plugins: [
     logger({ level: 'info', prefix: 'dummyjson' }),
     auth(dummyJsonTokenProvider),

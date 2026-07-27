@@ -33,12 +33,15 @@ export interface LoggerOptions {
   level?: LogLevel;
   logger?: ApiLogger;
   prefix?: string;
+  // Responses at/under this duration are demoted to `debug` (likely cache hits).
+  cacheHitThresholdMs?: number;
 }
 
 export function logger({
   level: rawLevel,
   logger: customLogger,
   prefix: rawPrefix = '',
+  cacheHitThresholdMs = 10,
 }: LoggerOptions = {}): ApiPlugin {
   const prefix = rawPrefix ? `${rawPrefix} ` : '';
 
@@ -158,7 +161,16 @@ export function logger({
 
       const arrow = paint('<--', 'gray', useColors);
       const status = colorizeStatus(response.status, useColors);
-      const timing = paint(`in ${response.duration}ms`, 'gray', useColors);
+      // Below the threshold reads as a Next Data Cache hit (in-process, no network) rather
+      // than a real round-trip — tagged, not hidden, so the request line above it isn't left
+      // dangling with no terminus.
+      const cacheTag =
+        response.duration <= cacheHitThresholdMs ? ' (cache?)' : '';
+      const timing = paint(
+        `in ${response.duration}ms${cacheTag}`,
+        'gray',
+        useColors,
+      );
       logFn(
         `${prefix}${tag(options.requestId)}${arrow} ${colorizeMethod(method, useColors)} ${path} ${status} ${timing}`,
         metadata,
@@ -193,8 +205,8 @@ export function logger({
 
       // An aborted request is a caller-initiated cancellation, not a failure —
       // TanStack Query aborts the in-flight query when its component unmounts or
-      // re-renders (React 19 Strict Mode double-invokes effects in dev, so the
-      // first request is routinely canceled and a second one succeeds). Don't
+      // re-renders. (React 19 Strict Mode double-invokes effects in dev, so the
+      // first request is routinely canceled and a second one succeeds.) Don't
       // red-flag it as an error, but still close the request's lifecycle with a
       // muted line at info level — otherwise its `-->` line has no matching
       // terminus and looks like it silently vanished.

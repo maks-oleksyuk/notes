@@ -1,26 +1,14 @@
 @import '../../node_modules/tailwindcss';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* No background/color override here — Mantine owns `body`'s background and
+ * text color (`@mantine/core/styles.css`, scoped by `defaultColorScheme` in
+ * layout.tsx). A second, uncoordinated light/dark toggle here previously
+ * fought Mantine's own scheme and produced dark-on-dark text. */
 body {
   font-family: Arial, Helvetica, sans-serif;
-  color: var(--foreground);
-  background: var(--background);
 }

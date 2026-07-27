@@ -40,6 +40,11 @@ export async function parseResponseData<T>(
       try {
         return (await response.json()) as T;
       } catch (err) {
+        // A mid-stream abort rejects response.json() with 'AbortError', not a
+        // syntax error — rethrow as-is so callers see the cancel, not ParseError.
+        if (err instanceof Error && err.name === 'AbortError') {
+          throw err;
+        }
         throw new ParseError(
           response.url,
           err instanceof Error ? err.message : 'invalid JSON',

@@ -1,18 +1,38 @@
 'use client';
 
+import {
+  Alert,
+  Badge,
+  Button,
+  Container,
+  Group,
+  Paper,
+  PasswordInput,
+  ScrollArea,
+  Select,
+  Stack,
+  Table,
+  Text,
+  TextInput,
+  Title,
+} from '@mantine/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { getCurrentUser, login, logout } from '@/lib/api/dummyjson/auth';
-import { setDummyJsonTokens } from '@/lib/api/dummyjson/auth/token-provider';
-import { productsQueries } from '@/lib/api/dummyjson/products';
+import {
+  getCurrentUser,
+  login,
+  logout,
+  productsQueries,
+  setDummyJsonTokens,
+} from '@/lib/api/dummyjson';
 
 interface LogEntry {
   id: number;
   text: string;
 }
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 15;
 const meQueryKey = ['dummyjson-demo', 'me'] as const;
 
 export default function DummyJsonDemoPage() {
@@ -22,6 +42,7 @@ export default function DummyJsonDemoPage() {
   // demo below — the client itself never needs this outside token-provider.ts.
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [page, setPage] = useState(0);
+  const [sortBy, setSortBy] = useState<'title' | 'price'>('title');
   const [log, setLog] = useState<LogEntry[]>([]);
   const queryClient = useQueryClient();
 
@@ -108,138 +129,185 @@ export default function DummyJsonDemoPage() {
     loginMutation.mutate();
   }
 
+  const products = [...(productsQuery.data?.products ?? [])].sort((a, b) =>
+    sortBy === 'price' ? a.price - b.price : a.title.localeCompare(b.title),
+  );
+  const total = productsQuery.data?.total ?? 0;
+
   return (
-    <main className='max-w-2xl mx-auto p-8 space-y-8'>
-      <div>
-        <h1 className='text-3xl font-bold'>dummyjson.com — http-client demo</h1>
-        <p className='text-sm text-gray-500'>
-          A real, live backend — exercises the http-client library&apos;s `auth`
-          plugin (login, Bearer header, 401 → refresh → replay) through TanStack
-          Query&apos;s `useQuery`/`useMutation`, no mocks.
-        </p>
-      </div>
+    <Container py='xl' size='sm'>
+      <Stack gap='xl'>
+        <Stack gap={4}>
+          <Title order={1}>dummyjson.com — http-client demo</Title>
+          <Text c='dimmed' size='sm'>
+            A real, live backend — exercises the http-client library&apos;s
+            `auth` plugin (login, Bearer header, 401 → refresh → replay) through
+            TanStack Query&apos;s `useQuery`/`useMutation`, no mocks.
+          </Text>
+        </Stack>
 
-      <section className='space-y-4'>
-        <h2 className='text-xl font-semibold'>Auth</h2>
+        <Stack gap='sm'>
+          <Title order={2} size='h3'>
+            Auth
+          </Title>
 
-        {user ? (
-          <div className='space-y-3 border rounded p-4'>
-            <p className='text-sm'>
-              Signed in as <strong>{user.username}</strong> ({user.email})
-            </p>
-            <div className='flex flex-wrap gap-2'>
-              <button
-                className='border rounded px-3 py-1.5 text-sm disabled:opacity-50'
-                disabled={busy}
-                onClick={handleWhoAmI}
-                type='button'
-              >
-                GET /auth/me
-              </button>
-              <button
-                className='border rounded px-3 py-1.5 text-sm bg-amber-600 text-white disabled:opacity-50'
-                disabled={busy}
-                onClick={handleForceRefresh}
-                type='button'
-              >
-                Corrupt token &amp; refetch (live refresh)
-              </button>
-              <button
-                className='border rounded px-3 py-1.5 text-sm disabled:opacity-50'
-                disabled={busy}
-                onClick={handleLogout}
-                type='button'
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        ) : (
-          <form className='space-y-3 border rounded p-4' onSubmit={handleLogin}>
-            <div className='flex gap-3'>
-              <input
-                className='flex-1 border rounded px-3 py-2 text-sm'
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder='username'
-                required
-                type='text'
-                value={username}
-              />
-              <input
-                className='flex-1 border rounded px-3 py-2 text-sm'
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder='password'
-                required
-                type='password'
-                value={password}
-              />
-            </div>
-            <button
-              className='border rounded px-4 py-2 text-sm bg-blue-600 text-white disabled:opacity-50'
-              disabled={busy}
-              type='submit'
+          {user ? (
+            <Paper p='md' radius='md' withBorder>
+              <Stack gap='sm'>
+                <Text size='sm'>
+                  Signed in as{' '}
+                  <Text fw={700} span>
+                    {user.username}
+                  </Text>{' '}
+                  ({user.email})
+                </Text>
+                <Group gap='xs'>
+                  <Button
+                    disabled={busy}
+                    onClick={handleWhoAmI}
+                    size='xs'
+                    variant='default'
+                  >
+                    GET /auth/me
+                  </Button>
+                  <Button
+                    color='orange'
+                    disabled={busy}
+                    onClick={handleForceRefresh}
+                    size='xs'
+                  >
+                    Corrupt token &amp; refetch (live refresh)
+                  </Button>
+                  <Button
+                    disabled={busy}
+                    onClick={handleLogout}
+                    size='xs'
+                    variant='default'
+                  >
+                    Logout
+                  </Button>
+                </Group>
+              </Stack>
+            </Paper>
+          ) : (
+            <Paper
+              component='form'
+              onSubmit={handleLogin}
+              p='md'
+              radius='md'
+              withBorder
             >
-              {busy ? 'Signing in…' : 'Sign in'}
-            </button>
-          </form>
-        )}
-      </section>
+              <Stack gap='sm'>
+                <Group grow>
+                  <TextInput
+                    onChange={(e) => setUsername(e.currentTarget.value)}
+                    placeholder='username'
+                    required
+                    radius='xl'
+                    value={username}
+                  />
+                  <PasswordInput
+                    onChange={(e) => setPassword(e.currentTarget.value)}
+                    placeholder='password'
+                    radius='xl'
+                    required
+                    value={password}
+                  />
+                </Group>
+                <Button loading={busy} type='submit' radius='xl'>
+                  Sign in
+                </Button>
+              </Stack>
+            </Paper>
+          )}
+        </Stack>
 
-      <section className='space-y-4'>
-        <h2 className='text-xl font-semibold'>Products (public, no token)</h2>
-        <div className='flex gap-2'>
-          <button
-            className='border rounded px-3 py-1.5 text-sm disabled:opacity-50'
-            disabled={productsQuery.isFetching || page === 0}
-            onClick={() => setPage((p) => p - 1)}
-            type='button'
-          >
-            ← Prev
-          </button>
-          <button
-            className='border rounded px-3 py-1.5 text-sm disabled:opacity-50'
-            disabled={productsQuery.isFetching}
-            onClick={() => productsQuery.refetch()}
-            type='button'
-          >
-            Reload
-          </button>
-          <button
-            className='border rounded px-3 py-1.5 text-sm disabled:opacity-50'
-            disabled={
-              productsQuery.isFetching ||
-              (page + 1) * PAGE_SIZE >= (productsQuery.data?.total ?? 0)
-            }
-            onClick={() => setPage((p) => p + 1)}
-            type='button'
-          >
-            Next →
-          </button>
-        </div>
-        <ul className='divide-y border rounded'>
-          {(productsQuery.data?.products ?? []).map((product) => (
-            <li className='p-3 text-sm flex justify-between' key={product.id}>
-              <span>{product.title}</span>
-              <span className='text-gray-500'>${product.price}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+        <Stack gap='sm'>
+          <Title order={2} size='h3'>
+            Products (public, no token)
+          </Title>
+          <Group gap='xs'>
+            <Button
+              disabled={productsQuery.isFetching || page === 0}
+              onClick={() => setPage((p) => p - 1)}
+              size='xs'
+              variant='default'
+            >
+              ← Prev
+            </Button>
+            <Button
+              disabled={productsQuery.isFetching}
+              loading={productsQuery.isFetching}
+              onClick={() => productsQuery.refetch()}
+              size='xs'
+              variant='default'
+            >
+              Reload
+            </Button>
+            <Button
+              disabled={
+                productsQuery.isFetching || (page + 1) * PAGE_SIZE >= total
+              }
+              onClick={() => setPage((p) => p + 1)}
+              size='xs'
+              variant='default'
+            >
+              Next →
+            </Button>
+            <Badge color='gray' variant='light'>
+              {total} total
+            </Badge>
+            <Select
+              allowDeselect={false}
+              data={[
+                { value: 'title', label: 'Sort: Title' },
+                { value: 'price', label: 'Sort: Price' },
+              ]}
+              onChange={(value) =>
+                setSortBy((value as 'title' | 'price') ?? 'title')
+              }
+              size='xs'
+              value={sortBy}
+              w={140}
+            />
+          </Group>
+          <Paper radius='md' withBorder>
+            <Table highlightOnHover striped>
+              <Table.Tbody>
+                {products.map((product) => (
+                  <Table.Tr key={product.id}>
+                    <Table.Td>{product.title}</Table.Td>
+                    <Table.Td ta='right'>${product.price}</Table.Td>
+                  </Table.Tr>
+                ))}
+              </Table.Tbody>
+            </Table>
+          </Paper>
+        </Stack>
 
-      {error ? (
-        <p className='text-red-600 text-sm'>
-          {error instanceof Error ? error.message : 'Request failed'}
-        </p>
-      ) : null}
+        {error ? (
+          <Alert color='red' variant='light'>
+            {error instanceof Error ? error.message : 'Request failed'}
+          </Alert>
+        ) : null}
 
-      <section className='space-y-2'>
-        <h2 className='text-xl font-semibold'>Log</h2>
-        <ul className='text-xs text-gray-500 space-y-1 font-mono'>
-          {log.map((entry) => (
-            <li key={entry.id}>{entry.text}</li>
-          ))}
-        </ul>
-      </section>
-    </main>
+        <Stack gap='xs'>
+          <Title order={2} size='h3'>
+            Log
+          </Title>
+          <Paper p='sm' radius='md' withBorder>
+            <ScrollArea.Autosize mah={200}>
+              <Stack gap={4}>
+                {log.map((entry) => (
+                  <Text c='dimmed' ff='monospace' key={entry.id} size='xs'>
+                    {entry.text}
+                  </Text>
+                ))}
+              </Stack>
+            </ScrollArea.Autosize>
+          </Paper>
+        </Stack>
+      </Stack>
+    </Container>
   );
 }

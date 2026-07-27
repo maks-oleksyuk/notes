@@ -16,5 +16,6 @@ import { getDummyJsonBaseUrl } from './base-url';
  */
 export const dummyJsonServerApi = new HttpClient(getDummyJsonBaseUrl(), {
   timeout: 10_000,
+  retry: { limit: 3 },
   plugins: [logger({ level: 'info', prefix: 'dummyjson:server' })],
 });
