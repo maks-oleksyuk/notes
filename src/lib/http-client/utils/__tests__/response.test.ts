@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { ParseError } from '@/lib/http-client/core/errors';
-import {
-  parseErrorData,
-  parseResponseData,
-} from '@/lib/http-client/utils/response';
+import { parseErrorData, parseResponseData } from '@/lib/http-client/utils';
 
 describe('parseResponseData', () => {
   it('parses a well-formed JSON body', async () => {

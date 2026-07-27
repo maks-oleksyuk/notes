@@ -8,13 +8,6 @@ type ZodIssue = ZodError['issues'][number];
 // `ZodIssue` type, so widen locally to reach them.
 type UnionIssue = ZodIssue & { errors?: ZodIssue[][] };
 
-// Turn Zod issues into a readable, one-per-line summary so the thrown error (and
-// the log line it produces) names *which field* failed and why — one bullet per
-// field instead of one long semicolon-joined blob. e.g.
-//   Response validation failed (2 issues):
-//     • data.0.address: expected string, received object
-//     • data.1.address: expected string, received object
-// The root of the response body shows as `(root)`.
 const MAX_ISSUES = 5;
 
 // Union failures wrap the real problems (one set per arm) under `.errors`;
@@ -41,6 +34,11 @@ function formatIssue(issue: ZodIssue): string {
   return `${path}: ${reason}`;
 }
 
+// One bullet per field instead of one long semicolon-joined blob, e.g.:
+//   Response validation failed (2 issues):
+//     • data.0.address: expected string, received object
+//     • data.1.address: expected string, received object
+// The root of the response body shows as `(root)`.
 export function summarizeIssues(issues: readonly ZodIssue[]): string {
   // Union arms produce duplicate lines (same field fails in each arm) — dedupe.
   const seen = new Set<string>();

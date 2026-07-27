@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildUrl } from '@/lib/http-client/utils/url';
+import { buildUrl } from '@/lib/http-client/utils';
 
 describe('buildUrl', () => {
   it('joins a relative base and path', () => {

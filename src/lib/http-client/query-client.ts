@@ -15,7 +15,7 @@ export function makeQueryClient(): QueryClient {
         retry: false,
         // > 0 is required: hydrating a server-prefetched query with staleTime 0
         // (the TQ default) marks it stale immediately, triggering an instant
-        // client refetched and defeating the prefetch.
+        // client refetch and defeating the prefetch.
         staleTime: 60_000,
       },
     },

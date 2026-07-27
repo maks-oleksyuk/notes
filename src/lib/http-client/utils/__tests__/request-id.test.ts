@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { generateRequestId } from '@/lib/http-client/utils/request-id';
+import { generateRequestId } from '@/lib/http-client/utils';
 
 describe('generateRequestId', () => {
   afterEach(() => {

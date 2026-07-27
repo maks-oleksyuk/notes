@@ -1,14 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { HttpClient } from '@/lib/http-client/core/client';
 import {
   ApiError,
+  HttpClient,
   NetworkError,
   TimeoutError,
   ValidationError,
-} from '@/lib/http-client/core/errors';
+} from '@/lib/http-client/core';
 
-import type { ApiPlugin } from '@/lib/http-client/core/types';
+import type { ApiPlugin } from '@/lib/http-client/core';
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {

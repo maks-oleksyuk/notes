@@ -1,8 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { HttpClient } from '@/lib/http-client/core/client';
-import { ApiError, NetworkError } from '@/lib/http-client/core/errors';
-import { safe } from '@/lib/http-client/core/safe';
+import {
+  ApiError,
+  HttpClient,
+  NetworkError,
+  safe,
+} from '@/lib/http-client/core';
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {

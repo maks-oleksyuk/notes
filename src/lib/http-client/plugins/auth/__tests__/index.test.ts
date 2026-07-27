@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { HttpClient } from '@/lib/http-client/core/client';
-import { auth } from '@/lib/http-client/plugins/auth';
+import { HttpClient } from '@/lib/http-client/core';
+import { auth } from '@/lib/http-client/plugins';
 
-import type { TokenProvider } from '@/lib/http-client/plugins/auth/types';
+import type { TokenProvider } from '@/lib/http-client/plugins';
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {

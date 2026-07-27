@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildHeaders, headersToRecord } from '@/lib/http-client/utils/headers';
+import { buildHeaders, headersToRecord } from '@/lib/http-client/utils';
 
 describe('headersToRecord', () => {
   it('returns {} for undefined', () => {

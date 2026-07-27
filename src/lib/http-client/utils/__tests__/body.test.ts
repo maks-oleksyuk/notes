@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildBody } from '@/lib/http-client/utils/body';
+import { buildBody } from '@/lib/http-client/utils';
 
 describe('buildBody', () => {
   it('returns null for null/undefined only (B4 — not falsy)', () => {

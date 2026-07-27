@@ -1,13 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
-import { ValidationError } from '@/lib/http-client/core/errors';
-import {
-  summarizeIssues,
-  validation,
-} from '@/lib/http-client/plugins/validation';
+import { ValidationError } from '@/lib/http-client/core';
+import { summarizeIssues, validation } from '@/lib/http-client/plugins';
 
-import type { ApiResponse } from '@/lib/http-client/core/types';
+import type { ApiResponse } from '@/lib/http-client/core';
 
 const PostSchema = z.object({ id: z.number(), title: z.string() });
 

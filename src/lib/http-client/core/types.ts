@@ -1,43 +1,23 @@
 import type { ZodType } from 'zod';
 
-/**
- * Supported HTTP methods.
- * Using a union type ensures we don't have typos in our request calls.
- */
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD';
 
-/**
- * How we want the client to parse the response.
- * 'json' is the most common, but we might need 'blob' for images or 'text' for logs.
- */
 export type ResponseType = 'json' | 'text' | 'blob' | 'arraybuffer' | 'stream';
 
-/**
- * Options for every single request.
- * We extend the native RequestInit (from fetch) but make it better.
- */
+/** Extends the native `RequestInit`, redefining `method`/`body` below. */
 export interface ApiRequestOptions
   extends Omit<RequestInit, 'method' | 'body'> {
-  /**
-   * Base URL to override the client default if needed.
-   */
+  /** Overrides the client's default base URL for this request. */
   baseUrl?: string;
 
-  /**
-   * The request path (e.g., /posts).
-   */
   path?: string;
 
-  /**
-   * The HTTP method. Defaults to GET.
-   */
+  /** Defaults to `GET`. */
   method?: HttpMethod;
 
   /**
-   * Query parameters.
-   *
-   * Object like { page: 1, search: 'test' } becomes ?page=1&search=test.
-   * An array value repeats the key: { tag: ['a', 'b'] } becomes ?tag=a&tag=b.
+   * `{ page: 1, search: 'test' }` becomes `?page=1&search=test`.
+   * An array value repeats the key: `{ tag: ['a', 'b'] }` becomes `?tag=a&tag=b`.
    */
   params?: Record<
     string,
@@ -49,14 +29,9 @@ export interface ApiRequestOptions
     | Array<string | number | boolean>
   >;
 
-  /**
-   * Request body. Can be an object (for JSON), FormData, or Blob.
-   */
   body?: unknown;
 
-  /**
-   * Expected response format. Defaults to 'json'.
-   */
+  /** Defaults to `'json'`. */
   responseType?: ResponseType;
 
   /**
@@ -145,9 +120,6 @@ export interface ApiRequestOptions
    */
   sendRequestIdHeader?: boolean;
 
-  /**
-   * Hooks (Interceptors) - simple version
-   */
   onRequest?: (options: ApiRequestOptions) => void | Promise<void>;
 
   onResponse?: (response: ApiResponse) => void | Promise<void>;
@@ -159,15 +131,10 @@ export interface ApiRequestOptions
    */
   onResponseError?: (error: Error) => void | Promise<void>;
 
-  /**
-   * List of plugins to extend the request lifecycle.
-   */
   plugins?: ApiPlugin[];
 }
 
-/**
- * Retry policy for transient failures, handled by the core request loop.
- */
+/** Handled by the core request loop, not a plugin. */
 export interface RetryOptions {
   limit?: number;
   /** Base delay in ms; grows exponentially per attempt. */
@@ -204,8 +171,6 @@ export interface RetryInfo {
 }
 
 /**
- * Interface representing a plugin that hooks into the request lifecycle.
- *
  * Two roles, kept separate:
  *  - **recovery** — `onError` may return a value to recover the request (e.g., auth
  *    refreshing a token). The first plugin that returns stops the chain.
@@ -235,22 +200,14 @@ export interface ApiPlugin {
   ) => void | Promise<void>;
 }
 
-/**
- * The standardized response object that every request returns.
- * T is the generic type for the data (e.g., User, Post[]).
- */
 export interface ApiResponse<T = unknown> {
-  /** The parsed data (JSON, string, etc.) */
   data: T;
-  /** HTTP Status code (200, 201, etc.) */
   status: number;
-  /** Status text from the server */
   statusText: string;
-  /** Response headers */
   headers: Headers;
-  /** The final URL after resolving base and params */
+  /** After resolving `baseUrl` + `path` + `params`. */
   url: string;
-  /** How long the request took in milliseconds */
+  /** Milliseconds. */
   duration: number;
 }
 
@@ -261,9 +218,6 @@ export interface ApiResponse<T = unknown> {
  */
 export type InferSchema<O, T> = O extends { schema: ZodType<infer S> } ? S : T;
 
-/**
- * Internal info used to construct rich Error objects.
- */
 export interface ApiErrorInfo {
   status: number;
   statusText: string;

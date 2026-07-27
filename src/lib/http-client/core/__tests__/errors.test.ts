@@ -6,7 +6,7 @@ import {
   ParseError,
   TimeoutError,
   ValidationError,
-} from '@/lib/http-client/core/errors';
+} from '@/lib/http-client/core';
 
 describe('ApiError', () => {
   it('carries the response info and serializes it via toJSON', () => {

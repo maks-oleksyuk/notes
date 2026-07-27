@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { toRequestInit } from '@/lib/http-client/utils/request-init';
+import { toRequestInit } from '@/lib/http-client/utils';
 
 describe('toRequestInit', () => {
   it('picks only fetch-known fields, dropping client-specific config', () => {

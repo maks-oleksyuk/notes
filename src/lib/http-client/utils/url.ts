@@ -2,14 +2,10 @@
 // to start with the letters "http" — an actual scheme needs `://` after it.
 const ABSOLUTE_URL_RE = /^https?:\/\//i;
 
-/**
- * Constructs a fully qualified URL, combining baseUrl, path, and query parameters.
- */
 export function buildUrl(
   baseUrl: string,
-  // Optional because `ApiRequestOptions.path` is (callers always end up setting
-  // it via `mergeOptions()`, but the type itself doesn't guarantee that) — handled
-  // defensively below via `path?.replace(...)`.
+  // `ApiRequestOptions.path` is typed optional even though callers always set it
+  // via `mergeOptions()` — handled defensively below via `path?.replace(...)`.
   path: string | undefined,
   params?: Record<
     string,

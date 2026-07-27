@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { cleanMetadata } from '@/lib/http-client/utils/sanitize';
+import { cleanMetadata } from '@/lib/http-client/utils';
 
 describe('cleanMetadata', () => {
   it('redacts sensitive top-level keys', () => {

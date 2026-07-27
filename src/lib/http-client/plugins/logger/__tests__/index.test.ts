@@ -1,11 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { logger } from '@/lib/http-client/plugins/logger';
+import { logger } from '@/lib/http-client/plugins';
 
-import type {
-  ApiRequestOptions,
-  ApiResponse,
-} from '@/lib/http-client/core/types';
+import type { ApiRequestOptions, ApiResponse } from '@/lib/http-client/core';
 
 function fakeLogger() {
   return {
@@ -131,7 +128,7 @@ describe('logger plugin', () => {
   });
 
   it('includes status/data in the metadata when the error is an ApiError (e.g. a 422 validation body)', async () => {
-    const { ApiError } = await import('@/lib/http-client/core/errors');
+    const { ApiError } = await import('@/lib/http-client/core');
     const custom = fakeLogger();
     const plugin = logger({ level: 'error', logger: custom });
 

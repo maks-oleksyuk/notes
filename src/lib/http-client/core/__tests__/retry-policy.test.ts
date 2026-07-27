@@ -5,7 +5,7 @@ import {
   NetworkError,
   TimeoutError,
   ValidationError,
-} from '@/lib/http-client/core/errors';
+} from '@/lib/http-client/core';
 import { nextRetry, resolveRetry } from '@/lib/http-client/core/retry-policy';
 
 /** Unwraps a resolveRetry() result, failing loudly instead of using `!`. */

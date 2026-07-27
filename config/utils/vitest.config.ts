@@ -16,10 +16,10 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    // Tests live in a mirrored `tests/<type>/` tree, not next to the source files —
-    // keeps `src/` free of *.test.ts clutter. `unit/` today; `feature/` (e2e/
-    // integration) lands as a sibling once that tooling is picked.
-    include: ['tests/unit/**/*.test.ts'],
+    // Migrating off the mirrored `tests/<type>/` tree towards colocated
+    // `__tests__/` folders next to source (React/Next.js convention). `lib/api`
+    // hasn't moved yet, so both patterns are needed until that migrates too.
+    include: ['tests/unit/**/*.test.ts', 'src/**/__tests__/**/*.test.ts'],
     // Hides passing tests' console output (e.g. the logger plugin's request/
     // response lines) — only surfaces it for failing tests, where it's
     // actually needed to debug. Applies locally too, not just CI.

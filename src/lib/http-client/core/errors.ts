@@ -1,9 +1,5 @@
 import type { ApiErrorInfo } from './types';
 
-/**
- * Base class for all API-related errors.
- * It captures the status code, URL, and the data returned by the server.
- */
 export class ApiError extends Error {
   readonly status: number;
   readonly statusText: string;
@@ -38,10 +34,7 @@ export class ApiError extends Error {
   }
 }
 
-/**
- * Thrown when the request fails due to network issues (no internet, DNS, etc.).
- * There is no response from the server in this case.
- */
+/** Thrown when `fetch` itself fails (no internet, DNS, refused connection) — no response to work with. */
 export class NetworkError extends Error {
   constructor(
     message: string,
