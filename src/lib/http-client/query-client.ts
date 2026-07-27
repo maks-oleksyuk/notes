@@ -1,10 +1,10 @@
 import { QueryClient } from '@tanstack/react-query';
 
 /**
- * Shared `QueryClient` factory — used both by RSC pages (a fresh instance per
- * request; see blog-example/page.tsx) and by the browser provider (one
- * instance for the tab's lifetime; see app/providers.tsx). Not `'use client'`
- * so Server Components can import it directly.
+ * Shared `QueryClient` factory — call it once per request on the server (a
+ * fresh instance, never reused across requests/users) and once per tab in
+ * the browser (reused across renders). Not `'use client'` so Server
+ * Components can import it directly.
  */
 export function makeQueryClient(): QueryClient {
   return new QueryClient({

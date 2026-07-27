@@ -22,6 +22,9 @@ const nextConfig: NextConfig = {
       hmrRefreshes: false,
     },
   },
+  experimental: {
+    useTypeScriptCli: true,
+  },
 };
 
 export default nextConfig;

@@ -14,7 +14,7 @@ RUN pnpm install --frozen-lockfile --color=always
 
 COPY --chown=node:node . .
 
-RUN pnpm exec next build
+RUN FORCE_COLOR=1 pnpm exec next build
 
 FROM wodby/node:${NODE_VERSION} AS runner
 

@@ -4,9 +4,9 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 // Regression guard for the exact bug class this repo already got bitten by
-// once at the api-client layer ("HttpClient is not a constructor" — see
-// tests/unit/lib/api/backend.test.ts) and that resurfaced inside the library
-// itself in utils/response.ts: `core/index.ts` re-exports `client.ts`, which
+// once at the api-client layer ("HttpClient is not a constructor", thrown at
+// module-load time depending on evaluation order) and that resurfaced inside
+// the library itself in utils/response.ts: `core/index.ts` re-exports `client.ts`, which
 // imports the `utils` barrel — so any file under `utils/` that imports back
 // through the bare `@/lib/http-client/core` barrel closes a
 // core -> utils -> core loop, evaluated mid-load. `tsc` never sees this;
@@ -29,9 +29,7 @@ describe('http-client utils/ does not import the core/ barrel', () => {
   it('imports core/* deep, never the bare @/lib/http-client/core barrel', () => {
     const offenders = listTsFiles(utilsDir)
       .filter((file) =>
-        fs
-          .readFileSync(file, 'utf8')
-          .includes(`from '@/lib/http-client/core'`),
+        fs.readFileSync(file, 'utf8').includes(`from '@/lib/http-client/core'`),
       )
       .map((file) => path.relative(utilsDir, file));
 

@@ -241,8 +241,8 @@ sequenceDiagram
 - **401 — не ретраїться ядром** (Фаза 2). Якщо recovery не спрацював (guard або
   провалений refresh) — 401 не входить у дефолтні `retry.statusCodes`, тож ядро
   одразу здається, не марнує спроби.
-- **Провайдер без `refreshToken`** (статичний токен, як `backendApi` з
-  `NEXT_PUBLIC_API_TOKEN`) — 401 фінальний: плагін викликає `onAuthFailure` і
+- **Провайдер без `refreshToken`** (статичний токен з env-змінної) — 401
+  фінальний: плагін викликає `onAuthFailure` і
   пропускає **оригінальний** `ApiError` (статус/дані сервера цілі), не підміняє
   його помилкою «нема чим рефрешити». Увага: `NEXT_PUBLIC_*` інлайниться в
   клієнтський бандл — такий токен видно кожному в DevTools; справжній секрет
@@ -288,9 +288,11 @@ plugins/
                      server-provider.ts — окремо, не в барелі (next/headers)
   logger/           observer: onRequest/onResponse/onRetry/onFinalError
   validation
-clients/
-  blog · backend    готові інстанси
 ```
+
+Це чиста бібліотека — жодних готових інстансів клієнтів тут немає і не
+повинно бути. Конкретний клієнт (base URL, плагіни, auth-провайдер) кожен
+консюмер будує сам поверх `core`/`plugins`/`query-client.ts`.
 
 ---
 
