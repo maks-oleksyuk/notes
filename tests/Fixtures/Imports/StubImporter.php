@@ -22,10 +22,10 @@ final class StubImporter extends SpreadsheetImporter
     public static array $optionComponents = [];
 
     /** @var array<string, string> */
-    public static array $capturedMapping = [];
+    public static array $capturedMapping;
 
     /** @var array<string, mixed> */
-    public static array $capturedOptions = [];
+    public static array $capturedOptions;
 
     public function __construct(array $mapping = [], array $options = [], ?int $importId = null, ?string $authGuard = null)
     {
