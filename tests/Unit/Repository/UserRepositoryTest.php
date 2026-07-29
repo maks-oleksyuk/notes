@@ -16,9 +16,9 @@ describe('Repository | User', function (): void {
     it('finds a user by ID', function (): void {
         $user = User::factory()->create();
         $foundUser = $this->repository->find($user->id);
+        assert($foundUser instanceof User);
 
-        expect($foundUser)->toBeInstanceOf(User::class)
-            ->and($foundUser->id)->toBe($user->id);
+        expect($foundUser->id)->toBe($user->id);
     });
 
     it('retrieves all users', function (): void {
@@ -31,32 +31,37 @@ describe('Repository | User', function (): void {
         User::factory(15)->create();
 
         $paginator = $this->repository->findAll(perPage: 10);
+        assert($paginator instanceof LengthAwarePaginator);
 
         expect($paginator)
-            ->toBeInstanceOf(LengthAwarePaginator::class)
             ->and($paginator->items())->toHaveCount(10)
             ->and($paginator->currentPage())->toBe(1);
     });
 
     it('filters users by IDs', function (): void {
         $users = User::factory(3)->create();
-        $filters = new UserFilters(ids: $users->take(2)->pluck('id')->toArray());
+
+        /** @var list<int> $ids */
+        $ids = $users->take(2)->pluck('id')->toArray();
+        $filters = new UserFilters(ids: $ids);
 
         expect($this->repository->getFilteredQuery($filters)->count())->toBe(2);
     });
 
-    it('sorts users correctly', function (): void {
+    it('sorts users correctly', function (array $order): void {
         $users = new Collection([
             User::factory()->create(['name' => 'Charlie']),
             User::factory()->create(['name' => 'Alice']),
             User::factory()->create(['name' => 'Bob']),
         ]);
 
-        foreach ([['name' => 'asc'], ['name']] as $order) {
-            expect($this->repository->getFilteredQuery(new UserFilters, $order)->pluck('name')->toArray())
-                ->toBe($users->sortBy('name')->pluck('name')->toArray());
-        }
-    });
+        /** @var array<int, string>|array<string, 'asc'> $order */
+        expect($this->repository->getFilteredQuery(new UserFilters, $order)->pluck('name')->toArray())
+            ->toBe($users->sortBy('name')->pluck('name')->toArray());
+    })->with([
+        'column => direction' => [['name' => 'asc']],
+        'bare column name' => [['name']],
+    ]);
 
     it('filters users correctly using findBy without pagination', function (): void {
         $user = User::factory()->create(['name' => 'Alice']);
@@ -65,17 +70,21 @@ describe('Repository | User', function (): void {
         $filteredUsers = $this->repository->findBy(new UserFilters(ids: [$user->id]));
 
         expect($filteredUsers)->toBeInstanceOf(Collection::class)
-            ->and($filteredUsers)->toHaveCount(1)
-            ->and($filteredUsers->first()->id)->toBe($user->id);
+            ->and($filteredUsers)->toHaveCount(1);
+
+        $foundUser = $filteredUsers->first();
+        assert($foundUser instanceof User);
+
+        expect($foundUser->id)->toBe($user->id);
     });
 
     it('returns paginated results when perPage is provided in findBy', function (): void {
         User::factory(15)->create();
 
         $paginator = $this->repository->findBy(filters: new UserFilters, perPage: 10);
+        assert($paginator instanceof LengthAwarePaginator);
 
         expect($paginator)
-            ->toBeInstanceOf(LengthAwarePaginator::class)
             ->and($paginator->items())->toHaveCount(10)
             ->and($paginator->currentPage())->toBe(1);
     });

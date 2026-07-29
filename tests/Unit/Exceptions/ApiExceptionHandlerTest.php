@@ -14,10 +14,10 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 covers(ApiExceptionHandler::class);
 
-beforeEach(fn (): array => [
-    $this->responseFactory = App::make(ResponseFactory::class),
-    $this->handler = App::make(ApiExceptionHandler::class),
-]);
+beforeEach(function (): void {
+    $this->responseFactory = App::make(ResponseFactory::class);
+    $this->handler = App::make(ApiExceptionHandler::class);
+});
 
 describe('API | ExceptionHandler', function (): void {
     it('returns null if request does not expect json', function (): void {
@@ -51,11 +51,13 @@ describe('API | ExceptionHandler', function (): void {
         $exception = new HttpException(HttpFoundationResponse::HTTP_FORBIDDEN, 'Forbidden message');
 
         $response = ($this->handler)($exception, $request);
+        assert($response instanceof JsonResponse);
 
-        expect($response)->toBeInstanceOf(JsonResponse::class)
+        expect($response)
             ->and($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_FORBIDDEN)
             ->and($response->headers->get('Content-Type'))->toBe('application/problem+json');
 
+        /** @var array<string, mixed> $data */
         $data = json_decode((string) $response->getContent(), true);
         expect($data['title'])->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_FORBIDDEN])
             ->and($data['status'])->toBe(HttpFoundationResponse::HTTP_FORBIDDEN)
@@ -73,10 +75,11 @@ describe('API | ExceptionHandler', function (): void {
         $exception = new AuthenticationException('Unauthenticated');
 
         $response = ($this->handler)($exception, $request);
+        assert($response instanceof JsonResponse);
 
-        expect($response)->toBeInstanceOf(JsonResponse::class)
-            ->and($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_UNAUTHORIZED);
+        expect($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_UNAUTHORIZED);
 
+        /** @var array<string, mixed> $data */
         $data = json_decode((string) $response->getContent(), true);
         expect($data['title'])->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_UNAUTHORIZED])
             ->and($data['status'])->toBe(HttpFoundationResponse::HTTP_UNAUTHORIZED)
@@ -97,10 +100,11 @@ describe('API | ExceptionHandler', function (): void {
         $validationException->shouldReceive('errors')->andReturn(['field' => ['error message']]);
 
         $response = ($this->handler)($validationException, $request);
+        assert($response instanceof JsonResponse);
 
-        expect($response)->toBeInstanceOf(JsonResponse::class)
-            ->and($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY);
+        expect($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY);
 
+        /** @var array<string, mixed> $data */
         $data = json_decode((string) $response->getContent(), true);
         expect($data['title'])->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY])
             ->and($data['status'])->toBe(HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY)
@@ -119,9 +123,11 @@ describe('API | ExceptionHandler', function (): void {
         $exception = new RuntimeException('Internal details that must stay hidden');
 
         $response = ($this->handler)($exception, $request);
+        assert($response instanceof JsonResponse);
 
         expect($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR);
 
+        /** @var array<string, mixed> $data */
         $data = json_decode((string) $response->getContent(), true);
         expect($data['status'])->toBe(HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR)
             ->and($data['detail'])->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR])
@@ -137,7 +143,9 @@ describe('API | ExceptionHandler', function (): void {
         $request->shouldReceive('getRequestUri')->andReturn('/api/v1/boom');
 
         $response = ($this->handler)(new RuntimeException('Debug detail'), $request);
+        assert($response instanceof JsonResponse);
 
+        /** @var array<string, mixed> $data */
         $data = json_decode((string) $response->getContent(), true);
         expect($data['detail'])->toBe('Debug detail');
     });
@@ -149,6 +157,7 @@ describe('API | ExceptionHandler', function (): void {
         $request->shouldReceive('getRequestUri')->andReturn('/api/v1/test');
 
         $response = ($this->handler)(new Exception('bad request', HttpFoundationResponse::HTTP_BAD_REQUEST), $request);
+        assert($response instanceof JsonResponse);
 
         expect($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_BAD_REQUEST);
     });
@@ -162,6 +171,7 @@ describe('API | ExceptionHandler', function (): void {
         $request->shouldReceive('getRequestUri')->andReturn('/api/v1/test');
 
         $response = ($this->handler)(new Exception('msg', 499), $request);
+        assert($response instanceof JsonResponse);
 
         expect($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR);
     });
@@ -175,9 +185,11 @@ describe('API | ExceptionHandler', function (): void {
         $exception = new Exception('Default error', HttpFoundationResponse::HTTP_I_AM_A_TEAPOT);
 
         $response = ($this->handler)($exception, $request);
-        expect($response)->toBeInstanceOf(JsonResponse::class)
-            ->and($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_I_AM_A_TEAPOT);
+        assert($response instanceof JsonResponse);
 
+        expect($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_I_AM_A_TEAPOT);
+
+        /** @var array<string, mixed> $data */
         $data = json_decode((string) $response->getContent(), true);
         expect($data['title'])->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_I_AM_A_TEAPOT])
             ->and($data['status'])->toBe(HttpFoundationResponse::HTTP_I_AM_A_TEAPOT)

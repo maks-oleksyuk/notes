@@ -6,8 +6,9 @@ namespace Tests\Feature\Filament\Fixtures;
 
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Livewire\Component;
 
-final class FilamentForm implements HasForms
+final class FilamentForm extends Component implements HasForms
 {
     use InteractsWithForms;
 

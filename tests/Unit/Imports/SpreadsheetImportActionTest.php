@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Filament\Actions\SpreadsheetImportAction;
 use App\Imports\UserImporter;
 use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Models\Import;
 use Filament\Actions\View\ActionsIconAlias;
@@ -12,6 +13,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\Width;
@@ -224,12 +226,14 @@ describe('Filament | Action | SpreadsheetImport', function (): void {
     describe('buildSchema()', function (): void {
         it('assembles the import modal schema', function (): void {
             $action = SpreadsheetImportAction::make()->importer(UserImporter::class);
+
+            /** @var list<Component> $schema */
             $schema = new ReflectionMethod($action, 'buildSchema')->invoke($action);
+            assert($schema[2] instanceof FileUpload);
 
             expect($schema)->toHaveCount(5)
                 ->and($schema[0])->toBeInstanceOf(Hidden::class)
                 ->and($schema[1])->toBeInstanceOf(Actions::class)
-                ->and($schema[2])->toBeInstanceOf(FileUpload::class)
                 ->and($schema[2]->getMaxSize())->toBe(5120)
                 ->and($schema[2]->getAcceptedFileTypes())->toBe([
                     'text/csv',
@@ -246,6 +250,7 @@ describe('Filament | Action | SpreadsheetImport', function (): void {
                 ->and($schema[3]->getColumns('lg'))->toBe(1)
                 ->and($schema[4])->toBeInstanceOf(Fieldset::class);
 
+            /** @var list<Action> $downloads */
             $downloads = $schema[1]->getDefaultChildComponents();
             expect($downloads)->toHaveCount(2)
                 ->and($downloads[0]->getName())->toBe('downloadCsvTemplate')
@@ -253,9 +258,11 @@ describe('Filament | Action | SpreadsheetImport', function (): void {
                 ->and($downloads[1]->getName())->toBe('downloadXlsxTemplate')
                 ->and($downloads[1]->getLabel())->toBe(__('filament/import.templates.download', ['format' => 'XLSX']));
 
+            /** @var list<Component> $mappingFields */
             $mappingFields = $schema[3]->getDefaultChildComponents();
+            assert($mappingFields[0] instanceof Select);
+
             expect($mappingFields)->toHaveCount(2)
-                ->and($mappingFields[0])->toBeInstanceOf(Select::class)
                 ->and($mappingFields[0]->isNative())->toBeFalse()
                 ->and($mappingFields[1])->toBeInstanceOf(Select::class);
         });
@@ -265,6 +272,8 @@ describe('Filament | Action | SpreadsheetImport', function (): void {
             StubImporter::$optionComponents = $hasOptions ? [Hidden::make('skipExisting')] : [];
 
             $action = SpreadsheetImportAction::make()->importer(StubImporter::class);
+
+            /** @var list<Component> $schema */
             $schema = new ReflectionMethod($action, 'buildSchema')->invoke($action);
 
             expect($schema[4]->isVisible())->toBe($visible);
@@ -281,7 +290,11 @@ describe('Filament | Action | SpreadsheetImport', function (): void {
             ];
 
             $action = SpreadsheetImportAction::make()->importer(StubImporter::class);
+
+            /** @var list<Component> $schema */
             $schema = new ReflectionMethod($action, 'buildSchema')->invoke($action);
+
+            /** @var list<Select> $mappingFields */
             $mappingFields = $schema[3]->getDefaultChildComponents();
 
             // Explicit label is kept; a column without one falls back to the humanized name.

@@ -35,7 +35,6 @@ tasks:
     cmd: '{{.PHP_BIN}} artisan {{.CLI_ARGS}} --ansi'
     aliases:
       - art
-    internal: true
     silent: true
 
   artisan:test:

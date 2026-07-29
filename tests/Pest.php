@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\WithCachedRoutes;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Testing\TestResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\ApiV1TestCase;
 use Tests\TestCase;
 
@@ -92,6 +93,9 @@ arch()->preset()->php();
 
 /**
  * Assert that the response contains API version headers.
+ *
+ * @param  TestResponse<Response>  $response
+ * @return TestResponse<Response>
  */
 function assertApiVersionHeaders(
     TestResponse $response,

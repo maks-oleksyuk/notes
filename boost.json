@@ -11,12 +11,13 @@
     ],
     "sail": false,
     "skills": [
+        "infer-conventions",
         "laravel-best-practices",
+        "testing-best-practices",
         "configure-nightwatch",
         "octane-development",
         "pulse-development",
         "socialite-development",
-        "pest-testing",
         "laravel-excel",
         "debug-using-debugbar"
     ]

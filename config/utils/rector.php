@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Pest\Rector\Set\PestSetList;
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\Transform\Rector\StaticCall\StaticCallToMethodCallRector;
@@ -19,8 +20,6 @@ use RectorLaravel\Rector\StaticCall\RouteActionCallableRector;
 use RectorLaravel\Set\LaravelLevelSetList;
 use RectorLaravel\Set\LaravelSetList;
 use RectorLaravel\Set\LaravelSetProvider;
-use RectorPest\Set\PestLevelSetList;
-use RectorPest\Set\PestSetList;
 
 if (defined('ARTISAN_BINARY') || ! class_exists(RectorConfig::class)) {
     return;
@@ -73,11 +72,7 @@ return RectorConfig::configure()
         LaravelSetList::LARAVEL_STATIC_TO_INJECTION,
         LaravelSetList::LARAVEL_TESTING,
         LaravelSetList::LARAVEL_TYPE_DECLARATIONS,
-        PestLevelSetList::UP_TO_PEST_40,
-        PestSetList::PEST_CODE_QUALITY,
-        PestSetList::PEST_CHAIN,
-        PestSetList::PEST_LARAVEL,
-        PestSetList::PEST_BROWSER,
+        PestSetList::CODING_STYLE,
     ])
     ->withConfiguredRule(RemoveDumpDataDeadCodeRector::class, [])
     ->withConfiguredRule(RouteActionCallableRector::class, [])

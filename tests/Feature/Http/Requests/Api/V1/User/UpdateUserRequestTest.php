@@ -18,6 +18,8 @@ describe('API | V1 | User | UpdateUserRequest', function (): void {
 
     it('validates rules', function (): void {
         $rules = new UpdateUserRequest()->rules();
+        $hasEmailUniqueRule = new Collection($rules['email'])->contains(fn ($rule): bool => $rule instanceof Unique);
+        $hasPasswordRule = new Collection($rules['password'])->contains(fn ($rule): bool => $rule instanceof Password);
 
         expect($rules)->toHaveKey('name')
             ->and($rules['name'])->toContain('sometimes')
@@ -28,14 +30,10 @@ describe('API | V1 | User | UpdateUserRequest', function (): void {
             ->and($rules['email'])->toContain('string')
             ->and($rules['email'])->toContain('email')
             ->and($rules['email'])->toContain('max:255')
-            ->and(new Collection($rules['email']))
-            ->contains(fn ($rule): bool => $rule instanceof Unique)
-            ->toBeTrue()
+            ->and($hasEmailUniqueRule)->toBeTrue()
             ->and($rules)->toHaveKey('password')
             ->and($rules['password'])->toContain('sometimes')
-            ->and(new Collection($rules['password']))
-            ->contains(fn ($rule): bool => $rule instanceof Password)
-            ->toBeTrue();
+            ->and($hasPasswordRule)->toBeTrue();
     });
 
     it('enforces Password::defaults() validation rules when password is provided', function (string $password, bool $shouldPass): void {

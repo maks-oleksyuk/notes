@@ -11,6 +11,7 @@ node_modules
 # Docker & deploy configs
 .ddev
 .docker
+!.docker/dev/php/entrypoint.d
 .dokploy
 .devcontainer
 

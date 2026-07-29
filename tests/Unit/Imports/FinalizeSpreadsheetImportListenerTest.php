@@ -71,7 +71,7 @@ describe('Import | Filament | FinalizeSpreadsheetImportListener', function (): v
         $import = makeImport($user, processedRows: 5, successfulRows: 5);
 
         $listener = App::make(FinalizeSpreadsheetImportListener::class);
-        $listener->handle(new UserImporter(importId: $import->getKey()));
+        $listener->handle(new UserImporter(importId: $import->id));
 
         $import->refresh();
 
@@ -79,11 +79,12 @@ describe('Import | Filament | FinalizeSpreadsheetImportListener', function (): v
             ->and($import->total_rows)->toBe(5)
             ->and(Storage::disk('local')->exists('imports/users.xlsx'))->toBeFalse();
 
-        $notification = $user->notifications()->sole();
+        /** @var array<string, mixed> $data */
+        $data = $user->notifications()->sole()->getAttribute('data');
 
-        expect($notification->data['status'])->toBe('success')
-            ->and($notification->data['body'])->toBe('Imported 5 rows.')
-            ->and($notification->data['actions'])->toBeEmpty();
+        expect($data['status'])->toBe('success')
+            ->and($data['body'])->toBe('Imported 5 rows.')
+            ->and($data['actions'])->toBeEmpty();
     });
 
     it('sends a warning notification with a download action when some rows failed', function (): void {
@@ -94,15 +95,18 @@ describe('Import | Filament | FinalizeSpreadsheetImportListener', function (): v
         makeFailedRow($import);
 
         $listener = App::make(FinalizeSpreadsheetImportListener::class);
-        $listener->handle(new UserImporter(importId: $import->getKey(), authGuard: 'web'));
+        $listener->handle(new UserImporter(importId: $import->id, authGuard: 'web'));
 
-        $notification = $user->notifications()->sole();
+        /** @var array<string, mixed> $data */
+        $data = $user->notifications()->sole()->getAttribute('data');
 
-        $action = $notification->data['actions'][0];
+        /** @var list<array<string, mixed>> $actions */
+        $actions = $data['actions'];
+        $action = $actions[0];
 
-        expect($notification->data['status'])->toBe('warning')
-            ->and($notification->data['body'])->toBe('Imported 2 rows. 1 row failed to import.')
-            ->and($notification->data['actions'])->toHaveCount(1)
+        expect($data['status'])->toBe('warning')
+            ->and($data['body'])->toBe('Imported 2 rows. 1 row failed to import.')
+            ->and($data['actions'])->toHaveCount(1)
             ->and($action['url'])->toContain('failed-rows')
             ->and($action['url'])->toContain('web')
             ->and($action['url'])->toContain('signature=')
@@ -120,9 +124,12 @@ describe('Import | Filament | FinalizeSpreadsheetImportListener', function (): v
         makeFailedRow($import);
 
         $listener = App::make(FinalizeSpreadsheetImportListener::class);
-        $listener->handle(new UserImporter(importId: $import->getKey()));
+        $listener->handle(new UserImporter(importId: $import->id));
 
-        expect($user->notifications()->sole()->data['status'])->toBe('danger');
+        /** @var array<string, mixed> $data */
+        $data = $user->notifications()->sole()->getAttribute('data');
+
+        expect($data['status'])->toBe('danger');
     });
 
     it('counts skipped rows in the notification body', function (): void {
@@ -132,10 +139,12 @@ describe('Import | Filament | FinalizeSpreadsheetImportListener', function (): v
         $import = makeImport($user, processedRows: 5, successfulRows: 3);
 
         $listener = App::make(FinalizeSpreadsheetImportListener::class);
-        $listener->handle(new UserImporter(importId: $import->getKey()));
+        $listener->handle(new UserImporter(importId: $import->id));
 
-        expect($user->notifications()->sole()->data['body'])
-            ->toBe('Imported 3 rows. 2 rows skipped.');
+        /** @var array<string, mixed> $data */
+        $data = $user->notifications()->sole()->getAttribute('data');
+
+        expect($data['body'])->toBe('Imported 3 rows. 2 rows skipped.');
     });
 
     it('includes exactly one skipped row in the notification body', function (): void {
@@ -145,10 +154,12 @@ describe('Import | Filament | FinalizeSpreadsheetImportListener', function (): v
         $import = makeImport($user, processedRows: 2, successfulRows: 1);
 
         $listener = App::make(FinalizeSpreadsheetImportListener::class);
-        $listener->handle(new UserImporter(importId: $import->getKey()));
+        $listener->handle(new UserImporter(importId: $import->id));
 
-        expect($user->notifications()->sole()->data['body'])
-            ->toBe('Imported 1 row. 1 row skipped.');
+        /** @var array<string, mixed> $data */
+        $data = $user->notifications()->sole()->getAttribute('data');
+
+        expect($data['body'])->toBe('Imported 1 row. 1 row skipped.');
     });
 
     it('does not finalize the same import twice', function (): void {
@@ -158,8 +169,8 @@ describe('Import | Filament | FinalizeSpreadsheetImportListener', function (): v
         $import = makeImport($user, processedRows: 1, successfulRows: 1);
 
         $listener = App::make(FinalizeSpreadsheetImportListener::class);
-        $listener->handle(new UserImporter(importId: $import->getKey()));
-        $listener->handle(new UserImporter(importId: $import->getKey()));
+        $listener->handle(new UserImporter(importId: $import->id));
+        $listener->handle(new UserImporter(importId: $import->id));
 
         expect($user->notifications()->count())->toBe(1);
     });
@@ -172,7 +183,7 @@ describe('Import | Filament | FinalizeSpreadsheetImportListener', function (): v
         $import = makeImport($user, processedRows: 4, successfulRows: 4);
 
         $listener = App::make(FinalizeSpreadsheetImportListener::class);
-        $listener->handleFailure(new UserImporter(importId: $import->getKey()));
+        $listener->handleFailure(new UserImporter(importId: $import->id));
 
         $import->refresh();
 
@@ -180,10 +191,11 @@ describe('Import | Filament | FinalizeSpreadsheetImportListener', function (): v
             ->and($import->total_rows)->toBe(4)
             ->and(Storage::disk('local')->exists('imports/users.xlsx'))->toBeFalse();
 
-        $notification = $user->notifications()->sole();
+        /** @var array<string, mixed> $data */
+        $data = $user->notifications()->sole()->getAttribute('data');
 
-        expect($notification->data['status'])->toBe('danger')
-            ->and($notification->data['body'])->toContain('4 rows were processed');
+        expect($data['status'])->toBe('danger')
+            ->and($data['body'])->toContain('4 rows were processed');
     });
 
     it('does not report a failure for an already finalized import', function (): void {
@@ -193,11 +205,14 @@ describe('Import | Filament | FinalizeSpreadsheetImportListener', function (): v
         $import = makeImport($user, processedRows: 1, successfulRows: 1);
 
         $listener = App::make(FinalizeSpreadsheetImportListener::class);
-        $listener->handle(new UserImporter(importId: $import->getKey()));
-        $listener->handleFailure(new UserImporter(importId: $import->getKey()));
+        $listener->handle(new UserImporter(importId: $import->id));
+        $listener->handleFailure(new UserImporter(importId: $import->id));
 
-        expect($user->notifications()->count())->toBe(1)
-            ->and($user->notifications()->sole()->data['status'])->toBe('success');
+        expect($user->notifications()->count())->toBe(1);
+
+        /** @var array<string, mixed> $data */
+        $data = $user->notifications()->sole()->getAttribute('data');
+        expect($data['status'])->toBe('success');
     });
 
     it('ignores a failure for a stateless importer', function (): void {

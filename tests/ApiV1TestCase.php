@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests;
 
 use Illuminate\Testing\TestResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Base test case for API v1 endpoints.
@@ -15,6 +16,10 @@ abstract class ApiV1TestCase extends TestCase
 {
     protected string $apiVersionStatus = 'active';
 
+    /**
+     * @param  array<string, mixed>  $headers
+     * @return TestResponse<Response>
+     */
     #[\Override]
     public function getJson($uri, array $headers = [], $options = 0): TestResponse
     {
@@ -23,6 +28,11 @@ abstract class ApiV1TestCase extends TestCase
         return $this->verifyApiVersionHeaders($response);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  array<string, mixed>  $headers
+     * @return TestResponse<Response>
+     */
     #[\Override]
     public function postJson($uri, array $data = [], array $headers = [], $options = 0): TestResponse
     {
@@ -31,6 +41,11 @@ abstract class ApiV1TestCase extends TestCase
         return $this->verifyApiVersionHeaders($response);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  array<string, mixed>  $headers
+     * @return TestResponse<Response>
+     */
     #[\Override]
     public function putJson($uri, array $data = [], array $headers = [], $options = 0): TestResponse
     {
@@ -39,6 +54,11 @@ abstract class ApiV1TestCase extends TestCase
         return $this->verifyApiVersionHeaders($response);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  array<string, mixed>  $headers
+     * @return TestResponse<Response>
+     */
     #[\Override]
     public function patchJson($uri, array $data = [], array $headers = [], $options = 0): TestResponse
     {
@@ -47,6 +67,11 @@ abstract class ApiV1TestCase extends TestCase
         return $this->verifyApiVersionHeaders($response);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  array<string, mixed>  $headers
+     * @return TestResponse<Response>
+     */
     #[\Override]
     public function deleteJson($uri, array $data = [], array $headers = [], $options = 0): TestResponse
     {
@@ -55,6 +80,10 @@ abstract class ApiV1TestCase extends TestCase
         return $this->verifyApiVersionHeaders($response);
     }
 
+    /**
+     * @param  TestResponse<Response>  $response
+     * @return TestResponse<Response>
+     */
     protected function verifyApiVersionHeaders(TestResponse $response): TestResponse
     {
         return assertApiVersionHeaders($response, $this->apiVersionStatus);

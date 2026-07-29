@@ -9,7 +9,9 @@ use Pest\Expectation;
 covers(IndexUserRequest::class);
 
 describe('API | V1 | User | IndexUserRequest', function (): void {
-    it('extends PaginatedRequest', fn (): Expectation => expect(new IndexUserRequest)->toBeInstanceOf(PaginatedRequest::class));
+    arch('extends PaginatedRequest')
+        ->expect(IndexUserRequest::class)
+        ->toExtend(PaginatedRequest::class);
 
     it('authorizes all requests', fn (): Expectation => expect(new IndexUserRequest()->authorize())->toBeTrue());
 

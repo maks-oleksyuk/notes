@@ -11,9 +11,9 @@ use Barryvdh\LaravelIdeHelper\Generator as LaravelIdeHelperGenerator;
 use Filament\Support\Commands\UpgradeCommand as FilamentUpgradeCommand;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Foundation\Console\VendorPublishCommand;
+use Illuminate\Testing\PendingCommand;
 use Mockery as m;
 use phpmock\phpunit\PHPMock;
-use PHPUnit\Framework\MockObject\Rule\AnyInvokedCount;
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -42,10 +42,6 @@ beforeEach(function (): void {
         new InputOption('env', null, InputOption::VALUE_OPTIONAL)
     );
 
-    $this->vendorTags = new ReflectionClass($this->setupCommand)
-        ->getProperty('vendorTags')
-        ->getValue($this->setupCommand);
-
     $this->filamentUpgradeMock = $this->mock(FilamentUpgradeCommand::class)->shouldIgnoreMissing();
     $this->vendorPublishMock = $this->mock(VendorPublishCommand::class)->shouldIgnoreMissing();
     $this->ideHelperMetaMock = $this->mock(LaravelIdeHelperMetaCommand::class)->shouldIgnoreMissing();
@@ -70,28 +66,36 @@ beforeEach(function (): void {
 describe('Console | Commands | Setup', function (): void {
     it('executes setup command', function (string $env, bool $classExists): void {
         $this->getFunctionMock('App\Console\Commands', 'class_exists')
-            ->expects(new AnyInvokedCount)
+            ->expects($env === 'local' ? $this->once() : $this->never())
             ->with(LaravelIdeHelperGenerator::class)
             ->willReturn($classExists);
 
         $this->filamentUpgradeMock->shouldReceive('run')->once()->andReturn(Command::SUCCESS);
 
-        foreach ($this->vendorTags as $tag) {
+        /** @var list<string> $vendorTags */
+        $vendorTags = new ReflectionClass($this->setupCommand)
+            ->getProperty('vendorTags')
+            ->getValue($this->setupCommand);
+
+        foreach ($vendorTags as $tag) {
             $this->vendorPublishMock->shouldReceive('run')
                 ->once()
                 ->with(
-                    m::on(fn ($input): bool => str_contains((string) $input, '--tag='.$tag) && str_contains((string) $input, '--force=1')),
+                    m::on(fn (string $input): bool => str_contains($input, '--tag='.$tag) && str_contains($input, '--force=1')),
                     m::any()
                 )
                 ->andReturn(Command::SUCCESS);
         }
 
-        $artisan = $this->artisan(SetupCommand::class, ['--env' => $env])
+        $command = $this->artisan(SetupCommand::class, ['--env' => $env]);
+        assert($command instanceof PendingCommand);
+
+        $artisan = $command
             ->assertSuccessful()
             ->expectsOutputToContain('INFO  Setup application.')
             ->expectsOutputToContain('Filament upgrade');
 
-        foreach ($this->vendorTags as $tag) {
+        foreach ($vendorTags as $tag) {
             $artisan->expectsOutputToContain(sprintf('Publishing assets for tag: [%s]', $tag));
         }
 
@@ -100,7 +104,7 @@ describe('Console | Commands | Setup', function (): void {
             $this->ideHelperGeneratorMock->shouldReceive('run')->once()->andReturn(Command::SUCCESS);
             $this->ideHelperModelsMock->shouldReceive('run')
                 ->once()
-                ->with(m::on(fn ($input): bool => str_contains((string) $input, '--write-mixin=1')), m::any())
+                ->with(m::on(fn (string $input): bool => str_contains($input, '--write-mixin=1')), m::any())
                 ->andReturn(Command::SUCCESS);
             $this->ideHelperEloquentMock->shouldReceive('run')->once()->andReturn(Command::SUCCESS);
 

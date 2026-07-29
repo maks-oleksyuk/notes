@@ -10,14 +10,17 @@ use Illuminate\Contracts\Translation\HasLocalePreference;
 covers(User::class);
 
 describe('Model | User', function (): void {
+    arch('implements HasLocalePreference')
+        ->expect(User::class)
+        ->toImplement(HasLocalePreference::class);
+
     it('can create a user', function (): void {
         $user = User::factory()->create([
             'name' => 'John Doe',
             'email' => 'johndoe@example.com',
         ]);
 
-        expect($user)->toBeInstanceOf(User::class)
-            ->and($user->name)->toBe('John Doe')
+        expect($user->name)->toBe('John Doe')
             ->and($user->email)->toBe('johndoe@example.com');
 
         $this->assertDatabaseHas('users', [
@@ -74,11 +77,9 @@ describe('Model | User', function (): void {
         expect($user->canAccessPanel($panel))->toBeTrue();
     });
 
-    it('implements HasLocalePreference and returns null by default', function (): void {
+    it('returns null preferred locale by default', function (): void {
         $user = User::factory()->make();
 
-        expect($user)
-            ->toBeInstanceOf(HasLocalePreference::class)
-            ->and($user->preferredLocale())->toBeNull();
+        expect($user->preferredLocale())->toBeNull();
     });
 });

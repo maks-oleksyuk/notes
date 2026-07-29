@@ -15,14 +15,14 @@ use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 covers(AppDefaultResponses::class);
 
-beforeEach(fn (): array => [
-    $this->scribeStrategy = new AppDefaultResponses(new DocumentationConfig),
+beforeEach(function (): void {
+    $this->scribeStrategy = new AppDefaultResponses(new DocumentationConfig);
     $this->route = new Route(
         [Request::METHOD_GET],
         '/test-uri',
         ['uses' => fn (): null => null]
-    ),
-]);
+    );
+});
 
 describe('Scribe | AppDefaultResponses', function (): void {
     it('assigns descriptions for standard successful responses', function (): void {
@@ -37,8 +37,10 @@ describe('Scribe | AppDefaultResponses', function (): void {
         $this->scribeStrategy->__invoke($endpointData);
 
         foreach ($statuses as $status) {
-            expect($endpointData->responses->firstWhere('status', $status)->description)
-                ->toBe(HttpFoundationResponse::$statusTexts[$status]);
+            $response = $endpointData->responses->firstWhere('status', $status);
+            assert($response instanceof ScribeResponse);
+
+            expect($response->description)->toBe(HttpFoundationResponse::$statusTexts[$status]);
         }
     });
 
@@ -59,9 +61,10 @@ describe('Scribe | AppDefaultResponses', function (): void {
 
         $responses = $this->scribeStrategy->__invoke($endpointData);
         $response = new Collection($responses)->firstWhere('status', HttpFoundationResponse::HTTP_NOT_FOUND);
+        assert($response !== null);
 
         assertErrorResponseStructure($responses, HttpFoundationResponse::HTTP_NOT_FOUND);
-        expect($response['content'])
+        expect($response['content'] ?? '')
             ->not->toContain('\/')
             ->not->toContain('\u')
             ->toContain('/test-uri')
@@ -86,9 +89,10 @@ describe('Scribe | AppDefaultResponses', function (): void {
         $responses = $this->scribeStrategy->__invoke($endpointData);
 
         $found = new Collection($responses)->firstWhere('status', HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY);
-        expect($found)->not()->toBeNull()
-            ->and($found['description'])->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY])
-            ->and(json_decode((string) $found['content'], true))->toBe([
+        assert($found !== null);
+
+        expect($found['description'])->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY])
+            ->and(json_decode((string) ($found['content'] ?? ''), true))->toBe([
                 'title' => HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY],
                 'status' => HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY,
                 'detail' => 'string',
@@ -98,7 +102,7 @@ describe('Scribe | AppDefaultResponses', function (): void {
                     'body_parameter' => ['body parameter / description 📑'],
                 ],
             ])
-            ->and($found['content'])->toContain('parameter / description 📑')
+            ->and($found['content'] ?? '')->toContain('parameter / description 📑')
             ->and($found['headers'])->toBe(['Content-Type' => 'application/problem+json']);
     });
 
@@ -145,22 +149,29 @@ describe('Scribe | AppDefaultResponses', function (): void {
 
         foreach (['makeSimpleErrorResponse', 'makeValidationErrorResponse'] as $methodName) {
             $method = $ref->getMethod($methodName);
+
+            /** @var array{status: int, description: string, content: string, headers: array<string, string>} $response */
             $response = $method->invoke($this->scribeStrategy, $endpointData, HttpFoundationResponse::HTTP_BAD_REQUEST);
 
-            expect($response['content'])->toBeString()->toBeEmpty();
+            expect($response['content'])->toBeEmpty();
         }
     });
 });
 
+/**
+ * @param  array<int, array{status: int, description: string, content?: string, headers: array<string, string>}>  $responses
+ */
 function assertErrorResponseStructure(array $responses, int $status): void
 {
     $found = new Collection($responses)->firstWhere('status', $status);
-    expect($found)->not()->toBeNull()
-        ->and($found['description'])->toBe(HttpFoundationResponse::$statusTexts[$status])
-        ->and(json_decode((string) $found['content'], true))->toBe([
+    assert($found !== null);
+
+    expect($found['description'])->toBe(HttpFoundationResponse::$statusTexts[$status])
+        ->and(json_decode((string) ($found['content'] ?? ''), true))->toBe([
             'title' => HttpFoundationResponse::$statusTexts[$status],
             'status' => $status,
             'detail' => 'string',
             'instance' => '/test-uri',
-        ])->and($found['headers'])->toBe(['Content-Type' => 'application/problem+json']);
+        ])
+        ->and($found['headers'])->toBe(['Content-Type' => 'application/problem+json']);
 }

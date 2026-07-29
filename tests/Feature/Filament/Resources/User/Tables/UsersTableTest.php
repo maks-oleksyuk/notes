@@ -9,6 +9,8 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\Testing\TestAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\BaseFilter;
 
 use function Pest\Livewire\livewire;
 
@@ -34,12 +36,26 @@ describe('Filament | User Table', function (): void {
 
     it('has correct filters configuration', function (): void {
         livewire(ListUsers::class)
-            ->assertTableFilterExists('name', fn ($filter): bool => $filter->getFormSchema()[0]->getLabel() === 'Name'
-                && $filter->getFormSchema()[0]->getPlaceholder() === 'Enter name to filter'
-            )
-            ->assertTableFilterExists('email', fn ($filter): bool => $filter->getFormSchema()[0]->getLabel() === 'Email'
-                && $filter->getFormSchema()[0]->getPlaceholder() === 'Enter email to filter'
-            );
+            ->assertTableFilterExists('name', function (BaseFilter $filter): bool {
+                $field = $filter->getSchemaComponents()[0];
+                assert($field instanceof TextInput);
+
+                expect($field)
+                    ->and($field->getLabel())->toBe('Name')
+                    ->and($field->getPlaceholder())->toBe('Enter name to filter');
+
+                return true;
+            })
+            ->assertTableFilterExists('email', function (BaseFilter $filter): bool {
+                $field = $filter->getSchemaComponents()[0];
+                assert($field instanceof TextInput);
+
+                expect($field)
+                    ->and($field->getLabel())->toBe('Email')
+                    ->and($field->getPlaceholder())->toBe('Enter email to filter');
+
+                return true;
+            });
     });
 
     it('has view and delete actions with icon buttons', function (): void {
@@ -52,7 +68,7 @@ describe('Filament | User Table', function (): void {
 
     it('applies the `name` filter correctly', function (): void {
         $users = User::factory(5)->create();
-        $filteredUser = $users->first();
+        $filteredUser = $users->firstOrFail();
         $nonFilteredUsers = $users->reject(fn ($user): bool => $user->name === $filteredUser->name);
 
         livewire(ListUsers::class)
@@ -68,7 +84,7 @@ describe('Filament | User Table', function (): void {
 
     it('applies the `email` filter correctly', function (): void {
         $users = User::factory(5)->create();
-        $filteredUser = $users->first();
+        $filteredUser = $users->firstOrFail();
         $nonFilteredUsers = $users->reject(fn ($user): bool => $user->email === $filteredUser->email);
 
         livewire(ListUsers::class)

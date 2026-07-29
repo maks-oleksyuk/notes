@@ -11,14 +11,12 @@ dataset('protected routes', [
 ]);
 
 describe('Basic Auth', function (): void {
-    beforeEach(
-        fn (): string => $this->validCredentials = base64_encode(
-            sprintf(
-                '%s:%s',
-                config('very_basic_auth.user'),
-                config('very_basic_auth.password'),
-            )
-        )
+    beforeEach(fn (): string => $this->validCredentials
+        = base64_encode(sprintf(
+            '%s:%s',
+            config()->string('very_basic_auth.user'),
+            config()->string('very_basic_auth.password'),
+        ))
     );
 
     it('denies access without authentication for `:dataset`',
@@ -26,14 +24,14 @@ describe('Basic Auth', function (): void {
     )->with('protected routes');
 
     it('denies access with invalid credentials for `:dataset`',
-        fn ($route) => test()->withHeaders(['Authorization' => 'Basic '.base64_encode('invalid:credentials')])
+        fn (string $route) => $this->withHeaders(['Authorization' => 'Basic '.base64_encode('invalid:credentials')])
             ->get($route)
             ->assertUnauthorized()
     )->with('protected routes');
 
-    it('grants access with valid credentials for `:dataset`',
-        fn ($route) => test()->withHeaders(['Authorization' => 'Basic '.test()->validCredentials])
+    it('grants access with valid credentials for `:dataset`', function (string $route): void {
+        $this->withHeaders(['Authorization' => 'Basic '.$this->validCredentials])
             ->get($route)
-            ->assertOk()
-    )->with('protected routes');
+            ->assertOk();
+    })->with('protected routes');
 });
