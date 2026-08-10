@@ -23,7 +23,6 @@ parameters:
         - ../../tests
     - identifiers:
         - argument.type
-        - varTag.type
       paths:
         - ../../config
   symfony:

@@ -1,3 +1,4 @@
+.claude
 .ddev
 .dokploy
 .github
@@ -7,6 +8,7 @@ composer.lock
 dist
 local
 pnpm-lock.yaml
+packages
 public
 taskfile.yml
 var
