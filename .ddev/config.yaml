@@ -1,9 +1,9 @@
 name: symfony
-type: php
+type: symfony
 docroot: public
 database:
   type: mariadb
-  version: '11.8'
+  version: '12.3'
 php_version: '8.5'
 host_db_port: '54374'
 nodejs_version: '26'
