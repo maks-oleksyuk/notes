@@ -138,6 +138,8 @@ tasks:
       - task: sf:console
         vars: { CLI_ARGS: 'doctrine:migrations:migrate -n' }
       - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:fixtures:load --append -n' }
+      - task: sf:console
         vars: { CLI_ARGS: 'cache:warmup' }
 
   update:

@@ -13,8 +13,6 @@ return App::config([
     ],
 
     'framework' => [
-        'profiler' => [
-            'collect_serializer_data' => true,
-        ],
+        'profiler' => true,
     ],
 ]);

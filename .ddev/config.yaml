@@ -1,15 +1,19 @@
 name: symfony
-type: php
+type: symfony
 docroot: public
 database:
   type: mariadb
-  version: '11.8'
+  version: '12.3'
 php_version: '8.5'
 host_db_port: '54374'
-nodejs_version: '24'
+nodejs_version: '26'
 webserver_type: nginx-fpm
 xdebug_enabled: false
-corepack_enable: true
+upload_dirs:
+  - ../var
+  - ../local
+  - ../packages
+  - ../node_modules
 hooks:
   pre-start:
     # Add pnpm and task to ddev if not already installed.
