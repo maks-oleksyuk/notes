@@ -5,12 +5,12 @@ inputs:
   php:
     description: 'PHP version to install'
     required: true
-    default: '8.4'
+    default: '8.5'
 
   node:
     description: 'Node.js version to install'
     required: true
-    default: '22.x'
+    default: '26.x'
 
   use-php:
     description: 'Whether to install PHP and dependencies'
@@ -34,7 +34,7 @@ runs:
 
     - name: '🐘 Setup PHP ${{ inputs.php }}'
       if: ${{ inputs.use-php == 'true' }}
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
       with:
         php-version: ${{ inputs.php }}
         coverage: none
@@ -47,7 +47,7 @@ runs:
 
     - name: '💽 Cache composer dependencies'
       if: ${{ inputs.use-php == 'true' }}
-      uses: actions/cache@v4
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
         key: "composer-cache-${{ runner.os }}-${{ github.head_ref || github.ref_name }}-${{ hashFiles('**/composer.lock') }}"
@@ -57,7 +57,7 @@ runs:
           composer-cache-${{ runner.os }}-wordpress
 
     - name: '💽 Cache var directory'
-      uses: actions/cache@v4
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       if: ${{ inputs.use-php == 'true' }}
       with:
         path: var
@@ -74,11 +74,11 @@ runs:
 
     - name: '🟧 Setup pnpm'
       if: ${{ inputs.use-node == 'true' }}
-      uses: pnpm/action-setup@v4
+      uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
     - name: '❇️ Setup Node.js ${{ inputs.node }}'
       if: ${{ inputs.use-node == 'true' }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
       with:
         cache: pnpm
         node-version: ${{ inputs.node }}

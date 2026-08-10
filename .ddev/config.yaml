@@ -1,14 +1,18 @@
 name: wordpress
-type: wordpress
+type: wp-bedrock
 docroot: web
 database:
   type: mariadb
-  version: '11.4'
-php_version: '8.4'
+  version: '12.3'
+php_version: '8.5'
 host_db_port: '57955'
-nodejs_version: '22'
+nodejs_version: '26'
 webserver_type: nginx-fpm
 xdebug_enabled: false
+upload_dirs:
+  - app/uploads
+  - ../local
+  - ../node_modules
 hooks:
   pre-start:
     # Add pnpm and task to ddev if not already installed.

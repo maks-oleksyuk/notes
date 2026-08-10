@@ -1,10 +1,10 @@
 # NTS Site
 
-Tested up to: 6.8
+Tested up to: 7.0
 
 Stable tag: 1.0.0
 
-Requires PHP: 8.4
+Requires PHP: 8.5
 
 License: GPL-3.0-or-later
 

@@ -1,0 +1,44 @@
+services:
+  app:
+    image: ghcr.io/maks-oleksyuk/notes-wordpress:dev
+    pull_policy: always
+    restart: unless-stopped
+    expose:
+      - 8080
+      - 8443
+    env_file:
+      - .env
+    environment:
+      WP_ENV: development
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ../../files/web/app/uploads:/var/www/html/web/app/uploads
+    post_start:
+      - command: >-
+          chown -R www-data:www-data /var/www/html/web/app/uploads &&
+          chmod -R 775 /var/www/html/web/app/uploads
+        user: root
+
+  db:
+    image: mariadb:12.3
+    restart: unless-stopped
+    environment:
+      MARIADB_USER: ${DB_USER}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    expose:
+      - 3306
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  db_data:
