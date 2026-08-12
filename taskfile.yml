@@ -42,6 +42,11 @@ tasks:
     cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.config.ts {{.CLI_ARGS}}'
     silent: true
 
+  vitest:browser:
+    desc: 'Run `vitest` command against the browser (real Chromium) config.'
+    cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.browser.config.ts {{.CLI_ARGS}}'
+    silent: true
+
   # Work commands:
 
   build:
@@ -158,6 +163,7 @@ tasks:
       - t
       - qa
     cmds:
+      - defer: { task: test:browser }
       - defer: { task: test:unit }
 
   test:unit:
@@ -175,3 +181,19 @@ tasks:
     cmds:
       - task: vitest
         vars: { CLI_ARGS: 'watch {{.CLI_ARGS}}' }
+
+  test:browser:
+    desc: 'Run the browser suite once (real Chromium via Playwright).'
+    aliases:
+      - t:b
+    cmds:
+      - task: vitest:browser
+        vars: { CLI_ARGS: 'run --coverage {{.CLI_ARGS}}' }
+
+  test:browser:watch:
+    desc: 'Watch a real headed Chromium window run the browser suite (needs a display, or remote-desktop/VNC access if running headless).'
+    aliases:
+      - t:b:w
+    cmds:
+      - task: vitest:browser
+        vars: { CLI_ARGS: 'watch --ui --browser.headless=false {{.CLI_ARGS}}' }

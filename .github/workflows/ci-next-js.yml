@@ -74,7 +74,8 @@ jobs:
       fail-fast: false
       matrix:
         command:
-          - { name: '🔬 Unit', command: 'test:unit', report: true }
+          - { name: '🔬 Unit',    command: 'test:unit',    report: true }
+          - { name: '🖥 Browser', command: 'test:browser', report: true }
 
     steps:
       - name: '🛎 Checkout'
@@ -85,8 +86,14 @@ jobs:
       - name: '⚙️ Prepare environment'
         uses: ./.github/actions/setup-environment
 
+      - name: '🎭 Install Playwright Chromium'
+        if: matrix.command.command == 'test:browser'
+        run: pnpm exec playwright install --with-deps --no-progress --only-shell chromium
+
       - name: '${{ matrix.command.name }} tests'
         run: task ${{ matrix.command.command }}
+        env:
+          FORCE_COLOR: '1'
 
       - name: '☂️ Upload coverage report to Codecov'
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0

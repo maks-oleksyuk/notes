@@ -28,24 +28,24 @@ describe('validation plugin', () => {
     expect(res.data).toEqual({ anything: true });
   });
 
-  it('replaces response.data with the Zod-parsed value on success', () => {
+  it('replaces response.data with the Zod-parsed value on success', async () => {
     const plugin = validation();
     const res = response({ id: 1, title: 'hello' });
 
-    plugin.onResponse?.(res, { schema: PostSchema });
+    await plugin.onResponse?.(res, { schema: PostSchema });
 
     expect(res.data).toEqual({ id: 1, title: 'hello' });
   });
 
-  it('throws ValidationError with the schema issues on a mismatch', () => {
+  it('throws ValidationError with the schema issues on a mismatch', async () => {
     const plugin = validation();
     const res = response({ id: 'not-a-number' });
 
     let caught: unknown;
     try {
-      plugin.onResponse?.(res, { schema: PostSchema });
-    } catch (err) {
-      caught = err;
+      await plugin.onResponse?.(res, { schema: PostSchema });
+    } catch (e) {
+      caught = e;
     }
 
     expect(caught).toBeInstanceOf(ValidationError);
@@ -58,7 +58,7 @@ describe('validation plugin', () => {
     expect(err.message).toContain('Response validation failed');
   });
 
-  it('flattens union issues so the message names real fields, not "invalid union"', () => {
+  it('flattens union issues so the message names real fields, not "invalid union"', async () => {
     // Same shape as the admin locations schema: bare array OR { data: [...] }.
     const unionSchema = z.union([
       z.array(z.object({ id: z.number() })),
@@ -70,9 +70,9 @@ describe('validation plugin', () => {
 
     let caught: unknown;
     try {
-      plugin.onResponse?.(res, { schema: unionSchema });
-    } catch (err) {
-      caught = err;
+      await plugin.onResponse?.(res, { schema: unionSchema });
+    } catch (e) {
+      caught = e;
     }
 
     const err = caught as ValidationError;
@@ -92,7 +92,7 @@ describe('validation plugin', () => {
     const summary = summarizeIssues([issue, issue]);
 
     expect(summary).toContain('1 issue:');
-    expect(summary.match(/id: expected/g)).toHaveLength(1);
+    expect(summary.match(/id: expected/gu)).toHaveLength(1);
   });
 
   it('summarizeIssues truncates past MAX_ISSUES and reports the remainder', () => {
@@ -106,6 +106,6 @@ describe('validation plugin', () => {
 
     expect(summary).toContain('7 issues:');
     expect(summary).toContain('…and 2 more');
-    expect(summary.match(/field\d: bad value/g)).toHaveLength(5);
+    expect(summary.match(/field\d: bad value/gu)).toHaveLength(5);
   });
 });

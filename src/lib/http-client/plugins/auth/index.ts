@@ -52,8 +52,7 @@ export function auth(provider: TokenProvider): ApiPlugin {
     },
 
     async onError(error, context) {
-      if (!(error instanceof ApiError) || error.status !== 401)
-        return undefined;
+      if (!(error instanceof ApiError) || error.status !== 401) return;
 
       // No refresh configured (static-token provider): the 401 is final.
       // Report the dead session, but return undefined so the original
@@ -66,7 +65,7 @@ export function auth(provider: TokenProvider): ApiPlugin {
         } catch {
           // onAuthFailure must never break the error path it's reporting on.
         }
-        return undefined;
+        return;
       }
 
       // Second 401 in a row, after we already refreshed once for this request —
@@ -78,7 +77,7 @@ export function auth(provider: TokenProvider): ApiPlugin {
         } catch {
           // onAuthFailure must never break the error path it's reporting on.
         }
-        return undefined;
+        return;
       }
 
       // Refresh failing is reported the same way and propagates as the final

@@ -21,14 +21,11 @@ import type {
   InferSchema,
 } from './types';
 
-// Backoff wait the caller's own AbortSignal can interrupt. Without this a canceled request
-// would silently sit out the full wait (a server Retry-After can ask for minutes) before
-// making one more doomed attempt — with TanStack Query that means the queryFn's signal
-// (unmount, page change) is ignored for the whole backoff window.
+// Backoff wait that the caller's AbortSignal can interrupt — otherwise a canceled request
+// sits out the full backoff (Retry-After can ask for minutes) before one more doomed attempt.
 const sleep = (ms: number, signal?: AbortSignal) =>
   new Promise<void>((resolve, reject) => {
-    // The `??` arm is for hand-rolled AbortSignal-likes without a reason —
-    // `AbortController.abort()` itself always sets one.
+    // `??`: hand-rolled AbortSignal-likes may lack a reason; AbortController.abort() always sets one.
     const abortError = () =>
       signal?.reason ??
       new DOMException('This operation was aborted', 'AbortError');
@@ -47,8 +44,7 @@ const sleep = (ms: number, signal?: AbortSignal) =>
     signal?.addEventListener('abort', onAbort, { once: true });
   });
 
-// Concatenates default + request-level plugins, deduped by `name` (first occurrence wins).
-// See the call site in `mergeOptions` for why dedup matters.
+// Concatenates default + request-level plugins, deduped by `name` (first wins) — see mergeOptions().
 function mergePlugins(
   defaults: ApiRequestOptions['plugins'],
   requested: ApiRequestOptions['plugins'],
@@ -62,10 +58,7 @@ function mergePlugins(
   });
 }
 
-/**
- * `mergeOptions()` unconditionally sets `method`/`path`/`requestId`/`plugins` — narrowing
- * them to require here lets callers use them without a non-null assertion.
- */
+// mergeOptions() always sets these — required here so callers skip the non-null assertion.
 type ResolvedOptions = ApiRequestOptions & {
   method: HttpMethod;
   path: string;
@@ -77,15 +70,12 @@ export class HttpClient {
   readonly #baseUrl: string;
   readonly #defaultOptions: ApiRequestOptions;
 
-  // Keyed by the resolved URL, only ever populated for GET requests that opt in via
-  // `dedupe: true` (see `request()`). Off by default — collapsing concurrent identical
-  // requests is the right call for read-heavy UI code, but it's a behavior change (fewer
-  // network calls, one shared response object across callers), so it stays opt-in rather
-  // than silently changing what every existing GET does.
+  // Keyed by resolved URL; populated only for GET requests opting into `dedupe: true` (see request()).
+  // Opt-in, not default — sharing a response across callers is a behavior change.
   readonly #inFlightGets = new Map<string, Promise<ApiResponse>>();
 
   constructor(baseUrl = '', defaultOptions: ApiRequestOptions = {}) {
-    this.#baseUrl = baseUrl.replace(/\/+$/, '');
+    this.#baseUrl = baseUrl.replace(/\/+$/u, '');
     this.#defaultOptions = {
       responseType: 'json',
       ...defaultOptions,
@@ -93,7 +83,7 @@ export class HttpClient {
   }
 
   /** The main method that wraps the native fetch. */
-  async request<T = unknown>(
+  request<T = unknown>(
     path: string,
     options: ApiRequestOptions = {},
   ): Promise<ApiResponse<T>> {
@@ -102,15 +92,13 @@ export class HttpClient {
     if (
       mergedOptions.method === 'GET' &&
       mergedOptions.dedupe &&
-      // Dedup silently steps aside when the request carries a per-user identity: on the
-      // server this client (and this map) is a module-scope singleton shared by every
-      // incoming request, so handing user A's in-flight response to user B's identical GET
-      // would leak data across users. Any sign of auth (the `auth` plugin, or an explicit
-      // Authorization header) disables it — the URL-only map key can't tell two users apart.
+      // Dedup steps aside for any per-user identity — on the server this client is a
+      // singleton shared across requests, so a URL-only key can't tell two users apart
+      // and would leak user A's response to user B.
       !this.hasAuthIdentity(mergedOptions)
     ) {
       const key = buildUrl(
-        mergedOptions.baseUrl || this.#baseUrl,
+        mergedOptions.baseUrl ?? this.#baseUrl,
         mergedOptions.path,
         mergedOptions.params,
       );
@@ -127,11 +115,9 @@ export class HttpClient {
     return this.executeWithRetries<T>(path, mergedOptions);
   }
 
-  /**
-   * Retry loop over already-merged options. Split out of `request()` so the recovery-phase
-   * replay below can re-enter the loop directly — going back through `request()` would
-   * re-check the dedup map for the very entry this call is still resolving, which deadlocks on itself.
-   */
+  // Split out of request() so the recovery-phase replay can re-enter the loop directly —
+  // going back through request() would re-check the dedup map for the entry this call is
+  // still resolving, deadlocking on itself.
   private async executeWithRetries<T>(
     path: string,
     mergedOptions: ResolvedOptions,
@@ -144,6 +130,7 @@ export class HttpClient {
       mergedOptions.retryAttempt = attempt;
 
       try {
+        // biome-ignore lint/performance/noAwaitInLoops: each attempt only happens after the previous one failed and backed off — parallel attempts would defeat retry semantics.
         return await this.attempt<T>(path, mergedOptions, plugins);
       } catch (err) {
         let finalError = this.normalizeError(err);
@@ -153,18 +140,15 @@ export class HttpClient {
         for (const plugin of plugins) {
           if (!plugin.onError) continue;
           try {
+            // biome-ignore lint/performance/noAwaitInLoops: first-match-wins — must stop at the first plugin that recovers, not fire every plugin's recovery attempt concurrently.
             const result = await plugin.onError(finalError, {
+              // `mergedOptions`, not the original `options` — a recovery plugin (e.g. auth)
+              // mutates it to mark the replay (the `authRetried` guard), and that mark must
+              // survive into the replay below.
               options: mergedOptions,
-              // Replays with `mergedOptions`, not the original `options` — a recovery
-              // plugin (e.g., auth) mutates `context.options` (that's `mergedOptions`) to
-              // leave a mark for the replay, such as the `authRetried` guard against
-              // refreshing forever. Spreading the original `options` here would silently
-              // drop that mark, and the guard would never trip.
-              // `retry: false` on the replay: recovery gets exactly one clean re-run. The
-              // replay is a full inner `executeWithRetries` — if it kept a transient-retry
-              // budget of its own, its final error would land back here as `finalError` and
-              // Phase 2 below would retry the *outer* loop too, multiplying real fetches up
-              // to limit×(limit+1) in the worst case.
+              // `retry: false`: one clean replay. Without it, the inner executeWithRetries
+              // would carry its own retry budget, and Phase 2 below would retry the outer
+              // loop too — multiplying real fetches up to limit×(limit+1).
               retry: () =>
                 this.executeWithRetries<T>(path, {
                   ...mergedOptions,
@@ -186,18 +170,22 @@ export class HttpClient {
             mergedOptions.method,
           );
           if (decision) {
-            for (const plugin of plugins) {
-              await plugin.onRetry?.({
-                attempt: attempt + 1,
-                limit: retryPolicy.limit,
-                wait: decision.wait,
-                fromRetryAfter: decision.fromRetryAfter,
-                error: finalError,
-                requestId: mergedOptions.requestId,
-                method: mergedOptions.method,
-                path: mergedOptions.path,
-              });
-            }
+            // Pure notification, no early exit or shared-state mutation between
+            // plugins — safe (and faster) to fire concurrently.
+            await Promise.all(
+              plugins.map((plugin) =>
+                plugin.onRetry?.({
+                  attempt: attempt + 1,
+                  limit: retryPolicy.limit,
+                  wait: decision.wait,
+                  fromRetryAfter: decision.fromRetryAfter,
+                  error: finalError,
+                  requestId: mergedOptions.requestId,
+                  method: mergedOptions.method,
+                  path: mergedOptions.path,
+                }),
+              ),
+            );
             try {
               // `?? undefined`: RequestInit types `signal` as possibly null.
               await sleep(decision.wait, mergedOptions.signal ?? undefined);
@@ -209,15 +197,20 @@ export class HttpClient {
               finalError =
                 abortErr instanceof Error
                   ? abortErr
-                  : new Error(String(abortErr));
+                  : typeof abortErr === 'string'
+                    ? new Error(abortErr)
+                    : new Error('Request aborted', { cause: abortErr });
             }
           }
         }
 
         // Phase 3 — final failure. Notify observers, then throw.
-        for (const plugin of plugins) {
-          await plugin.onFinalError?.(finalError, mergedOptions);
-        }
+        // Pure notification, safe to fire concurrently (see onRetry above).
+        await Promise.all(
+          plugins.map((plugin) =>
+            plugin.onFinalError?.(finalError, mergedOptions),
+          ),
+        );
         if (mergedOptions.onResponseError && finalError instanceof ApiError) {
           await mergedOptions.onResponseError(finalError);
         }
@@ -233,15 +226,14 @@ export class HttpClient {
     plugins: NonNullable<ApiRequestOptions['plugins']>,
   ): Promise<ApiResponse<T>> {
     for (const plugin of plugins) {
+      // biome-ignore lint/performance/noAwaitInLoops: plugins share (and mutate) `mergedOptions` — e.g. auth attaches a header a later plugin may read — order must be preserved.
       if (plugin.onRequest) await plugin.onRequest(mergedOptions);
     }
     if (mergedOptions.onRequest) await mergedOptions.onRequest(mergedOptions);
 
-    // `mergedOptions.path`/`.method` are always set by `mergeOptions()` below (it reassigns
-    // them unconditionally after the spread) — no `|| path`/`|| 'GET'` fallback needed here,
-    // that path is unreachable through this class's API.
+    // mergeOptions() always sets path/method — no fallback needed here.
     const url = buildUrl(
-      mergedOptions.baseUrl || this.#baseUrl,
+      mergedOptions.baseUrl ?? this.#baseUrl,
       mergedOptions.path,
       mergedOptions.params,
     );
@@ -254,10 +246,9 @@ export class HttpClient {
     );
     const body = buildBody(mergedOptions.body);
 
-    // Per-attempt timeout: `AbortSignal.timeout()` self-clears, so there's no timer to
-    // track or clean up by hand. Combined with the caller's own signal (if any). Never
-    // mutates `mergedOptions` — that object is shared across retries, so a signal aborted
-    // here must not poison later attempts; each retry needs its own clean signal.
+    // Per-attempt timeout, combined with the caller's own signal. Built fresh each attempt
+    // (never stored on mergedOptions, which is shared across retries) — an abort here must
+    // not poison later attempts.
     const timeoutMs = mergedOptions.timeout;
     const signal = timeoutMs
       ? mergedOptions.signal
@@ -281,21 +272,18 @@ export class HttpClient {
         }),
       );
     } catch (err) {
-      // `fetch` rejects with the signal's own abort *reason* (spec behavior, verified on
-      // Node 24 / modern browsers) — `AbortSignal.timeout()`'s reason is a DOMException
-      // already named 'TimeoutError', so no manual timer/controller bookkeeping is needed
-      // to tell "our timer fired" (retryable) apart from "the caller canceled" (must
-      // propagate as-is, must not be retried).
+      // fetch rejects with the signal's abort reason — AbortSignal.timeout()'s reason is
+      // already a DOMException named 'TimeoutError', distinguishing "our timer fired"
+      // (retryable) from "the caller canceled" (must propagate as-is).
       if (err instanceof Error && err.name === 'TimeoutError') {
-        throw new TimeoutError(url, timeoutMs as number);
+        throw new TimeoutError(url, timeoutMs as number, err);
       }
-      // `name` check, not `instanceof DOMException` — some runtimes/polyfills reject with a plain Error named AbortError.
+      // `name` check, not `instanceof DOMException` — some runtimes reject with a plain Error.
       if (err instanceof Error && err.name === 'AbortError') {
         throw err;
       }
-      // NetworkError wraps *only* what `fetch` itself threw (DNS, refused connection, ...).
-      // Classifying right here — not in a catch-all around the whole attempt — is what
-      // keeps a throwing user hook from being mislabeled as a (retryable) network failure.
+      // Classified here (not a catch-all around the whole attempt) so a throwing user hook
+      // downstream can't get mislabeled as a retryable network failure.
       throw new NetworkError(
         err instanceof Error ? err.message : 'Unknown network error',
         url,
@@ -321,7 +309,7 @@ export class HttpClient {
 
     const data = await parseResponseData<T>(
       response,
-      mergedOptions.responseType || 'json',
+      mergedOptions.responseType ?? 'json',
     );
 
     const apiResponse: ApiResponse<T> = {
@@ -334,8 +322,10 @@ export class HttpClient {
     };
 
     for (const plugin of plugins) {
-      if (plugin.onResponse)
+      if (plugin.onResponse) {
+        // biome-ignore lint/performance/noAwaitInLoops: plugins share (and mutate) `apiResponse.data` — e.g. validation replaces it with the parsed value before a later plugin (logger) reads it — order must be preserved.
         await plugin.onResponse(apiResponse, mergedOptions);
+      }
     }
     if (mergedOptions.onResponse) {
       await mergedOptions.onResponse(apiResponse as ApiResponse);
@@ -344,23 +334,18 @@ export class HttpClient {
     return apiResponse;
   }
 
-  /**
-   * Errors reaching the retry loop are already typed at their source: the fetch call in
-   * `attempt()` classifies its own failures (TimeoutError / AbortError / NetworkError),
-   * `ApiError`/`ParseError` are thrown typed, and `ValidationError` comes from the
-   * validation plugin. Everything else — a user hook or plugin throwing its own error —
-   * passes through *unwrapped*: wrapping it in NetworkError would make `nextRetry` re-run a
-   * request whose network part already succeeded and would lie about the error's type. The
-   * only guarantee left to enforce is `Error`-ness for non-Error throws.
-   */
+  // Errors reaching here are already typed at their source (TimeoutError/AbortError/
+  // NetworkError from attempt(), ApiError/ParseError thrown typed, ValidationError from the
+  // validation plugin). A user hook's own error passes through unwrapped — wrapping it in
+  // NetworkError would misclassify a request whose network part already succeeded. Only
+  // guarantee enforced here: non-Error throws become an Error.
   private normalizeError(err: unknown): Error {
     return err instanceof Error ? err : new Error(String(err));
   }
 
   // --- Convenience Methods ---
-  // `O` carries the option object's literal type so `InferSchema` can pick up a `schema`
-  // field when present; `T` is the fallback for the schema-less call shape callers already
-  // use (`get<Post[]>('/posts')`).
+  // `O` carries the option object's literal type so InferSchema can pick up a `schema`
+  // field; `T` is the fallback for the schema-less call shape (`get<Post[]>('/posts')`).
 
   get<
     T = unknown,
@@ -449,12 +434,9 @@ export class HttpClient {
     >;
   }
 
-  /**
-   * `{ data, error }` sugar over `get/post/put/patch/delete` — see `safe()` in `./safe`. A
-   * getter (not a field set in the constructor) so it stays bound to `this` without extra
-   * bookkeeping, at the cost of a new object per access; `client.safe` is called
-   * per-request, not in a hot loop, so that's fine.
-   */
+  // `{ data, error }` sugar over get/post/put/patch/delete — see safe() in ./safe. A getter,
+  // not a constructor field, so it stays bound to `this`; new object per access is fine
+  // since it's called per-request, not in a hot loop.
   get safe() {
     return {
       get: <
@@ -524,12 +506,8 @@ export class HttpClient {
 
   // --- Private Helpers ---
 
-  /**
-   * See the dedup gate in `request()` — URL-keyed dedup can't tell two users' identical GETs apart,
-   * so any per-user identity opts the request out. Identity can arrive three ways:
-   * the `auth` plugin, an explicit `Authorization`/`Cookie` header, or `credentials: 'include'`
-   * (the request then carries whatever cookies the runtime holds for the target origin).
-   */
+  // Backs the dedup gate in request(). Identity can arrive via the `auth` plugin, an
+  // explicit Authorization/Cookie header, or `credentials: 'include'`.
   private hasAuthIdentity(options: ResolvedOptions): boolean {
     if (options.plugins.some((plugin) => plugin.name === 'auth')) return true;
     if (options.credentials === 'include') return true;
@@ -544,8 +522,8 @@ export class HttpClient {
     options: ApiRequestOptions,
   ): ResolvedOptions {
     const method = (
-      options.method ||
-      this.#defaultOptions.method ||
+      options.method ??
+      this.#defaultOptions.method ??
       'GET'
     ).toUpperCase() as HttpMethod;
 
@@ -554,18 +532,16 @@ export class HttpClient {
       ...options,
       path,
       method,
-      // Generated once per request so every lifecycle hook shares the same id.
-      // Not inherited from defaultOptions, which would collide across requests.
+      // Fresh per request so every lifecycle hook shares one id — not inherited from
+      // defaultOptions, which would collide across requests.
       requestId: options.requestId ?? generateRequestId(),
       headers: {
         ...headersToRecord(this.#defaultOptions.headers),
         ...headersToRecord(options.headers),
       },
-      // Concatenate, don't replace it — a per-request `plugins` array must not drop the
-      // client's default plugins (e.g. `logger`). Deduped by `name`, the first occurrence
-      // wins: the auth `onError` recovery path replays through `mergeOptions` with
-      // `options` set to the *already merged* plugins list, so without dedup a replay
-      // would double every plugin on each retry.
+      // Concatenated, not replaced, so a per-request `plugins` array doesn't drop the
+      // client's defaults (e.g. logger). Deduped by name — the auth recovery replay calls
+      // back in with the already-merged list, and without dedup that doubles every plugin.
       plugins: mergePlugins(this.#defaultOptions.plugins, options.plugins),
     };
   }

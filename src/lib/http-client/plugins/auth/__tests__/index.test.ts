@@ -167,7 +167,7 @@ describe('auth plugin', () => {
 
   it('calls onAuthFailure (not a retry loop) when the refresh itself fails', async () => {
     fetchMock.mockResolvedValue(jsonResponse({}, 401));
-    const { provider, getRefreshCalls } = createTestProvider(async () => {
+    const { provider, getRefreshCalls } = createTestProvider(() => {
       throw new Error('refresh endpoint down');
     });
     const client = new HttpClient('https://api.test', {

@@ -1,3 +1,5 @@
+import { sharedEnv } from '@/lib/env/shared';
+
 const codes = {
   red: '\x1b[31m',
   green: '\x1b[32m',
@@ -14,7 +16,7 @@ type Color = keyof typeof codes;
 export function supportsColor(): boolean {
   return (
     typeof process !== 'undefined' &&
-    !process.env.NO_COLOR &&
+    !sharedEnv().NO_COLOR &&
     Boolean(process.stdout?.isTTY)
   );
 }
@@ -59,7 +61,7 @@ const CSS_BY_ANSI_CODE: Record<string, string> = {
 };
 
 // biome-ignore lint/suspicious/noControlCharactersInRegex: matching ANSI escapes is the whole point
-const ANSI_RE = /\x1b\[(\d+)m/g;
+const ANSI_RE = /\x1b\[(?<code>\d+)m/gu;
 
 /**
  * Rewrites ANSI escapes into a console `%c` format string plus its style

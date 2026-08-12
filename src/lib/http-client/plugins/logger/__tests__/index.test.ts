@@ -37,34 +37,36 @@ describe('logger plugin', () => {
     vi.unstubAllEnvs();
   });
 
-  it('logs onRequest with method/path via info (custom logger, level info)', () => {
+  it('logs onRequest with method/path via info (custom logger, level info)', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'info', logger: custom });
 
-    plugin.onRequest?.(options());
+    await plugin.onRequest?.(options());
 
     expect(custom.info).toHaveBeenCalledTimes(1);
     expect(custom.info.mock.calls[0][0]).toContain('GET');
     expect(custom.info.mock.calls[0][0]).toContain('/x');
   });
 
-  it('skips onRequest for a retried attempt (already announced by onRetry)', () => {
+  it('skips onRequest for a retried attempt (already announced by onRetry)', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'info', logger: custom });
 
-    plugin.onRequest?.(options({ retryAttempt: 1 }));
+    await plugin.onRequest?.(options({ retryAttempt: 1 }));
 
     expect(custom.info).not.toHaveBeenCalled();
   });
 
-  it('includes debug metadata (headers/params/body) only at debug level', () => {
+  it('includes debug metadata (headers/params/body) only at debug level', async () => {
     const custom = fakeLogger();
     const infoLevel = logger({ level: 'info', logger: custom });
-    infoLevel.onRequest?.(options());
+    await infoLevel.onRequest?.(options());
     expect(custom.info.mock.calls[0][1]).toBeUndefined();
 
     const debugLevel = logger({ level: 'debug', logger: custom });
-    debugLevel.onRequest?.(options({ headers: { Authorization: 'Bearer x' } }));
+    await debugLevel.onRequest?.(
+      options({ headers: { Authorization: 'Bearer x' } }),
+    );
     expect(custom.info.mock.calls[1][1]).toBeDefined();
     // Sanity: the sanitizer actually ran on the debug metadata.
     expect(JSON.stringify(custom.info.mock.calls[1][1])).not.toContain(
@@ -72,45 +74,45 @@ describe('logger plugin', () => {
     );
   });
 
-  it('logs onResponse with status/duration', () => {
+  it('logs onResponse with status/duration', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'info', logger: custom });
 
-    plugin.onResponse?.(response(), options());
+    await plugin.onResponse?.(response(), options());
 
     expect(custom.info).toHaveBeenCalledTimes(1);
     expect(custom.info.mock.calls[0][0]).toContain('200');
   });
 
-  it('includes debug metadata (headers/data) on onResponse only at debug level', () => {
+  it('includes debug metadata (headers/data) on onResponse only at debug level', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'debug', logger: custom });
 
-    plugin.onResponse?.(response(), options());
+    await plugin.onResponse?.(response(), options());
 
     expect(custom.info.mock.calls[0][1]).toBeDefined();
   });
 
-  it('tags a sub-threshold onResponse as a likely cache hit, without hiding it', () => {
+  it('tags a sub-threshold onResponse as a likely cache hit, without hiding it', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'info', logger: custom });
 
-    plugin.onResponse?.(response({ duration: 2 }), options());
+    await plugin.onResponse?.(response({ duration: 2 }), options());
 
     expect(custom.info).toHaveBeenCalledTimes(1);
     expect(custom.info.mock.calls[0][0]).toContain('(cache?)');
   });
 
-  it('does not tag an onResponse above the cache-hit threshold', () => {
+  it('does not tag an onResponse above the cache-hit threshold', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'info', logger: custom });
 
-    plugin.onResponse?.(response({ duration: 12 }), options());
+    await plugin.onResponse?.(response({ duration: 12 }), options());
 
     expect(custom.info.mock.calls[0][0]).not.toContain('(cache?)');
   });
 
-  it('respects a custom cacheHitThresholdMs', () => {
+  it('respects a custom cacheHitThresholdMs', async () => {
     const custom = fakeLogger();
     const plugin = logger({
       level: 'info',
@@ -118,16 +120,16 @@ describe('logger plugin', () => {
       cacheHitThresholdMs: 0,
     });
 
-    plugin.onResponse?.(response({ duration: 2 }), options());
+    await plugin.onResponse?.(response({ duration: 2 }), options());
 
     expect(custom.info.mock.calls[0][0]).not.toContain('(cache?)');
   });
 
-  it('logs onRetry with attempt/limit/wait, including the Retry-After marker', () => {
+  it('logs onRetry with attempt/limit/wait, including the Retry-After marker', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'info', logger: custom });
 
-    plugin.onRetry?.({
+    await plugin.onRetry?.({
       attempt: 1,
       limit: 3,
       wait: 250.4,
@@ -145,11 +147,11 @@ describe('logger plugin', () => {
     expect(msg).toContain('boom');
   });
 
-  it('logs onFinalError via the logger.error method', () => {
+  it('logs onFinalError via the logger.error method', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'error', logger: custom });
 
-    plugin.onFinalError?.(new Error('dead'), options());
+    await plugin.onFinalError?.(new Error('dead'), options());
 
     expect(custom.error).toHaveBeenCalledTimes(1);
     const [msg, err] = custom.error.mock.calls[0];
@@ -175,7 +177,7 @@ describe('logger plugin', () => {
       },
     });
 
-    plugin.onFinalError?.(err, options());
+    await plugin.onFinalError?.(err, options());
 
     const meta = custom.error.mock.calls[0][2];
     expect(meta.status).toBe(422);
@@ -184,46 +186,46 @@ describe('logger plugin', () => {
     });
   });
 
-  it('does not add status/data metadata for a plain (non-ApiError) failure', () => {
+  it('does not add status/data metadata for a plain (non-ApiError) failure', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'error', logger: custom });
 
-    plugin.onFinalError?.(new Error('network down'), options());
+    await plugin.onFinalError?.(new Error('network down'), options());
 
     const meta = custom.error.mock.calls[0][2];
     expect(meta).not.toHaveProperty('status');
     expect(meta).not.toHaveProperty('data');
   });
 
-  it('skips onFinalError for an AbortError (caller-cancelled, not a failure)', () => {
+  it('skips onFinalError for an AbortError (caller-cancelled, not a failure)', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'error', logger: custom });
 
     const aborted = new DOMException('signal is aborted', 'AbortError');
-    plugin.onFinalError?.(aborted, options());
+    await plugin.onFinalError?.(aborted, options());
 
     expect(custom.error).not.toHaveBeenCalled();
   });
 
-  it('logs a muted cancelled line for an AbortError at info level (not an error)', () => {
+  it('logs a muted cancelled line for an AbortError at info level (not an error)', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'info', logger: custom });
 
     const aborted = new DOMException('signal is aborted', 'AbortError');
-    plugin.onFinalError?.(aborted, options());
+    await plugin.onFinalError?.(aborted, options());
 
     expect(custom.error).not.toHaveBeenCalled();
     expect(custom.info).toHaveBeenCalledTimes(1);
     expect(custom.info.mock.calls[0][0]).toContain('cancelled');
   });
 
-  it('default console logger renders errors red via console.error in the browser', () => {
+  it('default console logger renders errors red via console.error in the browser', async () => {
     vi.stubGlobal('window', {});
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const plugin = logger({ level: 'error' }); // default console logger
 
     const err = new Error('dead');
-    plugin.onFinalError?.(err, options());
+    await plugin.onFinalError?.(err, options());
 
     // Red line = header (with message + %c styles) + cleaned metadata. The Error
     // object itself is NOT printed (its stack is always transport plumbing, not
@@ -236,12 +238,12 @@ describe('logger plugin', () => {
     vi.restoreAllMocks();
   });
 
-  it('default console logger errors on the server without %c styling', () => {
+  it('default console logger errors on the server without %c styling', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const plugin = logger({ level: 'error' }); // no window → server branch
 
     const err = new Error('dead');
-    plugin.onFinalError?.(err, options());
+    await plugin.onFinalError?.(err, options());
 
     const args = errorSpy.mock.calls[0];
     expect(args[0]).not.toContain('%c');
@@ -250,41 +252,43 @@ describe('logger plugin', () => {
     vi.restoreAllMocks();
   });
 
-  it('respects level filtering: silent suppresses everything', () => {
+  it('respects level filtering: silent suppresses everything', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'silent', logger: custom });
 
-    plugin.onRequest?.(options());
-    plugin.onResponse?.(response(), options());
-    plugin.onRetry?.({
+    await plugin.onRequest?.(options());
+    await plugin.onResponse?.(response(), options());
+    await plugin.onRetry?.({
       attempt: 1,
       limit: 3,
       wait: 1,
       fromRetryAfter: false,
       error: new Error('x'),
     });
-    plugin.onFinalError?.(new Error('x'), options());
+    await plugin.onFinalError?.(new Error('x'), options());
 
     expect(custom.info).not.toHaveBeenCalled();
     expect(custom.error).not.toHaveBeenCalled();
   });
 
-  it('prefixes messages when a prefix is configured', () => {
+  it('prefixes messages when a prefix is configured', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'info', logger: custom, prefix: 'blog' });
 
-    plugin.onRequest?.(options());
+    await plugin.onRequest?.(options());
 
     expect(custom.info.mock.calls[0][0]).toContain('blog ');
   });
 
-  it('falls back to the default console logger when none is given, without throwing', () => {
+  it('falls back to the default console logger when none is given, without throwing', async () => {
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const plugin = logger({ level: 'debug' });
 
-    plugin.onRequest?.(options({ headers: { Authorization: 'Bearer x' } }));
-    plugin.onFinalError?.(new Error('dead'), options());
+    await plugin.onRequest?.(
+      options({ headers: { Authorization: 'Bearer x' } }),
+    );
+    await plugin.onFinalError?.(new Error('dead'), options());
 
     expect(logSpy).toHaveBeenCalled();
     expect(errorSpy).toHaveBeenCalled();
@@ -292,12 +296,12 @@ describe('logger plugin', () => {
     errorSpy.mockRestore();
   });
 
-  it('colors browser logs via %c CSS (the TTY check alone left them colorless)', () => {
+  it('colors browser logs via %c CSS (the TTY check alone left them colorless)', async () => {
     vi.stubGlobal('window', {});
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     const plugin = logger({ level: 'info' }); // default console logger
 
-    plugin.onRequest?.(options());
+    await plugin.onRequest?.(options());
 
     const args = logSpy.mock.calls[0];
     expect(args[0]).toContain('%c'); // CSS directives present
@@ -307,7 +311,7 @@ describe('logger plugin', () => {
     vi.restoreAllMocks();
   });
 
-  it('default console logger groups output in a simulated browser environment', () => {
+  it('default console logger groups output in a simulated browser environment', async () => {
     vi.stubGlobal('window', {});
     const groupSpy = vi
       .spyOn(console, 'groupCollapsed')
@@ -319,75 +323,77 @@ describe('logger plugin', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     const plugin = logger({ level: 'debug' });
 
-    plugin.onRequest?.(options({ headers: { Authorization: 'Bearer x' } }));
-    plugin.onFinalError?.(new Error('dead'), options());
+    await plugin.onRequest?.(
+      options({ headers: { Authorization: 'Bearer x' } }),
+    );
+    await plugin.onFinalError?.(new Error('dead'), options());
 
     expect(groupSpy).toHaveBeenCalled();
     expect(groupEndSpy).toHaveBeenCalled();
     vi.restoreAllMocks();
   });
 
-  it('defaults to error level in production and info otherwise, unless overridden', () => {
+  it('defaults to error level in production and info otherwise, unless overridden', async () => {
     vi.stubEnv('NODE_ENV', 'production');
     const custom = fakeLogger();
     const plugin = logger({ logger: custom }); // no explicit level
 
-    plugin.onRequest?.(options()); // info-level should be suppressed in prod default
+    await plugin.onRequest?.(options()); // info-level should be suppressed in prod default
 
     expect(custom.info).not.toHaveBeenCalled();
   });
 
-  it('falls back to .log when the custom logger has no .info', () => {
+  it('falls back to .log when the custom logger has no .info', async () => {
     const logOnly = { log: vi.fn(), error: vi.fn() };
     const plugin = logger({ level: 'info', logger: logOnly });
 
-    plugin.onRequest?.(options());
+    await plugin.onRequest?.(options());
 
     expect(logOnly.log).toHaveBeenCalledTimes(1);
   });
 
-  it('omits the [id] tag when the request has no requestId', () => {
+  it('omits the [id] tag when the request has no requestId', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'info', logger: custom });
 
-    plugin.onRequest?.(options({ requestId: undefined }));
+    await plugin.onRequest?.(options({ requestId: undefined }));
 
     expect(custom.info.mock.calls[0][0]).not.toContain('[');
   });
 
-  it('defaults method/path to GET and / when missing on onRequest', () => {
+  it('defaults method/path to GET and / when missing on onRequest', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'info', logger: custom });
 
-    plugin.onRequest?.({});
+    await plugin.onRequest?.({});
 
     expect(custom.info.mock.calls[0][0]).toContain('GET');
     expect(custom.info.mock.calls[0][0]).toContain(' /');
   });
 
-  it('defaults method/path to GET and / when missing on onResponse', () => {
+  it('defaults method/path to GET and / when missing on onResponse', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'info', logger: custom });
 
-    plugin.onResponse?.(response(), {});
+    await plugin.onResponse?.(response(), {});
 
     expect(custom.info.mock.calls[0][0]).toContain('GET');
   });
 
-  it('defaults method/path to GET and / when missing on onFinalError', () => {
+  it('defaults method/path to GET and / when missing on onFinalError', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'error', logger: custom });
 
-    plugin.onFinalError?.(new Error('dead'), {});
+    await plugin.onFinalError?.(new Error('dead'), {});
 
     expect(custom.error.mock.calls[0][0]).toContain('GET');
   });
 
-  it('onRetry: omits the Retry-After marker and defaults method/path when absent', () => {
+  it('onRetry: omits the Retry-After marker and defaults method/path when absent', async () => {
     const custom = fakeLogger();
     const plugin = logger({ level: 'info', logger: custom });
 
-    plugin.onRetry?.({
+    await plugin.onRetry?.({
       attempt: 1,
       limit: 3,
       wait: 5,

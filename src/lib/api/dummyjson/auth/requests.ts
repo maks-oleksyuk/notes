@@ -29,6 +29,6 @@ export function logout(): void {
 
 /** Requires a valid access token — the `auth` plugin attaches it and
  * transparently refreshes+replays once on a 401. */
-export async function getCurrentUser(overrides?: RequestOverrides) {
+export function getCurrentUser(overrides?: RequestOverrides) {
   return dummyJsonApi.get<AuthUser>(dummyJsonUrls.auth.me(), overrides);
 }

@@ -1,3 +1,5 @@
+// biome-ignore-all lint/suspicious/noConsole: this file *is* the console logger — console.* is the point, not a leftover.
+import { sharedEnv } from '@/lib/env/shared';
 import { ApiError } from '@/lib/http-client/core';
 import { cleanMetadata } from '@/lib/http-client/utils/sanitize';
 
@@ -46,12 +48,10 @@ export function logger({
   const prefix = rawPrefix ? `${rawPrefix} ` : '';
 
   // Priority: explicit option -> API_LOG_LEVEL env -> per-environment default.
+  const env = sharedEnv();
   const defaultLevel: LogLevel =
-    process.env.NODE_ENV === 'production' ? 'error' : 'info';
-  const level = resolveLevel(
-    rawLevel ?? process.env.API_LOG_LEVEL,
-    defaultLevel,
-  );
+    env.NODE_ENV === 'production' ? 'error' : 'info';
+  const level = resolveLevel(rawLevel ?? env.API_LOG_LEVEL, defaultLevel);
   const allow = createLevelFilter(level);
 
   // Groups render nicely in the browser but get mangled (header duplicated) by
@@ -68,13 +68,13 @@ export function logger({
   }
 
   function print(
-    level: 'log' | 'warn',
+    method: 'log' | 'warn',
     msg: string,
     meta?: Record<string, unknown>,
   ) {
     const cleanMeta = meta ? cleanMetadata(meta) : undefined;
     if (!cleanMeta || Object.keys(cleanMeta).length === 0) {
-      console[level](...toConsoleArgs(msg));
+      console[method](...toConsoleArgs(msg));
       return;
     }
     if (isBrowser) {
@@ -82,7 +82,7 @@ export function logger({
       console.dir(cleanMeta, { depth: null });
       console.groupEnd();
     } else {
-      console[level](msg, cleanMeta);
+      console[method](msg, cleanMeta);
     }
   }
 
@@ -106,7 +106,7 @@ export function logger({
     },
   };
 
-  const activeLogger = customLogger || defaultConsoleLogger;
+  const activeLogger = customLogger ?? defaultConsoleLogger;
   const logFn = activeLogger.info ?? activeLogger.log;
 
   // Custom loggers get plain text (they format/ship structured logs themselves);
@@ -114,12 +114,12 @@ export function logger({
   // real TTY on the server, or browser devtools (where the ANSI is converted
   // to %c CSS in `toConsoleArgs`; the TTY check alone would leave browser logs
   // colorless, since a browser has no process.stdout).
-  const useColors = !customLogger && (isBrowser || supportsColor());
+  const isColorEnabled = !customLogger && (isBrowser || supportsColor());
 
   // Correlates the three lines of one request when logs from parallel requests
   // interleave. Empty when the request has no id.
   const tag = (id?: string) =>
-    id ? `${paint(`[${id}]`, 'gray', useColors)} ` : '';
+    id ? `${paint(`[${id}]`, 'gray', isColorEnabled)} ` : '';
 
   return {
     name: 'logger',
@@ -140,9 +140,9 @@ export function logger({
           })
         : undefined;
 
-      const arrow = paint('-->', 'gray', useColors);
+      const arrow = paint('-->', 'gray', isColorEnabled);
       logFn(
-        `${prefix}${tag(options.requestId)}${arrow} ${colorizeMethod(method, useColors)} ${path}`,
+        `${prefix}${tag(options.requestId)}${arrow} ${colorizeMethod(method, isColorEnabled)} ${path}`,
         metadata,
       );
     },
@@ -159,8 +159,8 @@ export function logger({
           })
         : undefined;
 
-      const arrow = paint('<--', 'gray', useColors);
-      const status = colorizeStatus(response.status, useColors);
+      const arrow = paint('<--', 'gray', isColorEnabled);
+      const status = colorizeStatus(response.status, isColorEnabled);
       // Below the threshold reads as a Next Data Cache hit (in-process, no network) rather
       // than a real round-trip — tagged, not hidden, so the request line above it isn't left
       // dangling with no terminus.
@@ -169,10 +169,10 @@ export function logger({
       const timing = paint(
         `in ${response.duration}ms${cacheTag}`,
         'gray',
-        useColors,
+        isColorEnabled,
       );
       logFn(
-        `${prefix}${tag(options.requestId)}${arrow} ${colorizeMethod(method, useColors)} ${path} ${status} ${timing}`,
+        `${prefix}${tag(options.requestId)}${arrow} ${colorizeMethod(method, isColorEnabled)} ${path} ${status} ${timing}`,
         metadata,
       );
     },
@@ -182,20 +182,20 @@ export function logger({
 
       // A retry is expected and recoverable — log level, not warn/error, so the
       // browser console doesn't attach an alarm icon and a stack trace.
-      const marker = paint('↺', 'yellow', useColors);
+      const marker = paint('↺', 'yellow', isColorEnabled);
       const label = paint(
         `retry ${info.attempt}/${info.limit}`,
         'yellow',
-        useColors,
+        isColorEnabled,
       );
       const source = info.fromRetryAfter ? ' (Retry-After)' : '';
       const wait = paint(
         `in ${Math.round(info.wait)}ms${source}`,
         'gray',
-        useColors,
+        isColorEnabled,
       );
       logFn(
-        `${prefix}${tag(info.requestId)}${marker} ${label} ${colorizeMethod(info.method || 'GET', useColors)} ${info.path || '/'} ${wait} — ${info.error.message}`,
+        `${prefix}${tag(info.requestId)}${marker} ${label} ${colorizeMethod(info.method || 'GET', isColorEnabled)} ${info.path || '/'} ${wait} — ${info.error.message}`,
       );
     },
 
@@ -212,10 +212,10 @@ export function logger({
       // terminus and looks like it silently vanished.
       if (error.name === 'AbortError') {
         if (!allow('info')) return;
-        const marker = paint('✕', 'gray', useColors);
-        const label = paint('cancelled', 'gray', useColors);
+        const marker = paint('✕', 'gray', isColorEnabled);
+        const label = paint('cancelled', 'gray', isColorEnabled);
         logFn(
-          `${prefix}${tag(options.requestId)}${marker} ${colorizeMethod(method, useColors)} ${path} — ${label}`,
+          `${prefix}${tag(options.requestId)}${marker} ${colorizeMethod(method, isColorEnabled)} ${path} — ${label}`,
         );
         return;
       }
@@ -242,9 +242,9 @@ export function logger({
       // but the default console sink deliberately doesn't print it — its stack
       // is always the same transport plumbing (`validation` -> `attempt` ->
       // `executeWithRetries`), never the real cause, so it's pure noise.
-      const label = paint('Error', 'red', useColors);
+      const label = paint('Error', 'red', isColorEnabled);
       activeLogger.error(
-        `${prefix}${tag(options.requestId)}${label} ${colorizeMethod(method, useColors)} ${path} — ${error.message}`,
+        `${prefix}${tag(options.requestId)}${label} ${colorizeMethod(method, isColorEnabled)} ${path} — ${error.message}`,
         error,
         metadata,
       );

@@ -41,6 +41,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# vitest browser mode (trace.zip recordings, next to the test file)
+__traces__
+
 # local packages (separate repos, not part of this project)
 /packages
 

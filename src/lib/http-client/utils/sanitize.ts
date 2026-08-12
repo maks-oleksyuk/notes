@@ -15,7 +15,7 @@ const SENSITIVE_SUBSTRINGS = [
 ];
 
 function isSensitiveKey(key: string): boolean {
-  const normalized = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const normalized = key.toLowerCase().replace(/[^a-z0-9]/gu, '');
   return SENSITIVE_SUBSTRINGS.some((needle) => normalized.includes(needle));
 }
 

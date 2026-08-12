@@ -259,13 +259,12 @@ export default function DummyJsonDemoPage() {
             </Badge>
             <Select
               allowDeselect={false}
+              aria-label='Sort by'
               data={[
                 { value: 'title', label: 'Sort: Title' },
                 { value: 'price', label: 'Sort: Price' },
               ]}
-              onChange={(value) =>
-                setSortBy((value as 'title' | 'price') ?? 'title')
-              }
+              onChange={(value) => setSortBy(value as 'title' | 'price')}
               size='xs'
               value={sortBy}
               w={140}
@@ -287,7 +286,7 @@ export default function DummyJsonDemoPage() {
 
         {error ? (
           <Alert color='red' variant='light'>
-            {error instanceof Error ? error.message : 'Request failed'}
+            {error.message}
           </Alert>
         ) : null}
 

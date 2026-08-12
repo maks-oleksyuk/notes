@@ -340,13 +340,14 @@ describe('HttpClient', () => {
       // 'TimeoutError', not a generic 'AbortError'. Mirror that here instead of
       // hardcoding 'AbortError', or this mock silently drifts from what `fetch`
       // actually does.
-      fetchMock.mockImplementation((_url: string, init: RequestInit) => {
-        return new Promise((_resolve, reject) => {
-          init.signal?.addEventListener('abort', () => {
-            reject(init.signal?.reason);
-          });
-        });
-      });
+      fetchMock.mockImplementation(
+        (_url: string, init: RequestInit) =>
+          new Promise((_resolve, reject) => {
+            init.signal?.addEventListener('abort', () => {
+              reject(init.signal?.reason);
+            });
+          }),
+      );
 
       const client = new HttpClient('https://api.test', {
         retry: { limit: 2, delay: 1 },
@@ -360,13 +361,14 @@ describe('HttpClient', () => {
     });
 
     it('does not retry when the caller cancels via their own signal', async () => {
-      fetchMock.mockImplementation((_url: string, init: RequestInit) => {
-        return new Promise((_resolve, reject) => {
-          init.signal?.addEventListener('abort', () => {
-            reject(new DOMException('aborted', 'AbortError'));
-          });
-        });
-      });
+      fetchMock.mockImplementation(
+        (_url: string, init: RequestInit) =>
+          new Promise((_resolve, reject) => {
+            init.signal?.addEventListener('abort', () => {
+              reject(new DOMException('aborted', 'AbortError'));
+            });
+          }),
+      );
 
       const controller = new AbortController();
       const client = new HttpClient('https://api.test', {
@@ -399,6 +401,7 @@ describe('HttpClient', () => {
       const recovered = jsonResponse({ recovered: true });
       const recovery: ApiPlugin = {
         name: 'recovery',
+        // biome-ignore lint/suspicious/useAwait: must return a Promise (one branch returns a bare object) to satisfy ApiPlugin['onError'].
         async onError(error) {
           if (error instanceof ApiError && error.status === 401) {
             return {
@@ -410,7 +413,6 @@ describe('HttpClient', () => {
               duration: 0,
             };
           }
-          return undefined;
         },
       };
       const client = new HttpClient('https://api.test', {
@@ -432,10 +434,9 @@ describe('HttpClient', () => {
 
       const recovery: ApiPlugin = {
         name: 'recovery',
-        async onError(error, context) {
-          if (!(error instanceof ApiError) || error.status !== 401)
-            return undefined;
-          if (context.options.authRetried) return undefined;
+        onError(error, context) {
+          if (!(error instanceof ApiError) || error.status !== 401) return;
+          if (context.options.authRetried) return;
           context.options.authRetried = true;
           return context.retry();
         },
@@ -465,9 +466,7 @@ describe('HttpClient', () => {
       fetchMock.mockResolvedValue(jsonResponse({}, 401));
       const recovery: ApiPlugin = {
         name: 'recovery',
-        async onError() {
-          return undefined; // never recovers
-        },
+        onError() {},
       };
       const client = new HttpClient('https://api.test', {
         retry: { limit: 3, delay: 1 }, // 401 isn't in the default retryable statuses
@@ -487,7 +486,7 @@ describe('HttpClient', () => {
         onRequest: () => void calls.push('onRequest'),
         onResponse: () => void calls.push('onResponse'),
       };
-      fetchMock.mockImplementationOnce(async () => {
+      fetchMock.mockImplementationOnce(() => {
         calls.push('fetch');
         return jsonResponse({ ok: true });
       });
@@ -566,8 +565,8 @@ describe('HttpClient', () => {
       const recovery: ApiPlugin = {
         name: 'recovery',
         onRequest: () => void onRequestCalls++,
-        onError: async (_err, { retry }) => {
-          if (calls > 1) return undefined;
+        onError: (_err, { retry }) => {
+          if (calls > 1) return;
           return retry();
         },
       };
@@ -840,6 +839,30 @@ describe('HttpClient', () => {
       await expect(
         client.get('/x', { signal: controller.signal }),
       ).rejects.toMatchObject({ message: 'user navigated away' });
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('wraps a non-Error, non-string abort reason (abort({...})) into an Error', async () => {
+      fetchMock.mockResolvedValue(jsonResponse({}, 503));
+      const controller = new AbortController();
+      const aborter: ApiPlugin = {
+        name: 'aborter',
+        // Neither an Error nor a string — the backoff catch's last ternary
+        // branch (wrap with a generic message, original as `cause`).
+        onRetry: () => controller.abort({ code: 'NAV_AWAY' }),
+      };
+      const client = new HttpClient('https://api.test', {
+        retry: { limit: 3, delay: 60_000 },
+        plugins: [aborter],
+      });
+
+      await expect(
+        client.get('/x', { signal: controller.signal }),
+      ).rejects.toMatchObject({
+        message: 'Request aborted',
+        cause: { code: 'NAV_AWAY' },
+      });
 
       expect(fetchMock).toHaveBeenCalledTimes(1);
     });

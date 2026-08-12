@@ -70,9 +70,9 @@ describe('dummyJsonTokenProvider', () => {
     expect(getDummyJsonAccessToken()).toBeNull();
   });
 
-  it('onAuthFailure clears the token pair', () => {
+  it('onAuthFailure clears the token pair', async () => {
     setDummyJsonTokens({ accessToken: 'a1', refreshToken: 'r1' });
-    dummyJsonTokenProvider.onAuthFailure?.(new Error('dead session'));
+    await dummyJsonTokenProvider.onAuthFailure?.(new Error('dead session'));
     expect(getDummyJsonAccessToken()).toBeNull();
   });
 });

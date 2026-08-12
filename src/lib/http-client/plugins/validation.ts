@@ -30,7 +30,7 @@ function formatIssue(issue: ZodIssue): string {
       : '(root)';
   // Zod prefixes every type error with "Invalid input: " — drop it, the path
   // already says which input.
-  const reason = issue.message.replace(/^Invalid input:\s*/i, '');
+  const reason = issue.message.replace(/^Invalid input:\s*/iu, '');
   return `${path}: ${reason}`;
 }
 

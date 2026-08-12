@@ -30,11 +30,6 @@ export function getDummyJsonAccessToken(): string | null {
  */
 async function refreshDummyJsonToken(): Promise<string> {
   if (!tokens?.refreshToken) throw new Error('No refresh token available');
-
-  // Bypasses `dummyJsonApi` (see the doc above), so the `logger` plugin never
-  // sees this call — log it by hand, or a refresh happens invisibly between
-  // two identical-looking `/auth/me` log lines.
-  console.log('[dummyjson] refreshing access token…');
   const res = await fetch(
     `${getDummyJsonBaseUrl()}${dummyJsonUrls.auth.refresh()}`,
     {
@@ -45,13 +40,11 @@ async function refreshDummyJsonToken(): Promise<string> {
   );
   if (!res.ok) {
     clearDummyJsonTokens();
-    console.log(`[dummyjson] refresh failed: ${res.status}`);
     throw new Error(`Refresh failed: ${res.status}`);
   }
 
   const next: AuthTokens = await res.json();
   tokens = next;
-  console.log('[dummyjson] access token refreshed');
   return next.accessToken;
 }
 

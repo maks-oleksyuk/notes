@@ -9,7 +9,7 @@ import type { Product, ProductsPage } from './types';
  * `queries.ts` in this same folder. Unauthenticated — dummyjson's product
  * catalog is public, the `auth` plugin only kicks in when a token exists. */
 
-export async function getProducts(
+export function getProducts(
   skip = 0,
   limit = 10,
   overrides?: RequestOverrides,
@@ -20,17 +20,14 @@ export async function getProducts(
   });
 }
 
-export async function getProduct(id: number, overrides?: RequestOverrides) {
+export function getProduct(id: number, overrides?: RequestOverrides) {
   return dummyJsonApi.get<Product>(
     dummyJsonUrls.products.detail(id),
     overrides,
   );
 }
 
-export async function searchProducts(
-  query: string,
-  overrides?: RequestOverrides,
-) {
+export function searchProducts(query: string, overrides?: RequestOverrides) {
   return dummyJsonApi.get<ProductsPage>(dummyJsonUrls.products.search(), {
     ...overrides,
     params: { q: query },

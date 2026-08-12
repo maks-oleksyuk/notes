@@ -225,4 +225,5 @@ export interface ApiErrorInfo {
   method: string;
   data?: unknown;
   headers?: Headers;
+  cause?: unknown;
 }

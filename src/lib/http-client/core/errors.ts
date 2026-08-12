@@ -9,7 +9,7 @@ export class ApiError extends Error {
   readonly headers?: Headers;
 
   constructor(message: string, info: ApiErrorInfo) {
-    super(message);
+    super(message, { cause: info.cause });
 
     this.name = 'ApiError';
     this.status = info.status;
@@ -51,8 +51,9 @@ export class TimeoutError extends Error {
   constructor(
     public url: string,
     public timeout: number,
+    cause?: unknown,
   ) {
-    super(`Request timeout after ${timeout}ms: ${url}`);
+    super(`Request timeout after ${timeout}ms: ${url}`, { cause });
     this.name = 'TimeoutError';
   }
 }
