@@ -3,11 +3,14 @@
 import { MantineProvider } from '@mantine/core';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { NextIntlClientProvider } from 'next-intl';
 import { useState } from 'react';
 
+import { defaultLocale } from '@/i18n/config';
 import { makeQueryClient } from '@/lib/http-client/query-client';
 
 import type { QueryClient } from '@tanstack/react-query';
+import type { AbstractIntlMessages } from 'next-intl';
 import type React from 'react';
 
 // A fresh QueryClient per browser tab, created once via `useState`'s lazy
@@ -30,15 +33,25 @@ function getQueryClient(): QueryClient {
   return browserQueryClient;
 }
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({
+  children,
+  locale = defaultLocale,
+  messages = {},
+}: {
+  children: React.ReactNode;
+  locale?: string;
+  messages?: AbstractIntlMessages;
+}) {
   const [queryClient] = useState(getQueryClient);
 
   return (
-    <MantineProvider defaultColorScheme='auto'>
-      <QueryClientProvider client={queryClient}>
-        {children}
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </MantineProvider>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <MantineProvider defaultColorScheme='auto'>
+        <QueryClientProvider client={queryClient}>
+          {children}
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </MantineProvider>
+    </NextIntlClientProvider>
   );
 }
