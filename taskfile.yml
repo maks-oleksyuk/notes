@@ -47,6 +47,11 @@ tasks:
     cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.browser.config.ts {{.CLI_ARGS}}'
     silent: true
 
+  knip:
+    desc: 'Run `knip` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/knip --config {{.CONFIG_DIR}}/knip.json {{.CLI_ARGS}}'
+    silent: true
+
   # Work commands:
 
   build:
@@ -99,6 +104,7 @@ tasks:
     aliases:
       - l
     cmds:
+      - defer: { task: lint:knip }
       - defer: { task: lint:biome }
       - defer: { task: lint:type }
 
@@ -129,6 +135,18 @@ tasks:
         vars: { CLI_ARGS: '-V' }
       - task: tsc
         vars: { CLI_ARGS: '--noEmit --incremental --pretty' }
+
+  lint:knip:
+    desc: 'Find unused files, dependencies, and exports.'
+    aliases:
+      - l:k
+      - l:knip
+      - lint:k
+    cmds:
+      - task: knip
+        vars: { CLI_ARGS: '-V' }
+      - task: knip
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
   # Fixing:
 

@@ -51,6 +51,7 @@ jobs:
         command:
           - { name: '🗜 TS Types', command: 'lint:type' }
           - { name: '🫐 Biome', command: 'lint:biome -- --reporter=github' }
+          - { name: '✂️ Knip', command: 'lint:knip -- --reporter github-actions' }
 
     steps:
       - name: '🛎 Checkout'

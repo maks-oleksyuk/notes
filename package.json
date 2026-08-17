@@ -2,6 +2,7 @@
   "name": "notes-next-js",
   "version": "0.1.0",
   "dependencies": {
+    "@better-auth/memory-adapter": "^1.6.29",
     "@mantine/core": "^9.5.1",
     "@mantine/hooks": "^9.5.1",
     "@sentry/nextjs": "^10.70.0",
@@ -27,6 +28,7 @@
     "@vitest/coverage-v8": "^4.1.10",
     "@vitest/ui": "^4.1.10",
     "babel-plugin-react-compiler": "1.0.0",
+    "knip": "^6.32.2",
     "msw": "^2.15.0",
     "next-devtools-mcp": "^0.4.0",
     "playwright": "^1.62.1",
