@@ -3,13 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { DELETE, GET, PATCH, POST, PUT } from '../route';
 
-// Proxy behavior itself (header forwarding, body parsing, error mapping,
-// blob passthrough, ...) is covered generically in
-// `src/lib/http-client/__tests__/next-proxy.test.ts`. These two tests only
-// confirm the wiring: `route.ts` plugs the real `dummyJsonServerApi` (its
-// actual base URL, `retry: { limit: 3 }`, logger plugin) into
-// `toNextJsProxyHandler` and it behaves as expected end to end.
-
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -42,8 +35,7 @@ describe('dummyjson proxy route', () => {
 
   it('exports all five methods, all wired to the real dummyJsonServerApi', async () => {
     // A fresh Response per call — reusing one instance across the five
-    // handlers below would fail on the second `.json()` read (body already
-    // consumed).
+    // handlers below would fail on the second `.json()` read (body already consumed).
     fetchMock.mockImplementation(() => jsonResponse({ ok: true }));
 
     const responses = await Promise.all(

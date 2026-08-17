@@ -3,7 +3,7 @@
 // import (review.md A4); the root barrel was removed for exactly that reason.
 
 import { HttpClient } from '@/lib/http-client/core';
-import { auth, logger } from '@/lib/http-client/plugins';
+import { auth, logger, sentry } from '@/lib/http-client/plugins';
 
 import { dummyJsonTokenProvider } from './auth/token-provider';
 import { getDummyJsonBaseUrl } from './base-url';
@@ -24,6 +24,7 @@ export const dummyJsonApi = new HttpClient(getDummyJsonBaseUrl(), {
   plugins: [
     logger({ level: 'info', prefix: 'dummyjson' }),
     auth(dummyJsonTokenProvider),
+    sentry(),
   ],
 });
 
