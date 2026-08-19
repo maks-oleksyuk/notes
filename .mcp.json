@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "next-devtools": {
+      "command": "ddev",
+      "args": ["exec", "npx", "-y", "next-devtools-mcp@latest"]
+    }
+  }
+}

@@ -10,8 +10,7 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
+var
 
 # next.js
 /.next/
@@ -34,6 +33,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -41,3 +41,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# vitest browser mode (trace.zip recordings, next to the test file)
+__traces__
+
+# local packages (separate repos, not part of this project)
+/packages
+
+local

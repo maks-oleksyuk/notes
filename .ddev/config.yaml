@@ -1,14 +1,40 @@
 name: next-js
 type: generic
 webserver_type: generic
-nodejs_version: '24'
+nodejs_version: '26'
 omit_containers: [db]
 disable_upload_dirs_warning: true
+upload_dirs:
+  - node_modules
 web_extra_exposed_ports:
   - name: next-js
     container_port: 3000
     http_port: 80
     https_port: 443
+  - name: vitest-ui-dashboard
+    container_port: 51204
+    http_port: 51204
+    https_port: 51205
+  - name: novnc
+    container_port: 6080
+    http_port: 6080
+    https_port: 6081
+web_environment:
+  - DISPLAY=:99
+  - PLAYWRIGHT_BROWSERS_PATH=0
+web_extra_daemons:
+  - name: xvfb
+    command: 'Xvfb :99 -screen 0 1920x1080x24'
+    directory: /var/www/html
+  - name: fluxbox
+    command: 'sleep 2 && fluxbox || sleep infinity'
+    directory: /var/www/html
+  - name: x11vnc
+    command: 'sleep 3 && x11vnc -display :99 -forever -shared -nopw -rfbport 5900 || sleep infinity'
+    directory: /var/www/html
+  - name: novnc
+    command: 'sleep 4 && websockify --web=/usr/share/novnc 6080 localhost:5900 || sleep infinity'
+    directory: /var/www/html
 hooks:
   pre-start:
     # Add pnpm and task to ddev if not already installed.
@@ -17,3 +43,4 @@ hooks:
         ddev add-on list --installed | grep -q 'gebruederheitz/ddev-taskfile' || ddev add-on get gebruederheitz/ddev-taskfile > /dev/null
   post-start:
     - exec: pnpm install
+    - exec: pnpm exec playwright install chromium

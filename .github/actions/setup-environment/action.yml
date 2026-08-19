@@ -5,7 +5,7 @@ inputs:
   node:
     description: 'Node.js version to install'
     required: true
-    default: '24.x'
+    default: '26.x'
 
 runs:
   using: composite
@@ -15,14 +15,14 @@ runs:
       run: sh -c "$(curl -s --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin > /dev/null 2>&1
 
     - name: '🟧 Setup pnpm'
-      uses: pnpm/action-setup@v4
+      uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
     - name: '❇️ Setup Node.js ${{ inputs.node }}'
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
       with:
         cache: pnpm
         node-version: ${{ inputs.node }}
 
     - name: '📦 Install pnpm dependencies'
       shell: bash
-      run: pnpm i -s --prefer-offline --color=always
+      run: pnpm i --prefer-offline --color=always

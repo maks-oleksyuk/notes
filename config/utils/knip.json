@@ -1,0 +1,10 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "config/utils/*.config.ts",
+    "config/utils/*.setup.ts",
+    "src/lib/http-client/**/*.ts",
+    "src/lib/env/server.ts"
+  ],
+  "ignoreDependencies": ["next-devtools-mcp", "@biomejs/biome"]
+}

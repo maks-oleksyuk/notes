@@ -1,4 +1,4 @@
-name: 🔄 CI | ⚡️ Next.js
+name: '🔄 CI | ⚫ Next.js'
 
 on:
   push:
@@ -21,23 +21,96 @@ concurrency:
   group: ci
   cancel-in-progress: false
 
-#jobs:
-#  lint:
-#    name: '🪄 Lint | ${{ matrix.command.name }}'
-#    runs-on: ubuntu-latest
-#
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        command:
-#          - { name: '🅿️ Prettier', command: 'lint:prettier' }
-#
-#    steps:
-#      - name: '🛎 Checkout'
-#        uses: actions/checkout@v6
-#
-#      - name: '⚙️ Prepare environment'
-#        uses: ./.github/actions/setup-environment
-#
-#      - name: '${{ matrix.command.name }} validate'
-#        run: task ${{ matrix.command.command }}
+permissions: {}
+
+jobs:
+  cleanup:
+    name: '🧹 Clean up GitHub repo'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    if: github.event_name != 'pull_request'
+
+    steps:
+      - name: '🗑 Delete workflow runs'
+        uses: Mattraks/delete-workflow-runs@b3018382ca039b53d238908238bd35d1fb14f8ee # v2.1.0
+        with:
+          retain_days: 7
+          keep_minimum_runs: 1
+          delete_workflow_pattern: ci-next-js.yml
+
+  lint:
+    name: '🪄 Lint | ${{ matrix.command.name }}'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - { name: '🗜 TS Types', command: 'lint:type' }
+          - { name: '🫐 Biome', command: 'lint:biome -- --reporter=github' }
+          - { name: '✂️ Knip', command: 'lint:knip -- --reporter github-actions' }
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-environment
+
+      - name: '${{ matrix.command.name }} validate'
+        run: task ${{ matrix.command.command }}
+
+  test:
+    name: '♻️ Test | ${{ matrix.command.name }}'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - { name: '🔬 Unit',    command: 'test:unit',    report: true }
+          - { name: '🖥 Browser', command: 'test:browser', report: true }
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: '⚙️ Prepare environment'
+        uses: ./.github/actions/setup-environment
+
+      - name: '🎭 Install Playwright Chromium'
+        if: matrix.command.command == 'test:browser'
+        run: pnpm exec playwright install --with-deps --no-progress --only-shell chromium
+
+      - name: '${{ matrix.command.name }} tests'
+        run: task ${{ matrix.command.command }}
+        env:
+          FORCE_COLOR: '1'
+
+      - name: '☂️ Upload coverage report to Codecov'
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        if: ${{ matrix.command.report && !cancelled() }}
+        with:
+          slug: maks-oleksyuk/notes
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.command.name }}
+          directory: ./var/report/coverage
+
+      - name: '☂️ Upload test results to Codecov'
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        if: ${{ matrix.command.report && !cancelled() }}
+        with:
+          slug: maks-oleksyuk/notes
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.command.name }}
+          directory: ./var/report
+          report_type: test_results
