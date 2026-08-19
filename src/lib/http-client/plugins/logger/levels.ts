@@ -1,5 +1,3 @@
-export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug';
-
 const RANK: Record<LogLevel, number> = {
   silent: 0,
   error: 1,
@@ -7,6 +5,8 @@ const RANK: Record<LogLevel, number> = {
   info: 3,
   debug: 4,
 };
+
+export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug';
 
 // Falls back to `fallback` when the value is not a known level (e.g., a typo in
 // the API_LOG_LEVEL env var). `Object.hasOwn`, not `in` — `in` also matches

@@ -8,18 +8,6 @@ import type { AuthTokens } from './types';
 // shared `dummyJsonApi` instance, so one in-memory token pair is enough.
 let tokens: AuthTokens | null = null;
 
-export function setDummyJsonTokens(next: AuthTokens): void {
-  tokens = next;
-}
-
-export function clearDummyJsonTokens(): void {
-  tokens = null;
-}
-
-export function getDummyJsonAccessToken(): string | null {
-  return tokens?.accessToken ?? null;
-}
-
 /**
  * Raw `fetch`, not `dummyJsonApi.post(...)` — `client.ts` imports this file
  * to build the `auth` plugin, so calling back into `dummyJsonApi` from here
@@ -46,6 +34,18 @@ async function refreshDummyJsonToken(): Promise<string> {
   const next: AuthTokens = await res.json();
   tokens = next;
   return next.accessToken;
+}
+
+export function setDummyJsonTokens(next: AuthTokens): void {
+  tokens = next;
+}
+
+export function clearDummyJsonTokens(): void {
+  tokens = null;
+}
+
+export function getDummyJsonAccessToken(): string | null {
+  return tokens?.accessToken ?? null;
 }
 
 export const dummyJsonTokenProvider: TokenProvider = {

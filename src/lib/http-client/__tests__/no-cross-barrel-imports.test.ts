@@ -13,7 +13,7 @@ import { describe, expect, it } from 'vitest';
 // it only throws at runtime, and only depending on import order. Deep
 // imports (`core/errors`, `core/types`, ...) from within `utils/` sidestep
 // the cycle entirely — this test fails loudly if that discipline slips.
-const utilsDir = path.resolve(__dirname, '..', 'utils');
+const utilsDir = path.resolve(import.meta.dirname, '..', 'utils');
 
 function listTsFiles(dir: string): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {

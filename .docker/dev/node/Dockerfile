@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 ARG NODE_VERSION=26
 
 FROM wodby/node:${NODE_VERSION} AS base
@@ -14,7 +16,11 @@ RUN pnpm install --frozen-lockfile --color=always
 
 COPY --chown=node:node . .
 
-RUN FORCE_COLOR=1 pnpm exec next build
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN --mount=type=secret,id=better_auth_secret,env=BETTER_AUTH_SECRET \
+    --mount=type=secret,id=better_auth_url,env=BETTER_AUTH_URL \
+    FORCE_COLOR=1 pnpm exec next build
 
 FROM wodby/node:${NODE_VERSION} AS runner
 

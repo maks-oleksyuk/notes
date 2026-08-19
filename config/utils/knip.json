@@ -6,9 +6,5 @@
     "src/lib/http-client/**/*.ts",
     "src/lib/env/server.ts"
   ],
-  "ignoreDependencies": [
-    "next-devtools-mcp",
-    "@biomejs/biome",
-    "@better-auth/memory-adapter"
-  ]
+  "ignoreDependencies": ["next-devtools-mcp", "@biomejs/biome"]
 }

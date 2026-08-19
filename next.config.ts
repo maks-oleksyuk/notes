@@ -30,6 +30,7 @@ const nextConfig: NextConfig = {
   experimental: {
     useTypeScriptCli: true,
     optimizePackageImports: ['@mantine/core', '@mantine/hooks'],
+    turbopackRustReactCompiler: true,
   },
 };
 

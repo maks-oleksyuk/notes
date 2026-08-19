@@ -2,46 +2,15 @@ import { ApiError, NetworkError, TimeoutError } from './errors';
 
 import type { HttpMethod, RetryOptions } from './types';
 
-export interface ResolvedRetry {
-  limit: number;
-  delay: number;
-  maxDelay: number;
-  maxRetryAfter: number;
-  statusCodes: number[];
-  respectRetryAfter: boolean;
-  methods: HttpMethod[];
-}
-
 // ky/got default: only methods a server can safely receive twice.
 // POST/PATCH are opt-in only, via `retry.methods`.
 const IDEMPOTENT_METHODS: HttpMethod[] = ['GET', 'PUT', 'HEAD', 'DELETE'];
-
-export interface RetryDecision {
-  wait: number;
-  fromRetryAfter: boolean;
-}
 
 // A server `Retry-After` can ask for minutes; honoring that in the browser is fine (the tab just waits),
 // but on the server it blocks an RSC render for the same duration — so the default cap is much smaller there.
 // Checked per call (not hoisted to a module-level constant), so it reflects the environment `resolveRetry` actually runs in.
 function defaultMaxRetryAfter(): number {
   return typeof window === 'undefined' ? 15_000 : 3 * 60_000;
-}
-
-// Fills defaults. Returns null when retries are disabled.
-export function resolveRetry(
-  input?: RetryOptions | false,
-): ResolvedRetry | null {
-  if (!input) return null;
-  return {
-    limit: input.limit ?? 3,
-    delay: input.delay ?? 1000,
-    maxDelay: input.maxDelay ?? 30_000,
-    maxRetryAfter: input.maxRetryAfter ?? defaultMaxRetryAfter(),
-    statusCodes: input.statusCodes ?? [408, 429, 500, 502, 503, 504],
-    respectRetryAfter: input.respectRetryAfter ?? true,
-    methods: input.methods ?? IDEMPOTENT_METHODS,
-  };
 }
 
 // `Retry-After` is either a number of seconds or an HTTP-date.
@@ -64,6 +33,37 @@ function parseRetryAfter(headers?: Headers): number | null {
 function backoffDelay(base: number, attempt: number, cap: number): number {
   const window = Math.min(cap, base * 2 ** attempt);
   return window / 2 + Math.random() * (window / 2);
+}
+
+export interface ResolvedRetry {
+  limit: number;
+  delay: number;
+  maxDelay: number;
+  maxRetryAfter: number;
+  statusCodes: number[];
+  respectRetryAfter: boolean;
+  methods: HttpMethod[];
+}
+
+export interface RetryDecision {
+  wait: number;
+  fromRetryAfter: boolean;
+}
+
+// Fills defaults. Returns null when retries are disabled.
+export function resolveRetry(
+  input?: RetryOptions | false,
+): ResolvedRetry | null {
+  if (!input) return null;
+  return {
+    limit: input.limit ?? 3,
+    delay: input.delay ?? 1000,
+    maxDelay: input.maxDelay ?? 30_000,
+    maxRetryAfter: input.maxRetryAfter ?? defaultMaxRetryAfter(),
+    statusCodes: input.statusCodes ?? [408, 429, 500, 502, 503, 504],
+    respectRetryAfter: input.respectRetryAfter ?? true,
+    methods: input.methods ?? IDEMPOTENT_METHODS,
+  };
 }
 
 // Decides whether (and how long) to wait before retrying. Returns null to give up.

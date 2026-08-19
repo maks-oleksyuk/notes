@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.8/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -32,6 +32,7 @@
           }
         },
         "useSortedProperties": "on",
+        "useSortedPackageJson": "on",
         "noDuplicateClasses": "on"
       }
     }
@@ -46,16 +47,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": [
-      "**",
-      "!.next",
-      "!node_modules",
-      "!packages",
-      "!public",
-      "!var",
-      "!next-env.d.ts",
-      "!!config/utils/biome.json"
-    ]
+    "includes": ["**", "!public", "!!config/utils/biome.json"]
   },
   "formatter": {
     "enabled": true,
@@ -77,6 +69,9 @@
     "enabled": true,
     "rules": {
       "preset": "recommended",
+      "a11y": {
+        "noNoninteractiveElementInteractions": "error"
+      },
       "complexity": {
         "noExcessiveNestedTestSuites": "error",
         "noForEach": "error",
@@ -90,6 +85,7 @@
       },
       "correctness": {
         "noBeforeInteractiveScriptOutsideDocument": "error",
+        "noGlobalDirnameFilename": "error",
         "noNestedComponentDefinitions": "error",
         "noNextAsyncClientComponent": "error",
         "noReactPropAssignments": "error",
@@ -118,12 +114,15 @@
         "useArraySome": "error",
         "useAwaitThenable": "error",
         "useConsistentTestIt": "error",
+        "useControlLabel": "error",
         "useDisposables": "error",
         "useExhaustiveSwitchCases": "error",
+        "useExpect": "error",
         "useIframeSandbox": "error",
         "useImportsFirst": "error",
         "useIncludes": "error",
         "useNamedCaptureGroup": "error",
+        "useNamedLayer": "error",
         "useNullishCoalescing": "error",
         "useReactAsyncServerFunction": "error",
         "useReactCompiler": "error",
@@ -131,12 +130,15 @@
         "useReduceTypeParameter": "error",
         "useRegexpExec": "error",
         "useRegexpTest": "error",
+        "useSortedClasses": "error",
+        "useTailwindShorthandClasses": "error",
         "useTestHooksInOrder": "error",
         "useTestHooksOnTop": "error",
         "useUnicodeRegex": "error"
       },
       "performance": {
         "noAwaitInLoops": "error",
+        "noDelete": "error",
         "noImgElement": "error",
         "noNamespaceImport": "error",
         "noSyncScripts": "error"
@@ -148,13 +150,21 @@
         "noHeadElement": "error",
         "noInferrableTypes": "error",
         "noMultiAssign": "error",
+        "noMultilineString": "error",
         "noNamespace": "error",
+        "noNegationElse": "error",
         "noParameterAssign": "error",
         "noProcessEnv": "error",
+        "noSubstr": "error",
+        "noYodaExpression": "error",
         "useAtIndex": "error",
+        "useCollapsedElseIf": "error",
+        "useCollapsedIf": "error",
         "useConsistentArrowReturn": "error",
+        "useConsistentObjectDefinitions": "error",
         "useConsistentTypeDefinitions": "error",
         "useExplicitLengthCheck": "error",
+        "useExportsLast": "error",
         "useImportType": {
           "level": "error",
           "options": { "style": "separatedType" }
@@ -162,6 +172,10 @@
         "useObjectSpread": "error",
         "useReactFunctionComponents": "error",
         "useReadonlyClassProperties": "error",
+        "useShorthandAssign": "error",
+        "useSingleVarDeclarator": "error",
+        "useSpreadOverApply": "error",
+        "useSymbolDescription": "error",
         "useThrowOnlyError": "error",
         "useUnifiedTypeSignatures": "error"
       },
@@ -231,6 +245,7 @@
   "vcs": {
     "clientKind": "git",
     "enabled": true,
-    "root": ".."
+    "root": ".",
+    "useIgnoreFile": true
   }
 }
