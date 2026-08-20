@@ -4,6 +4,10 @@
   "commitMessagePrefix": "⬆️ ",
   "schedule": ["before 12am on the first day of the month"],
   "rangeStrategy": "bump",
+  "useBaseBranchConfig": "merge",
+  "lockFileMaintenance": {
+    "enabled": false
+  },
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch"],
