@@ -1,10 +1,10 @@
 import { defineConfig } from 'vitepress';
-import { generateSidebar } from 'vitepress-sidebar';
-import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs';
 import {
   groupIconMdPlugin,
   groupIconVitePlugin,
 } from 'vitepress-plugin-group-icons';
+import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs';
+import { generateSidebar } from 'vitepress-sidebar';
 
 const devServerUrl =
   process.env.DDEV_PRIMARY_URL ?
@@ -37,7 +37,10 @@ export default defineConfig({
     ],
   ],
   themeConfig: {
-    nav: [{ text: 'mono', link: '//send.monobank.ua/jar/72Yj5TxSg9' }],
+    nav: [
+      { text: 'Tools', link: '/tools/' },
+      { text: 'mono', link: '//send.monobank.ua/jar/72Yj5TxSg9' },
+    ],
     socialLinks: [
       { icon: 'github', link: '//github.com/maks-oleksyuk/notes' },
       { icon: 'linkedin', link: '//linkedin.com/in/maks-oleksyuk' },
@@ -61,6 +64,16 @@ export default defineConfig({
         useTitleFromFrontmatter: true,
         useFolderLinkFromIndexFile: true,
         useFolderTitleFromIndexFile: true,
+      },
+      {
+        documentRootPath: 'src',
+        scanStartPath: 'tools',
+        resolvePath: '/tools/',
+        collapsed: true,
+        useTitleFromFrontmatter: true,
+        useFolderLinkFromIndexFile: true,
+        useFolderTitleFromIndexFile: true,
+        frontmatterTitleFieldName: 'menu_title',
       },
       {
         documentRootPath: 'src',

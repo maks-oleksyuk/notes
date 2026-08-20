@@ -1,22 +1,22 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:best-practices"],
   "commitMessagePrefix": "⬆️ ",
-  "schedule": ["before 12am on the first day of the month"],
-  "rangeStrategy": "bump",
-  "useBaseBranchConfig": "merge",
+  "extends": ["config:best-practices"],
   "lockFileMaintenance": {
     "enabled": false
   },
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch"],
       "groupName": "all non-major dependencies",
-      "groupSlug": "all-non-major"
+      "groupSlug": "all-non-major",
+      "matchUpdateTypes": ["minor", "patch"]
     },
     {
       "matchDepTypes": ["packageManager"],
       "rangeStrategy": "replace"
     }
-  ]
+  ],
+  "rangeStrategy": "bump",
+  "schedule": ["before 12am on the first day of the month"],
+  "useBaseBranchConfig": "merge"
 }

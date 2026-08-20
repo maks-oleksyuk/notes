@@ -12,6 +12,8 @@ import {
   Options as NolebaseEnhancedReadabilitiesOptions,
 } from '@nolebase/vitepress-plugin-enhanced-readabilities/client';
 
+import JsonSchemaSorter from './components/JsonSchemaSorter.vue';
+
 import './styles/vars.css';
 import './styles/base.css';
 import './styles/components/vp-doc.css';
@@ -27,6 +29,8 @@ export default {
     });
   },
   enhanceApp({ app }) {
+    app.component('JsonSchemaSorter', JsonSchemaSorter);
+
     app.provide(NolebaseEnhancedReadabilitiesInjectionKey, {
       layoutSwitch: {
         defaultMode:
