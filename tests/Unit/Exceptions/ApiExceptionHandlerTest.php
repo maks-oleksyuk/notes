@@ -3,14 +3,17 @@
 declare(strict_types=1);
 
 use App\Exceptions\ApiExceptionHandler;
+use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 covers(ApiExceptionHandler::class);
 
@@ -94,10 +97,7 @@ describe('API | ExceptionHandler', function (): void {
         $request->shouldReceive('is')->andReturn(true);
         $request->shouldReceive('getRequestUri')->andReturn('/api/v1/validate');
 
-        $validationException = Mockery::mock(ValidationException::class);
-        $validationException->shouldReceive('getCode')->andReturn(HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY);
-        $validationException->shouldReceive('getMessage')->andReturn('Validation failed');
-        $validationException->shouldReceive('errors')->andReturn(['field' => ['error message']]);
+        $validationException = ValidationException::withMessages(['field' => ['error message']]);
 
         $response = ($this->handler)($validationException, $request);
         assert($response instanceof JsonResponse);
@@ -109,6 +109,8 @@ describe('API | ExceptionHandler', function (): void {
         expect($data['title'])->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY])
             ->and($data['status'])->toBe(HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY)
             ->and($data['instance'])->toBe('/api/v1/validate')
+            ->and($data['detail'])->toBe($validationException->getMessage())
+            ->and($data['detail'])->not->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY])
             ->and($data['errors'])->toEqual(['field' => ['error message']]);
     });
 
@@ -193,8 +195,30 @@ describe('API | ExceptionHandler', function (): void {
         $data = json_decode((string) $response->getContent(), true);
         expect($data['title'])->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_I_AM_A_TEAPOT])
             ->and($data['status'])->toBe(HttpFoundationResponse::HTTP_I_AM_A_TEAPOT)
-            ->and($data['detail'])->toBe('Default error')
+            ->and($data['detail'])->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_I_AM_A_TEAPOT])
             ->and($data['instance'])->toBe('/api/v1/default')
             ->and($data)->not->toHaveKey('errors');
+    });
+
+    it('scrubs the model name from a route-model-binding 404', function (): void {
+        config(['app.debug' => false]);
+
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('expectsJson')->andReturn(true);
+        $request->shouldReceive('is')->andReturn(true);
+        $request->shouldReceive('getRequestUri')->andReturn('/api/v1/users/5');
+
+        $modelMissing = (new ModelNotFoundException)->setModel(User::class, [5]);
+        $exception = new NotFoundHttpException($modelMissing->getMessage(), $modelMissing);
+
+        $response = ($this->handler)($exception, $request);
+        assert($response instanceof JsonResponse);
+
+        expect($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_NOT_FOUND);
+
+        /** @var array<string, mixed> $data */
+        $data = json_decode((string) $response->getContent(), true);
+        expect($data['detail'])->toBe(HttpFoundationResponse::$statusTexts[HttpFoundationResponse::HTTP_NOT_FOUND])
+            ->and($data['detail'])->not->toContain(User::class);
     });
 });

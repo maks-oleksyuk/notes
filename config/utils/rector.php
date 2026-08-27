@@ -17,9 +17,7 @@ use RectorLaravel\Rector\MethodCall\UseComponentPropertyWithinCommandsRector;
 use RectorLaravel\Rector\MethodCall\WhereToWhereLikeRector;
 use RectorLaravel\Rector\StaticCall\RequestStaticValidateToInjectRector;
 use RectorLaravel\Rector\StaticCall\RouteActionCallableRector;
-use RectorLaravel\Set\LaravelLevelSetList;
 use RectorLaravel\Set\LaravelSetList;
-use RectorLaravel\Set\LaravelSetProvider;
 
 if (defined('ARTISAN_BINARY') || ! class_exists(RectorConfig::class)) {
     return;
@@ -37,7 +35,6 @@ return RectorConfig::configure()
     ])
     ->withPhpVersion(PhpVersion::PHP_85)
     ->withPhpSets(php85: true)
-    ->withSetProviders(LaravelSetProvider::class)
     ->withComposerBased(
         laravel: true,
     )
@@ -58,7 +55,6 @@ return RectorConfig::configure()
         carbon: true,
     )
     ->withSets([
-        LaravelLevelSetList::UP_TO_LARAVEL_130,
         LaravelSetList::LARAVEL_ARRAYACCESS_TO_METHOD_CALL,
         LaravelSetList::LARAVEL_ARRAY_STR_FUNCTION_TO_STATIC_CALL,
         LaravelSetList::LARAVEL_CODE_QUALITY,

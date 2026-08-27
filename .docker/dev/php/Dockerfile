@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/ap
 
 RUN install-php-extensions gd intl
 
-RUN sh -c "$(curl -s --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin > /dev/null 2>&1
+RUN sh -c "$(curl -s --location https://taskfile.dev/install.sh)" -- -b /usr/local/bin
 
 USER www-data
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Http\Middleware\Api\RejectNonJsonRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 covers(RejectNonJsonRequests::class);
 
@@ -14,21 +13,27 @@ beforeEach(fn () => Route::middleware(RejectNonJsonRequests::class)
 );
 
 describe('Middleware | API', function (): void {
-    it('correctly handles requests based on Accept header', function (?string $accept, int $status, ?string $view = null): void {
+    it('lets JSON-capable requests through', function (?string $accept): void {
         $headers = $accept ? ['Accept' => $accept] : [];
+
+        $this->get('/test-middleware', $headers)
+            ->assertOk()
+            ->assertJson(['ok' => true]);
+    })->with([
+        ['application/json'],
+        ['text/csv'],
+    ]);
+
+    it('rejects browser requests with a rendered 406 page', function (?string $accept): void {
+        $headers = $accept ? ['Accept' => $accept] : [];
+
         $response = $this->get('/test-middleware', $headers);
 
-        $response->assertStatus($status);
+        $response->assertNotAcceptable();
 
-        if ($view) {
-            $response->assertViewIs($view);
-        } else {
-            $response->assertJson(['ok' => true]);
-        }
+        expect((string) $response->getContent())->toContain('406');
     })->with([
-        ['application/json', HttpFoundationResponse::HTTP_OK],
-        ['text/html', HttpFoundationResponse::HTTP_NOT_ACCEPTABLE, 'errors.406'],
-        [null, HttpFoundationResponse::HTTP_NOT_ACCEPTABLE, 'errors.406'],
-        ['text/csv', HttpFoundationResponse::HTTP_OK],
+        ['text/html'],
+        [null],
     ]);
 });

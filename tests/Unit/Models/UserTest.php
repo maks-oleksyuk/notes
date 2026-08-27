@@ -48,7 +48,6 @@ describe('Model | User', function (): void {
             'id' => 'int',
             'password' => 'hashed',
             'email_verified_at' => 'datetime',
-            'google_id' => 'string',
         ]);
     });
 

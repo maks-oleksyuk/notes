@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Filament\Actions\SpreadsheetImportAction;
 use App\Filament\Exports\UserExporter;
 use App\Filament\Resources\User\Pages\ListUsers;
 use Filament\Actions\ExportAction;
@@ -37,6 +38,12 @@ describe('Filament | Resource | User | List', function (): void {
                     ->and($action->getColor())->toBe(Color::Green)
                     ->and($action->shouldOpenModal())->toBeFalse()
                     ->and($action->isOutlined())->toBeTrue();
+
+                return true;
+            })
+            ->assertActionExists('import', function (SpreadsheetImportAction $action): bool {
+                expect($action->getLabel())->toBe('Import')
+                    ->and($action->getColor())->toBe(Color::Green);
 
                 return true;
             });

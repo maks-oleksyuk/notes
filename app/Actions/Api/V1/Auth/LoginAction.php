@@ -16,7 +16,7 @@ final readonly class LoginAction
     ) {}
 
     /**
-     * @return string[]
+     * @return array{token: string, expires_at: string}
      *
      * @throws \Throwable
      */

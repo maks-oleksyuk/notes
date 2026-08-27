@@ -128,7 +128,7 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: 'u -W' }
       - task: pnpm
-        vars: { CLI_ARGS: 'up --save --latest' }
+        vars: { CLI_ARGS: 'up --save-exact --latest' }
 
   deploy:
     desc: 'Deploy project'

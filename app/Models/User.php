@@ -53,7 +53,6 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
         return [
             'password' => 'hashed',
             'email_verified_at' => 'datetime',
-            'google_id' => 'string',
         ];
     }
 

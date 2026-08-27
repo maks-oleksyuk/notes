@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
+use Laravel\Socialite\AbstractUser;
 use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse;
 
@@ -25,7 +26,19 @@ final readonly class GoogleController
 
     public function callback(): RedirectResponse
     {
-        $googleUser = Socialite::driver('google')->user();
+        try {
+            $googleUser = Socialite::driver('google')->user();
+        } catch (\Throwable) {
+            return $this->redirector->route('filament.admin.auth.login')
+                ->withErrors(['email' => __('Google sign-in failed, please try again.')]);
+        }
+
+        $rawGoogleUser = $googleUser instanceof AbstractUser ? $googleUser->getRaw() : [];
+
+        if (($rawGoogleUser['email_verified'] ?? false) !== true) {
+            return $this->redirector->route('filament.admin.auth.login')
+                ->withErrors(['email' => __('Your Google email address is not verified.')]);
+        }
 
         $user = User::query()->updateOrCreate(
             ['email' => $googleUser->getEmail()],

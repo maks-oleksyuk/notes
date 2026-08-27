@@ -8,12 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property string[] $resource
+ * @property array{token: string, expires_at: string} $resource
  */
 final class TokenResource extends JsonResource
 {
     /**
-     * @return string[]
+     * @return array{token: string, token_type: string, expires_at: string}
      */
     #[\Override]
     public function toArray(Request $request): array
@@ -21,9 +21,9 @@ final class TokenResource extends JsonResource
         $resource = $this->resource;
 
         return [
-            'token' => $resource['token'] ?? '',
+            'token' => $resource['token'],
             'token_type' => 'Bearer',
-            'expires_at' => $resource['expires_at'] ?? '',
+            'expires_at' => $resource['expires_at'],
         ];
     }
 }

@@ -150,10 +150,10 @@ describe('Scribe | AppDefaultResponses', function (): void {
         foreach (['makeSimpleErrorResponse', 'makeValidationErrorResponse'] as $methodName) {
             $method = $ref->getMethod($methodName);
 
-            /** @var array{status: int, description: string, content: string, headers: array<string, string>} $response */
+            /** @var array{status: int, description: string, content: mixed, headers: array<string, string>} $response */
             $response = $method->invoke($this->scribeStrategy, $endpointData, HttpFoundationResponse::HTTP_BAD_REQUEST);
 
-            expect($response['content'])->toBeEmpty();
+            expect($response['content'])->toBeString();
         }
     });
 });

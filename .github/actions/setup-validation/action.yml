@@ -32,7 +32,7 @@ runs:
   steps:
     - name: '📋 Install Task'
       shell: bash
-      run: sh -c "$(curl -s --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin > /dev/null 2>&1
+      run: sh -c "$(curl -s --location https://taskfile.dev/install.sh)" -- -b /usr/local/bin
 
     - name: '🐘 Setup PHP ${{ inputs.php }}'
       if: ${{ inputs.use-php == 'true' }}

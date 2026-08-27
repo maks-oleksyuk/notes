@@ -5,7 +5,7 @@
     "type": "project",
     "require": {
         "php": "^8.5",
-        "filament/filament": "^5.7.6",
+        "filament/filament": "^5.7.7",
         "grazulex/laravel-apiroute": "^2.1.1",
         "knuckleswtf/scribe": "^5.11",
         "laravel/framework": "^13.29",
@@ -22,7 +22,7 @@
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",
-        "driftingly/rector-laravel": "^2.5",
+        "driftingly/rector-laravel": "^2.6.2",
         "fakerphp/faker": "^1.24.1",
         "fruitcake/laravel-debugbar": "^4.4.2",
         "larastan/larastan": "^3.10",
