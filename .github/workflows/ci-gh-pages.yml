@@ -1,4 +1,4 @@
-name: 🔄 CI | ⚡️ VitePress
+name: '🔄 CI | ⚡️ VitePress'
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
           persist-credentials: false
 
       - name: '⚙️ Prepare environment'
-        uses: ./.github/actions/setup-environment
+        uses: $/.github/actions/setup-environment
 
       - name: '${{ matrix.command.name }} validate'
         run: task ${{ matrix.command.command }}
@@ -59,7 +59,7 @@ jobs:
           persist-credentials: false
 
       - name: '⚙️ Prepare environment'
-        uses: ./.github/actions/setup-environment
+        uses: $/.github/actions/setup-environment
 
       - name: '⚡️ Build site with VitePress'
         run: task build
