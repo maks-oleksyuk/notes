@@ -69,11 +69,11 @@ describe('Model | User', function (): void {
         expect($user->email_verified_at)->toBeInstanceOf(CarbonImmutable::class);
     });
 
-    it('grants Filament access', function (): void {
-        $user = User::factory()->create();
+    it('grants Filament access only to an admin', function (): void {
         $panel = Mockery::mock(Panel::class);
 
-        expect($user->canAccessPanel($panel))->toBeTrue();
+        expect(User::factory()->create()->canAccessPanel($panel))->toBeFalse()
+            ->and(User::factory()->superAdmin()->create()->canAccessPanel($panel))->toBeTrue();
     });
 
     it('returns null preferred locale by default', function (): void {

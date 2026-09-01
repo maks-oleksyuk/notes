@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Filament\Actions\SpreadsheetImportAction;
 use App\Filament\Exports\UserExporter;
 use App\Filament\Resources\User\Pages\ListUsers;
+use App\Models\User;
 use Filament\Actions\ExportAction;
 use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Support\Colors\Color;
@@ -13,6 +14,10 @@ use Filament\Support\Icons\Heroicon;
 use function Pest\Livewire\livewire;
 
 covers(ListUsers::class);
+
+beforeEach(function (): void {
+    $this->actingAs(User::factory()->superAdmin()->create());
+});
 
 describe('Filament | Resource | User | List', function (): void {
     it('renders export actions with correct configuration', function (): void {

@@ -10,7 +10,7 @@ covers(UserController::class);
 
 beforeEach(function (): void {
     $this->baseUrl = '/api/v1/users';
-    $this->actingAs(User::factory()->create());
+    $this->actingAs(User::factory()->superAdmin()->create());
 });
 
 describe('API | V1 | Actions | Users', function (): void {
@@ -151,5 +151,48 @@ describe('API | V1 | Actions | Users', function (): void {
         $this->getJson($this->baseUrl.'/1')->assertUnauthorized();
         $this->putJson($this->baseUrl.'/1')->assertUnauthorized();
         $this->deleteJson($this->baseUrl.'/1')->assertUnauthorized();
+    });
+
+    it('forbids a non-admin from admin-only actions', function (): void {
+        $this->actingAs(User::factory()->create());
+        $other = User::factory()->create();
+
+        $this->getJson($this->baseUrl)->assertForbidden();
+        $this->postJson($this->baseUrl, [
+            'name' => 'X',
+            'email' => 'x@example.com',
+            'password' => '!Password123',
+        ])->assertForbidden();
+        $this->getJson(sprintf('%s/%s', $this->baseUrl, $other->id))->assertForbidden();
+        $this->putJson(sprintf('%s/%s', $this->baseUrl, $other->id), ['name' => 'Nope'])->assertForbidden();
+        $this->deleteJson(sprintf('%s/%s', $this->baseUrl, $other->id))->assertForbidden();
+    });
+
+    it('lets a non-admin view and update only their own record', function (): void {
+        $user = User::factory()->create(['name' => 'Self']);
+        $this->actingAs($user);
+
+        $this->getJson(sprintf('%s/%s', $this->baseUrl, $user->id))
+            ->assertOk()
+            ->assertJsonPath('data.id', $user->id);
+
+        $this->putJson(sprintf('%s/%s', $this->baseUrl, $user->id), ['name' => 'Renamed'])
+            ->assertOk()
+            ->assertJsonPath('data.name', 'Renamed');
+    });
+
+    it('forbids an admin from deleting their own account', function (): void {
+        $this->deleteJson(sprintf('%s/%s', $this->baseUrl, auth()->id()))
+            ->assertForbidden();
+    });
+
+    it('returns a problem+json body for a forbidden request', function (): void {
+        $this->actingAs(User::factory()->create());
+
+        $this->getJson($this->baseUrl)
+            ->assertForbidden()
+            ->assertHeader('content-type', 'application/problem+json')
+            ->assertJsonPath('status', 403)
+            ->assertJsonPath('title', 'Forbidden');
     });
 });

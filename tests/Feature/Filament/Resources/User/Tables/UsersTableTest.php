@@ -16,6 +16,10 @@ use function Pest\Livewire\livewire;
 
 covers(UsersTable::class);
 
+beforeEach(function (): void {
+    $this->actingAs(User::factory()->superAdmin()->create());
+});
+
 describe('Filament | User Table', function (): void {
     it('renders valid table configuration', function (): void {
         $user = User::factory()->create();

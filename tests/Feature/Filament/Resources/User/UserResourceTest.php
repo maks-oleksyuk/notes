@@ -13,6 +13,10 @@ use Tests\Feature\Filament\Fixtures\FilamentForm;
 
 covers(UserResource::class);
 
+beforeEach(function (): void {
+    $this->actingAs(User::factory()->superAdmin()->create());
+});
+
 describe('Filament | Resource | User', function (): void {
     it('allows creating users',
         fn (): Expectation => expect(UserResource::canCreate())->toBeTrue()

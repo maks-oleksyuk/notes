@@ -22,7 +22,7 @@ covers(SpreadsheetImportAction::class);
 
 describe('Filament | Action | SpreadsheetImport', function (): void {
     beforeEach(function (): void {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->superAdmin()->create());
     });
 
     it('sends a warning notification when the uploaded file contains duplicate headings', function (): void {

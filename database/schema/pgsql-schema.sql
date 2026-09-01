@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict MDZjNyIqiK6WWlAsQkGSQKzyWn9hIyhysd94H8pVTZ7UzWqsyWiKGudzu5pujAz
+\restrict qsOb7a8KnFhWcqPRoVI4Y8hX2jBvYWp4Tf57aOclzfhXotiqBmOnZhjlzqimCfq
 
--- Dumped from database version 18.3 (Debian 18.3-1.pgdg13+1)
--- Dumped by pg_dump version 18.3 (Debian 18.3-1.pgdg13+1)
+-- Dumped from database version 18.4 (Debian 18.4-1.pgdg13+1)
+-- Dumped by pg_dump version 18.4 (Debian 18.4-1.pgdg13+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -272,6 +272,28 @@ ALTER SEQUENCE public.migrations_id_seq OWNED BY public.migrations.id;
 
 
 --
+-- Name: model_has_permissions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.model_has_permissions (
+    permission_id bigint NOT NULL,
+    model_type character varying(255) NOT NULL,
+    model_id bigint NOT NULL
+);
+
+
+--
+-- Name: model_has_roles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.model_has_roles (
+    role_id bigint NOT NULL,
+    model_type character varying(255) NOT NULL,
+    model_id bigint NOT NULL
+);
+
+
+--
 -- Name: notifications; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -296,6 +318,38 @@ CREATE TABLE public.password_reset_tokens (
     token character varying(255) NOT NULL,
     created_at timestamp(0) without time zone
 );
+
+
+--
+-- Name: permissions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.permissions (
+    id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    guard_name character varying(255) NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+--
+-- Name: permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.permissions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.permissions_id_seq OWNED BY public.permissions.id;
 
 
 --
@@ -438,6 +492,48 @@ ALTER SEQUENCE public.pulse_values_id_seq OWNED BY public.pulse_values.id;
 
 
 --
+-- Name: role_has_permissions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.role_has_permissions (
+    permission_id bigint NOT NULL,
+    role_id bigint NOT NULL
+);
+
+
+--
+-- Name: roles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.roles (
+    id bigint NOT NULL,
+    name character varying(255) NOT NULL,
+    guard_name character varying(255) NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+--
+-- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.roles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.roles_id_seq OWNED BY public.roles.id;
+
+
+--
 -- Name: sessions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -530,6 +626,13 @@ ALTER TABLE ONLY public.migrations ALTER COLUMN id SET DEFAULT nextval('public.m
 
 
 --
+-- Name: permissions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.permissions ALTER COLUMN id SET DEFAULT nextval('public.permissions_id_seq'::regclass);
+
+
+--
 -- Name: personal_access_tokens id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -555,6 +658,13 @@ ALTER TABLE ONLY public.pulse_entries ALTER COLUMN id SET DEFAULT nextval('publi
 --
 
 ALTER TABLE ONLY public.pulse_values ALTER COLUMN id SET DEFAULT nextval('public.pulse_values_id_seq'::regclass);
+
+
+--
+-- Name: roles id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.roles ALTER COLUMN id SET DEFAULT nextval('public.roles_id_seq'::regclass);
 
 
 --
@@ -645,6 +755,22 @@ ALTER TABLE ONLY public.migrations
 
 
 --
+-- Name: model_has_permissions model_has_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.model_has_permissions
+    ADD CONSTRAINT model_has_permissions_pkey PRIMARY KEY (permission_id, model_id, model_type);
+
+
+--
+-- Name: model_has_roles model_has_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.model_has_roles
+    ADD CONSTRAINT model_has_roles_pkey PRIMARY KEY (role_id, model_id, model_type);
+
+
+--
 -- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -658,6 +784,22 @@ ALTER TABLE ONLY public.notifications
 
 ALTER TABLE ONLY public.password_reset_tokens
     ADD CONSTRAINT password_reset_tokens_pkey PRIMARY KEY (email);
+
+
+--
+-- Name: permissions permissions_name_guard_name_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.permissions
+    ADD CONSTRAINT permissions_name_guard_name_unique UNIQUE (name, guard_name);
+
+
+--
+-- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.permissions
+    ADD CONSTRAINT permissions_pkey PRIMARY KEY (id);
 
 
 --
@@ -714,6 +856,30 @@ ALTER TABLE ONLY public.pulse_values
 
 ALTER TABLE ONLY public.pulse_values
     ADD CONSTRAINT pulse_values_type_key_hash_unique UNIQUE (type, key_hash);
+
+
+--
+-- Name: role_has_permissions role_has_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.role_has_permissions
+    ADD CONSTRAINT role_has_permissions_pkey PRIMARY KEY (permission_id, role_id);
+
+
+--
+-- Name: roles roles_name_guard_name_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.roles
+    ADD CONSTRAINT roles_name_guard_name_unique UNIQUE (name, guard_name);
+
+
+--
+-- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.roles
+    ADD CONSTRAINT roles_pkey PRIMARY KEY (id);
 
 
 --
@@ -774,6 +940,20 @@ CREATE INDEX failed_jobs_connection_queue_failed_at_index ON public.failed_jobs 
 --
 
 CREATE INDEX jobs_queue_index ON public.jobs USING btree (queue);
+
+
+--
+-- Name: model_has_permissions_model_id_model_type_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX model_has_permissions_model_id_model_type_index ON public.model_has_permissions USING btree (model_id, model_type);
+
+
+--
+-- Name: model_has_roles_model_id_model_type_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX model_has_roles_model_id_model_type_index ON public.model_has_roles USING btree (model_id, model_type);
 
 
 --
@@ -899,8 +1079,40 @@ ALTER TABLE ONLY public.imports
 
 
 --
+-- Name: model_has_permissions model_has_permissions_permission_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.model_has_permissions
+    ADD CONSTRAINT model_has_permissions_permission_id_foreign FOREIGN KEY (permission_id) REFERENCES public.permissions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: model_has_roles model_has_roles_role_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.model_has_roles
+    ADD CONSTRAINT model_has_roles_role_id_foreign FOREIGN KEY (role_id) REFERENCES public.roles(id) ON DELETE CASCADE;
+
+
+--
+-- Name: role_has_permissions role_has_permissions_permission_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.role_has_permissions
+    ADD CONSTRAINT role_has_permissions_permission_id_foreign FOREIGN KEY (permission_id) REFERENCES public.permissions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: role_has_permissions role_has_permissions_role_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.role_has_permissions
+    ADD CONSTRAINT role_has_permissions_role_id_foreign FOREIGN KEY (role_id) REFERENCES public.roles(id) ON DELETE CASCADE;
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-\unrestrict MDZjNyIqiK6WWlAsQkGSQKzyWn9hIyhysd94H8pVTZ7UzWqsyWiKGudzu5pujAz
+\unrestrict qsOb7a8KnFhWcqPRoVI4Y8hX2jBvYWp4Tf57aOclzfhXotiqBmOnZhjlzqimCfq
 

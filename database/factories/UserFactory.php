@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 /**
  * @extends Factory<User>
@@ -43,5 +45,15 @@ final class UserFactory extends Factory
         return $this->state(fn (array $attributes): array => [
             'email_verified_at' => null,
         ]);
+    }
+
+    /**
+     * Indicate that the user should hold the `super_admin` role.
+     */
+    public function superAdmin(): self
+    {
+        return $this->afterCreating(
+            fn (User $user): User => $user->assignRole(Role::findOrCreate(UserRole::SuperAdmin->value, 'web')),
+        );
     }
 }
