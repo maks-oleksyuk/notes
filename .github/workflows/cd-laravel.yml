@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - laravel
+      - chore/laravel-updates
 
   # Allows running this workflow manually from the Actions tab.
   workflow_dispatch:
@@ -32,7 +33,7 @@ jobs:
           REF_NAME: ${{ github.ref_name }}
         run: |
           case "$REF_NAME" in
-            laravel) tag=dev;    env=laravel; name="🟢 Dev";   file=".docker/dev/php/Dockerfile"   ;;
+            laravel | chore/laravel-updates) tag=dev;    env=laravel; name="🟢 Dev";   file=".docker/dev/php/Dockerfile"   ;;
             stage)   tag=stage;  env=stage;   name="🟡 Stage"; file=".docker/stage/php/Dockerfile" ;;
             main)    tag=latest; env=prod;    name="🔴 Prod";  file=".docker/prod/php/Dockerfile"  ;;
           esac

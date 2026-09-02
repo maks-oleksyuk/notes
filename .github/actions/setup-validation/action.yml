@@ -32,7 +32,7 @@ runs:
   steps:
     - name: '📋 Install Task'
       shell: bash
-      run: sh -c "$(curl -s --location https://taskfile.dev/install.sh)" -- -b /usr/local/bin
+      run: curl -fsSL https://taskfile.dev/install.sh | sh -s -- -b /usr/local/bin
 
     - name: '🐘 Setup PHP ${{ inputs.php }}'
       if: ${{ inputs.use-php == 'true' }}
@@ -87,7 +87,7 @@ runs:
     - name: '📦 Install pnpm dependencies'
       if: ${{ inputs.use-node == 'true' }}
       shell: bash
-      run: pnpm i -sD --frozen-lockfile --color=always
+      run: pnpm install --frozen-lockfile --prefer-offline --color=always
 
     - name: '🧰 Set up Laravel'
       if: ${{ inputs.use-db == 'true' }}
