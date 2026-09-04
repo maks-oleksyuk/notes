@@ -1,16 +1,16 @@
-uuid: e3778dd3-1926-4405-b872-14f3eb190a7b
+uuid: bd2e8c36-ec89-4ae2-aa4e-450de267c309
 langcode: en
 status: true
 dependencies:
   module:
     - system
   theme:
-    - nts_theme
+    - default_admin
 _core:
-  default_config_hash: WvPhI8OwllG0gE69-F8qL3ai3nd5SbYD6JpmEuZcyok
-id: nts_theme_messages
-theme: nts_theme
-region: messages
+  default_config_hash: '-8PL5mB7TwwrfyG9iaRNdXu5NdHT6M2jsbl4DFI3J0w'
+id: default_admin_messages
+theme: default_admin
+region: highlighted
 weight: 0
 provider: null
 plugin: system_messages_block
@@ -19,4 +19,4 @@ settings:
   label: 'Status messages'
   label_display: '0'
   provider: system
-visibility: {  }
+visibility: {}

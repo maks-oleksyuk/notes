@@ -1,7 +1,7 @@
 uuid: c6e6db9e-781b-4d7f-adb8-139dc0fa6b11
 langcode: en
 status: true
-dependencies: {  }
+dependencies: {}
 _core:
   default_config_hash: Z7KuCUwM_WdTNvLcoltuX3_8d-s-8FZkTN6KgNwF0eM
 id: html_month

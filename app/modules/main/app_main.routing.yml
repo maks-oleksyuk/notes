@@ -1,17 +1,17 @@
 # Basic admin route for toolbar item.
 
-nts_core.admin:
+app_main.admin:
   path: '/admin/notes'
   defaults:
     _title: 'Notes Admin panel'
     _controller: '\Drupal\system\Controller\SystemController::overview'
-    link_id: nts_core.admin
+    link_id: app_main.admin
   requirements:
     _permission: 'access administration pages'
 
 # Basic admin routes for categories.
 
-nts_core.admin.add:
+app_main.admin.add:
   path: '/admin/notes/add'
   defaults:
     _title: 'Add'
@@ -19,7 +19,7 @@ nts_core.admin.add:
   requirements:
     _permission: 'access administration pages'
 
-nts_core.admin.content:
+app_main.admin.content:
   path: '/admin/notes/content'
   defaults:
     _title: 'Content'
@@ -27,7 +27,7 @@ nts_core.admin.content:
   requirements:
     _permission: 'access administration pages'
 
-nts_core.admin.structure:
+app_main.admin.structure:
   path: '/admin/notes/structure'
   defaults:
     _title: 'Structure'
@@ -35,7 +35,7 @@ nts_core.admin.structure:
   requirements:
     _permission: 'access administration pages'
 
-nts_core.admin.settings:
+app_main.admin.settings:
   path: '/admin/notes/settings'
   defaults:
     _title: 'Settings'

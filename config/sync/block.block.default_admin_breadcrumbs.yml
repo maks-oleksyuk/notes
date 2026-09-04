@@ -1,15 +1,15 @@
-uuid: d2682277-f5b6-4b72-9eea-708c0bf720ea
+uuid: 484519f0-7d82-4465-b3b2-00832aa0b65c
 langcode: en
 status: true
 dependencies:
   module:
     - system
   theme:
-    - gin
+    - default_admin
 _core:
-  default_config_hash: y9X3xgCsO59pQyzNLzY1D3SDJJxCHILLWkpPnmuTJ2E
-id: gin_breadcrumbs
-theme: gin
+  default_config_hash: wYrg3zFzlz7ALa_iUH20Ohj1O7HtwWMOtFHR66dR4J8
+id: default_admin_breadcrumbs
+theme: default_admin
 region: breadcrumb
 weight: 0
 provider: null
@@ -19,4 +19,4 @@ settings:
   label: Breadcrumbs
   label_display: '0'
   provider: system
-visibility: {  }
+visibility: {}

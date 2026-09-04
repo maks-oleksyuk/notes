@@ -35,6 +35,11 @@ tasks:
     cmd: '{{.COMPOSER_BIN_DIR}}/drush {{.CLI_ARGS}}'
     silent: true
 
+  dr:
+    desc: 'Run `dr` (Drupal core CLI) command.'
+    cmd: '{{.COMPOSER_BIN_DIR}}/dr {{.CLI_ARGS}}'
+    silent: true
+
   phpcs:
     desc: 'Run `phpcs` command.'
     cmd:
@@ -54,7 +59,6 @@ tasks:
   phpstan:
     desc: 'Run `phpstan` command.'
     aliases:
-      - stan
       - php:stan
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan
@@ -64,8 +68,10 @@ tasks:
   rector:
     desc: 'Run `rector` command.'
     cmd:
-      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector
-      --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector {{.CLI_ARGS}}
+      --config={{.CONFIG_DIR}}/rector.php --ansi'
+    aliases:
+      - r
     silent: true
 
   twig-cs:
@@ -98,9 +104,13 @@ tasks:
     desc: 'Run `prettier` command.'
     cmd:
       '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
-      --config={{.CONFIG_DIR}}/.prettierrc.json
+      --config-path={{.CONFIG_DIR}}/.prettierrc.json
       --ignore-path={{.CONFIG_DIR}}/.prettierignore
       --cache --cache-location=var/cache/prettier/prettier.cache'
+    aliases:
+      - prt
+    env:
+      PRETTIER_EXPERIMENTAL_CLI: 1
     silent: true
 
   cspell:
@@ -114,13 +124,12 @@ tasks:
   # Work commands:
 
   cache:clear:
-    label: 'Cache clear'
-    desc: 'Rebuild Drupal caches'
+    desc: 'Rebuild all caches.'
     aliases:
       - cc
       - cr
     cmds:
-      - task: drush
+      - task: dr
         vars: { CLI_ARGS: 'cr' }
 
   install:
@@ -155,7 +164,7 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: 'u -W' }
       - task: pnpm
-        vars: { CLI_ARGS: 'up --save' }
+        vars: { CLI_ARGS: 'up --save-exact' }
 
   build-dictionary:
     desc: 'Builds a project dictionary for CSPell.'
@@ -214,6 +223,7 @@ tasks:
       - task: phpcs
         vars: { CLI_ARGS: '--version' }
       - task: phpcs
+        vars: { CLI_ARGS: '{{.CLI_ARGS}} || true' } # update when add PHP code
 
   lint:phpstan:
     desc: 'Analyze PHP code for bugs and errors.'
@@ -227,7 +237,7 @@ tasks:
       - task: phpstan
         vars: { CLI_ARGS: '-V' }
       - task: phpstan
-        vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}} || true' } # update when add php code
+        vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}} || true' } # update when add PHP code
 
   lint:rector:
     desc: 'Check for Rector refactoring suggestions.'

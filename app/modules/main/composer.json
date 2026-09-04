@@ -1,5 +1,5 @@
 {
-    "name": "drupal-notes/nts_core",
+    "name": "drupal-notes/app_main",
     "description": "Custom main module for Notes site",
     "license": "GPL-3.0-or-later",
     "type": "drupal-custom-module",

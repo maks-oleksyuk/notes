@@ -10,6 +10,8 @@ updates:
       actions-dependencies:
         patterns:
           - '*'
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: npm
     directory: /
@@ -21,9 +23,11 @@ updates:
       pnpm-dependencies:
         patterns:
           - '*'
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: npm
-    directory: /app/Drupal/nts_theme
+    directory: /app/themes/theme
     schedule:
       interval: quarterly
     commit-message:
@@ -32,3 +36,5 @@ updates:
       theme-dependencies:
         patterns:
           - '*'
+    cooldown:
+      default-days: 7

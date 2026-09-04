@@ -1,15 +1,15 @@
-uuid: 704719e8-4597-4af9-96c3-18ee22bc541a
+uuid: c6037ccd-af26-42dc-95b5-326c767879cd
 langcode: en
 status: true
 dependencies:
   module:
     - system
   theme:
-    - gin
+    - default_admin
 _core:
-  default_config_hash: hBHXB7hC05XU7pDYzETt-GUcpFlogK1gkjyAsg0Ym58
-id: gin_content
-theme: gin
+  default_config_hash: A0bSgTfhz7M_3ljjCoyrdKWwh-8s_9VsLVJzb4fzE3c
+id: default_admin_content
+theme: default_admin
 region: content
 weight: 0
 provider: null
@@ -19,4 +19,4 @@ settings:
   label: 'Main page content'
   label_display: '0'
   provider: system
-visibility: {  }
+visibility: {}
