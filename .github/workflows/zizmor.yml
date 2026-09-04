@@ -1,0 +1,57 @@
+name: '🔐 Security | 🌈 zizmor'
+
+on:
+  push:
+    branches:
+      - drupal
+    paths:
+      - '.github/actions/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches:
+      - drupal
+    paths:
+      - '.github/actions/**'
+      - '.github/workflows/**'
+
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  zizmor:
+    name: '🔍 Scan GitHub Actions'
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: '🌈 Run zizmor'
+        uses: zizmorcore/zizmor-action@70fb788f84895a7701f5643d103d587e460b5c99 # v0.6.3
+        with:
+          advanced-security: false
+          annotations: true
+
+  cleanup:
+    name: '🧹 Clean up GitHub repo'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    if: github.event_name != 'pull_request'
+
+    steps:
+      - name: '🗑 Delete workflow runs'
+        uses: Mattraks/delete-workflow-runs@b3018382ca039b53d238908238bd35d1fb14f8ee # v2.1.0
+        with:
+          retain_days: 0
+          keep_minimum_runs: 0
+          delete_workflow_pattern: zizmor.yml

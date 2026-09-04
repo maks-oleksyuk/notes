@@ -15,5 +15,6 @@
   <exclude-pattern>node_modules</exclude-pattern>
   <exclude-pattern>*\.(css|js)</exclude-pattern>
 
-  <rule ref="DrupalExtended"/>
+  <rule ref="Drupal"/>
+  <rule ref="DrupalPractice"/>
 </ruleset>
