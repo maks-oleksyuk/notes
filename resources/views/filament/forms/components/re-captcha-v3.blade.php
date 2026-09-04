@@ -1,18 +1,24 @@
-@include('filament-forms::components.hidden')
+{!! $field->toEmbeddedHtml() !!}
 
-@if(config('recaptcha.enabled') && config('recaptcha.site_key'))
-@once('recaptcha-preload')
-<link rel="preconnect" href="https://www.google.com">
-<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-@endonce
+@if (config('recaptcha.enabled') && config('recaptcha.site_key'))
+    @once('recaptcha-preload')
+        <link rel="preconnect" href="https://www.google.com" />
+        <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+    @endonce
 
-@once('recaptcha-script')
-<script src="https://www.google.com/recaptcha/enterprise.js?render={{ config('recaptcha.site_key') }}&hl={{ app()->getLocale() }}" async defer></script>
-<script>window._recaptchaSiteKey = '{{ config('recaptcha.site_key') }}';</script>
-@endonce
+    @once('recaptcha-script')
+        <script
+            src="https://www.google.com/recaptcha/enterprise.js?render={{ config('recaptcha.site_key') }}&hl={{ app()->getLocale() }}"
+            async
+            defer
+        ></script>
+        <script>
+            window._recaptchaSiteKey = '{{ config('recaptcha.site_key') }}';
+        </script>
+    @endonce
 
-<div
-    x-data="{
+    <div
+        x-data="{
         _loading: false,
         error: null,
         init() {
@@ -47,9 +53,9 @@
             });
         }
     }"
->
-    <template x-if="error">
-        <p x-text="error" class="mt-2 text-sm text-danger-600 dark:text-danger-400"></p>
-    </template>
-</div>
+    >
+        <template x-if="error">
+            <p x-text="error" class="text-danger-600 dark:text-danger-400 mt-2 text-sm"></p>
+        </template>
+    </div>
 @endif

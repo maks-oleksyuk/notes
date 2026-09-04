@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Imports\Filament\SpreadsheetImporter;
 use App\Imports\UserImporter;
 use App\Models\User;
-use Filament\Forms\Components\Toggle;
+use Filament\Actions\Imports\ImportColumn;
 use Illuminate\Support\Collection;
 
 covers(UserImporter::class, SpreadsheetImporter::class);
@@ -104,35 +104,37 @@ describe('Import | User', function (): void {
 
     it('defines correct validation rules for name column', function (): void {
         $column = new Collection(UserImporter::getColumns())->first(fn ($c): bool => $c->getName() === 'name');
+        assert($column instanceof ImportColumn);
 
         expect($column->getDataValidationRules())->toBe(['required', 'max:255']);
     });
 
     it('defines correct validation rules for email column', function (): void {
         $column = new Collection(UserImporter::getColumns())->first(fn ($c): bool => $c->getName() === 'email');
+        assert($column instanceof ImportColumn);
 
         expect($column->getDataValidationRules())->toBe(['required', 'email:strict']);
     });
 
     it('provides guess hints for name column mapping', function (): void {
         $column = new Collection(UserImporter::getColumns())->first(fn ($c): bool => $c->getName() === 'name');
+        assert($column instanceof ImportColumn);
 
-        expect($column->getGuesses())
-            ->toContain('full_name')
-            ->toContain('fullname');
+        expect($column->getGuesses())->toContain('full_name')->toContain('fullname');
     });
 
     it('provides guess hints for email column mapping', function (): void {
         $column = new Collection(UserImporter::getColumns())->first(fn ($c): bool => $c->getName() === 'email');
+        assert($column instanceof ImportColumn);
 
-        expect($column->getGuesses())
-            ->toContain('e-mail')
+        expect($column)
+            ->and($column->getGuesses())->toContain('e-mail')
             ->toContain('mail')
             ->toContain('email address');
     });
 
     it('returns a non-empty modal description', function (): void {
-        expect(UserImporter::getModalDescription())->toBeString()->not->toBeEmpty();
+        expect(UserImporter::getModalDescription())->not->toBeEmpty();
     });
 
     it('returns a file upload hint listing supported formats', function (): void {
@@ -143,7 +145,6 @@ describe('Import | User', function (): void {
         $components = UserImporter::getOptionsFormComponents();
 
         expect($components)->toHaveCount(1)
-            ->and($components[0])->toBeInstanceOf(Toggle::class)
             ->and($components[0]->getName())->toBe('skipExisting')
             ->and($components[0]->getDefaultState())->toBeFalse();
     });

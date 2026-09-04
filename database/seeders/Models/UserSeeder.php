@@ -12,18 +12,16 @@ final class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $users = [[
+        User::factory()->superAdmin()->create([
             'name' => 'admin',
             'email' => 'admin@example.com',
             'password' => Hash::make('admin_Pass1'),
-        ], [
+        ]);
+
+        User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => Hash::make('test_Pass2'),
-        ], ];
-
-        foreach ($users as $user) {
-            User::factory()->create($user);
-        }
+        ]);
     }
 }

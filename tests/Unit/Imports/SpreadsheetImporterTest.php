@@ -6,6 +6,7 @@ use App\Imports\Filament\SpreadsheetImporter;
 use App\Imports\UserImporter;
 use App\Models\User;
 use Filament\Actions\Imports\ImportColumn;
+use Filament\Actions\Imports\Models\FailedImportRow;
 use Filament\Actions\Imports\Models\Import;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -86,7 +87,7 @@ describe('Import | Filament | SpreadsheetImporter', function (): void {
 
         $importer = new class extends SpreadsheetImporter
         {
-            public static ?Closure $spy = null;
+            public static Closure $spy;
 
             /**
              * @return ImportColumn[]
@@ -162,7 +163,7 @@ describe('Import | Filament | SpreadsheetImporter', function (): void {
             'total_rows' => 0,
         ])->save();
 
-        $importer = new UserImporter(importId: $import->getKey());
+        $importer = new UserImporter(importId: $import->id);
 
         $importer->model(['name' => 'Valid', 'email' => 'valid@example.com']);
         $importer->model(['name' => 'Bad', 'email' => 'not-an-email']);
@@ -175,8 +176,13 @@ describe('Import | Filament | SpreadsheetImporter', function (): void {
 
         expect($import->processed_rows)->toBe(2)
             ->and($import->successful_rows)->toBe(1)
-            ->and($import->failedRows()->count())->toBe(1)
-            ->and($import->failedRows()->first()->validation_error)->not->toBeNull();
+            ->and($import->failedRows()->count())->toBe(1);
+
+        $failedRow = $import->failedRows()->first();
+        expect($failedRow)->not->toBeNull();
+
+        /** @var FailedImportRow $failedRow */
+        expect($failedRow->validation_error)->not->toBeNull();
 
         $this->assertDatabaseHas(User::class, ['email' => 'valid@example.com']);
     });
@@ -193,7 +199,7 @@ describe('Import | Filament | SpreadsheetImporter', function (): void {
             'total_rows' => 0,
         ])->save();
 
-        $importer = new UserImporter(importId: $import->getKey());
+        $importer = new UserImporter(importId: $import->id);
         $flush = $importer->registerEvents()[AfterChunk::class];
 
         $importer->model(['name' => 'Alice', 'email' => 'alice@example.com']);
@@ -215,7 +221,7 @@ describe('Import | Filament | SpreadsheetImporter', function (): void {
             'total_rows' => 0,
         ])->save();
 
-        $importer = new UserImporter(importId: $import->getKey());
+        $importer = new UserImporter(importId: $import->id);
         $flush = $importer->registerEvents()[AfterChunk::class];
 
         $importer->model(['name' => 'Alice', 'email' => 'alice@example.com']);
@@ -238,7 +244,7 @@ describe('Import | Filament | SpreadsheetImporter', function (): void {
             'total_rows' => 0,
         ])->save();
 
-        $importer = new UserImporter(importId: $import->getKey());
+        $importer = new UserImporter(importId: $import->id);
 
         DB::connection()->flushQueryLog();
         DB::connection()->enableQueryLog();
@@ -248,7 +254,7 @@ describe('Import | Filament | SpreadsheetImporter', function (): void {
         // With nothing buffered, the early guard must skip the increment query entirely.
         $updateQueries = new Collection(DB::connection()->getQueryLog())
             ->pluck('query')
-            ->filter(fn (string $query): bool => str_contains($query, 'update'));
+            ->filter(fn (mixed $query): bool => is_string($query) && str_contains($query, 'update'));
 
         expect($updateQueries)->toBeEmpty()
             ->and($import->refresh()->processed_rows)->toBe(0);
@@ -278,7 +284,7 @@ describe('Import | Filament | SpreadsheetImporter', function (): void {
             'total_rows' => 0,
         ])->save();
 
-        $importer = new UserImporter(importId: $import->getKey());
+        $importer = new UserImporter(importId: $import->id);
         $flush = $importer->registerEvents()[AfterChunk::class];
 
         $importer->model(['name' => 'Alice', 'email' => 'alice@example.com']);
@@ -391,7 +397,7 @@ describe('Import | Filament | SpreadsheetImporter', function (): void {
             'total_rows' => 0,
         ])->save();
 
-        $importer = new UserImporter(options: ['skipExisting' => true], importId: $import->getKey());
+        $importer = new UserImporter(options: ['skipExisting' => true], importId: $import->id);
 
         // Existing email + skipExisting → recorded as a skip through the importId branch.
         $importer->model(['name' => 'Whoever', 'email' => 'existing@example.com']);
@@ -402,7 +408,10 @@ describe('Import | Filament | SpreadsheetImporter', function (): void {
 
         expect($import->processed_rows)->toBe(1)
             ->and($import->successful_rows)->toBe(0)
-            ->and($import->completed_at)->not->toBeNull()
-            ->and($owner->notifications()->sole()->data['status'])->toBe('success');
+            ->and($import->completed_at)->not->toBeNull();
+
+        /** @var array<string, mixed> $data */
+        $data = $owner->notifications()->sole()->getAttribute('data');
+        expect($data['status'])->toBe('success');
     });
 });

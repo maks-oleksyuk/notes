@@ -1,13 +1,16 @@
 includes:
   - ../../vendor/larastan/larastan/extension.neon
+  - ../../vendor/pestphp/pest-plugin-phpstan/extension.neon
   - ../../vendor/phpstan/phpstan/conf/bleedingEdge.neon
   - ../../vendor/phpstan/phpstan-deprecation-rules/rules.neon
+  - ../../vendor/phpstan/phpstan-mockery/extension.neon
 
 parameters:
   level: 10
   paths:
     - ../../app
     - ../../database
+    - ../../tests
   tmpDir: ../../var/cache/phpstan
   scanFiles:
     - ../../_ide_helper_models.php
@@ -21,4 +24,3 @@ parameters:
   checkConfigTypes: true
   checkAuthCallsWhenInRequestScope: true
   parseModelCastsMethod: true
-  enableMigrationCache: true

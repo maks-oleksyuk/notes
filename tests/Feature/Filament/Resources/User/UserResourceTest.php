@@ -8,11 +8,14 @@ use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
-use Livewire\Features\SupportTesting\Testable;
 use Pest\Expectation;
 use Tests\Feature\Filament\Fixtures\FilamentForm;
 
 covers(UserResource::class);
+
+beforeEach(function (): void {
+    $this->actingAs(User::factory()->superAdmin()->create());
+});
 
 describe('Filament | Resource | User', function (): void {
     it('allows creating users',
@@ -35,9 +38,11 @@ describe('Filament | Resource | User', function (): void {
             ->and($schema[3])->toBeInstanceOf(DateTimePicker::class);
     });
 
-    it('returns a Table instance configured by UsersTable',
-        fn (): Testable => Livewire::test(ListUsers::class)->assertSuccessful()
-    );
+    // No return type on the closure: PHPStan mistypes assertSuccessful() as
+    // TestResponse instead of Testable (phpstan/phpstan#15095).
+    it('returns a Table instance configured by UsersTable', function (): void {
+        Livewire::test(ListUsers::class)->assertSuccessful();
+    });
 
     it('returns valid pages routes',
         fn (): Expectation => expect(UserResource::getPages())->toHaveKeys(['index', 'view'])

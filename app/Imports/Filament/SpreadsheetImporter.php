@@ -72,8 +72,8 @@ abstract class SpreadsheetImporter implements ToModel, WithChunkReading, WithEve
     public function __construct(
         protected array $mapping = [],
         protected array $options = [],
-        protected(set) ?int $importId = null,
-        protected(set) ?string $authGuard = null,
+        public protected(set) ?int $importId = null,
+        public protected(set) ?string $authGuard = null,
     ) {}
 
     /**

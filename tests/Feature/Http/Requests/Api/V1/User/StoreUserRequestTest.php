@@ -17,6 +17,7 @@ describe('API | V1 | User | StoreUserRequest', function (): void {
 
     it('validates rules', function (): void {
         $rules = new StoreUserRequest()->rules();
+        $hasPasswordRule = new Collection($rules['password'])->contains(fn ($rule): bool => $rule instanceof Password);
 
         expect($rules)->toHaveKey('name')
             ->and($rules['name'])->toContain('required')
@@ -30,9 +31,7 @@ describe('API | V1 | User | StoreUserRequest', function (): void {
             ->and($rules['email'])->toContain('unique:users,email')
             ->and($rules)->toHaveKey('password')
             ->and($rules['password'])->toContain('required')
-            ->and(new Collection($rules['password']))
-            ->contains(fn ($rule): bool => $rule instanceof Password)
-            ->toBeTrue();
+            ->and($hasPasswordRule)->toBeTrue();
     });
 
     it('enforces Password::defaults() validation rules', function (string $password, bool $shouldPass): void {

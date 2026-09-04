@@ -34,7 +34,7 @@ describe('Http | Requests | PaginatedRequest', function (): void {
     it('validates page', function (mixed $value, bool $passes): void {
         $request = IndexUserRequest::create('/test', Request::METHOD_GET, ['page' => $value]);
 
-        expect($request->validator(App::make(ValidationFactory::class))->passes())->toBe($passes);
+        expect($request->validator(App::make(ValidationFactory::class))->fails())->toBe(! $passes);
     })->with([
         'valid 1' => [1, true],
         'valid 5' => [5, true],
@@ -46,7 +46,7 @@ describe('Http | Requests | PaginatedRequest', function (): void {
     it('validates per_page', function (mixed $value, bool $passes): void {
         $request = IndexUserRequest::create('/test', Request::METHOD_GET, ['per_page' => $value]);
 
-        expect($request->validator(App::make(ValidationFactory::class))->passes())->toBe($passes);
+        expect($request->validator(App::make(ValidationFactory::class))->fails())->toBe(! $passes);
     })->with([
         'valid 1' => [1, true],
         'valid 50' => [50, true],

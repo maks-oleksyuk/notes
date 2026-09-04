@@ -38,6 +38,7 @@ junit.xml
 
 # Ignore local folder and archives.
 local
+packages
 *.gz
 
 # Ignore OS files.

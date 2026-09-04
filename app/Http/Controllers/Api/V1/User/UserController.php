@@ -11,6 +11,7 @@ use App\Http\Resources\Api\V1\User\UserResource;
 use App\Models\User;
 use App\Repositories\Contracts\Models\UserRepositoryInterface;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
@@ -22,10 +23,14 @@ use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 #[Group('User')]
 final class UserController extends Controller
 {
+    use AuthorizesRequests;
+
     public function __construct(
         private readonly ResponseFactory $responseFactory,
         private readonly UserRepositoryInterface $userRepository,
-    ) {}
+    ) {
+        $this->authorizeResource(User::class, 'user');
+    }
 
     /**
      * @throws \Throwable

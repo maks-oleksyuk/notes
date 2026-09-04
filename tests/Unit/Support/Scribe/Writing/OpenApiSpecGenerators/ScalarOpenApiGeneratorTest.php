@@ -13,22 +13,26 @@ use Symfony\Component\HttpFoundation\Request;
 covers(ScalarOpenApiGenerator::class);
 
 beforeEach(function (): void {
-    $this->configRepository = Mockery::mock(Repository::class);
-    $this->configRepository
+    $configRepository = Mockery::mock(Repository::class);
+    $configRepository
         ->shouldReceive('get')
         ->with('scribe.groups.default')
         ->andReturn('_UNGROUPED');
 
     $this->generator = new ScalarOpenApiGenerator(
         new DocumentationConfig,
-        $this->configRepository
+        $configRepository
     );
 });
 
 describe('Scribe | ScalarOpenApiGenerator', function (): void {
     it('calls parent constructor and initializes base properties', function (): void {
         $reflection = new ReflectionClass($this->generator);
-        $property = $reflection->getParentClass()->getProperty('config');
+        $parentClass = $reflection->getParentClass();
+        expect($parentClass)->not()->toBeFalse();
+        assert($parentClass !== false);
+
+        $property = $parentClass->getProperty('config');
 
         $value = $property->getValue($this->generator);
         expect($value)->toBeInstanceOf(DocumentationConfig::class);
@@ -60,6 +64,7 @@ describe('Scribe | ScalarOpenApiGenerator', function (): void {
             'endpoints' => [$endpoint1, $endpoint2],
         ]];
 
+        /** @var array{tags: list<array<string, string>>, 'x-tagGroups': list<array{name: string, tags: list<string>}>} $root */
         $root = $this->generator->root([], $groupedEndpoints);
 
         expect($root)
@@ -106,9 +111,11 @@ describe('Scribe | ScalarOpenApiGenerator', function (): void {
 
         $groupedEndpoints = [[
             'name' => 'Mixed',
+            'description' => '',
             'endpoints' => [$endpoint1, $endpoint2],
         ]];
 
+        /** @var array{tags: list<array<string, string>>} $root */
         $root = $this->generator->root([], $groupedEndpoints);
 
         expect(array_column($root['tags'], 'name'))->toContain('Mixed Valid');
@@ -147,6 +154,7 @@ describe('Scribe | ScalarOpenApiGenerator', function (): void {
             'endpoints' => [$endpoint1, $endpoint2, $endpoint3],
         ]];
 
+        /** @var array{tags: list<array<string, string>>} $root */
         $root = $this->generator->root([], $groupedEndpoints);
 
         $tagNames = new Collection($root['tags'])->pluck('name');
@@ -175,9 +183,11 @@ describe('Scribe | ScalarOpenApiGenerator', function (): void {
 
         $groupedEndpoints = [[
             'name' => 'Sorted',
+            'description' => '',
             'endpoints' => [$endpointA, $endpointB],
         ]];
 
+        /** @var array{'x-tagGroups': list<array{name: string, tags: list<string>}>} $root */
         $root = $this->generator->root([], $groupedEndpoints);
 
         $tags = $root['x-tagGroups'][0]['tags'];
@@ -204,6 +214,7 @@ describe('Scribe | ScalarOpenApiGenerator', function (): void {
             'x-tagGroups' => [['name' => 'ExistingGroup', 'tags' => ['ExistingTag']]],
         ];
 
+        /** @var array{'x-tagGroups': list<array{name: string, tags: list<string>}>} $result */
         $result = $this->generator->root($root, $groupedEndpoints);
 
         expect($result['x-tagGroups'])
@@ -226,6 +237,7 @@ describe('Scribe | ScalarOpenApiGenerator', function (): void {
             'endpoints' => [$endpoint],
         ]];
 
+        /** @var array{tags: list<array<string, string>>, 'x-tagGroups': list<array{name: string, tags: list<string>}>} $root */
         $root = $this->generator->root([], $groupedEndpoints);
 
         expect($root['tags'])->toContain(['name' => '_UNGROUPED'])
@@ -252,9 +264,11 @@ describe('Scribe | ScalarOpenApiGenerator', function (): void {
 
         $groupedEndpoints = [[
             'name' => 'Users',
+            'description' => '',
             'endpoints' => [$endpoint1, $endpoint2],
         ]];
 
+        /** @var array{tags: list<array<string, string>>} $root */
         $root = $this->generator->root([], $groupedEndpoints);
 
         $names = array_column($root['tags'], 'name');
@@ -288,6 +302,7 @@ describe('Scribe | ScalarOpenApiGenerator', function (): void {
             ]),
         ]);
 
+        /** @var array{tags: list<string>} $pathItem */
         $pathItem = $this->generator->pathItem([], [], $endpoint);
 
         expect($pathItem['tags'])->toBe(['Users Settings']);

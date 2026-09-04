@@ -15,17 +15,12 @@ beforeEach(fn (): LoginAction => $this->loginAction = App::make(LoginAction::cla
 
 describe('Actions | API | V1 | Auth', function (): void {
     it('throws ValidationException when user not found', function (): void {
-        $this->expectException(ValidationException::class);
-
-        $this->loginAction->__invoke('nonexistent@example.com', 'any-password');
+        expect(fn () => $this->loginAction->__invoke('nonexistent@example.com', 'any-password'))->toThrow(ValidationException::class);
     });
 
     it('throws ValidationException when password is invalid', function (): void {
         $user = User::factory()->create(['password' => bcrypt('correct_password')]);
-
-        $this->expectException(ValidationException::class);
-
-        $this->loginAction->__invoke($user->email, 'wrong_password');
+        expect(fn () => $this->loginAction->__invoke($user->email, 'wrong_password'))->toThrow(ValidationException::class);
     });
 
     it('throws ValidationException with correct message when credentials are invalid', function (): void {
@@ -52,7 +47,7 @@ describe('Actions | API | V1 | Auth', function (): void {
         $expiresAt = Date::parse($result['expires_at']);
 
         expect($result)->toHaveKeys(['token', 'expires_at'])
-            ->and($result['token'])->toBeString()->not()->toBeEmpty()
+            ->and($result['token'])->not()->toBeEmpty()
             ->and($expiresAt->diffInMinutes($now))->toBeLessThanOrEqual(60);
     });
 });

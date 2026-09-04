@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Exports\ImporterTemplateExport;
 use App\Filament\Actions\SpreadsheetImportAction;
 use App\Filament\Resources\User\Pages\ListUsers;
 use App\Imports\UserImporter;
@@ -21,7 +22,7 @@ covers(SpreadsheetImportAction::class);
 
 describe('Filament | Action | SpreadsheetImport', function (): void {
     beforeEach(function (): void {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->superAdmin()->create());
     });
 
     it('sends a warning notification when the uploaded file contains duplicate headings', function (): void {
@@ -102,7 +103,7 @@ describe('Filament | Action | SpreadsheetImport', function (): void {
 
         Excel::assertDownloaded(
             $filename,
-            fn ($export): bool => $export->headings() === ['name', 'email']
+            fn (ImporterTemplateExport $export): bool => $export->headings() === ['name', 'email']
                 && $export->array() === [['John Doe', 'john@example.com']],
         );
     })->with([
@@ -147,7 +148,7 @@ describe('Filament | Action | SpreadsheetImport', function (): void {
         $import = Import::query()->sole();
 
         expect($import->importer)->toBe(UserImporter::class)
-            ->and($import->user_id)->toBe($userId)
+            ->and($import->getAttribute('user_id'))->toBe($userId)
             ->and($import->file_name)->not->toBeEmpty();
     });
 

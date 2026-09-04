@@ -7,6 +7,7 @@ namespace App\Exceptions;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -33,14 +34,20 @@ final readonly class ApiExceptionHandler
             default => $this->statusFromCode($e->getCode()),
         };
 
-        $isServerError = $status >= HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR;
+        $leaksModelName = $e->getPrevious() instanceof ModelNotFoundException;
+
+        $clientSafe = ! $leaksModelName && (
+            $e instanceof HttpExceptionInterface
+            || $e instanceof AuthenticationException
+            || $e instanceof ValidationException
+        );
 
         $problem = [
             'title' => HttpFoundationResponse::$statusTexts[$status],
             'status' => $status,
-            'detail' => $isServerError && ! $this->config->get('app.debug')
-                ? HttpFoundationResponse::$statusTexts[$status]
-                : $e->getMessage(),
+            'detail' => $clientSafe || $this->config->get('app.debug')
+                ? $e->getMessage()
+                : HttpFoundationResponse::$statusTexts[$status],
             'instance' => $request->getRequestUri(),
         ];
 

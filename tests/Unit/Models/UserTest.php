@@ -10,14 +10,17 @@ use Illuminate\Contracts\Translation\HasLocalePreference;
 covers(User::class);
 
 describe('Model | User', function (): void {
+    arch('implements HasLocalePreference')
+        ->expect(User::class)
+        ->toImplement(HasLocalePreference::class);
+
     it('can create a user', function (): void {
         $user = User::factory()->create([
             'name' => 'John Doe',
             'email' => 'johndoe@example.com',
         ]);
 
-        expect($user)->toBeInstanceOf(User::class)
-            ->and($user->name)->toBe('John Doe')
+        expect($user->name)->toBe('John Doe')
             ->and($user->email)->toBe('johndoe@example.com');
 
         $this->assertDatabaseHas('users', [
@@ -45,7 +48,6 @@ describe('Model | User', function (): void {
             'id' => 'int',
             'password' => 'hashed',
             'email_verified_at' => 'datetime',
-            'google_id' => 'string',
         ]);
     });
 
@@ -67,18 +69,16 @@ describe('Model | User', function (): void {
         expect($user->email_verified_at)->toBeInstanceOf(CarbonImmutable::class);
     });
 
-    it('grants Filament access', function (): void {
-        $user = User::factory()->create();
+    it('grants Filament access only to an admin', function (): void {
         $panel = Mockery::mock(Panel::class);
 
-        expect($user->canAccessPanel($panel))->toBeTrue();
+        expect(User::factory()->create()->canAccessPanel($panel))->toBeFalse()
+            ->and(User::factory()->superAdmin()->create()->canAccessPanel($panel))->toBeTrue();
     });
 
-    it('implements HasLocalePreference and returns null by default', function (): void {
+    it('returns null preferred locale by default', function (): void {
         $user = User::factory()->make();
 
-        expect($user)
-            ->toBeInstanceOf(HasLocalePreference::class)
-            ->and($user->preferredLocale())->toBeNull();
+        expect($user->preferredLocale())->toBeNull();
     });
 });

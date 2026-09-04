@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use App\Models\Traits\DynamicScopes\FilterBetweenDatesScope;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @mixin IdeHelperUser
@@ -42,6 +44,7 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
     /** @use HasFactory<UserFactory> */
     use HasFactory;
 
+    use HasRoles;
     use Notifiable;
 
     /**
@@ -53,13 +56,12 @@ final class User extends Authenticatable implements FilamentUser, HasLocalePrefe
         return [
             'password' => 'hashed',
             'email_verified_at' => 'datetime',
-            'google_id' => 'string',
         ];
     }
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        return $this->hasRole(UserRole::SuperAdmin);
     }
 
     public function preferredLocale(): ?string

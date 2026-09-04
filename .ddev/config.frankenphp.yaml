@@ -1,3 +1,4 @@
+#ddev-silent-no-warn
 webserver_type: generic
 web_extra_daemons:
   - name: 'octane'

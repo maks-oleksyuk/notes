@@ -19,14 +19,15 @@ describe('Filament | Auth | Login', function (): void {
     it('form contains email, password, remember and recaptcha fields', function (): void {
         $components = (new Login)->form(Schema::make(FilamentForm::make()))->getComponents();
 
+        assert($components[0] instanceof TextInput);
+        assert($components[1] instanceof TextInput);
+        assert($components[2] instanceof Checkbox);
+        assert($components[3] instanceof ReCaptchaV3);
+
         expect($components)->toHaveCount(4)
-            ->and($components[0])->toBeInstanceOf(TextInput::class)
             ->and($components[0]->getName())->toBe('email')
-            ->and($components[1])->toBeInstanceOf(TextInput::class)
             ->and($components[1]->getName())->toBe('password')
-            ->and($components[2])->toBeInstanceOf(Checkbox::class)
             ->and($components[2]->getName())->toBe('remember')
-            ->and($components[3])->toBeInstanceOf(ReCaptchaV3::class)
             ->and($components[3]->getName())->toBe('recaptcha_token')
             ->and($components[3]->getRecaptchaAction())->toBe('login');
     });

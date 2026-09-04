@@ -2,46 +2,55 @@
 
 declare(strict_types=1);
 
+use App\Filament\Actions\SpreadsheetImportAction;
 use App\Filament\Exports\UserExporter;
 use App\Filament\Resources\User\Pages\ListUsers;
+use App\Models\User;
 use Filament\Actions\ExportAction;
 use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
 
+use function Pest\Livewire\livewire;
+
 covers(ListUsers::class);
+
+beforeEach(function (): void {
+    $this->actingAs(User::factory()->superAdmin()->create());
+});
 
 describe('Filament | Resource | User | List', function (): void {
     it('renders export actions with correct configuration', function (): void {
-        $actions = new ReflectionMethod(
-            ListUsers::class,
-            'getHeaderActions',
-        )->invoke(new ListUsers);
+        livewire(ListUsers::class)
+            ->assertActionExists('export_csv', function (ExportAction $action): bool {
+                expect($action->getLabel())->toBe('Export CSV')
+                    ->and($action->getExporter())->toBe(UserExporter::class)
+                    ->and($action->getIcon())->toEqual(Heroicon::OutlinedDocumentArrowDown)
+                    ->and($action->getFormats())->toEqual([ExportFormat::Csv])
+                    ->and($action->hasColumnMapping())->toBeFalse()
+                    ->and($action->getColor())->toBe(Color::Sky)
+                    ->and($action->shouldOpenModal())->toBeFalse()
+                    ->and($action->isOutlined())->toBeTrue();
 
-        expect($actions)->toHaveCount(3);
+                return true;
+            })
+            ->assertActionExists('export_xls', function (ExportAction $action): bool {
+                expect($action->getLabel())->toBe('Export XLSX')
+                    ->and($action->getExporter())->toBe(UserExporter::class)
+                    ->and($action->getIcon())->toEqual(Heroicon::OutlinedDocumentArrowDown)
+                    ->and($action->getFormats())->toEqual([ExportFormat::Xlsx])
+                    ->and($action->hasColumnMapping())->toBeFalse()
+                    ->and($action->getColor())->toBe(Color::Green)
+                    ->and($action->shouldOpenModal())->toBeFalse()
+                    ->and($action->isOutlined())->toBeTrue();
 
-        /** @var ExportAction $csvAction */
-        $csvAction = $actions[0];
-        expect($csvAction->getName())->toBe('export_csv')
-            ->and($csvAction->getLabel())->toBe('Export CSV')
-            ->and($csvAction->getExporter())->toBe(UserExporter::class)
-            ->and($csvAction->getIcon())->toEqual(Heroicon::OutlinedDocumentArrowDown)
-            ->and($csvAction->getFormats())->toEqual([ExportFormat::Csv])
-            ->and($csvAction->hasColumnMapping())->toBeFalse()
-            ->and($csvAction->getColor())->toBe(Color::Sky)
-            ->and($csvAction->shouldOpenModal())->toBeFalse()
-            ->and($csvAction->isOutlined())->toBeTrue();
+                return true;
+            })
+            ->assertActionExists('import', function (SpreadsheetImportAction $action): bool {
+                expect($action->getLabel())->toBe('Import')
+                    ->and($action->getColor())->toBe(Color::Green);
 
-        /** @var ExportAction $xlsAction */
-        $xlsAction = $actions[1];
-        expect($xlsAction->getName())->toBe('export_xls')
-            ->and($xlsAction->getLabel())->toBe('Export XLSX')
-            ->and($xlsAction->getExporter())->toBe(UserExporter::class)
-            ->and($xlsAction->getIcon())->toEqual(Heroicon::OutlinedDocumentArrowDown)
-            ->and($xlsAction->getFormats())->toEqual([ExportFormat::Xlsx])
-            ->and($xlsAction->hasColumnMapping())->toBeFalse()
-            ->and($xlsAction->getColor())->toBe(Color::Green)
-            ->and($xlsAction->shouldOpenModal())->toBeFalse()
-            ->and($xlsAction->isOutlined())->toBeTrue();
+                return true;
+            });
     });
 });

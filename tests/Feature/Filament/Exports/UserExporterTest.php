@@ -26,14 +26,15 @@ describe('Filament | Export | User', function (): void {
     it('generates a correct success notification without failed rows', function (): void {
         $user = User::factory()->create();
 
-        $export = Export::query()->create([
-            'user_id' => $user->id,
+        $export = new Export;
+        $export->user()->associate($user);
+        $export->fill([
             'successful_rows' => 5,
             'total_rows' => 5,
             'file_disk' => 'local',
             'file_name' => 'export.csv',
             'exporter' => UserExporter::class,
-        ]);
+        ])->save();
 
         $message = UserExporter::getCompletedNotificationBody($export);
 
@@ -43,14 +44,15 @@ describe('Filament | Export | User', function (): void {
     it('generates a correct success notification with failed rows', function (): void {
         $user = User::factory()->create();
 
-        $export = Export::query()->create([
-            'user_id' => $user->id,
+        $export = new Export;
+        $export->user()->associate($user);
+        $export->fill([
             'successful_rows' => 5,
             'total_rows' => 7,
             'file_disk' => 'local',
             'file_name' => 'export.csv',
             'exporter' => UserExporter::class,
-        ]);
+        ])->save();
 
         $message = UserExporter::getCompletedNotificationBody($export);
 

@@ -35,7 +35,6 @@ tasks:
     cmd: '{{.PHP_BIN}} artisan {{.CLI_ARGS}} --ansi'
     aliases:
       - art
-    internal: true
     silent: true
 
   artisan:test:
@@ -129,7 +128,7 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: 'u -W' }
       - task: pnpm
-        vars: { CLI_ARGS: 'up --save --latest' }
+        vars: { CLI_ARGS: 'up --save-exact --latest' }
 
   deploy:
     desc: 'Deploy project'
