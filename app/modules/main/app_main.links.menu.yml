@@ -1,0 +1,40 @@
+# Basic admin toolbar item.
+
+app_main.admin:
+  title: 'Notes'
+  description: 'Administer and configure Notes.'
+  route_name: app_main.admin
+  parent: system.admin
+  weight: -15
+  options:
+    icon:
+      pack_id: app_main
+      icon_id: notes
+      settings:
+        size: 25
+
+# Basic categories.
+
+app_main.admin.add:
+  title: 'Add'
+  route_name: app_main.admin.add
+  parent: app_main.admin
+  weight: 0
+
+app_main.admin.content:
+  title: 'Content'
+  route_name: app_main.admin.content
+  parent: app_main.admin
+  weight: 1
+
+app_main.admin.structure:
+  title: 'Structure'
+  route_name: app_main.admin.structure
+  parent: app_main.admin
+  weight: 2
+
+app_main.admin.settings:
+  title: 'Settings'
+  route_name: app_main.admin.settings
+  parent: app_main.admin
+  weight: 3

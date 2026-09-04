@@ -19,4 +19,4 @@ regions:
   footer: 'Footer'
 
 libraries:
-  - nts_theme/base
+  - app_theme/base

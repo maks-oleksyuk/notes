@@ -1,0 +1,18 @@
+# Base admin tabs for toolbar item.
+
+app_main.admin.add:
+  title: 'Add'
+  route_name: app_main.admin.add
+  base_route: app_main.admin
+app_main.admin.content:
+  title: 'Content'
+  route_name: app_main.admin.content
+  base_route: app_main.admin
+app_main.admin.structure:
+  title: 'Structure'
+  route_name: app_main.admin.structure
+  base_route: app_main.admin
+app_main.admin.settings:
+  title: 'Settings'
+  route_name: app_main.admin.settings
+  base_route: app_main.admin

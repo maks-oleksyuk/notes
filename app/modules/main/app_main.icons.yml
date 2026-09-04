@@ -1,4 +1,4 @@
-nts_core:
+app_main:
   enabled: true
   label: 'Notes Icons'
   description: 'Icons available within Notes Core module.'

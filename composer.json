@@ -6,8 +6,9 @@
     "require": {
         "php": "^8.5",
         "composer/installers": "^2.3",
-        "drupal-notes/nts_core": "^1.0@dev",
-        "drupal-notes/nts_theme": "^1.0@dev",
+        "cweagans/composer-patches": "^2.0",
+        "drupal-notes/app_main": "^1.0@dev",
+        "drupal-notes/app_theme": "^1.0@dev",
         "drupal/core-composer-scaffold": "^12.0.0-alpha1",
         "drupal/core-recommended": "^12.0.0-alpha1",
         "drush/drush": "14.x-dev",
@@ -37,6 +38,7 @@
     "config": {
         "allow-plugins": {
             "composer/installers": true,
+            "cweagans/composer-patches": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
             "php-http/discovery": true,
@@ -54,6 +56,11 @@
         "sort-packages": true
     },
     "extra": {
+        "patches": {
+            "drupal/core": {
+                "Issue #3620907: default_admin theme: logo and navigation icons don't align in the collapsed sidebar. Same fix as https://git.drupalcode.org/project/drupal/-/merge_requests/17001, rebased on gin--navigation (our 12.0.0-alpha1) instead of admin--navigation (renamed on main after alpha1 was tagged)": "patches/default-admin-inherit-core-sidebar-width.patch"
+            }
+        },
         "drupal-cleanup": {
             "drupal-core": [
                 "tests",

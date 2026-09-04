@@ -1,0 +1,17 @@
+{
+    "_hash": "af73e563a45054c09a39acf48f3a1f5698fe07ce17591bdc8ebb965056579dec",
+    "patches": {
+        "drupal/core": [
+            {
+                "package": "drupal/core",
+                "description": "Issue #3620907: default_admin theme: logo and navigation icons don't align in the collapsed sidebar. Same fix as https://git.drupalcode.org/project/drupal/-/merge_requests/17001, rebased on gin--navigation (our 12.0.0-alpha1) instead of admin--navigation (renamed on main after alpha1 was tagged)",
+                "url": "patches/default-admin-inherit-core-sidebar-width.patch",
+                "sha256": "18fb90b4dbbcca9b37a9f13ab1911f1d914c0b99c9987651377f9b97a4e170d7",
+                "depth": 2,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ]
+    }
+}
