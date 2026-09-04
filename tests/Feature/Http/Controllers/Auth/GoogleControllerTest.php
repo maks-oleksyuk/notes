@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
+use App\Actions\Auth\AuthenticateWithGoogleAction;
+use App\Exceptions\GoogleSignInException;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Contracts\Provider;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse;
 
-covers(GoogleController::class);
+covers(AuthenticateWithGoogleAction::class, GoogleController::class, GoogleSignInException::class);
 
 function mockSocialiteCallback(string $email, string $name, string $googleId, bool $emailVerified = true): void
 {
@@ -36,47 +39,136 @@ describe('Http | Controllers | Auth | Google', function (): void {
             ->assertRedirect('https://accounts.google.com/oauth2/auth');
     });
 
-    it('creates a new user on callback', function (): void {
-        mockSocialiteCallback('new@example.com', 'New User', 'google-123');
-
-        $this->get(route('auth.google.callback'));
-
-        $this->assertDatabaseHas(User::class, [
-            'email' => 'new@example.com',
-            'name' => 'New User',
-            'google_id' => 'google-123',
+    it('logs in a user already linked by google_id', function (): void {
+        $user = User::factory()->create([
+            'email' => 'member@example.com',
+            'google_id' => 'google-1',
         ]);
+
+        mockSocialiteCallback('member@example.com', 'Ignored Name', 'google-1');
+
+        $this->get(route('auth.google.callback'))
+            ->assertRedirect(url('/admin'))
+            // proves `login(remember: true)` — no recaller cookie is queued otherwise
+            ->assertCookie(Auth::guard()->getRecallerName());
+
+        $this->assertAuthenticatedAs($user);
     });
 
-    it('updates an existing user on callback', function (): void {
-        User::factory()->create([
-            'email' => 'existing@example.com',
-            'name' => 'Old Name',
-            'google_id' => null,
+    it('still logs the user in after their Google email changed', function (): void {
+        $user = User::factory()->create([
+            'name' => 'Stable Name',
+            'email' => 'old@example.com',
+            'google_id' => 'google-1',
         ]);
 
-        mockSocialiteCallback('existing@example.com', 'Updated Name', 'google-456');
-
-        $this->get(route('auth.google.callback'));
-
-        $this->assertDatabaseCount(User::class, 1);
-
-        $this->assertDatabaseHas(User::class, [
-            'email' => 'existing@example.com',
-            'name' => 'Updated Name',
-            'google_id' => 'google-456',
-        ]);
-    });
-
-    it('authenticates, redirects, and remembers user after callback', function (): void {
-        mockSocialiteCallback('test@example.com', 'Test User', 'google-123');
+        mockSocialiteCallback('new@example.com', 'New Google Name', 'google-1');
 
         $this->get(route('auth.google.callback'))
             ->assertRedirect(url('/admin'));
 
-        $user = User::query()->where('email', 'test@example.com')->sole();
         $this->assertAuthenticatedAs($user);
-        expect($user->remember_token)->not->toBeNull();
+        $this->assertDatabaseHas(User::class, [
+            'id' => $user->id,
+            'email' => 'old@example.com',
+            'name' => 'Stable Name',
+            'google_id' => 'google-1',
+        ]);
+    });
+
+    it('links google_id on the first Google login of an existing account', function (): void {
+        $user = User::factory()->create([
+            'name' => 'Stable Name',
+            'email' => 'member@example.com',
+            'google_id' => null,
+        ]);
+
+        mockSocialiteCallback('member@example.com', 'New Google Name', 'google-2');
+
+        $this->get(route('auth.google.callback'))
+            ->assertRedirect(url('/admin'));
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertDatabaseHas(User::class, [
+            'id' => $user->id,
+            'email' => 'member@example.com',
+            'name' => 'Stable Name',
+            'google_id' => 'google-2',
+        ]);
+    });
+
+    it('rejects login when no account matches the Google email', function (): void {
+        mockSocialiteCallback('ghost@example.com', 'Ghost', 'google-x');
+
+        $this->get(route('auth.google.callback'))
+            ->assertRedirect(route('filament.admin.auth.login'))
+            ->assertSessionHas('filament.notifications');
+
+        $this->assertGuest();
+        $this->assertDatabaseCount(User::class, 0);
+    });
+
+    it('rejects login when the email is linked to a different Google account', function (): void {
+        $user = User::factory()->create([
+            'email' => 'member@example.com',
+            'google_id' => 'google-original',
+        ]);
+
+        mockSocialiteCallback('member@example.com', 'Impostor', 'google-impostor');
+
+        $this->get(route('auth.google.callback'))
+            ->assertRedirect(route('filament.admin.auth.login'))
+            ->assertSessionHas('filament.notifications');
+
+        $this->assertGuest();
+        $this->assertDatabaseHas(User::class, [
+            'id' => $user->id,
+            'google_id' => 'google-original',
+        ]);
+    });
+
+    it('rejects a callback whose Google payload omits email_verified', function (): void {
+        $user = User::factory()->create([
+            'email' => 'member@example.com',
+            'google_id' => null,
+        ]);
+
+        $socialiteUser = (new SocialiteUser)
+            ->setRaw([])
+            ->map(['id' => 'google-x', 'name' => 'No Flag', 'email' => 'member@example.com']);
+
+        $driver = Mockery::mock(Provider::class);
+        $driver->shouldReceive('user')->once()->andReturn($socialiteUser);
+        Socialite::shouldReceive('driver')->with('google')->once()->andReturn($driver);
+
+        $this->get(route('auth.google.callback'))
+            ->assertRedirect(route('filament.admin.auth.login'))
+            ->assertSessionHas('filament.notifications');
+
+        $this->assertGuest();
+        $this->assertDatabaseHas(User::class, [
+            'id' => $user->id,
+            'google_id' => null,
+        ]);
+    });
+
+    it('rejects an unverified Google email without linking the account', function (): void {
+        $user = User::factory()->create([
+            'email' => 'member@example.com',
+            'google_id' => null,
+        ]);
+
+        mockSocialiteCallback('member@example.com', 'Attacker', 'google-evil', emailVerified: false);
+
+        $this->get(route('auth.google.callback'))
+            ->assertRedirect(route('filament.admin.auth.login'))
+            ->assertSessionHas('filament.notifications');
+
+        $this->assertGuest();
+        $this->assertDatabaseHas(User::class, [
+            'id' => $user->id,
+            'google_id' => null,
+        ]);
     });
 
     it('redirects to login with an error when Socialite throws', function (): void {
@@ -87,29 +179,12 @@ describe('Http | Controllers | Auth | Google', function (): void {
 
         $this->get(route('auth.google.callback'))
             ->assertRedirect(route('filament.admin.auth.login'))
-            ->assertSessionHasErrors('email');
+            ->assertSessionHas('filament.notifications');
 
         $this->assertGuest();
     });
 
-    it('rejects a callback whose raw payload omits the email_verified flag', function (): void {
-        $socialiteUser = (new SocialiteUser)
-            ->setRaw([])
-            ->map(['id' => 'google-x', 'name' => 'No Flag', 'email' => 'noflag@example.com']);
-
-        $driver = Mockery::mock(Provider::class);
-        $driver->shouldReceive('user')->once()->andReturn($socialiteUser);
-        Socialite::shouldReceive('driver')->with('google')->once()->andReturn($driver);
-
-        $this->get(route('auth.google.callback'))
-            ->assertRedirect(route('filament.admin.auth.login'))
-            ->assertSessionHasErrors('email');
-
-        $this->assertGuest();
-        $this->assertDatabaseMissing(User::class, ['email' => 'noflag@example.com']);
-    });
-
-    it('rejects a callback when Socialite returns a user without raw payload access', function (): void {
+    it('rejects a Socialite user that is not a Google OAuth user', function (): void {
         $minimalUser = new class implements Laravel\Socialite\Contracts\User
         {
             public function getId()
@@ -144,25 +219,9 @@ describe('Http | Controllers | Auth | Google', function (): void {
 
         $this->get(route('auth.google.callback'))
             ->assertRedirect(route('filament.admin.auth.login'))
-            ->assertSessionHasErrors('email');
+            ->assertSessionHas('filament.notifications');
 
         $this->assertGuest();
         $this->assertDatabaseMissing(User::class, ['email' => 'minimal@example.com']);
-    });
-
-    it('rejects an unverified Google email and does not link an existing account', function (): void {
-        User::factory()->create(['email' => 'victim@example.com', 'google_id' => null]);
-
-        mockSocialiteCallback('victim@example.com', 'Attacker', 'google-evil', emailVerified: false);
-
-        $this->get(route('auth.google.callback'))
-            ->assertRedirect(route('filament.admin.auth.login'))
-            ->assertSessionHasErrors('email');
-
-        $this->assertGuest();
-        $this->assertDatabaseHas(User::class, [
-            'email' => 'victim@example.com',
-            'google_id' => null,
-        ]);
     });
 });

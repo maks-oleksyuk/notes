@@ -24,14 +24,19 @@ final class RouteServiceProvider extends ServiceProvider
     {
         RateLimiter::for(
             'login',
-            fn (Request $request) => Limit::perMinute(5)->by(
+            fn (Request $request): Limit => Limit::perMinute(5)->by(
                 Str::lower($request->string('email', '')->toString()).'|'.$request->ip()
             )
         );
 
         RateLimiter::for(
+            'google',
+            fn (Request $request): Limit => Limit::perMinute(30)->by((string) $request->ip())
+        );
+
+        RateLimiter::for(
             'api',
-            fn (Request $request) => Limit::perMinute(60)->by(
+            fn (Request $request): Limit => Limit::perMinute(60)->by(
                 $request->user()?->getAuthIdentifier() ?? $request->ip()
             )
         );

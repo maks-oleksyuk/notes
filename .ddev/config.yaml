@@ -38,6 +38,6 @@ hooks:
         ddev add-on list --installed | grep -q 'ddev-taskfile'   || ddev add-on get gebruederheitz/ddev-taskfile > /dev/null
   post-start:
     - composer: install
-    - exec: pnpm install
+    - exec: pnpm install --color=always
   post-import-db:
     - exec: php artisan migrate --force --ansi
