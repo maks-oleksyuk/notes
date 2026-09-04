@@ -1,13 +1,13 @@
-uuid: d7db6e82-a4a5-432b-92d9-f0bc28a18194
+uuid: 1f5a3d96-e130-4461-ab48-84ad0c522d24
 langcode: en
 status: true
 dependencies:
   theme:
-    - gin
+    - default_admin
 _core:
-  default_config_hash: HLQY2xgby8K3vN_98hiOSasOhm9pdCsH234-s0duJ8Q
-id: gin_page_title
-theme: gin
+  default_config_hash: CaTkocqIGci5JCxUVHC6mwT3he3MSfhVvucVivgebdI
+id: default_admin_page_title
+theme: default_admin
 region: header
 weight: -30
 provider: null
@@ -17,4 +17,4 @@ settings:
   label: 'Page title'
   label_display: '0'
   provider: core
-visibility: {  }
+visibility: {}

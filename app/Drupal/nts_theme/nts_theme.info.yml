@@ -3,7 +3,7 @@ description: 'A theme for the notes and for experiments.'
 type: theme
 package: Notes
 base theme: starterkit_theme
-core_version_requirement: ^11
+core_version_requirement: ^11 || ^12
 
 regions:
   banner: 'Banner'

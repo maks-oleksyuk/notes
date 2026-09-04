@@ -1,13 +1,13 @@
-uuid: ea07c90a-edd6-46b8-94e7-4bd22063f39d
+uuid: 3d91a2ce-c743-496a-89c8-3ac760a6d9b9
 langcode: en
 status: true
 dependencies:
   theme:
-    - claro
+    - default_admin
 _core:
-  default_config_hash: 2L0geP-ixCbCkEpW6BVF6H7vDUZN4ea07_Y9CociQm4
-id: claro_secondary_local_tasks
-theme: claro
+  default_config_hash: o2qka7Q_RI0cctlckjSI9br-3K_wZjjq59_0Vgq3c8g
+id: default_admin_secondary_local_tasks
+theme: default_admin
 region: pre_content
 weight: 0
 provider: null
@@ -19,4 +19,4 @@ settings:
   provider: core
   primary: false
   secondary: true
-visibility: {  }
+visibility: {}

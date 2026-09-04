@@ -1,5 +1,5 @@
 _core:
-  default_config_hash: UvSCt3S_NldJPFzvhSNOy9vWoPPFhmsmTC12vtVss9s
+  default_config_hash: IAd3ucimFswyrrqhRCm6uGyRjiT56kkK_RW9frbVm0w
 favicon:
   use_default: true
 features:
@@ -9,18 +9,12 @@ features:
   node_user_picture: false
 logo:
   use_default: true
-third_party_settings:
-  shortcut:
-    module_link: true
 preset_accent_color: green
 preset_focus_color: gin
-enable_darkmode: '1'
-classic_toolbar: new
-secondary_toolbar_frontend: true
+enable_dark_mode: '1'
 high_contrast_mode: false
 accent_color: ''
 focus_color: ''
 layout_density: small
-show_description_toggle: true
+show_description_toggle: false
 show_user_theme_settings: false
-sticky_action_buttons: true
