@@ -409,7 +409,7 @@ tasks:
       - task: prettier
         vars: { CLI_ARGS: '-v' }
       - task: prettier
-        vars: { CLI_ARGS: 'app -wl' }
+        vars: { CLI_ARGS: 'app -w' }
 
   fix:css:
     desc: 'Auto-fix CSS/SCSS issues.'

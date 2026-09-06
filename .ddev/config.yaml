@@ -12,6 +12,7 @@ upload_dirs:
   - ../var
   - ../local
   - ../node_modules
+  - ../app/themes/theme/node_modules
 hooks:
   pre-start:
     # Add pnpm and task to ddev if not already installed.

@@ -5,86 +5,86 @@
   --black: #000;
 
   // Base colors.
-  --nts-clr-blue:   #0d6efd;
-  --nts-clr-green:  #198754;
-  --nts-clr-red:    #dc3545;
-  --nts-clr-yellow: #ffc107;
-  --nts-clr-cyan:   #0dcaf0;
-  --nts-clr-gray:   #adb5bd;
+  --app-clr-blue:   #0d6efd;
+  --app-clr-green:  #198754;
+  --app-clr-red:    #dc3545;
+  --app-clr-yellow: #ffc107;
+  --app-clr-cyan:   #0dcaf0;
+  --app-clr-gray:   #adb5bd;
 
   // Blue color variation.
-  --nts-clr-blue-100: color-mix(in oklab, var(--nts-clr-blue), var(--white) 80%);
-  --nts-clr-blue-200: color-mix(in oklab, var(--nts-clr-blue), var(--white) 60%);
-  --nts-clr-blue-300: color-mix(in oklab, var(--nts-clr-blue), var(--white) 40%);
-  --nts-clr-blue-400: color-mix(in oklab, var(--nts-clr-blue), var(--white) 20%);
-  --nts-clr-blue-500: var(--nts-clr-blue);
-  --nts-clr-blue-600: color-mix(in oklab, var(--nts-clr-blue), var(--black) 20%);
-  --nts-clr-blue-700: color-mix(in oklab, var(--nts-clr-blue), var(--black) 40%);
-  --nts-clr-blue-800: color-mix(in oklab, var(--nts-clr-blue), var(--black) 60%);
-  --nts-clr-blue-900: color-mix(in oklab, var(--nts-clr-blue), var(--black) 80%);
+  --app-clr-blue-100: color-mix(in oklab, var(--app-clr-blue), var(--white) 80%);
+  --app-clr-blue-200: color-mix(in oklab, var(--app-clr-blue), var(--white) 60%);
+  --app-clr-blue-300: color-mix(in oklab, var(--app-clr-blue), var(--white) 40%);
+  --app-clr-blue-400: color-mix(in oklab, var(--app-clr-blue), var(--white) 20%);
+  --app-clr-blue-500: var(--app-clr-blue);
+  --app-clr-blue-600: color-mix(in oklab, var(--app-clr-blue), var(--black) 20%);
+  --app-clr-blue-700: color-mix(in oklab, var(--app-clr-blue), var(--black) 40%);
+  --app-clr-blue-800: color-mix(in oklab, var(--app-clr-blue), var(--black) 60%);
+  --app-clr-blue-900: color-mix(in oklab, var(--app-clr-blue), var(--black) 80%);
 
   // Green color variation.
-  --nts-clr-green-100: color-mix(in oklab, var(--nts-clr-green), var(--white) 80%);
-  --nts-clr-green-200: color-mix(in oklab, var(--nts-clr-green), var(--white) 60%);
-  --nts-clr-green-300: color-mix(in oklab, var(--nts-clr-green), var(--white) 40%);
-  --nts-clr-green-400: color-mix(in oklab, var(--nts-clr-green), var(--white) 20%);
-  --nts-clr-green-500: var(--nts-clr-green);
-  --nts-clr-green-600: color-mix(in oklab, var(--nts-clr-green), var(--black) 20%);
-  --nts-clr-green-700: color-mix(in oklab, var(--nts-clr-green), var(--black) 40%);
-  --nts-clr-green-800: color-mix(in oklab, var(--nts-clr-green), var(--black) 60%);
-  --nts-clr-green-900: color-mix(in oklab, var(--nts-clr-green), var(--black) 80%);
+  --app-clr-green-100: color-mix(in oklab, var(--app-clr-green), var(--white) 80%);
+  --app-clr-green-200: color-mix(in oklab, var(--app-clr-green), var(--white) 60%);
+  --app-clr-green-300: color-mix(in oklab, var(--app-clr-green), var(--white) 40%);
+  --app-clr-green-400: color-mix(in oklab, var(--app-clr-green), var(--white) 20%);
+  --app-clr-green-500: var(--app-clr-green);
+  --app-clr-green-600: color-mix(in oklab, var(--app-clr-green), var(--black) 20%);
+  --app-clr-green-700: color-mix(in oklab, var(--app-clr-green), var(--black) 40%);
+  --app-clr-green-800: color-mix(in oklab, var(--app-clr-green), var(--black) 60%);
+  --app-clr-green-900: color-mix(in oklab, var(--app-clr-green), var(--black) 80%);
 
   // Red color variation.
-  --nts-clr-red-100: color-mix(in oklab, var(--nts-clr-red), var(--white) 80%);
-  --nts-clr-red-200: color-mix(in oklab, var(--nts-clr-red), var(--white) 60%);
-  --nts-clr-red-300: color-mix(in oklab, var(--nts-clr-red), var(--white) 40%);
-  --nts-clr-red-400: color-mix(in oklab, var(--nts-clr-red), var(--white) 20%);
-  --nts-clr-red-500: var(--nts-clr-red);
-  --nts-clr-red-600: color-mix(in oklab, var(--nts-clr-red), var(--black) 20%);
-  --nts-clr-red-700: color-mix(in oklab, var(--nts-clr-red), var(--black) 40%);
-  --nts-clr-red-800: color-mix(in oklab, var(--nts-clr-red), var(--black) 60%);
-  --nts-clr-red-900: color-mix(in oklab, var(--nts-clr-red), var(--black) 80%);
+  --app-clr-red-100: color-mix(in oklab, var(--app-clr-red), var(--white) 80%);
+  --app-clr-red-200: color-mix(in oklab, var(--app-clr-red), var(--white) 60%);
+  --app-clr-red-300: color-mix(in oklab, var(--app-clr-red), var(--white) 40%);
+  --app-clr-red-400: color-mix(in oklab, var(--app-clr-red), var(--white) 20%);
+  --app-clr-red-500: var(--app-clr-red);
+  --app-clr-red-600: color-mix(in oklab, var(--app-clr-red), var(--black) 20%);
+  --app-clr-red-700: color-mix(in oklab, var(--app-clr-red), var(--black) 40%);
+  --app-clr-red-800: color-mix(in oklab, var(--app-clr-red), var(--black) 60%);
+  --app-clr-red-900: color-mix(in oklab, var(--app-clr-red), var(--black) 80%);
 
   // Yellow color variation.
-  --nts-clr-yellow-100: color-mix(in oklab, var(--nts-clr-yellow), var(--white) 80%);
-  --nts-clr-yellow-200: color-mix(in oklab, var(--nts-clr-yellow), var(--white) 60%);
-  --nts-clr-yellow-300: color-mix(in oklab, var(--nts-clr-yellow), var(--white) 40%);
-  --nts-clr-yellow-400: color-mix(in oklab, var(--nts-clr-yellow), var(--white) 20%);
-  --nts-clr-yellow-500: var(--nts-clr-yellow);
-  --nts-clr-yellow-600: color-mix(in oklab, var(--nts-clr-yellow), var(--black) 20%);
-  --nts-clr-yellow-700: color-mix(in oklab, var(--nts-clr-yellow), var(--black) 40%);
-  --nts-clr-yellow-800: color-mix(in oklab, var(--nts-clr-yellow), var(--black) 60%);
-  --nts-clr-yellow-900: color-mix(in oklab, var(--nts-clr-yellow), var(--black) 80%);
+  --app-clr-yellow-100: color-mix(in oklab, var(--app-clr-yellow), var(--white) 80%);
+  --app-clr-yellow-200: color-mix(in oklab, var(--app-clr-yellow), var(--white) 60%);
+  --app-clr-yellow-300: color-mix(in oklab, var(--app-clr-yellow), var(--white) 40%);
+  --app-clr-yellow-400: color-mix(in oklab, var(--app-clr-yellow), var(--white) 20%);
+  --app-clr-yellow-500: var(--app-clr-yellow);
+  --app-clr-yellow-600: color-mix(in oklab, var(--app-clr-yellow), var(--black) 20%);
+  --app-clr-yellow-700: color-mix(in oklab, var(--app-clr-yellow), var(--black) 40%);
+  --app-clr-yellow-800: color-mix(in oklab, var(--app-clr-yellow), var(--black) 60%);
+  --app-clr-yellow-900: color-mix(in oklab, var(--app-clr-yellow), var(--black) 80%);
 
   // Cyan color variation.
-  --nts-clr-cyan-100: color-mix(in oklab, var(--nts-clr-cyan), var(--white) 80%);
-  --nts-clr-cyan-200: color-mix(in oklab, var(--nts-clr-cyan), var(--white) 60%);
-  --nts-clr-cyan-300: color-mix(in oklab, var(--nts-clr-cyan), var(--white) 40%);
-  --nts-clr-cyan-400: color-mix(in oklab, var(--nts-clr-cyan), var(--white) 20%);
-  --nts-clr-cyan-500: var(--nts-clr-cyan);
-  --nts-clr-cyan-600: color-mix(in oklab, var(--nts-clr-cyan), var(--black) 20%);
-  --nts-clr-cyan-700: color-mix(in oklab, var(--nts-clr-cyan), var(--black) 40%);
-  --nts-clr-cyan-800: color-mix(in oklab, var(--nts-clr-cyan), var(--black) 60%);
-  --nts-clr-cyan-900: color-mix(in oklab, var(--nts-clr-cyan), var(--black) 80%);
+  --app-clr-cyan-100: color-mix(in oklab, var(--app-clr-cyan), var(--white) 80%);
+  --app-clr-cyan-200: color-mix(in oklab, var(--app-clr-cyan), var(--white) 60%);
+  --app-clr-cyan-300: color-mix(in oklab, var(--app-clr-cyan), var(--white) 40%);
+  --app-clr-cyan-400: color-mix(in oklab, var(--app-clr-cyan), var(--white) 20%);
+  --app-clr-cyan-500: var(--app-clr-cyan);
+  --app-clr-cyan-600: color-mix(in oklab, var(--app-clr-cyan), var(--black) 20%);
+  --app-clr-cyan-700: color-mix(in oklab, var(--app-clr-cyan), var(--black) 40%);
+  --app-clr-cyan-800: color-mix(in oklab, var(--app-clr-cyan), var(--black) 60%);
+  --app-clr-cyan-900: color-mix(in oklab, var(--app-clr-cyan), var(--black) 80%);
 
   // Gray color variation.
-  --nts-clr-gray-100: color-mix(in oklab, var(--nts-clr-gray), var(--white) 80%);
-  --nts-clr-gray-200: color-mix(in oklab, var(--nts-clr-gray), var(--white) 60%);
-  --nts-clr-gray-300: color-mix(in oklab, var(--nts-clr-gray), var(--white) 40%);
-  --nts-clr-gray-400: color-mix(in oklab, var(--nts-clr-gray), var(--white) 20%);
-  --nts-clr-gray-500: var(--nts-clr-gray);
-  --nts-clr-gray-600: color-mix(in oklab, var(--nts-clr-gray), var(--black) 20%);
-  --nts-clr-gray-700: color-mix(in oklab, var(--nts-clr-gray), var(--black) 40%);
-  --nts-clr-gray-800: color-mix(in oklab, var(--nts-clr-gray), var(--black) 60%);
-  --nts-clr-gray-900: color-mix(in oklab, var(--nts-clr-gray), var(--black) 80%);
+  --app-clr-gray-100: color-mix(in oklab, var(--app-clr-gray), var(--white) 80%);
+  --app-clr-gray-200: color-mix(in oklab, var(--app-clr-gray), var(--white) 60%);
+  --app-clr-gray-300: color-mix(in oklab, var(--app-clr-gray), var(--white) 40%);
+  --app-clr-gray-400: color-mix(in oklab, var(--app-clr-gray), var(--white) 20%);
+  --app-clr-gray-500: var(--app-clr-gray);
+  --app-clr-gray-600: color-mix(in oklab, var(--app-clr-gray), var(--black) 20%);
+  --app-clr-gray-700: color-mix(in oklab, var(--app-clr-gray), var(--black) 40%);
+  --app-clr-gray-800: color-mix(in oklab, var(--app-clr-gray), var(--black) 60%);
+  --app-clr-gray-900: color-mix(in oklab, var(--app-clr-gray), var(--black) 80%);
 
   // Theme colors.
-  --nts-clr-primary:   var(--nts-clr-blue);
-  --nts-clr-secondary: var(--nts-clr-gray-600);
-  --nts-clr-success:   var(--nts-clr-green);
-  --nts-clr-danger:    var(--nts-clr-red);
-  --nts-clr-warning:   var(--nts-clr-yellow);
-  --nts-clr-info:      var(--nts-clr-cyan);
-  --nts-clr-light:     var(--nts-clr-gray-100);
-  --nts-clr-dark:      var(--nts-clr-gray-900);
+  --app-clr-primary:   var(--app-clr-blue);
+  --app-clr-secondary: var(--app-clr-gray-600);
+  --app-clr-success:   var(--app-clr-green);
+  --app-clr-danger:    var(--app-clr-red);
+  --app-clr-warning:   var(--app-clr-yellow);
+  --app-clr-info:      var(--app-clr-cyan);
+  --app-clr-light:     var(--app-clr-gray-100);
+  --app-clr-dark:      var(--app-clr-gray-900);
 }
