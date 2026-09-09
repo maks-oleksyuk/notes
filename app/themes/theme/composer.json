@@ -1,6 +1,5 @@
 {
-    "name": "drupal-notes/app_theme",
-    "description": "Custom theme for Notes site",
+    "name": "app/theme",
     "license": "GPL-3.0-or-later",
     "type": "drupal-custom-theme",
     "version": "1.0-dev"

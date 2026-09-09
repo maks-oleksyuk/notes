@@ -180,6 +180,33 @@ tasks:
       - task: drush
         vars: { CLI_ARGS: 'generate -y phpstorm-meta' }
 
+  dump:db:
+    desc: 'Dump database into the dump/ directory.'
+    aliases:
+      - d:db
+    cmds:
+      - 'mkdir -p {{.TASKFILE_DIR}}/dump'
+      - task: drush
+        vars:
+          CLI_ARGS: >-
+            sql:dump --gzip
+            --structure-tables-list=cache,cache_*,search_index,watchdog
+            --result-file={{.TASKFILE_DIR}}/dump/db_$(date +%Y.%m.%d_%H-%M_%:::z).sql
+    silent: true
+
+  dump:files:
+    desc: 'Archive public files into the dump/ directory.'
+    aliases:
+      - d:files
+    cmds:
+      - 'mkdir -p {{.TASKFILE_DIR}}/dump'
+      - task: drush
+        vars:
+          CLI_ARGS: >-
+            ard --files
+            --destination={{.TASKFILE_DIR}}/dump/files_$(date +%Y.%m.%d_%H-%M_%:::z).tar.gz
+    silent: true
+
   # Linters:
 
   lint:

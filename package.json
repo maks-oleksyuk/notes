@@ -2,14 +2,8 @@
   "license": "GPL-3.0-or-later",
   "type": "module",
   "private": true,
-  "scripts": {
-    "lint:yml": "eslint -c ./config/.eslintrc.json --ext .yml --ext .yaml --no-error-on-unmatched-pattern --color",
-    "lint:yml:fix": "eslint -c ./config/.eslintrc.json --ext .yml --ext .yaml --no-error-on-unmatched-pattern --fix",
-    "lint:style": "stylelint app/**/*.css --aei --cache --cache-location node_modules/.cache/stylelint/ --color",
-    "lint:style:fix": "stylelint app/**/*.css --aei --cache --cache-location node_modules/.cache/stylelint/ --fix"
-  },
   "devDependencies": {
-    "cspell": "^10.2.2",
+    "cspell": "^10.3.0",
     "eslint": "8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.1.2",
@@ -23,7 +17,7 @@
     "stylelint-order": "^7.0.1",
     "stylelint-prettier": "^5.0.3"
   },
-  "packageManager": "pnpm@12.3.4",
+  "packageManager": "pnpm@12.4.0",
   "engines": {
     "pnpm": ">=12",
     "node": ">=26"

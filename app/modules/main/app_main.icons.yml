@@ -1,7 +1,7 @@
 app_main:
   enabled: true
-  label: 'Notes Icons'
-  description: 'Icons available within Notes Core module.'
+  label: 'App Icons'
+  description: 'Icons available within App Main module.'
   version: VERSION
   extractor: svg
   config:

@@ -2,7 +2,7 @@
   "extends": "./../../web/.eslintrc.json",
   "root": true,
   "ignorePatterns": [
-    "app/Drupal/nts_theme/*",
+    "app/themes/theme/*",
     "config/sync/**/*",
     "vendor/**/*",
     "web/**/*"

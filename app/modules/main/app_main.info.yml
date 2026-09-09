@@ -1,5 +1,5 @@
-name: 'Notes Main'
-description: 'Main functionality for the Notes site'
+name: 'App: Main'
+description: 'Main functionality for the App site'
 type: module
 package: App
 core_version_requirement: ^11 || ^12

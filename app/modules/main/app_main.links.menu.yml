@@ -1,8 +1,8 @@
 # Basic admin toolbar item.
 
 app_main.admin:
-  title: 'Notes'
-  description: 'Administer and configure Notes.'
+  title: 'App'
+  description: 'Administer and configure App.'
   route_name: app_main.admin
   parent: system.admin
   weight: -15

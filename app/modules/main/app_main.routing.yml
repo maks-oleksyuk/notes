@@ -3,7 +3,7 @@
 app_main.admin:
   path: '/admin/notes'
   defaults:
-    _title: 'Notes Admin panel'
+    _title: 'App Admin panel'
     _controller: '\Drupal\system\Controller\SystemController::overview'
     link_id: app_main.admin
   requirements:

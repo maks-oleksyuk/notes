@@ -64,7 +64,7 @@ runs:
     - name: '📦 Install composer dependencies'
       if: ${{ inputs.use-php == 'true' }}
       shell: bash
-      run: composer i --no-progress --no-scripts -qn --ansi;
+      run: composer install --no-interaction --no-progress --no-scripts --ansi;
 
     - name: '🟧 Setup pnpm & Node.js ${{ inputs.node }}'
       if: ${{ inputs.use-node == 'true' }}

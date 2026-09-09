@@ -4,8 +4,40 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9136c6b8a1cab60aa78698e678c8fba9",
+    "content-hash": "f488c8710a40771de9eefd3402c2ebfc",
     "packages": [
+        {
+            "name": "app/main",
+            "version": "1.0-dev",
+            "dist": {
+                "type": "path",
+                "url": "app/modules/main",
+                "reference": "c2ba726ed34f1910b9e3334a1435035c56e186fc"
+            },
+            "type": "drupal-custom-module",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "app/theme",
+            "version": "1.0-dev",
+            "dist": {
+                "type": "path",
+                "url": "app/themes/theme",
+                "reference": "3c2f0efc350d658f330e2ca46547ca842f7d2654"
+            },
+            "type": "drupal-custom-theme",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
         {
             "name": "asm89/stack-cors",
             "version": "v2.4.0",
@@ -1011,40 +1043,6 @@
             "time": "2024-02-05T11:56:58+00:00"
         },
         {
-            "name": "drupal-notes/app_main",
-            "version": "1.0-dev",
-            "dist": {
-                "type": "path",
-                "url": "app/modules/main",
-                "reference": "9e2b883cde45552d291c6f141ea5a5446bdbbb97"
-            },
-            "type": "drupal-custom-module",
-            "license": [
-                "GPL-3.0-or-later"
-            ],
-            "description": "Custom main module for Notes site",
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "drupal-notes/app_theme",
-            "version": "1.0-dev",
-            "dist": {
-                "type": "path",
-                "url": "app/themes/theme",
-                "reference": "4618522ae563cdad53d4547ade31bb044f8001ce"
-            },
-            "type": "drupal-custom-theme",
-            "license": [
-                "GPL-3.0-or-later"
-            ],
-            "description": "Custom theme for Notes site",
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
             "name": "drupal/core",
             "version": "12.0.0-alpha1",
             "source": {
@@ -1361,12 +1359,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/drush-ops/drush.git",
-                "reference": "1beb14796f0819e84ee2c29773e31bc121f8723b"
+                "reference": "8efed5f07543011b3026701861b86756e8ec0308"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drush-ops/drush/zipball/1beb14796f0819e84ee2c29773e31bc121f8723b",
-                "reference": "1beb14796f0819e84ee2c29773e31bc121f8723b",
+                "url": "https://api.github.com/repos/drush-ops/drush/zipball/8efed5f07543011b3026701861b86756e8ec0308",
+                "reference": "8efed5f07543011b3026701861b86756e8ec0308",
                 "shasum": ""
             },
             "require": {
@@ -1374,7 +1372,7 @@
                 "composer-runtime-api": "^2.2",
                 "composer/semver": "^1.4 || ^3",
                 "consolidation/annotated-command": "^4.10.2",
-                "consolidation/config": "^2.1.2 || ^3.1.1",
+                "consolidation/config": "^3.1.1",
                 "consolidation/filter-via-dot-access-data": "^2.0.2",
                 "consolidation/log": "^3",
                 "consolidation/output-formatters": "^4.6.1",
@@ -1385,7 +1383,7 @@
                 "grasmash/yaml-cli": "4.x-dev",
                 "guzzlehttp/guzzle": "^7.8.2 || ^8.0",
                 "laravel/prompts": "^0.3.5",
-                "league/container": "^4.2",
+                "league/container": "^4.2.5",
                 "php": ">=8.3",
                 "psy/psysh": "~0.12",
                 "symfony/event-dispatcher": "^7 || ^8",
@@ -1397,7 +1395,8 @@
             "conflict": {
                 "drupal/core": "< 11.3",
                 "drupal/migrate_run": "*",
-                "drupal/migrate_tools": "<= 5"
+                "drupal/migrate_tools": "<= 5",
+                "grasmash/expander": "<3.0.1"
             },
             "require-dev": {
                 "composer/installers": "^2",
@@ -1503,7 +1502,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-09-04T03:41:45+00:00"
+            "time": "2026-09-08T21:29:17+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -9682,16 +9681,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.5.34",
+            "version": "12.5.35",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "6cbff63d670de92cb1cb3d2ff9f40327e9da9c7f"
+                "reference": "345ac22e42cb14cdc7aa8428655d8bb8c82a4aab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/6cbff63d670de92cb1cb3d2ff9f40327e9da9c7f",
-                "reference": "6cbff63d670de92cb1cb3d2ff9f40327e9da9c7f",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/345ac22e42cb14cdc7aa8428655d8bb8c82a4aab",
+                "reference": "345ac22e42cb14cdc7aa8428655d8bb8c82a4aab",
                 "shasum": ""
             },
             "require": {
@@ -9760,7 +9759,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.34"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.35"
             },
             "funding": [
                 {
@@ -9768,7 +9767,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-08-27T08:38:28+00:00"
+            "time": "2026-09-09T04:48:50+00:00"
         },
         {
             "name": "ramsey/collection",
@@ -12033,16 +12032,16 @@
         },
         {
             "name": "vincentlanglet/twig-cs-fixer",
-            "version": "4.1.0",
+            "version": "4.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/VincentLanglet/Twig-CS-Fixer.git",
-                "reference": "73f6474720fce9a6709e7b6cdd26574efe36d09b"
+                "reference": "53c1234b6e5d87ac2beaf686774bba013697f9c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/VincentLanglet/Twig-CS-Fixer/zipball/73f6474720fce9a6709e7b6cdd26574efe36d09b",
-                "reference": "73f6474720fce9a6709e7b6cdd26574efe36d09b",
+                "url": "https://api.github.com/repos/VincentLanglet/Twig-CS-Fixer/zipball/53c1234b6e5d87ac2beaf686774bba013697f9c5",
+                "reference": "53c1234b6e5d87ac2beaf686774bba013697f9c5",
                 "shasum": ""
             },
             "require": {
@@ -12098,7 +12097,7 @@
             "homepage": "https://github.com/VincentLanglet/Twig-CS-Fixer",
             "support": {
                 "issues": "https://github.com/VincentLanglet/Twig-CS-Fixer/issues",
-                "source": "https://github.com/VincentLanglet/Twig-CS-Fixer/tree/4.1.0"
+                "source": "https://github.com/VincentLanglet/Twig-CS-Fixer/tree/4.1.1"
             },
             "funding": [
                 {
@@ -12106,7 +12105,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-30T16:07:04+00:00"
+            "time": "2026-09-08T21:26:25+00:00"
         },
         {
             "name": "webflo/drupal-finder",
@@ -12224,8 +12223,8 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "drupal-notes/app_main": 20,
-        "drupal-notes/app_theme": 20,
+        "app/main": 20,
+        "app/theme": 20,
         "drush/drush": 20
     },
     "prefer-stable": true,
