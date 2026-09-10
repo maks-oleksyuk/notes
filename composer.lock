@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f488c8710a40771de9eefd3402c2ebfc",
+    "content-hash": "29c663e3d91400ca5a816c855b8e5311",
     "packages": [
         {
             "name": "app/main",
@@ -6630,6 +6630,40 @@
             "time": "2026-06-14T18:21:03+00:00"
         },
         {
+            "name": "chi-teck/drupal-coder-extension",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Chi-teck/drupal-coder-extension.git",
+                "reference": "4afa55e387b36ea051e3ecc8909a90b2ba0b7971"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Chi-teck/drupal-coder-extension/zipball/4afa55e387b36ea051e3ecc8909a90b2ba0b7971",
+                "reference": "4afa55e387b36ea051e3ecc8909a90b2ba0b7971",
+                "shasum": ""
+            },
+            "require": {
+                "drupal/coder": "^9.0",
+                "php": ">=8.5",
+                "slevomat/coding-standard": "^8.25.1"
+            },
+            "suggest": {
+                "squizlabs/php_codesniffer": ""
+            },
+            "type": "phpcodesniffer-standard",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "An extension of Drupal coding standards.",
+            "support": {
+                "issues": "https://github.com/Chi-teck/drupal-coder-extension/issues",
+                "source": "https://github.com/Chi-teck/drupal-coder-extension/tree/2.1.0"
+            },
+            "time": "2026-09-10T12:49:08+00:00"
+        },
+        {
             "name": "colinodell/psr-testlogger",
             "version": "v1.3.1",
             "source": {
@@ -7736,16 +7770,16 @@
         },
         {
             "name": "mglaman/phpstan-drupal",
-            "version": "2.1.2",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mglaman/phpstan-drupal.git",
-                "reference": "6b4fd0485597d34903efd6a66a6516b659461d2c"
+                "reference": "d5b72bea7b8c8b2c21599b890af030f335a97395"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mglaman/phpstan-drupal/zipball/6b4fd0485597d34903efd6a66a6516b659461d2c",
-                "reference": "6b4fd0485597d34903efd6a66a6516b659461d2c",
+                "url": "https://api.github.com/repos/mglaman/phpstan-drupal/zipball/d5b72bea7b8c8b2c21599b890af030f335a97395",
+                "reference": "d5b72bea7b8c8b2c21599b890af030f335a97395",
                 "shasum": ""
             },
             "require": {
@@ -7817,7 +7851,7 @@
             "description": "Drupal extension and rules for PHPStan",
             "support": {
                 "issues": "https://github.com/mglaman/phpstan-drupal/issues",
-                "source": "https://github.com/mglaman/phpstan-drupal/tree/2.1.2"
+                "source": "https://github.com/mglaman/phpstan-drupal/tree/2.2.0"
             },
             "funding": [
                 {
@@ -7833,7 +7867,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-13T15:38:26+00:00"
+            "time": "2026-09-09T14:50:40+00:00"
         },
         {
             "name": "micheh/phpcs-gitlab",
@@ -8424,16 +8458,16 @@
         },
         {
             "name": "open-telemetry/sem-conv",
-            "version": "1.38.0",
+            "version": "1.44.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opentelemetry-php/sem-conv.git",
-                "reference": "e613bc640a407def4991b8a936a9b27edd9a3240"
+                "reference": "c94bc7ebacef039cda4f4c9270807dcc58b4e3af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opentelemetry-php/sem-conv/zipball/e613bc640a407def4991b8a936a9b27edd9a3240",
-                "reference": "e613bc640a407def4991b8a936a9b27edd9a3240",
+                "url": "https://api.github.com/repos/opentelemetry-php/sem-conv/zipball/c94bc7ebacef039cda4f4c9270807dcc58b4e3af",
+                "reference": "c94bc7ebacef039cda4f4c9270807dcc58b4e3af",
                 "shasum": ""
             },
             "require": {
@@ -8477,7 +8511,7 @@
                 "issues": "https://github.com/open-telemetry/opentelemetry-php/issues",
                 "source": "https://github.com/open-telemetry/opentelemetry-php"
             },
-            "time": "2026-01-21T04:14:03+00:00"
+            "time": "2026-09-09T22:06:17+00:00"
         },
         {
             "name": "palantirnet/drupal-rector",
