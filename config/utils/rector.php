@@ -3,9 +3,7 @@
 declare(strict_types=1);
 
 use DrupalFinder\DrupalFinderComposerRuntime;
-use DrupalRector\Set\Drupal10SetList;
-use DrupalRector\Set\Drupal8SetList;
-use DrupalRector\Set\Drupal9SetList;
+use DrupalRector\Set\DrupalSetProvider;
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\ValueObject\PhpVersion;
@@ -25,14 +23,15 @@ return RectorConfig::configure()
     'theme',
     'profile',
   ])
-  ->withPhpVersion(PhpVersion::PHP_84)
-  ->withPhpSets(php84: true)
+  ->withPhpVersion(PhpVersion::PHP_85)
+  ->withPhpSets(php85: true)
+  ->withSetProviders(DrupalSetProvider::class)
   ->withComposerBased(
     twig: true,
+    drupal: true,
   )
   ->withImportNames(
     importShortClasses: false,
-    removeUnusedImports: true,
   )
   ->withPreparedSets(
     deadCode: true,
@@ -44,11 +43,6 @@ return RectorConfig::configure()
     earlyReturn: true,
     carbon: true,
   )
-  ->withSets([
-    Drupal8SetList::DRUPAL_8,
-    Drupal9SetList::DRUPAL_9,
-    Drupal10SetList::DRUPAL_10,
-  ])
   ->withAutoloadPaths([
     $drupalRoot . '/core',
     $drupalRoot . '/modules',

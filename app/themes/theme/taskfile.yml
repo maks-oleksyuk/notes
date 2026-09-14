@@ -1,0 +1,158 @@
+version: 3
+
+vars:
+  NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
+  CACHE_DIR: '{{.TASKFILE_DIR}}/var/cache'
+
+tasks:
+  default:
+    desc: 'List all commands.'
+    cmd: 'task -l'
+
+  # Utils:
+
+  vite:
+    desc: 'Run `vite` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/vite {{.CLI_ARGS}}'
+    silent: true
+
+  eslint:
+    desc: 'Run `eslint` command.'
+    cmd:
+      '{{.NODEJS_BIN_DIR}}/eslint --no-error-on-unmatched-pattern --cache
+      --cache-location {{.CACHE_DIR}}/eslint/.eslintcache {{.CLI_ARGS}} --color'
+    silent: true
+
+  stylelint:
+    desc: 'Run `stylelint` command.'
+    cmd:
+      '{{.NODEJS_BIN_DIR}}/stylelint --aei --cache --cache-location
+      {{.CACHE_DIR}}/stylelint/ {{.CLI_ARGS}} --color'
+    silent: true
+
+  prettier:
+    desc: 'Run `prettier` command.'
+    cmd:
+      '{{.NODEJS_BIN_DIR}}/prettier --no-error-on-unmatched-pattern --cache
+      --cache-location {{.CACHE_DIR}}/prettier/prettier.cache {{.CLI_ARGS}}'
+    aliases:
+      - prt
+    env:
+      PRETTIER_EXPERIMENTAL_CLI: 1
+    silent: true
+
+  # Build:
+
+  dev:
+    desc: 'Build styles and watch for changes.'
+    cmds:
+      - task: vite
+        vars: { CLI_ARGS: 'build --watch --mode development' }
+
+  build:
+    desc: 'Build theme styles.'
+    cmds:
+      - task: vite
+        vars: { CLI_ARGS: '-v' }
+      - task: vite
+        vars: { CLI_ARGS: 'build' }
+
+  # Linters:
+
+  lint:
+    desc: 'Run all linters.'
+    aliases:
+      - l
+    cmds:
+      - defer: { task: lint:format }
+      - defer: { task: lint:style }
+      - defer: { task: lint:js }
+
+  lint:js:
+    desc: 'Lint JavaScript files.'
+    aliases:
+      - l:js
+      - l:eslint
+      - lint:eslint
+    cmds:
+      - task: eslint
+        vars: { CLI_ARGS: '-v' }
+      - task: eslint
+        vars: { CLI_ARGS: 'js {{.CLI_ARGS}}' }
+
+  lint:style:
+    desc: 'Lint CSS/SCSS files.'
+    aliases:
+      - l:css
+      - l:style
+      - lint:css
+    cmds:
+      - task: stylelint
+        vars: { CLI_ARGS: '-v' }
+      - task: stylelint
+        vars: { CLI_ARGS: 'styles {{.CLI_ARGS}}' }
+
+  lint:format:
+    desc: 'Check code formatting with Prettier.'
+    aliases:
+      - l:f
+      - l:prt
+      - l:format
+      - l:prettier
+      - lint:f
+      - lint:prettier
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-v' }
+      - task: prettier
+        vars: { CLI_ARGS: 'styles js -c {{.CLI_ARGS}}' }
+
+  # Fixing:
+
+  fix:
+    desc: 'Run all automated fixers.'
+    aliases:
+      - f
+    cmds:
+      - defer: { task: fix:js }
+      - defer: { task: fix:style }
+      - defer: { task: fix:format }
+
+  fix:js:
+    desc: 'Auto-fix JavaScript issues.'
+    aliases:
+      - f:js
+      - f:eslint
+      - fix:eslint
+    cmds:
+      - task: eslint
+        vars: { CLI_ARGS: '-v' }
+      - task: lint:js
+        vars: { CLI_ARGS: '--fix' }
+
+  fix:style:
+    desc: 'Auto-fix CSS/SCSS issues.'
+    aliases:
+      - f:css
+      - f:style
+      - fix:css
+    cmds:
+      - task: stylelint
+        vars: { CLI_ARGS: '-v' }
+      - task: lint:style
+        vars: { CLI_ARGS: '--fix' }
+
+  fix:format:
+    desc: 'Auto-fix code formatting with Prettier.'
+    aliases:
+      - f:f
+      - f:prt
+      - f:format
+      - f:prettier
+      - fix:f
+      - fix:prettier
+    cmds:
+      - task: prettier
+        vars: { CLI_ARGS: '-v' }
+      - task: prettier
+        vars: { CLI_ARGS: 'styles js -wl' }

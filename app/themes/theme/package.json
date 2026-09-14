@@ -1,0 +1,61 @@
+{
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch --mode development",
+    "build": "vite build",
+    "postinstall": "sed -i '/\"airbnb-base\",/d;/^ *$/d' ../../../web/core/.eslintrc.json || true"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.5.5",
+    "postcss": "^8.5.28",
+    "postcss-rtl-logical-properties": "^2.0.1",
+    "sass": "^1.104.0",
+    "vite": "^8.2.2"
+  },
+  "devDependencies": {
+    "eslint": "8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jquery": "^1.5.1",
+    "eslint-plugin-prettier": "^5.5.6",
+    "eslint-plugin-yml": "^1.19.0",
+    "prettier": "^3.9.6",
+    "stylelint": "^16.26.0",
+    "stylelint-config-standard": "^38.0.0",
+    "stylelint-config-standard-scss": "^14.0.0",
+    "stylelint-order": "^7.0.0",
+    "stylelint-prettier": "^5.0.3",
+    "stylelint-scss": "^6.12.1"
+  },
+  "packageManager": "pnpm@12.3.2",
+  "engines": {
+    "pnpm": ">=12",
+    "node": ">=26"
+  },
+  "eslintConfig": {
+    "extends": [
+      "../../../web/core/.eslintrc.passing.json",
+      "airbnb-base"
+    ]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "proseWrap": "always",
+    "bracketSameLine": true
+  },
+  "stylelint": {
+    "extends": [
+      "stylelint-config-standard-scss",
+      "../../../web/core/.stylelintrc.json"
+    ],
+    "plugins": [
+      "stylelint-scss"
+    ],
+    "rules": {
+      "at-rule-no-unknown": null,
+      "scss/at-rule-no-unknown": true
+    }
+  }
+}

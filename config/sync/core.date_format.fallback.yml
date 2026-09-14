@@ -1,7 +1,7 @@
 uuid: e5c6cf8a-d187-49e4-9466-e528132b8313
 langcode: en
 status: true
-dependencies: {  }
+dependencies: {}
 _core:
   default_config_hash: 7klS5IWXrwzVaPpYZFAs6wcx8U2FF1X73OfrtTsvuvE
 id: fallback

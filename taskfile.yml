@@ -35,6 +35,11 @@ tasks:
     cmd: '{{.COMPOSER_BIN_DIR}}/drush {{.CLI_ARGS}}'
     silent: true
 
+  dr:
+    desc: 'Run `dr` (Drupal core CLI) command.'
+    cmd: '{{.COMPOSER_BIN_DIR}}/dr {{.CLI_ARGS}}'
+    silent: true
+
   phpcs:
     desc: 'Run `phpcs` command.'
     cmd:
@@ -54,7 +59,6 @@ tasks:
   phpstan:
     desc: 'Run `phpstan` command.'
     aliases:
-      - stan
       - php:stan
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan
@@ -64,8 +68,10 @@ tasks:
   rector:
     desc: 'Run `rector` command.'
     cmd:
-      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector
-      --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector {{.CLI_ARGS}}
+      --config={{.CONFIG_DIR}}/rector.php --ansi'
+    aliases:
+      - r
     silent: true
 
   twig-cs:
@@ -98,9 +104,13 @@ tasks:
     desc: 'Run `prettier` command.'
     cmd:
       '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
-      --config={{.CONFIG_DIR}}/.prettierrc.json
+      --config-path={{.CONFIG_DIR}}/.prettierrc.json
       --ignore-path={{.CONFIG_DIR}}/.prettierignore
       --cache --cache-location=var/cache/prettier/prettier.cache'
+    aliases:
+      - prt
+    env:
+      PRETTIER_EXPERIMENTAL_CLI: 1
     silent: true
 
   cspell:
@@ -114,13 +124,12 @@ tasks:
   # Work commands:
 
   cache:clear:
-    label: 'Cache clear'
-    desc: 'Rebuild Drupal caches'
+    desc: 'Rebuild all caches.'
     aliases:
       - cc
       - cr
     cmds:
-      - task: drush
+      - task: dr
         vars: { CLI_ARGS: 'cr' }
 
   install:
@@ -155,7 +164,7 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: 'u -W' }
       - task: pnpm
-        vars: { CLI_ARGS: 'up --save' }
+        vars: { CLI_ARGS: 'up --save-exact' }
 
   build-dictionary:
     desc: 'Builds a project dictionary for CSPell.'
@@ -170,6 +179,33 @@ tasks:
     cmds:
       - task: drush
         vars: { CLI_ARGS: 'generate -y phpstorm-meta' }
+
+  dump:db:
+    desc: 'Dump database into the dump/ directory.'
+    aliases:
+      - d:db
+    cmds:
+      - 'mkdir -p {{.TASKFILE_DIR}}/dump'
+      - task: drush
+        vars:
+          CLI_ARGS: >-
+            sql:dump --gzip
+            --structure-tables-list=cache,cache_*,search_index,watchdog
+            --result-file={{.TASKFILE_DIR}}/dump/db_$(date +%Y.%m.%d_%H-%M_%:::z).sql
+    silent: true
+
+  dump:files:
+    desc: 'Archive public files into the dump/ directory.'
+    aliases:
+      - d:files
+    cmds:
+      - 'mkdir -p {{.TASKFILE_DIR}}/dump'
+      - task: drush
+        vars:
+          CLI_ARGS: >-
+            ard --files
+            --destination={{.TASKFILE_DIR}}/dump/files_$(date +%Y.%m.%d_%H-%M_%:::z).tar.gz
+    silent: true
 
   # Linters:
 
@@ -186,6 +222,7 @@ tasks:
       - defer: { task: lint:twig }
       - defer: { task: lint:phpstan }
       - defer: { task: lint:phpcs }
+      - defer: { task: lint:rector }
       - defer: { task: lint:composer }
 
   lint:composer:
@@ -214,6 +251,7 @@ tasks:
       - task: phpcs
         vars: { CLI_ARGS: '--version' }
       - task: phpcs
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
   lint:phpstan:
     desc: 'Analyze PHP code for bugs and errors.'
@@ -227,7 +265,7 @@ tasks:
       - task: phpstan
         vars: { CLI_ARGS: '-V' }
       - task: phpstan
-        vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}} || true' } # update when add php code
+        vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}}' }
 
   lint:rector:
     desc: 'Check for Rector refactoring suggestions.'
@@ -326,12 +364,13 @@ tasks:
     aliases:
       - f
     cmds:
-      - defer: { task: fix:phpcs }
+      - defer: { task: fix:prettier }
       - defer: { task: fix:js }
       - defer: { task: fix:css }
       - defer: { task: fix:yml }
       - defer: { task: fix:twig }
-      - defer: { task: fix:prettier }
+      - defer: { task: fix:phpcs }
+      - defer: { task: fix:rector }
       - defer: { task: fix:composer }
 
   fix:composer:
@@ -344,7 +383,7 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: '-V' }
       - task: composer
-        vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
+        vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader --no-install' }
       - task: composer
         vars: { CLI_ARGS: 'bump' }
 
@@ -399,7 +438,7 @@ tasks:
       - task: prettier
         vars: { CLI_ARGS: '-v' }
       - task: prettier
-        vars: { CLI_ARGS: 'app -wl' }
+        vars: { CLI_ARGS: 'app -w' }
 
   fix:css:
     desc: 'Auto-fix CSS/SCSS issues.'
