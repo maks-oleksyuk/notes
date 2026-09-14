@@ -222,6 +222,7 @@ tasks:
       - defer: { task: lint:twig }
       - defer: { task: lint:phpstan }
       - defer: { task: lint:phpcs }
+      - defer: { task: lint:rector }
       - defer: { task: lint:composer }
 
   lint:composer:
@@ -250,7 +251,7 @@ tasks:
       - task: phpcs
         vars: { CLI_ARGS: '--version' }
       - task: phpcs
-        vars: { CLI_ARGS: '{{.CLI_ARGS}} || true' } # update when add PHP code
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
   lint:phpstan:
     desc: 'Analyze PHP code for bugs and errors.'
@@ -264,7 +265,7 @@ tasks:
       - task: phpstan
         vars: { CLI_ARGS: '-V' }
       - task: phpstan
-        vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}} || true' } # update when add PHP code
+        vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}}' }
 
   lint:rector:
     desc: 'Check for Rector refactoring suggestions.'
@@ -363,12 +364,13 @@ tasks:
     aliases:
       - f
     cmds:
-      - defer: { task: fix:phpcs }
+      - defer: { task: fix:prettier }
       - defer: { task: fix:js }
       - defer: { task: fix:css }
       - defer: { task: fix:yml }
       - defer: { task: fix:twig }
-      - defer: { task: fix:prettier }
+      - defer: { task: fix:phpcs }
+      - defer: { task: fix:rector }
       - defer: { task: fix:composer }
 
   fix:composer:
@@ -381,7 +383,7 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: '-V' }
       - task: composer
-        vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
+        vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader --no-install' }
       - task: composer
         vars: { CLI_ARGS: 'bump' }
 
