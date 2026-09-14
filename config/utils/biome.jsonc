@@ -47,7 +47,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!public", "!!config/utils/biome.json"]
+    "includes": ["**", "!public", "!!config/utils/biome.jsonc"]
   },
   "formatter": {
     "enabled": true,
@@ -102,15 +102,28 @@
         "noIdenticalTestTitle": "error",
         "noImpliedEval": "error",
         "noInlineStyles": "error",
+        "noInvalidFileInputAccept": "error",
         "noJsxLeakedDollar": "error",
         "noLoopFunc": "error",
         "noMisusedPromises": "error",
         "noNonScalableViewport": "error",
         "noRestrictedDependencies": "error",
         "noTailwindArbitraryValue": "error",
+        // Deliberately on: hangs indefinitely (100%+ CPU, no output,
+        // confirmed via 25s timeout locally) when run against this project
+        // on biome 2.5.13. Reproduces even with every other rule/domain
+        // disabled, so it's this rule alone, not an interaction. Doesn't
+        // reproduce on small isolated repro projects with identical file
+        // content — only on this real project's tree, so it likely depends
+        // on node_modules scale. Left on so CI times out as proof for the
+        // upstream issue; flip back to "off" once filed / fixed upstream.
+        "noUndeclaredCustomProperties": "error",
+        "noUnmodifiedLoopCondition": "error",
         "noUnnecessaryTemplateExpression": "error",
+        "noUnsafeIframeSandbox": "error",
         "noUnsafePlusOperands": "error",
         "noUselessTypeConversion": "error",
+        "noXorAsExponentiation": "error",
         "useArraySome": "error",
         "useAwaitThenable": "error",
         "useConsistentTestIt": "error",
@@ -127,6 +140,7 @@
         "useReactAsyncServerFunction": "error",
         "useReactCompiler": "error",
         "useReactFunctionComponentDefinition": "error",
+        "useReactNamingConvention": "error",
         "useReduceTypeParameter": "error",
         "useRegexpExec": "error",
         "useRegexpTest": "error",

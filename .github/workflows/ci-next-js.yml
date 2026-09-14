@@ -60,10 +60,11 @@ jobs:
           persist-credentials: false
 
       - name: '⚙️ Prepare environment'
-        uses: ./.github/actions/setup-environment
+        uses: $/.github/actions/setup-environment
 
       - name: '${{ matrix.command.name }} validate'
         run: task ${{ matrix.command.command }}
+        timeout-minutes: 5
 
   test:
     name: '♻️ Test | ${{ matrix.command.name }}'

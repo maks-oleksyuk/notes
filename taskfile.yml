@@ -29,7 +29,12 @@ tasks:
     desc: 'Run `biome` command.'
     cmd: '{{.NODEJS_BIN_DIR}}/biome {{.CLI_ARGS}} --colors=force'
     env:
-      BIOME_CONFIG_PATH: '{{.CONFIG_DIR}}/biome.json'
+      BIOME_CONFIG_PATH: '{{.CONFIG_DIR}}/biome.jsonc'
+    silent: true
+
+  knip:
+    desc: 'Run `knip` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/knip --config {{.CONFIG_DIR}}/knip.jsonc {{.CLI_ARGS}}'
     silent: true
 
   next:
@@ -45,11 +50,6 @@ tasks:
   vitest:browser:
     desc: 'Run `vitest` command against the browser (real Chromium) config.'
     cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.browser.config.ts {{.CLI_ARGS}}'
-    silent: true
-
-  knip:
-    desc: 'Run `knip` command.'
-    cmd: '{{.NODEJS_BIN_DIR}}/knip --config {{.CONFIG_DIR}}/knip.json {{.CLI_ARGS}}'
     silent: true
 
   # Work commands:
@@ -95,7 +95,7 @@ tasks:
       - u
     cmds:
       - task: pnpm
-        vars: { CLI_ARGS: 'up --save --latest' }
+        vars: { CLI_ARGS: 'up --save-exact --latest' }
 
   # Linters:
 
