@@ -16,6 +16,7 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
+    fsModuleCache: true,
     // Migrating off the mirrored `tests/<type>/` tree towards colocated
     // `__tests__/` folders next to source (React/Next.js convention). `lib/api`
     // hasn't moved yet, so both patterns are needed until that migrates too.
