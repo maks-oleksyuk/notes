@@ -3,7 +3,7 @@ import { setupWorker } from 'msw/browser';
 import { afterAll, afterEach, beforeAll, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { Providers } from '@/app/providers';
+import { Providers } from '@/app/[locale]/providers';
 
 import DummyJsonDemoPage from '../page';
 

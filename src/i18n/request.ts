@@ -1,11 +1,13 @@
-import { cookies } from 'next/headers';
+import { notFound } from 'next/navigation';
+// biome-ignore lint/correctness/noUnresolvedImports: next/root-params is a compiler-generated module (types emitted at dev/build time), biome can't resolve it statically
+import { locale as getRootLocale } from 'next/root-params';
+import { hasLocale } from 'next-intl';
 import { getRequestConfig } from 'next-intl/server';
 
-import { defaultLocale, locales, namespaces } from './config';
+import { namespaces } from './config';
+import { routing } from './routing';
 
 import type { Locale } from './config';
-
-const LOCALE_COOKIE = 'NEXT_LOCALE';
 
 async function loadLocaleMessages(locale: Locale) {
   const entries = await Promise.all(
@@ -18,13 +20,11 @@ async function loadLocaleMessages(locale: Locale) {
 }
 
 export default getRequestConfig(async () => {
-  const cookieLocale = (await cookies()).get(LOCALE_COOKIE)?.value;
-  const locale = locales.includes(cookieLocale as Locale)
-    ? (cookieLocale as Locale)
-    : defaultLocale;
+  const paramValue = await getRootLocale();
+  if (!hasLocale(routing.locales, paramValue)) notFound();
 
   return {
-    locale,
-    messages: await loadLocaleMessages(locale),
+    locale: paramValue,
+    messages: await loadLocaleMessages(paramValue),
   };
 });
