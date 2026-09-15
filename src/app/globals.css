@@ -1,7 +1,9 @@
 @import '../../node_modules/tailwindcss';
 
 @theme inline {
+  /* biome-ignore lint/nursery/noUndeclaredCustomProperties: injected at runtime by next/font's `variable` option (see layout.tsx), not declared in CSS */
   --font-sans: var(--font-geist-sans);
+  /* biome-ignore lint/nursery/noUndeclaredCustomProperties: injected at runtime by next/font's `variable` option (see layout.tsx), not declared in CSS */
   --font-mono: var(--font-geist-mono);
 }
 

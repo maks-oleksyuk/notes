@@ -1,3 +1,10 @@
+# Temporary: needed to install the @biomejs/biome preview build from
+# pkg.pr.new (its platform binaries resolve as exotic transitive deps via
+# URL) to verify the noUndeclaredCustomProperties hang fix in CI. Remove
+# this and the preview override in package.json once biomejs/biome#11782
+# ships in a real release and we switch back.
+blockExoticSubdeps: false
+
 allowBuilds:
   '@biomejs/biome': true
   '@parcel/watcher': true

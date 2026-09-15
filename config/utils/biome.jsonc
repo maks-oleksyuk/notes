@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.13/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -47,7 +47,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!public", "!!config/utils/biome.json"]
+    "includes": ["**", "!public", "!!config/utils/biome.jsonc"]
   },
   "formatter": {
     "enabled": true,
@@ -102,15 +102,26 @@
         "noIdenticalTestTitle": "error",
         "noImpliedEval": "error",
         "noInlineStyles": "error",
+        "noInvalidFileInputAccept": "error",
         "noJsxLeakedDollar": "error",
         "noLoopFunc": "error",
         "noMisusedPromises": "error",
         "noNonScalableViewport": "error",
         "noRestrictedDependencies": "error",
         "noTailwindArbitraryValue": "error",
+        // Used to hang indefinitely on biome 2.5.13 (biomejs/biome#11782).
+        // Fixed upstream in the pkg.pr.new preview build this project now
+        // pins in package.json — rule runs normally again. Flagged false
+        // positives on --font-geist-sans/--font-geist-mono (injected at
+        // runtime by next/font, not declared in CSS); silenced with
+        // biome-ignore comments in globals.css instead of disabling the rule.
+        "noUndeclaredCustomProperties": "error",
+        "noUnmodifiedLoopCondition": "error",
         "noUnnecessaryTemplateExpression": "error",
+        "noUnsafeIframeSandbox": "error",
         "noUnsafePlusOperands": "error",
         "noUselessTypeConversion": "error",
+        "noXorAsExponentiation": "error",
         "useArraySome": "error",
         "useAwaitThenable": "error",
         "useConsistentTestIt": "error",
@@ -127,6 +138,7 @@
         "useReactAsyncServerFunction": "error",
         "useReactCompiler": "error",
         "useReactFunctionComponentDefinition": "error",
+        "useReactNamingConvention": "error",
         "useReduceTypeParameter": "error",
         "useRegexpExec": "error",
         "useRegexpTest": "error",
@@ -213,8 +225,8 @@
     {
       "includes": [
         "next.config.ts",
-        "config/utils/vitest.config.ts",
-        "config/utils/vitest.browser.config.ts",
+        "config/utils/vitest.config.mts",
+        "config/utils/vitest.browser.config.mts",
         "src/lib/env/**",
         "src/lib/api/evexia/base-url.ts",
         "src/lib/api/evexia/private/notifications/requests.ts"

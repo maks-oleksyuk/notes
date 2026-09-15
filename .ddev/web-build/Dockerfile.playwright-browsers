@@ -1,0 +1,9 @@
+#ddev-silent-no-warn
+# System libraries Chromium needs at runtime, even headless (libnss3,
+# libatk-bridge2.0-0, libxkbcommon0, ...). Pinned to match the `playwright`
+# devDependency in package.json — bump both together, or the apt package
+# list can drift from the actual browser build downloaded at container
+# start (see config.yaml's post-start hook).
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt,sharing=locked \
+  npx --yes playwright@1.63.0 install-deps chromium
