@@ -40,7 +40,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
       reportsDirectory: path.resolve(rootDir, 'var/report/coverage'),
-      include: ['src/app/demo/dummyjson/page.tsx'],
+      include: ['src/app/\\[locale\\]/demo/dummyjson/page.tsx'],
       thresholds: { 100: true },
     },
     browser: {

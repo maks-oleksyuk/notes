@@ -103,6 +103,7 @@ export class HttpClient {
         mergedOptions.params,
       );
       const existing = this.#inFlightGets.get(key);
+      // biome-ignore lint/nursery/noMisusedPromises: checking Map.get()'s `Promise<T> | undefined` for a dedup cache hit, not truthiness of a resolved value
       if (existing) return existing as Promise<ApiResponse<T>>;
 
       const promise = this.executeWithRetries<T>(path, mergedOptions).finally(

@@ -9,7 +9,7 @@ import { routing } from './routing';
 
 import type { Locale } from './config';
 
-async function loadLocaleMessages(locale: Locale) {
+export async function loadLocaleMessages(locale: Locale) {
   const entries = await Promise.all(
     namespaces.map(async (namespace) => {
       const messages = await import(`../messages/${locale}/${namespace}.json`);
