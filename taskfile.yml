@@ -44,12 +44,12 @@ tasks:
 
   vitest:
     desc: 'Run `vitest` command.'
-    cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.config.ts {{.CLI_ARGS}}'
+    cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.config.mts {{.CLI_ARGS}}'
     silent: true
 
   vitest:browser:
     desc: 'Run `vitest` command against the browser (real Chromium) config.'
-    cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.browser.config.ts {{.CLI_ARGS}}'
+    cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.browser.config.mts {{.CLI_ARGS}}'
     silent: true
 
   # Work commands:
@@ -70,21 +70,18 @@ tasks:
       - task: next
         vars: { CLI_ARGS: 'dev' }
 
-  start:
-    desc: 'Run `next start` (no build)'
-    aliases:
-      - s
-    cmds:
-      - task: next
-        vars: { CLI_ARGS: 'start' }
-
   prod:
-    desc: 'Run `next build` then `next start`'
+    desc: 'Run `next build` then the standalone server'
     aliases:
       - p
+    silent: true
     cmds:
       - task: build
-      - task: start
+      # `output: standalone` doesn't copy these; the server expects them next to itself.
+      - rm -rf .next/standalone/public .next/standalone/.next/static
+      - cp -R public .next/standalone/public
+      - cp -R .next/static .next/standalone/.next/static
+      - HOSTNAME=0.0.0.0 {{.NODE_BIN}} .next/standalone/server.js
 
   update:
     desc: 'Updates project dependencies withing constraints.'

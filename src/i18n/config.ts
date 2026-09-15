@@ -10,3 +10,5 @@ export const localeNames: Record<Locale, string> = {
 
 // New translation domain? Add the filename (without .json) here.
 export const namespaces = ['common'] as const;
+
+export const timeZone = 'Europe/Kyiv';

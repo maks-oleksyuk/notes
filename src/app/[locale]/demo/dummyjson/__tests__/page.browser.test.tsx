@@ -10,7 +10,7 @@ import DummyJsonDemoPage from '../page';
 // Intercepts specific dummyjson calls; unhandled ones bypass to the real backend.
 const worker = setupWorker();
 
-beforeAll(() => worker.start({ onUnhandledRequest: 'bypass' }));
+beforeAll(() => worker.start({ onUnhandledFrame: 'bypass' }));
 afterEach(() => worker.resetHandlers());
 afterAll(() => worker.stop());
 

@@ -1,8 +1,8 @@
 'use client';
 
-import { SegmentedControl } from '@mantine/core';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { SegmentedControl } from '@/components/ui';
 import { localeNames, locales } from '@/i18n/config';
 import { usePathname, useRouter } from '@/i18n/navigation';
 

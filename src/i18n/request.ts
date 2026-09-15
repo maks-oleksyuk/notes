@@ -4,12 +4,12 @@ import { locale as getRootLocale } from 'next/root-params';
 import { hasLocale } from 'next-intl';
 import { getRequestConfig } from 'next-intl/server';
 
-import { namespaces } from './config';
+import { namespaces, timeZone } from './config';
 import { routing } from './routing';
 
 import type { Locale } from './config';
 
-async function loadLocaleMessages(locale: Locale) {
+export async function loadLocaleMessages(locale: Locale) {
   const entries = await Promise.all(
     namespaces.map(async (namespace) => {
       const messages = await import(`../messages/${locale}/${namespace}.json`);
@@ -25,6 +25,7 @@ export default getRequestConfig(async () => {
 
   return {
     locale: paramValue,
+    timeZone,
     messages: await loadLocaleMessages(paramValue),
   };
 });

@@ -25,10 +25,8 @@ export default defineConfig({
     // response lines) — only surfaces it for failing tests, where it's
     // actually needed to debug. Applies locally too, not just CI.
     silent: 'passed-only',
-    // 'dot' keeps CI logs short (one char per file instead of a line per file);
-    // 'default' locally shows the per-file breakdown as tests run.
-    // JUnit XML is what Codecov's test-results upload (report_type: test_results
-    // in CI) reads.
+    // 'dot' (CI) vs 'default' (local) trade per-file breakdown for shorter
+    // logs; JUnit XML feeds Codecov's test-results upload either way.
     reporters: isCI ? ['dot', 'github-actions', 'junit'] : ['default', 'junit'],
     outputFile: {
       junit: path.resolve(rootDir, 'var/report/junit.xml'),
@@ -39,10 +37,13 @@ export default defineConfig({
       // local runs (`task test:coverage` prints text, opens coverage/index.html).
       reporter: ['text', 'html', 'lcov'],
       reportsDirectory: path.resolve(rootDir, 'var/report/coverage'),
-      // Coverage only makes sense for code that has (or should have) tests —
-      // scoped to the API client for now, not the whole `src/` tree (pages,
-      // routes, etc. aren't under test yet).
-      include: ['src/lib/http-client/**/*.ts', 'src/lib/api/**/*.ts'],
+      // Only the trees that actually have tests — not the whole `src/` tree
+      // (pages, routes, etc. aren't under test yet).
+      include: [
+        'src/lib/http-client/**/*.ts',
+        'src/lib/api/**/*.ts',
+        'src/i18n/*.ts',
+      ],
       // Only the pure re-export barrels — NOT `plugins/auth/index.ts` or
       // `plugins/logger/index.ts`, which are real implementations that happen
       // to be named index.ts, not barrels.
@@ -58,10 +59,9 @@ export default defineConfig({
         'src/lib/http-client/core/types.ts',
         'src/lib/http-client/plugins/auth/types.ts',
         'src/lib/api/*/*/types.ts',
-        // Real-backend integration client — no unit tests against it (would
-        // require the live Evexia backend), so it's excluded from coverage
-        // entirely rather than dragging the ratio down.
-        'src/lib/api/evexia/**',
+        // Pure re-export of next-intl's `createNavigation(routing)` factory —
+        // no logic of our own, testing it would just test next-intl itself.
+        'src/i18n/navigation.ts',
       ],
     },
   },
