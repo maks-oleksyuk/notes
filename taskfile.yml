@@ -44,12 +44,12 @@ tasks:
 
   vitest:
     desc: 'Run `vitest` command.'
-    cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.config.ts {{.CLI_ARGS}}'
+    cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.config.mts {{.CLI_ARGS}}'
     silent: true
 
   vitest:browser:
     desc: 'Run `vitest` command against the browser (real Chromium) config.'
-    cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.browser.config.ts {{.CLI_ARGS}}'
+    cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.browser.config.mts {{.CLI_ARGS}}'
     silent: true
 
   # Work commands:

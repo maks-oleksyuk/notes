@@ -42,7 +42,7 @@ export default defineConfig({
       // Coverage only makes sense for code that has (or should have) tests —
       // scoped to the API client for now, not the whole `src/` tree (pages,
       // routes, etc. aren't under test yet).
-      include: ['src/lib/http-client/**/*.ts', 'src/lib/api/**/*.ts'],
+      include: ['src/lib/http-client/**/*.ts', 'src/lib/api/**/*.ts', 'src/i18n/*.ts'],
       // Only the pure re-export barrels — NOT `plugins/auth/index.ts` or
       // `plugins/logger/index.ts`, which are real implementations that happen
       // to be named index.ts, not barrels.

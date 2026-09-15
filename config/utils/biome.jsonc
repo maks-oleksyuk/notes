@@ -109,14 +109,12 @@
         "noNonScalableViewport": "error",
         "noRestrictedDependencies": "error",
         "noTailwindArbitraryValue": "error",
-        // Deliberately on: hangs indefinitely (100%+ CPU, no output,
-        // confirmed via 25s timeout locally) when run against this project
-        // on biome 2.5.13. Reproduces even with every other rule/domain
-        // disabled, so it's this rule alone, not an interaction. Doesn't
-        // reproduce on small isolated repro projects with identical file
-        // content — only on this real project's tree, so it likely depends
-        // on node_modules scale. Left on so CI times out as proof for the
-        // upstream issue; flip back to "off" once filed / fixed upstream.
+        // Used to hang indefinitely on biome 2.5.13 (biomejs/biome#11782).
+        // Fixed upstream in the pkg.pr.new preview build this project now
+        // pins in package.json — rule runs normally again. Flagged false
+        // positives on --font-geist-sans/--font-geist-mono (injected at
+        // runtime by next/font, not declared in CSS); silenced with
+        // biome-ignore comments in globals.css instead of disabling the rule.
         "noUndeclaredCustomProperties": "error",
         "noUnmodifiedLoopCondition": "error",
         "noUnnecessaryTemplateExpression": "error",
@@ -227,8 +225,8 @@
     {
       "includes": [
         "next.config.ts",
-        "config/utils/vitest.config.ts",
-        "config/utils/vitest.browser.config.ts",
+        "config/utils/vitest.config.mts",
+        "config/utils/vitest.browser.config.mts",
         "src/lib/env/**",
         "src/lib/api/evexia/base-url.ts",
         "src/lib/api/evexia/private/notifications/requests.ts"
