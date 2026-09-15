@@ -86,7 +86,7 @@ jobs:
           persist-credentials: false
 
       - name: '⚙️ Prepare environment'
-        uses: ./.github/actions/setup-environment
+        uses: $/.github/actions/setup-environment
 
       - name: '🎭 Install Playwright Chromium'
         if: matrix.command.command == 'test:browser'

@@ -15,10 +15,10 @@
     "next-intl": "^4.14.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "zod": "^4.6.4"
+    "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.13",
+    "@biomejs/biome": "https://pkg.pr.new/biomejs/biome/@biomejs/biome@4ecf9196d1265481ce3ca3fcfbd5bbc553b21ed7",
     "@tailwindcss/postcss": "^4.3.3",
     "@tanstack/react-query-devtools": "^5.102.8",
     "@types/node": "^26.5.1",
