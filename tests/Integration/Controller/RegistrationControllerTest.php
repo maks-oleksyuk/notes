@@ -50,9 +50,9 @@ final class RegistrationControllerTest extends WebTestCase
 
         $user = $this->userRepository->findOneByUsername('john_doe');
         $this->assertInstanceOf(User::class, $user);
-        $this->assertNotSame('Strong123!', $user->getPassword());
-        $this->assertIsString($user->getPassword());
-        $this->assertStringStartsWith('$', $user->getPassword());
+        $this->assertIsString($user->password);
+        $this->assertNotSame('Strong123!', $user->password);
+        $this->assertStringStartsWith('$', $user->password);
     }
 
     public function testFailedRegistrationDueToInvalidPassword(): void

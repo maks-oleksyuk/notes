@@ -35,9 +35,9 @@ final class UserRepositoryTest extends KernelTestCase
 
     public function testFindOneByUsernameReturnsUserWhenExists(): void
     {
-        $user = new User()
-            ->setUsername('maks')
-            ->setPassword('password');
+        $user = new User();
+        $user->username = 'maks';
+        $user->password = 'password';
 
         $this->em->persist($user);
         $this->em->flush();
@@ -45,7 +45,7 @@ final class UserRepositoryTest extends KernelTestCase
         $found = $this->repository->findOneByUsername('maks');
 
         $this->assertInstanceOf(User::class, $found);
-        $this->assertSame('maks', $found->getUsername());
+        $this->assertSame('maks', $found->username);
     }
 
     public function testFindOneByUsernameReturnsNullWhenNotExists(): void
@@ -61,16 +61,16 @@ final class UserRepositoryTest extends KernelTestCase
 
         $result = $this->repository->paginate(1, 2);
         $this->assertCount(2, $result);
-        $this->assertSame('user1', $result[0]->getUsername());
-        $this->assertSame('user2', $result[1]->getUsername());
+        $this->assertSame('user1', $result[0]->username);
+        $this->assertSame('user2', $result[1]->username);
 
         $result = $this->repository->paginate(2, 2);
         $this->assertCount(2, $result);
-        $this->assertSame('user3', $result[0]->getUsername());
-        $this->assertSame('user4', $result[1]->getUsername());
+        $this->assertSame('user3', $result[0]->username);
+        $this->assertSame('user4', $result[1]->username);
 
         $result = $this->repository->paginate(5, 2);
-        $this->assertEmpty($result);
+        $this->assertCount(0, $result);
     }
 
     public function testUpgradePasswordThrowsForUnsupportedUser(): void
@@ -83,14 +83,16 @@ final class UserRepositoryTest extends KernelTestCase
 
     public function testUpgradePasswordPersistsNewPassword(): void
     {
-        $user = new User()->setUsername('user')->setPassword('old_password');
+        $user = new User();
+        $user->username = 'user';
+        $user->password = 'old_password';
 
         $this->em->persist($user);
         $this->em->flush();
 
         $this->repository->upgradePassword($user, 'new_hashed_password');
 
-        $reloaded = $this->repository->find($user->getId());
-        $this->assertSame('new_hashed_password', $reloaded?->getPassword());
+        $reloaded = $this->repository->find($user->id);
+        $this->assertSame('new_hashed_password', $reloaded?->password);
     }
 }

@@ -20,22 +20,22 @@ final class UserTest extends TestCase
         $user = new User();
         $property->setValue($user, 123);
 
-        $this->assertSame(123, $user->getId());
+        $this->assertSame(123, $user->id);
     }
 
     public function testUsernameCanBeSetAndRetrieved(): void
     {
         $user = new User();
-        $user->setUsername('test_user');
+        $user->username = 'test_user';
 
-        $this->assertSame('test_user', $user->getUsername());
+        $this->assertSame('test_user', $user->username);
         $this->assertSame('test_user', $user->getUserIdentifier());
     }
 
     public function testRolesCanBeSetAndRetrieved(): void
     {
         $user = new User();
-        $user->setRoles([UserRole::ADMIN->value]);
+        $user->roles = [UserRole::ADMIN->value];
 
         $this->assertContains(UserRole::ADMIN->value, $user->getRoles());
         // every user at least has `ROLE_USER`
@@ -47,10 +47,10 @@ final class UserTest extends TestCase
     {
         $user = new User();
 
-        $this->assertNull($user->getPassword());
+        $this->assertNull($user->password);
 
-        $user->setPassword('secret');
+        $user->password = 'secret';
 
-        $this->assertSame('secret', $user->getPassword());
+        $this->assertSame('secret', $user->password);
     }
 }
