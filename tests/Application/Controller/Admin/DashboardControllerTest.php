@@ -35,11 +35,14 @@ final class DashboardControllerTest extends WebTestCase
         $em = self::getContainer()->get(EntityManagerInterface::class);
         $em->createQuery('DELETE FROM App\Entity\User')->execute();
 
-        $this->simpleUser = new User()->setUsername('simple_user')->setPassword('pass');
-        $this->adminUser = new User()
-            ->setUsername('admin_user')
-            ->setPassword('pass')
-            ->setRoles([UserRole::ADMIN->value]);
+        $this->simpleUser = new User();
+        $this->simpleUser->username = 'simple_user';
+        $this->simpleUser->password = 'pass';
+
+        $this->adminUser = new User();
+        $this->adminUser->username = 'admin_user';
+        $this->adminUser->password = 'pass';
+        $this->adminUser->roles = [UserRole::ADMIN->value];
 
         $em->persist($this->simpleUser);
         $em->persist($this->adminUser);
