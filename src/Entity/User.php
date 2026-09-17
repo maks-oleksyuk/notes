@@ -21,74 +21,39 @@ final class User implements PasswordAuthenticatedUserInterface, UserInterface
     #[ORM\Id]
     #[ORM\Column]
     #[ORM\GeneratedValue]
-    private int $id;
+    public private(set) int $id;
 
     /** @var non-empty-string */
     #[Assert\Length(min: 3, minMessage: 'Username must be at least {{ limit }} characters')]
     #[Assert\Regex(pattern: '/^\S+$/', message: 'Username must not contain spaces')]
     #[ORM\Column(length: 30)]
-    private string $username;
+    public string $username;
 
-    /** @var array<string> */
+    /** @var string[] */
     #[ORM\Column(type: Types::JSON)]
-    private array $roles = [];
+    public array $roles = [] {
+        // guarantee every user at least has ROLE_USER
+        get => array_values(array_unique([...$this->roles, UserRole::USER->value]));
+    }
 
     #[ORM\Column(nullable: true)]
-    private ?string $password = null;
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    /**
-     * @param non-empty-string $username
-     */
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
-    }
+    public ?string $password = null;
 
     public function getUserIdentifier(): string
     {
         return $this->username;
     }
 
+    /**
+     * @return string[]
+     */
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = UserRole::USER->value;
-
-        return array_unique($roles);
-    }
-
-    /**
-     * @param array<string> $roles
-     */
-    public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
-
-        return $this;
+        return $this->roles;
     }
 
     public function getPassword(): ?string
     {
         return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-
-        return $this;
     }
 }

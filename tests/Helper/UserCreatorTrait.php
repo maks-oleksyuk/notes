@@ -22,10 +22,10 @@ trait UserCreatorTrait
         string $password = 'password',
         array $roles = [],
     ): User {
-        $user = new User()
-            ->setUsername($username)
-            ->setPassword($hasher->hashPassword(new User(), $password))
-            ->setRoles($roles);
+        $user = new User();
+        $user->username = $username;
+        $user->password = $hasher->hashPassword(new User(), $password);
+        $user->roles = $roles;
 
         $em->persist($user);
         $em->flush();
@@ -55,7 +55,7 @@ trait UserCreatorTrait
         $users = [];
         for ($i = 1; $i <= $count; ++$i) {
             $user = new User();
-            $user->setUsername('user'.$i);
+            $user->username = 'user'.$i;
             $em->persist($user);
             $users[] = $user;
         }
