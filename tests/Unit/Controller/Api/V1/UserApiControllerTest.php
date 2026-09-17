@@ -49,8 +49,8 @@ final class UserApiControllerTest extends KernelTestCase
         $users = $this->userRepository->paginate(page: 2, limit: 1);
 
         $expectedItem = new UserResourceDto(
-            id: $users[0]->getId(),
-            username: $users[0]->getUsername(),
+            id: $users[0]->id,
+            username: $users[0]->username,
         );
 
         $mapper = $this->createMock(ObjectMapperInterface::class);
@@ -83,7 +83,7 @@ final class UserApiControllerTest extends KernelTestCase
         $user = $this->userRepository->findOneByUsername('user1');
         $this->assertInstanceOf(User::class, $user);
         $dto = new UserResourceDto(
-            id: $user->getId(),
+            id: $user->id,
             username: 'user1',
         );
 
@@ -108,7 +108,7 @@ final class UserApiControllerTest extends KernelTestCase
         $response = $this->controller->create();
 
         $this->assertSame(Response::HTTP_CREATED, $response->getStatusCode(), (string) $response->getContent());
-        $this->assertEmpty(json_decode((string) $response->getContent(), true));
+        $this->assertSame([], json_decode((string) $response->getContent(), true));
     }
 
     public function testUpdate(): void
@@ -119,7 +119,7 @@ final class UserApiControllerTest extends KernelTestCase
         $response = $this->controller->update($user);
 
         $this->assertSame(Response::HTTP_OK, $response->getStatusCode(), (string) $response->getContent());
-        $this->assertEmpty(json_decode((string) $response->getContent(), true));
+        $this->assertSame([], json_decode((string) $response->getContent(), true));
     }
 
     public function testDelete(): void
@@ -129,6 +129,6 @@ final class UserApiControllerTest extends KernelTestCase
         $response = $this->controller->delete($user);
 
         $this->assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode(), (string) $response->getContent());
-        $this->assertEmpty(json_decode((string) $response->getContent(), true));
+        $this->assertSame([], json_decode((string) $response->getContent(), true));
     }
 }

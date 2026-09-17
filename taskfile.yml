@@ -153,7 +153,7 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: 'u -W' }
       - task: pnpm
-        vars: { CLI_ARGS: 'up --save --latest' }
+        vars: { CLI_ARGS: 'up --save-exact --latest' }
 
   # Migrations:
 
@@ -200,6 +200,23 @@ tasks:
         vars: { CLI_ARGS: '-n' }
       - task: sf:console
         vars: { CLI_ARGS: 'doctrine:fixtures:load --append -n' }
+
+  migrations:squash:
+    desc: 'Squash all migrations into a single one from the current DB schema.'
+    prompt: |
+      This deletes all files in migrations/ and replaces them with one schema dump.
+      Make sure every environment has already applied all existing migrations.
+      The dump contains the schema only, not data migrations.
+    aliases:
+      - m:squash
+    cmds:
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:migrate -n' }
+      - rm -f migrations/Version*.php
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:dump-schema --formatted -n' }
+      - task: sf:console
+        vars: { CLI_ARGS: 'doctrine:migrations:rollup -n' }
 
   # Linters:
 

@@ -30,7 +30,9 @@ final class UserTest extends KernelTestCase
 
     public function testValidUser(): void
     {
-        $user = new User()->setUsername('valid_user');
+        $user = new User();
+        $user->username = 'valid_user';
+
         $violations = $this->validator->validate($user);
 
         $this->assertCount(0, $violations);
@@ -38,7 +40,9 @@ final class UserTest extends KernelTestCase
 
     public function testShortUsername(): void
     {
-        $user = new User()->setUsername('ab');
+        $user = new User();
+        $user->username = 'ab';
+
         $violations = $this->validator->validate($user);
 
         $this->assertCount(1, $violations);
@@ -47,7 +51,9 @@ final class UserTest extends KernelTestCase
 
     public function testUsernameWithSpaces(): void
     {
-        $user = new User()->setUsername('user name');
+        $user = new User();
+        $user->username = 'user name';
+
         $violations = $this->validator->validate($user);
 
         $this->assertCount(1, $violations);
@@ -56,8 +62,13 @@ final class UserTest extends KernelTestCase
 
     public function testUniqueUsernameConstraint(): void
     {
-        $user1 = new User()->setUsername('duplicate')->setPassword('pass');
-        $user2 = new User()->setUsername('duplicate')->setPassword('pass');
+        $user1 = new User();
+        $user1->username = 'duplicate';
+        $user1->password = 'pass';
+
+        $user2 = new User();
+        $user2->username = 'duplicate';
+        $user2->password = 'pass';
 
         $this->em->persist($user1);
         $this->em->flush();

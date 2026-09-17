@@ -37,10 +37,10 @@ final class UserFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         foreach ($this->usersData as $data) {
-            $user = new User()
-                ->setUsername($data['username'])
-                ->setRoles($data['roles'])
-                ->setPassword($this->passwordHasher->hashPassword(new User(), $data['password']));
+            $user = new User();
+            $user->username = $data['username'];
+            $user->roles = $data['roles'];
+            $user->password = $this->passwordHasher->hashPassword(new User(), $data['password']);
 
             $manager->persist($user);
         }
