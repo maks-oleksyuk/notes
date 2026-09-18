@@ -30,6 +30,7 @@ export default defineConfig({
   test: {
     include: ['src/**/__tests__/**/*.browser.test.tsx'],
     silent: 'passed-only',
+    fsModuleCache: true,
     setupFiles: [path.resolve(rootDir, 'config/utils/vitest.browser.setup.ts')],
     attachmentsDir: path.resolve(rootDir, 'var/report/vitest-attachments'),
     outputFile: {
@@ -39,7 +40,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
       reportsDirectory: path.resolve(rootDir, 'var/report/coverage'),
-      include: ['src/app/demo/dummyjson/page.tsx'],
+      include: ['src/app/\\[locale\\]/demo/dummyjson/page.tsx'],
       thresholds: { 100: true },
     },
     browser: {
