@@ -3,7 +3,7 @@ import { setupWorker } from 'msw/browser';
 import { afterAll, afterEach, beforeAll, expect, it } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { Providers } from '@/app/providers';
+import { Providers } from '@/app/[locale]/providers';
 
 import DummyJsonDemoPage from '../page';
 
@@ -57,7 +57,7 @@ it('logs in, calls /auth/me, forces a token refresh, then logs out', async () =>
   await screen.getByPlaceholder('password').fill('emilyspass');
   await screen.getByRole('button', { name: 'Sign in' }).click();
 
-  await expect.element(screen.getByText('Signed in as')).toBeVisible();
+  await expect.element(screen.getByText(/^Signed in as/u)).toBeVisible();
   await expect
     .element(screen.getByText('emilys', { exact: true }))
     .toBeVisible();
@@ -90,7 +90,7 @@ it('shows an error when /auth/me fails, including on a corrupt-token retry', asy
   );
 
   await screen.getByRole('button', { name: 'Sign in' }).click();
-  await expect.element(screen.getByText('Signed in as')).toBeVisible();
+  await expect.element(screen.getByText(/^Signed in as/u)).toBeVisible();
 
   // 400, not 5xx — the retry policy would retry those, slowing the test down.
   worker.use(
@@ -138,7 +138,7 @@ it('does not attempt a token refresh when the login response has no refresh toke
   );
 
   await screen.getByRole('button', { name: 'Sign in' }).click();
-  await expect.element(screen.getByText('Signed in as')).toBeVisible();
+  await expect.element(screen.getByText(/^Signed in as/u)).toBeVisible();
 
   // Early-return guard (`if (!refreshToken) return`) — nothing should happen.
   await screen

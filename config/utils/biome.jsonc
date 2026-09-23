@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -47,7 +47,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!public", "!!config/utils/biome.json"]
+    "includes": ["**", "!public", "!!config/utils/biome.jsonc"]
   },
   "formatter": {
     "enabled": true,
@@ -102,15 +102,20 @@
         "noIdenticalTestTitle": "error",
         "noImpliedEval": "error",
         "noInlineStyles": "error",
+        "noInvalidFileInputAccept": "error",
         "noJsxLeakedDollar": "error",
         "noLoopFunc": "error",
         "noMisusedPromises": "error",
         "noNonScalableViewport": "error",
         "noRestrictedDependencies": "error",
         "noTailwindArbitraryValue": "error",
+        "noUndeclaredCustomProperties": "error",
+        "noUnmodifiedLoopCondition": "error",
         "noUnnecessaryTemplateExpression": "error",
+        "noUnsafeIframeSandbox": "error",
         "noUnsafePlusOperands": "error",
         "noUselessTypeConversion": "error",
+        "noXorAsExponentiation": "error",
         "useArraySome": "error",
         "useAwaitThenable": "error",
         "useConsistentTestIt": "error",
@@ -127,6 +132,7 @@
         "useReactAsyncServerFunction": "error",
         "useReactCompiler": "error",
         "useReactFunctionComponentDefinition": "error",
+        "useReactNamingConvention": "error",
         "useReduceTypeParameter": "error",
         "useRegexpExec": "error",
         "useRegexpTest": "error",
@@ -213,11 +219,9 @@
     {
       "includes": [
         "next.config.ts",
-        "config/utils/vitest.config.ts",
-        "config/utils/vitest.browser.config.ts",
-        "src/lib/env/**",
-        "src/lib/api/evexia/base-url.ts",
-        "src/lib/api/evexia/private/notifications/requests.ts"
+        "config/utils/vitest.config.mts",
+        "config/utils/vitest.browser.config.mts",
+        "src/lib/env/**"
       ],
       "linter": {
         "rules": {
