@@ -8,19 +8,19 @@
   },
   "devDependencies": {
     "@nolebase/vitepress-plugin-enhanced-readabilities": "2.18.2",
-    "@types/node": "^26.4.0",
-    "prettier": "^3.9.6",
-    "vitepress": "2.0.0-alpha.17",
+    "@types/node": "^26.6.3",
+    "prettier": "^3.9.9",
+    "vitepress": "2.0.0-alpha.20",
     "vitepress-plugin-back-to-top": "^1.0.1",
     "vitepress-plugin-google-analytics": "^1.0.2",
     "vitepress-plugin-group-icons": "^1.7.6",
     "vitepress-plugin-tabs": "^0.9.1",
-    "vitepress-sidebar": "^1.39.0",
-    "vue": "^3.5.42"
+    "vitepress-sidebar": "^1.40.0",
+    "vue": "^3.5.43"
   },
-  "packageManager": "pnpm@11.24.0",
+  "packageManager": "pnpm@12.8.1",
   "engines": {
-    "pnpm": ">=11",
+    "pnpm": ">=12",
     "node": ">=26"
   }
 }

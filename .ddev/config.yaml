@@ -22,4 +22,4 @@ hooks:
         ddev add-on list --installed | grep -q 'ddev-pnpm'     || ddev add-on get ddev/ddev-pnpm > /dev/null
         ddev add-on list --installed | grep -q 'ddev-taskfile' || ddev add-on get gebruederheitz/ddev-taskfile > /dev/null
   post-start:
-    - exec: pnpm install
+    - exec: pnpm install --color=always
