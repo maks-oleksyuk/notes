@@ -1,14 +1,14 @@
 --- a/core/themes/default_admin/css/components/navigation.css
 +++ b/core/themes/default_admin/css/components/navigation.css
-@@ -36,18 +36,6 @@
+@@ -36,18 +36,6 @@ html.admin-toolbar-expanded {
    }
  }
 
--body.gin--navigation {
+-body.admin--navigation {
 -  --admin-toolbar-sidebar-width: 4rem;
 -}
 -
--[data-admin-toolbar="expanded"] body.gin--navigation {
+-[data-admin-toolbar="expanded"] body.admin--navigation {
 -  --admin-toolbar-sidebar-width: 16.5rem;
 -
 -  @media (--admin-toolbar-tablet) {
@@ -21,15 +21,15 @@
    --admin-toolbar-color-white: var(--admin-color-bg-surface);
 --- a/core/themes/default_admin/css/components/navigation.pcss.css
 +++ b/core/themes/default_admin/css/components/navigation.pcss.css
-@@ -31,18 +31,6 @@
+@@ -31,18 +31,6 @@ html.admin-toolbar-expanded {
    }
  }
 
--body.gin--navigation {
+-body.admin--navigation {
 -  --admin-toolbar-sidebar-width: 4rem;
 -}
 -
--[data-admin-toolbar="expanded"] body.gin--navigation {
+-[data-admin-toolbar="expanded"] body.admin--navigation {
 -  --admin-toolbar-sidebar-width: 16.5rem;
 -
 -  @media (--admin-toolbar-tablet) {

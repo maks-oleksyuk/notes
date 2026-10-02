@@ -1,12 +1,12 @@
 {
-    "_hash": "dfdc9351e689c458459f17cce9ee4fe3e33fec2df2c120d015901c72ea1331ef",
+    "_hash": "2938910e11c03406b71848ec5c69a133e3178d22fea86c3fd115b0e1845d9fdc",
     "patches": {
         "drupal/core": [
             {
                 "package": "drupal/core",
                 "description": "#3620907: default_admin theme: logo and navigation icons don't align in the collapsed sidebar",
                 "url": "patches/default-admin-inherit-core-sidebar-width.patch",
-                "sha256": "18fb90b4dbbcca9b37a9f13ab1911f1d914c0b99c9987651377f9b97a4e170d7",
+                "sha256": "769f78565e91a362ed6df0897618fca764d5cfce83152da65f6ae919fd1f628d",
                 "depth": 2,
                 "extra": {
                     "provenance": "root"
