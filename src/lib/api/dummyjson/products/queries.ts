@@ -3,7 +3,7 @@ import { queryOptions } from '@tanstack/react-query';
 import { getProduct, getProducts, searchProducts } from './requests';
 
 /**
- * `queryOptions` factories for the products entity — same object shared
+ * `queryOptions` factories for the product entity — the same object shared
  * between a server `fetchQuery` (RSC, no hook) and a client `useQuery`.
  */
 export const productsQueries = {
