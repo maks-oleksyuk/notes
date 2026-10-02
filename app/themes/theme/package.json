@@ -23,34 +23,17 @@
     "eslint-plugin-yml": "^1.19.0",
     "globals": "^17.12.0",
     "prettier": "^3.9.9",
-    "stylelint": "^16.26.0",
-    "stylelint-config-standard": "^38.0.0",
-    "stylelint-config-standard-scss": "^14.0.0",
-    "stylelint-order": "^7.0.0",
+    "stylelint": "^17.15.0",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-config-standard-scss": "^17.0.0",
+    "stylelint-order": "^8.1.1",
     "stylelint-prettier": "^5.0.3",
-    "stylelint-scss": "^6.12.1"
+    "stylelint-scss": "^7.3.0"
   },
   "packageManager": "pnpm@12.8.2",
   "engines": {
     "pnpm": ">=12",
     "node": ">=26"
   },
-  "prettier": {
-    "singleQuote": true,
-    "proseWrap": "always",
-    "bracketSameLine": true
-  },
-  "stylelint": {
-    "extends": [
-      "stylelint-config-standard-scss",
-      "../../../web/core/.stylelintrc.json"
-    ],
-    "plugins": [
-      "stylelint-scss"
-    ],
-    "rules": {
-      "at-rule-no-unknown": null,
-      "scss/at-rule-no-unknown": true
-    }
-  }
+  "prettier": "./config/utils/.prettierrc.json"
 }

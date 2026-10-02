@@ -48,7 +48,7 @@ final readonly class EntityViewAlter {
         $label = (string) ($build[$name]['#title'] ?? $entity->get($name)->getFieldDefinition()->getLabel());
       }
       else {
-        // Pseudo-field (e.g. added via hook_entity_extra_field_info()).
+        // Pseudo-field (e.g., added via hook_entity_extra_field_info()).
         $extraFields = $this->entityFieldManager->getExtraFields($entity->getEntityTypeId(), $entity->bundle());
         $label = (string) ($build[$name]['#title'] ?? $extraFields['display'][$name]['label'] ?? $name);
       }

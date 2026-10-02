@@ -30,14 +30,14 @@ tasks:
     internal: true
     silent: true
 
-  drush:
-    desc: 'Run `drush` command.'
-    cmd: '{{.COMPOSER_BIN_DIR}}/drush {{.CLI_ARGS}}'
-    silent: true
-
   dr:
     desc: 'Run `dr` (Drupal core CLI) command.'
     cmd: '{{.COMPOSER_BIN_DIR}}/dr {{.CLI_ARGS}}'
+    silent: true
+
+  drush:
+    desc: 'Run `drush` command.'
+    cmd: '{{.COMPOSER_BIN_DIR}}/drush {{.CLI_ARGS}}'
     silent: true
 
   phpcs:
