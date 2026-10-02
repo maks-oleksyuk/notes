@@ -30,6 +30,11 @@ tasks:
     internal: true
     silent: true
 
+  dr:
+    desc: 'Run `dr` (Drupal core CLI) command.'
+    cmd: '{{.COMPOSER_BIN_DIR}}/dr {{.CLI_ARGS}}'
+    silent: true
+
   drush:
     desc: 'Run `drush` command.'
     cmd: '{{.COMPOSER_BIN_DIR}}/drush {{.CLI_ARGS}}'
@@ -39,22 +44,19 @@ tasks:
     desc: 'Run `phpcs` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcs -s
-      --standard={{.CONFIG_DIR}}/phpcs.xml
-      {{.CLI_ARGS}} --colors'
+      --standard={{.CONFIG_DIR}}/phpcs.xml {{.CLI_ARGS}} --colors'
     silent: true
 
   phpcbf:
     desc: 'Run `phpcbf` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcbf -s
-      --standard={{.CONFIG_DIR}}/phpcs.xml
-      {{.CLI_ARGS}} --colors'
+      --standard={{.CONFIG_DIR}}/phpcs.xml {{.CLI_ARGS}} --colors'
     silent: true
 
   phpstan:
     desc: 'Run `phpstan` command.'
     aliases:
-      - stan
       - php:stan
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpstan
@@ -64,63 +66,62 @@ tasks:
   rector:
     desc: 'Run `rector` command.'
     cmd:
-      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector
-      --config={{.CONFIG_DIR}}/rector.php {{.CLI_ARGS}} --ansi'
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/rector {{.CLI_ARGS}}
+      --config={{.CONFIG_DIR}}/rector.php --ansi'
+    aliases:
+      - r
     silent: true
 
   twig-cs:
     desc: 'Run `twig-cs-fixer` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/twig-cs-fixer
-      --config={{.CONFIG_DIR}}/.twig-cs-fixer.php
-      {{.CLI_ARGS}} --ansi'
+      --config={{.CONFIG_DIR}}/.twig-cs-fixer.php {{.CLI_ARGS}} --ansi'
     silent: true
 
   eslint:
     desc: 'Run `eslint` command.'
     cmd:
-      '{{.NODEJS_BIN_DIR}}/eslint
-      -c {{.CONFIG_DIR}}/.eslintrc.json
-      --cache --cache-location var/cache/eslint/.eslintcache
-      {{.CLI_ARGS}} --color'
+      '{{.NODEJS_BIN_DIR}}/eslint -c {{.CONFIG_DIR}}/eslint.config.mjs --cache
+      --cache-location var/cache/eslint/.eslintcache {{.CLI_ARGS}} --color'
     silent: true
 
   stylelint:
     desc: 'Run `stylelint` command.'
     cmd:
-      '{{.NODEJS_BIN_DIR}}/stylelint
-      -c {{.CONFIG_DIR}}/.stylelintrc.json
-      --cache --cache-location var/cache/stylelint
-      --aei {{.CLI_ARGS}} --color'
+      '{{.NODEJS_BIN_DIR}}/stylelint -c {{.CONFIG_DIR}}/.stylelintrc.json
+      --cache --cache-location var/cache/stylelint --aei {{.CLI_ARGS}} --color'
     silent: true
 
   prettier:
     desc: 'Run `prettier` command.'
     cmd:
       '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
-      --config={{.CONFIG_DIR}}/.prettierrc.json
-      --ignore-path={{.CONFIG_DIR}}/.prettierignore
-      --cache --cache-location=var/cache/prettier/prettier.cache'
+      --config-path={{.CONFIG_DIR}}/.prettierrc.json
+      --ignore-path={{.CONFIG_DIR}}/.prettierignore --cache
+      --cache-location=var/cache/prettier/prettier.cache'
+    aliases:
+      - prt
+    env:
+      PRETTIER_EXPERIMENTAL_CLI: 1
     silent: true
 
   cspell:
     desc: 'Run `cspell` command.'
     cmd:
-      '{{.NODEJS_BIN_DIR}}/cspell
-      -c {{.CONFIG_DIR}}/.cspell.json --color
-      {{.CLI_ARGS}}'
+      '{{.NODEJS_BIN_DIR}}/cspell -c {{.CONFIG_DIR}}/.cspell.json
+      --color {{.CLI_ARGS}}'
     silent: true
 
   # Work commands:
 
   cache:clear:
-    label: 'Cache clear'
-    desc: 'Rebuild Drupal caches'
+    desc: 'Rebuild all caches.'
     aliases:
       - cc
       - cr
     cmds:
-      - task: drush
+      - task: dr
         vars: { CLI_ARGS: 'cr' }
 
   install:
@@ -155,7 +156,7 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: 'u -W' }
       - task: pnpm
-        vars: { CLI_ARGS: 'up --save' }
+        vars: { CLI_ARGS: 'up --save-exact' }
 
   build-dictionary:
     desc: 'Builds a project dictionary for CSPell.'
@@ -170,6 +171,33 @@ tasks:
     cmds:
       - task: drush
         vars: { CLI_ARGS: 'generate -y phpstorm-meta' }
+
+  dump:db:
+    desc: 'Dump database into the dump/ directory.'
+    aliases:
+      - d:db
+    cmds:
+      - 'mkdir -p {{.TASKFILE_DIR}}/dump'
+      - task: drush
+        vars:
+          CLI_ARGS: >-
+            sql:dump --gzip
+            --structure-tables-list=cache,cache_*,search_index,watchdog
+            --result-file={{.TASKFILE_DIR}}/dump/db_$(date +%Y.%m.%d_%H-%M_%:::z).sql
+    silent: true
+
+  dump:files:
+    desc: 'Archive public files into the dump/ directory.'
+    aliases:
+      - d:files
+    cmds:
+      - 'mkdir -p {{.TASKFILE_DIR}}/dump'
+      - task: drush
+        vars:
+          CLI_ARGS: >-
+            ard --files
+            --destination={{.TASKFILE_DIR}}/dump/files_$(date +%Y.%m.%d_%H-%M_%:::z).tar.gz
+    silent: true
 
   # Linters:
 
@@ -186,6 +214,7 @@ tasks:
       - defer: { task: lint:twig }
       - defer: { task: lint:phpstan }
       - defer: { task: lint:phpcs }
+      - defer: { task: lint:rector }
       - defer: { task: lint:composer }
 
   lint:composer:
@@ -214,6 +243,7 @@ tasks:
       - task: phpcs
         vars: { CLI_ARGS: '--version' }
       - task: phpcs
+        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
 
   lint:phpstan:
     desc: 'Analyze PHP code for bugs and errors.'
@@ -227,7 +257,7 @@ tasks:
       - task: phpstan
         vars: { CLI_ARGS: '-V' }
       - task: phpstan
-        vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}} || true' } # update when add php code
+        vars: { CLI_ARGS: 'analyze {{.CLI_ARGS}}' }
 
   lint:rector:
     desc: 'Check for Rector refactoring suggestions.'
@@ -291,7 +321,7 @@ tasks:
       - task: eslint
         vars: { CLI_ARGS: '-v' }
       - task: eslint
-        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '"**/*.{js,mjs,cjs}" {{.CLI_ARGS}}' }
 
   lint:yml:
     desc: 'Lint Y(A)ML files.'
@@ -305,7 +335,7 @@ tasks:
       - task: eslint
         vars: { CLI_ARGS: '-v' }
       - task: eslint
-        vars: { CLI_ARGS: '--ext .yml --ext .yaml {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '"**/*.{yml,yaml}" {{.CLI_ARGS}}' }
 
   lint:spellcheck:
     desc: 'Check for spelling issues.'
@@ -326,12 +356,13 @@ tasks:
     aliases:
       - f
     cmds:
-      - defer: { task: fix:phpcs }
+      - defer: { task: fix:prettier }
       - defer: { task: fix:js }
       - defer: { task: fix:css }
       - defer: { task: fix:yml }
       - defer: { task: fix:twig }
-      - defer: { task: fix:prettier }
+      - defer: { task: fix:phpcs }
+      - defer: { task: fix:rector }
       - defer: { task: fix:composer }
 
   fix:composer:
@@ -344,7 +375,7 @@ tasks:
       - task: composer
         vars: { CLI_ARGS: '-V' }
       - task: composer
-        vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
+        vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader --no-install' }
       - task: composer
         vars: { CLI_ARGS: 'bump' }
 
@@ -399,7 +430,7 @@ tasks:
       - task: prettier
         vars: { CLI_ARGS: '-v' }
       - task: prettier
-        vars: { CLI_ARGS: 'app -wl' }
+        vars: { CLI_ARGS: 'app -w' }
 
   fix:css:
     desc: 'Auto-fix CSS/SCSS issues.'
@@ -423,7 +454,7 @@ tasks:
       - task: eslint
         vars: { CLI_ARGS: '-v' }
       - task: eslint
-        vars: { CLI_ARGS: '--fix' }
+        vars: { CLI_ARGS: '"**/*.{js,mjs,cjs}" --fix' }
 
   fix:yml:
     desc: 'Auto-fix Y(A)ML formatting.'
@@ -435,4 +466,4 @@ tasks:
       - task: eslint
         vars: { CLI_ARGS: '-v' }
       - task: lint:yml
-        vars: { CLI_ARGS: '--fix' }
+        vars: { CLI_ARGS: '"**/*.{yml,yaml}" --fix' }

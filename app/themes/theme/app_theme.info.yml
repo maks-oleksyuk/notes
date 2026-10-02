@@ -1,0 +1,22 @@
+name: 'App: Theme'
+description: 'A theme for the App and for experiments.'
+type: theme
+package: App
+base theme: starterkit_theme
+core_version_requirement: ^11 || ^12
+
+regions:
+  banner: 'Banner'
+  header: 'Header'
+  nav_main: 'Primary menu'
+  nav_additional: 'Secondary menu'
+  hero: 'Hero (full width)'
+  breadcrumb: 'Breadcrumb'
+  messages: 'Messages'
+  content_above: 'Content Above'
+  content: 'Content'
+  content_below: 'Content Below'
+  footer: 'Footer'
+
+libraries:
+  - app_theme/base

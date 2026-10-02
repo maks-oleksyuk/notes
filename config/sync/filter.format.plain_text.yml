@@ -1,7 +1,7 @@
 uuid: 24aba0ef-8ad6-4f1e-aa29-930845a1edfe
 langcode: en
 status: true
-dependencies: {  }
+dependencies: {}
 _core:
   default_config_hash: NIKBt6kw_uPhNI0qtR2DnRf7mSOgAQdx7Q94SKMjXbQ
 name: 'Plain text'
@@ -13,13 +13,13 @@ filters:
     provider: filter
     status: true
     weight: 0
-    settings: {  }
+    settings: {}
   filter_html_escape:
     id: filter_html_escape
     provider: filter
     status: true
     weight: -10
-    settings: {  }
+    settings: {}
   filter_url:
     id: filter_url
     provider: filter
