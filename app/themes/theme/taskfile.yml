@@ -3,6 +3,7 @@ version: 3
 vars:
   NODEJS_BIN_DIR: '{{.TASKFILE_DIR}}/node_modules/.bin'
   CACHE_DIR: '{{.TASKFILE_DIR}}/var/cache'
+  CONFIG_DIR: '{{.TASKFILE_DIR}}/config/utils'
 
 tasks:
   default:
@@ -19,8 +20,8 @@ tasks:
   eslint:
     desc: 'Run `eslint` command.'
     cmd:
-      '{{.NODEJS_BIN_DIR}}/eslint --no-error-on-unmatched-pattern --cache
-      --cache-location {{.CACHE_DIR}}/eslint/.eslintcache {{.CLI_ARGS}} --color'
+      '{{.NODEJS_BIN_DIR}}/eslint -c {{.CONFIG_DIR}}/eslint.config.mjs --no-error-on-unmatched-pattern
+      --cache --cache-location {{.CACHE_DIR}}/eslint/.eslintcache {{.CLI_ARGS}} --color'
     silent: true
 
   stylelint:

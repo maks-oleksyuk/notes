@@ -44,16 +44,14 @@ tasks:
     desc: 'Run `phpcs` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcs -s
-      --standard={{.CONFIG_DIR}}/phpcs.xml
-      {{.CLI_ARGS}} --colors'
+      --standard={{.CONFIG_DIR}}/phpcs.xml {{.CLI_ARGS}} --colors'
     silent: true
 
   phpcbf:
     desc: 'Run `phpcbf` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpcbf -s
-      --standard={{.CONFIG_DIR}}/phpcs.xml
-      {{.CLI_ARGS}} --colors'
+      --standard={{.CONFIG_DIR}}/phpcs.xml {{.CLI_ARGS}} --colors'
     silent: true
 
   phpstan:
@@ -78,26 +76,21 @@ tasks:
     desc: 'Run `twig-cs-fixer` command.'
     cmd:
       '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/twig-cs-fixer
-      --config={{.CONFIG_DIR}}/.twig-cs-fixer.php
-      {{.CLI_ARGS}} --ansi'
+      --config={{.CONFIG_DIR}}/.twig-cs-fixer.php {{.CLI_ARGS}} --ansi'
     silent: true
 
   eslint:
     desc: 'Run `eslint` command.'
     cmd:
-      '{{.NODEJS_BIN_DIR}}/eslint
-      -c {{.CONFIG_DIR}}/.eslintrc.json
-      --cache --cache-location var/cache/eslint/.eslintcache
-      {{.CLI_ARGS}} --color'
+      '{{.NODEJS_BIN_DIR}}/eslint -c {{.CONFIG_DIR}}/eslint.config.mjs --cache
+      --cache-location var/cache/eslint/.eslintcache {{.CLI_ARGS}} --color'
     silent: true
 
   stylelint:
     desc: 'Run `stylelint` command.'
     cmd:
-      '{{.NODEJS_BIN_DIR}}/stylelint
-      -c {{.CONFIG_DIR}}/.stylelintrc.json
-      --cache --cache-location var/cache/stylelint
-      --aei {{.CLI_ARGS}} --color'
+      '{{.NODEJS_BIN_DIR}}/stylelint -c {{.CONFIG_DIR}}/.stylelintrc.json
+      --cache --cache-location var/cache/stylelint --aei {{.CLI_ARGS}} --color'
     silent: true
 
   prettier:
@@ -105,8 +98,8 @@ tasks:
     cmd:
       '{{.NODEJS_BIN_DIR}}/prettier {{.CLI_ARGS}}
       --config-path={{.CONFIG_DIR}}/.prettierrc.json
-      --ignore-path={{.CONFIG_DIR}}/.prettierignore
-      --cache --cache-location=var/cache/prettier/prettier.cache'
+      --ignore-path={{.CONFIG_DIR}}/.prettierignore --cache
+      --cache-location=var/cache/prettier/prettier.cache'
     aliases:
       - prt
     env:
@@ -116,9 +109,8 @@ tasks:
   cspell:
     desc: 'Run `cspell` command.'
     cmd:
-      '{{.NODEJS_BIN_DIR}}/cspell
-      -c {{.CONFIG_DIR}}/.cspell.json --color
-      {{.CLI_ARGS}}'
+      '{{.NODEJS_BIN_DIR}}/cspell -c {{.CONFIG_DIR}}/.cspell.json
+      --color {{.CLI_ARGS}}'
     silent: true
 
   # Work commands:
@@ -329,7 +321,7 @@ tasks:
       - task: eslint
         vars: { CLI_ARGS: '-v' }
       - task: eslint
-        vars: { CLI_ARGS: '{{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '"**/*.{js,mjs,cjs}" {{.CLI_ARGS}}' }
 
   lint:yml:
     desc: 'Lint Y(A)ML files.'
@@ -343,7 +335,7 @@ tasks:
       - task: eslint
         vars: { CLI_ARGS: '-v' }
       - task: eslint
-        vars: { CLI_ARGS: '--ext .yml --ext .yaml {{.CLI_ARGS}}' }
+        vars: { CLI_ARGS: '"**/*.{yml,yaml}" {{.CLI_ARGS}}' }
 
   lint:spellcheck:
     desc: 'Check for spelling issues.'
@@ -462,7 +454,7 @@ tasks:
       - task: eslint
         vars: { CLI_ARGS: '-v' }
       - task: eslint
-        vars: { CLI_ARGS: '--fix' }
+        vars: { CLI_ARGS: '"**/*.{js,mjs,cjs}" --fix' }
 
   fix:yml:
     desc: 'Auto-fix Y(A)ML formatting.'
@@ -474,4 +466,4 @@ tasks:
       - task: eslint
         vars: { CLI_ARGS: '-v' }
       - task: lint:yml
-        vars: { CLI_ARGS: '--fix' }
+        vars: { CLI_ARGS: '"**/*.{yml,yaml}" --fix' }
