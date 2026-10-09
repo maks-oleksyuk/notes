@@ -1,8 +1,9 @@
 // Import from `@/lib/http-client/core` / `@/lib/http-client/plugins` directly —
 // a barrel that re-exported both core and this client would be a circular
 // import (review.md A4); the root barrel was removed for exactly that reason.
+import { sharedEnv } from '@/lib/env/shared';
 import { HttpClient } from '@/lib/http-client/core';
-import { logger } from '@/lib/http-client/plugins';
+import { logger, resolveLevel } from '@/lib/http-client/plugins';
 
 import { getDummyJsonBaseUrl } from './base-url';
 
@@ -17,5 +18,10 @@ import { getDummyJsonBaseUrl } from './base-url';
 export const dummyJsonServerApi = new HttpClient(getDummyJsonBaseUrl(), {
   timeout: 10_000,
   retry: { limit: 3 },
-  plugins: [logger({ level: 'info', prefix: 'dummyjson:server' })],
+  plugins: [
+    logger({
+      level: resolveLevel(sharedEnv().DUMMYJSON_API_LOG_LEVEL),
+      prefix: 'dummyjson:server',
+    }),
+  ],
 });

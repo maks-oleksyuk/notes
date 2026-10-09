@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { ApiError } from '@/lib/http-client/core';
 import { logger } from '@/lib/http-client/plugins';
 
 import type { ApiRequestOptions, ApiResponse } from '@/lib/http-client/core';
@@ -11,6 +12,16 @@ function fakeLogger() {
     warn: vi.fn(),
     error: vi.fn(),
   };
+}
+
+function apiError(status: number) {
+  return new ApiError(`HTTP Error ${status}`, {
+    status,
+    statusText: '',
+    url: 'https://api.test/x',
+    method: 'GET',
+    data: {},
+  });
 }
 
 function options(
@@ -162,7 +173,6 @@ describe('logger plugin', () => {
   });
 
   it('includes status/data in the metadata when the error is an ApiError (e.g. a 422 validation body)', async () => {
-    const { ApiError } = await import('@/lib/http-client/core');
     const custom = fakeLogger();
     const plugin = logger({ level: 'error', logger: custom });
 
@@ -404,5 +414,55 @@ describe('logger plugin', () => {
     const [msg] = custom.info.mock.calls[0];
     expect(msg).not.toContain('Retry-After');
     expect(msg).toContain('GET');
+  });
+
+  describe('expectedStatuses', () => {
+    it('logs an expected status at info level, not as an error', async () => {
+      const custom = fakeLogger();
+      const plugin = logger({ level: 'info', logger: custom });
+
+      await plugin.onFinalError?.(
+        apiError(404),
+        options({ expectedStatuses: [404] }),
+      );
+
+      expect(custom.error).not.toHaveBeenCalled();
+      expect(custom.info).toHaveBeenCalledOnce();
+      expect(custom.info.mock.calls[0][0]).toContain('(expected)');
+    });
+
+    it('still logs an unlisted status as an error', async () => {
+      const custom = fakeLogger();
+      const plugin = logger({ level: 'info', logger: custom });
+
+      await plugin.onFinalError?.(
+        apiError(500),
+        options({ expectedStatuses: [404] }),
+      );
+
+      expect(custom.error).toHaveBeenCalledOnce();
+    });
+
+    it('still logs a 404 as an error when the caller did not expect it', async () => {
+      const custom = fakeLogger();
+      const plugin = logger({ level: 'info', logger: custom });
+
+      await plugin.onFinalError?.(apiError(404), options());
+
+      expect(custom.error).toHaveBeenCalledOnce();
+    });
+
+    it('is silent for an expected status below info level', async () => {
+      const custom = fakeLogger();
+      const plugin = logger({ level: 'error', logger: custom });
+
+      await plugin.onFinalError?.(
+        apiError(404),
+        options({ expectedStatuses: [404] }),
+      );
+
+      expect(custom.error).not.toHaveBeenCalled();
+      expect(custom.info).not.toHaveBeenCalled();
+    });
   });
 });
