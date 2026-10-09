@@ -2,8 +2,6 @@ import {
   HeadlessMantineProvider,
   SegmentedControl as MantineSegmentedControl,
 } from '@mantine/core';
-// biome-ignore lint/correctness/noUnresolvedImports: false positive, Suspense is exported by React
-import { Suspense } from 'react';
 
 import { segmentedControlVariants } from './segmented-control.styles';
 
@@ -20,20 +18,18 @@ export function SegmentedControl(props: SegmentedControlProps) {
   const classNames = segmentedControlVariants(props);
 
   return (
-    <Suspense>
-      <HeadlessMantineProvider>
-        <MantineSegmentedControl
-          {...props}
-          className={classNames.root({ className: props.className })}
-          classNames={{
-            control: classNames.control(),
-            input: classNames.input(),
-            label: classNames.label(),
-            indicator: classNames.indicator(),
-            innerLabel: classNames.innerLabel(),
-          }}
-        />
-      </HeadlessMantineProvider>
-    </Suspense>
+    <HeadlessMantineProvider>
+      <MantineSegmentedControl
+        {...props}
+        className={classNames.root({ className: props.className })}
+        classNames={{
+          control: classNames.control(),
+          input: classNames.input(),
+          label: classNames.label(),
+          indicator: classNames.indicator(),
+          innerLabel: classNames.innerLabel(),
+        }}
+      />
+    </HeadlessMantineProvider>
   );
 }

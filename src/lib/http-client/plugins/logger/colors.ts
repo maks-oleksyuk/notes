@@ -1,5 +1,3 @@
-import { sharedEnv } from '@/lib/env/shared';
-
 const codes = {
   red: '\x1b[31m',
   green: '\x1b[32m',
@@ -38,7 +36,8 @@ const ANSI_RE = /\x1b\[(?<code>\d+)m/gu;
 export function supportsColor(): boolean {
   return (
     typeof process !== 'undefined' &&
-    !sharedEnv().NO_COLOR &&
+    // biome-ignore lint/style/noProcessEnv: NO_COLOR is a generic convention, not a project var.
+    !process.env.NO_COLOR &&
     Boolean(process.stdout?.isTTY)
   );
 }

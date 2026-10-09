@@ -65,6 +65,13 @@ export interface ApiRequestOptions
   refreshedToken?: string;
 
   /**
+   * HTTP statuses the caller treats as a normal answer (e.g., 404 = "no report yet") and
+   * handles itself. They still throw, but the logger records them as a muted info line
+   * instead of a red error, so the browser console / Next dev overlay isn't flooded.
+   */
+  expectedStatuses?: number[];
+
+  /**
    * Retry policy for transient failures. Omit or set `false` to disable.
    * Retries live in the core request loop, not in a plugin.
    */
