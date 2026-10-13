@@ -52,6 +52,11 @@ tasks:
     cmd: '{{.NODEJS_BIN_DIR}}/vitest --config {{.CONFIG_DIR}}/vitest.browser.config.mts {{.CLI_ARGS}}'
     silent: true
 
+  playwright:
+    desc: 'Run `playwright` command.'
+    cmd: '{{.NODEJS_BIN_DIR}}/playwright {{.CLI_ARGS}}'
+    silent: true
+
   # Work commands:
 
   build:
@@ -212,3 +217,12 @@ tasks:
     cmds:
       - task: vitest:browser
         vars: { CLI_ARGS: 'watch --ui --browser.headless=false {{.CLI_ARGS}}' }
+
+  test:e2e:
+    desc: 'Run Playwright e2e suite'
+    aliases:
+      - t:e
+      - t:e2e
+    cmds:
+      - task: playwright
+        vars: { CLI_ARGS: 'test --config {{.CONFIG_DIR}}/playwright.config.mts {{.CLI_ARGS}}' }

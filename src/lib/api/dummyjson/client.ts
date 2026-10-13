@@ -2,7 +2,6 @@
 // a barrel that re-exported both core and this client would be a circular
 // import (review.md A4); the root barrel was removed for exactly that reason.
 
-
 import { sharedEnv } from '@/lib/env/shared';
 import { HttpClient } from '@/lib/http-client/core';
 import { auth, logger, resolveLevel, sentry } from '@/lib/http-client/plugins';
@@ -33,7 +32,7 @@ export const dummyJsonApi = new HttpClient(getDummyJsonBaseUrl(), {
   ],
 });
 
-/** Only what callers (e.g. a `queries.ts` threading a TanStack Query `signal`)
+/** Only what callers (e.g., a `queries.ts` threading a TanStack Query `signal`)
  * need to override per call — not the full `ApiRequestOptions`, so a caller
  * can't accidentally clobber `params` an entity's request already sets. */
 export type RequestOverrides = Pick<ApiRequestOptions, 'signal'>;

@@ -50,8 +50,8 @@ jobs:
       matrix:
         command:
           - { name: '🗜 TS Types', command: 'lint:type' }
-          - { name: '🫐 Biome', command: 'lint:biome -- --reporter=github' }
-          - { name: '✂️ Knip', command: 'lint:knip -- --reporter github-actions' }
+          - { name: '🫐 Biome',    command: 'lint:biome -- --reporter=github' }
+          - { name: '✂️ Knip',     command: 'lint:knip  -- --reporter github-actions' }
 
     steps:
       - name: '🛎 Checkout'
@@ -78,6 +78,7 @@ jobs:
         command:
           - { name: '🔬 Unit',    command: 'test:unit',    report: true }
           - { name: '🖥 Browser', command: 'test:browser', report: true }
+          - { name: '🌐 E2E',     command: 'test:e2e',     report: false }
 
     steps:
       - name: '🛎 Checkout'
@@ -89,16 +90,17 @@ jobs:
         uses: $/.github/actions/setup-environment
 
       - name: '🎭 Install Playwright Chromium'
-        if: matrix.command.command == 'test:browser'
+        if: matrix.command.command != 'test:unit'
         run: pnpm exec playwright install --with-deps --no-progress --only-shell chromium
 
       - name: '${{ matrix.command.name }} tests'
         run: task ${{ matrix.command.command }}
+        timeout-minutes: 15
         env:
           FORCE_COLOR: '1'
 
       - name: '☂️ Upload coverage report to Codecov'
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         if: ${{ matrix.command.report && !cancelled() }}
         with:
           slug: maks-oleksyuk/notes
@@ -107,7 +109,7 @@ jobs:
           directory: ./var/report/coverage
 
       - name: '☂️ Upload test results to Codecov'
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         if: ${{ matrix.command.report && !cancelled() }}
         with:
           slug: maks-oleksyuk/notes
@@ -115,3 +117,11 @@ jobs:
           flags: ${{ matrix.command.name }}
           directory: ./var/report
           report_type: test_results
+
+      - name: '📦 Upload Playwright report'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: ${{ !cancelled() && matrix.command.command == 'test:e2e' }}
+        with:
+          name: playwright-report
+          path: var/report/playwright
+          retention-days: 7

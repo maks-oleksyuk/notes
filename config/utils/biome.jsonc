@@ -282,6 +282,7 @@
         "next.config.ts",
         "config/utils/vitest.config.mts",
         "config/utils/vitest.browser.config.mts",
+        "config/utils/playwright.config.mts",
         "src/lib/env/**"
       ],
       "linter": {
