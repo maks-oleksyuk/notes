@@ -1,12 +1,16 @@
 import Image from 'next/image';
+// biome-ignore lint/correctness/noUnresolvedImports: false positive resolving the "react-server" export condition for Server Component files (no upstream issue found yet, similar to closed biomejs/biome#9143 and #9626)
+import { Suspense } from 'react';
 
-import { LocaleSwitcher } from './locale-switcher';
+import { LocaleSwitcher } from '@/components/widgets';
 
 export default function Home() {
   return (
     <div className='flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black'>
       <main className='flex min-h-screen w-full max-w-3xl flex-col items-center justify-between bg-white px-16 py-32 sm:items-start dark:bg-black'>
-        <LocaleSwitcher />
+        <Suspense>
+          <LocaleSwitcher />
+        </Suspense>
         <Image
           className='dark:invert'
           src='/next.svg'

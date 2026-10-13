@@ -1,5 +1,4 @@
 // biome-ignore-all lint/suspicious/noConsole: this file *is* the console logger — console.* is the point, not a leftover.
-import { sharedEnv } from '@/lib/env/shared';
 import { ApiError } from '@/lib/http-client/core';
 import { cleanMetadata } from '@/lib/http-client/utils/sanitize';
 
@@ -14,6 +13,8 @@ import { createLevelFilter, resolveLevel } from './levels';
 
 import type { ApiPlugin } from '@/lib/http-client/core';
 import type { LogLevel } from './levels';
+
+export { resolveLevel } from './levels';
 
 export type { LogLevel } from './levels';
 
@@ -47,11 +48,10 @@ export function logger({
 }: LoggerOptions = {}): ApiPlugin {
   const prefix = rawPrefix ? `${rawPrefix} ` : '';
 
-  // Priority: explicit option -> API_LOG_LEVEL env -> per-environment default.
-  const env = sharedEnv();
   const defaultLevel: LogLevel =
-    env.NODE_ENV === 'production' ? 'error' : 'info';
-  const level = resolveLevel(rawLevel ?? env.API_LOG_LEVEL, defaultLevel);
+    // biome-ignore lint/style/noProcessEnv: standard NODE_ENV, not a project var.
+    process.env.NODE_ENV === 'production' ? 'error' : 'info';
+  const level = resolveLevel(rawLevel, defaultLevel);
   const allow = createLevelFilter(level);
 
   // Groups render nicely in the browser but get mangled (header duplicated) by
@@ -116,8 +116,8 @@ export function logger({
   // colorless, since a browser has no process.stdout).
   const isColorEnabled = !customLogger && (isBrowser || supportsColor());
 
-  // Correlates the three lines of one request when logs from parallel requests
-  // interleave. Empty when the request has no id.
+  // Correlates the three lines of one request when logs from parallel requests interleave.
+  // Empty when the request has no id.
   const tag = (id?: string) =>
     id ? `${paint(`[${id}]`, 'gray', isColorEnabled)} ` : '';
 
@@ -206,7 +206,7 @@ export function logger({
       // An aborted request is a caller-initiated cancellation, not a failure —
       // TanStack Query aborts the in-flight query when its component unmounts or
       // re-renders. (React 19 Strict Mode double-invokes effects in dev, so the
-      // first request is routinely canceled and a second one succeeds.) Don't
+      // first request is routinely canceled, and a second one succeeds.) Don't
       // red-flag it as an error, but still close the request's lifecycle with a
       // muted line at info level — otherwise its `-->` line has no matching
       // terminus and looks like it silently vanished.
@@ -220,9 +220,25 @@ export function logger({
         return;
       }
 
+      // The caller handles a status the caller declared as an expected answer ('expectedStatuses')
+      // — close the request's lifecycle at info level rather than flagging it red.
+      if (
+        error instanceof ApiError &&
+        options.expectedStatuses?.includes(error.status)
+      ) {
+        if (!allow('info')) return;
+        const arrow = paint('<--', 'gray', isColorEnabled);
+        const status = colorizeStatus(error.status, isColorEnabled);
+        const label = paint('(expected)', 'gray', isColorEnabled);
+        logFn(
+          `${prefix}${tag(options.requestId)}${arrow} ${colorizeMethod(method, isColorEnabled)} ${path} ${status} ${label}`,
+        );
+        return;
+      }
+
       if (!allow('error')) return;
 
-      // `ApiError.data` is the server's actual response body (e.g. a Laravel
+      // `ApiError.data` is the server's actual response body (e.g., a Laravel
       // 422's `{message, errors: {field: [msg,...]}}`) — without it, a
       // validation failure only ever showed as "HTTP Error 422", no way to
       // tell which field or why without re-triggering the request under a

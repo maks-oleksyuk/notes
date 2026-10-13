@@ -1,4 +1,4 @@
-import { withSentryConfig } from '@sentry/nextjs';
+import { withSentryConfig } from '@sentry/nextjs/config';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 import type { NextConfig } from 'next';
@@ -19,6 +19,8 @@ const getBrowserLogging: () => boolean | 'warn' | 'error' = ():
 const nextConfig: NextConfig = {
   output: 'standalone',
   reactCompiler: true,
+  cacheComponents: true,
+  partialPrefetching: true,
   allowedDevOrigins: ['*.ddev.site'],
   logging: {
     browserToTerminal: getBrowserLogging(),
@@ -31,6 +33,8 @@ const nextConfig: NextConfig = {
     useTypeScriptCli: true,
     optimizePackageImports: ['@mantine/core', '@mantine/hooks'],
     turbopackRustReactCompiler: true,
+    turbopackGc: true,
+    turbopackLazyDynamicImports: true,
   },
 };
 
