@@ -14,4 +14,8 @@ export default [
       'taskfile.yml',
     ],
   },
+  {
+    files: ['**/*.{yml,yaml}'],
+    rules: { 'prettier/prettier': 'off' },
+  },
 ];

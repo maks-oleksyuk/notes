@@ -11,8 +11,7 @@
         "app/theme": "^1.0@dev",
         "drupal/core-composer-scaffold": "^12.0@beta",
         "drupal/core-recommended": "^12.0@beta",
-        "drush/drush": "^14@dev",
-        "skilldlabs/drupal-cleanup": "^1.4"
+        "drush/drush": "^14@dev"
     },
     "require-dev": {
         "chi-teck/drupal-coder-extension": "^2.1.1",
@@ -44,7 +43,6 @@
             "drupal/core-composer-scaffold": true,
             "php-http/discovery": true,
             "phpstan/extension-installer": true,
-            "skilldlabs/drupal-cleanup": true,
             "symfony/runtime": true,
             "tbachert/spi": true
         },
@@ -61,26 +59,6 @@
             "drupal/core": {
                 "#3620907: default_admin theme: logo and navigation icons don't align in the collapsed sidebar": "patches/default-admin-inherit-core-sidebar-width.patch"
             }
-        },
-        "drupal-cleanup": {
-            "drupal-core": [
-                "tests",
-                "modules/*/tests",
-                "modules/*/src/Tests",
-                "themes/*/tests",
-                "themes/*/src/Tests",
-                "profiles/demo_umami",
-                "profiles/*test*",
-                "profiles/*/tests"
-            ],
-            "drupal-module": [
-                "tests",
-                "src/Tests"
-            ],
-            "drupal-theme": [
-                "tests",
-                "src/Tests"
-            ]
         },
         "drupal-scaffold": {
             "file-mapping": {

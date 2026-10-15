@@ -72,7 +72,7 @@ jobs:
             }
           - {
               name: '🔍 PHPStan',
-              command: 'lint:phpstan',
+              command: 'lint:phpstan -- --no-progress',
               php: true,
             }
           - {
@@ -83,7 +83,7 @@ jobs:
             }
           - {
               name: '🏠 Rector',
-              command: 'lint:rector',
+              command: 'lint:rector -- --no-progress-bar',
               php: true,
             }
           - {

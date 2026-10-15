@@ -41,7 +41,6 @@ return RectorConfig::configure()
     typeDeclarationDocblocks: true,
     instanceOf: true,
     earlyReturn: true,
-    carbon: true,
   )
   ->withAutoloadPaths([
     $drupalRoot . '/core',
