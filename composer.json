@@ -21,7 +21,8 @@
         "vincentlanglet/twig-cs-fixer": "^4.1.1"
     },
     "conflict": {
-        "drupal/drupal": "*"
+        "drupal/drupal": "*",
+        "phpstan/phpstan": ">=2.3.4"
     },
     "repositories": [
         {
@@ -57,7 +58,8 @@
     "extra": {
         "patches": {
             "drupal/core": {
-                "#3620907: default_admin theme: logo and navigation icons don't align in the collapsed sidebar": "patches/default-admin-inherit-core-sidebar-width.patch"
+                "#3620907: default_admin theme: logo and navigation icons don't align in the collapsed sidebar": "patches/default-admin-inherit-core-sidebar-width.patch",
+                "default_admin: top bar padding is too large on mobile": "patches/default-admin-top-bar-padding.patch"
             }
         },
         "drupal-scaffold": {

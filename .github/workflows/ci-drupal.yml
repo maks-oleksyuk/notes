@@ -118,3 +118,46 @@ jobs:
 
       - name: '${{ matrix.command.name }} validate'
         run: task ${{ matrix.command.command }}
+
+  test:
+    name: '♻️ Test | ${{ matrix.command.name }}'
+    runs-on: ubuntu-latest
+    permissions: {}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        command:
+          - { name: '🔬 Unit', command: 'test:unit -- --no-progress --coverage-clover var/report/coverage.xml' }
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: '⚙️ Prepare environment'
+        uses: $/.github/actions/setup-validation
+        with:
+          use-php: true
+          coverage: xdebug
+
+      - name: '${{ matrix.command.name }} tests'
+        run: task ${{ matrix.command.command }}
+
+      - name: '☂️ Upload coverage to Codecov'
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          slug: maks-oleksyuk/notes
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.command.name }}
+          directory: ./var/report
+
+      - name: '☂️ Upload test results to Codecov'
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          slug: maks-oleksyuk/notes
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: ${{ matrix.command.name }}
+          directory: ./var/report
+          report_type: test_results

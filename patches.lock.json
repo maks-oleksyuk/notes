@@ -1,5 +1,5 @@
 {
-    "_hash": "2938910e11c03406b71848ec5c69a133e3178d22fea86c3fd115b0e1845d9fdc",
+    "_hash": "fe82edfe510f51517a5f8b6872d961352b6d7f7f56661792688d198f8be32d4c",
     "patches": {
         "drupal/core": [
             {
@@ -7,6 +7,16 @@
                 "description": "#3620907: default_admin theme: logo and navigation icons don't align in the collapsed sidebar",
                 "url": "patches/default-admin-inherit-core-sidebar-width.patch",
                 "sha256": "769f78565e91a362ed6df0897618fca764d5cfce83152da65f6ae919fd1f628d",
+                "depth": 2,
+                "extra": {
+                    "provenance": "root"
+                }
+            },
+            {
+                "package": "drupal/core",
+                "description": "default_admin: top bar padding is too large on mobile",
+                "url": "patches/default-admin-top-bar-padding.patch",
+                "sha256": "5a4604a75862cc1a73a6580bc99e542863930f467a7290649382f92b2dce7cd2",
                 "depth": 2,
                 "extra": {
                     "provenance": "root"

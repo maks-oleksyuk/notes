@@ -9,6 +9,7 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Render\Element;
 
 /**
  * Renders admin user view modes as a two-column table.
@@ -36,7 +37,8 @@ final readonly class EntityViewAlter {
 
     $rows = [];
     foreach (\array_keys($components) as $name) {
-      if (($build[$name] ?? []) === []) {
+      // Access-denied fields keep #cache; leave them in place to bubble it.
+      if (Element::isEmpty($build[$name] ?? [])) {
         continue;
       }
 
