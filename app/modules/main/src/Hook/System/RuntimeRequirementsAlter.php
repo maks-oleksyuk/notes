@@ -13,6 +13,8 @@ use Drupal\Core\Hook\Attribute\Hook;
 final class RuntimeRequirementsAlter {
 
   /**
+   * Implements hook_runtime_requirements_alter().
+   *
    * @param array<string, mixed> $requirements
    */
   public function __invoke(array &$requirements): void {

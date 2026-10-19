@@ -9,6 +9,7 @@ export default [
       'app/themes/theme/**/*',
       'config/sync/**/*',
       'local/**/*',
+      'var/**/*',
       'vendor/**/*',
       'web/**/*',
       'pnpm-lock.yaml',

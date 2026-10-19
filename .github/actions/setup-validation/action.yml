@@ -22,6 +22,11 @@ inputs:
     required: false
     default: 'false'
 
+  coverage:
+    description: 'PHP code coverage driver (none, xdebug, pcov)'
+    required: false
+    default: 'none'
+
 runs:
   using: composite
   steps:
@@ -33,7 +38,7 @@ runs:
       uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
       with:
         php-version: ${{ inputs.php }}
-        coverage: none
+        coverage: ${{ inputs.coverage }}
 
     - name: '🗃 Get composer cache directory'
       if: ${{ inputs.use-php == 'true' }}
@@ -64,7 +69,9 @@ runs:
     - name: '📦 Install composer dependencies'
       if: ${{ inputs.use-php == 'true' }}
       shell: bash
-      run: composer install --no-interaction --no-progress --no-scripts --ansi;
+      run: |
+        composer config --global preferred-install.drupal/core source
+        composer install --no-interaction --no-progress --no-scripts --ansi
 
     - name: '🟧 Setup pnpm & Node.js ${{ inputs.node }}'
       if: ${{ inputs.use-node == 'true' }}

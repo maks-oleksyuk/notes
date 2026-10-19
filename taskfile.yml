@@ -63,6 +63,13 @@ tasks:
       --configuration={{.CONFIG_DIR}}/phpstan.neon {{.CLI_ARGS}} --ansi'
     silent: true
 
+  phpunit:
+    desc: 'Run `phpunit` command.'
+    cmd:
+      '{{.PHP_BIN}} {{.COMPOSER_BIN_DIR}}/phpunit
+      --configuration={{.CONFIG_DIR}}/phpunit.xml {{.CLI_ARGS}} --colors=always'
+    silent: true
+
   rector:
     desc: 'Run `rector` command.'
     cmd:
@@ -346,6 +353,25 @@ tasks:
         vars: { CLI_ARGS: '--version' }
       - task: cspell
         vars: { CLI_ARGS: '--no-progress "**" {{.CLI_ARGS}}' }
+
+  # Testing:
+
+  test:
+    desc: 'Run project tests.'
+    aliases:
+      - t
+    cmds:
+      - defer: { task: test:unit }
+
+  test:unit:
+    desc: 'Run unit tests.'
+    aliases:
+      - t:u
+      - t:unit
+      - test:u
+    cmds:
+      - task: phpunit
+        vars: { CLI_ARGS: '--testsuite=Unit {{.CLI_ARGS}}' }
 
   # Fixing:
 

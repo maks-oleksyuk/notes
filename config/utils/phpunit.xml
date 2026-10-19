@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../../vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="../../web/core/tests/bootstrap.php"
+         cacheDirectory="../../var/cache/phpunit"
+         colors="true"
+         failOnWarning="true"
+         failOnRisky="true"
+         failOnNotice="true"
+         failOnDeprecation="true"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>../../app/modules/*/tests/src/Unit</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>../../app/modules</directory>
+        </include>
+        <exclude>
+            <directory>../../app/modules/*/tests</directory>
+        </exclude>
+    </source>
+    <logging>
+        <junit outputFile="../../var/report/junit.xml"/>
+    </logging>
+</phpunit>
