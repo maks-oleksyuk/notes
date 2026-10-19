@@ -1,0 +1,45 @@
+# Version control
+.git
+.github
+.gitignore
+.gitattributes
+
+# Dependencies & generated (installed/built during build)
+vendor
+web
+recipes
+**/node_modules
+**/dist
+
+# Docker & deploy config
+.ddev
+.docker
+!.docker/dev/php/entrypoint.d
+.dokploy
+
+# IDE & editor
+.idea
+.vscode
+.editorconfig
+
+# QA & lint tooling config
+config/utils
+package.json
+pnpm-lock.yaml
+
+# Runtime & cache
+var
+**/var
+private
+
+# Environment (personal)
+.env*
+
+# Docs & misc
+*.md
+local
+*.sql
+*.gz
+
+# OS files
+**/.DS_Store

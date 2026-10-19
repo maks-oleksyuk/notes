@@ -8,6 +8,7 @@ export default [
       '.github/**/*',
       'app/themes/theme/**/*',
       'config/sync/**/*',
+      'local/**/*',
       'vendor/**/*',
       'web/**/*',
       'pnpm-lock.yaml',

@@ -37,7 +37,7 @@ tasks:
 
   drush:
     desc: 'Run `drush` command.'
-    cmd: '{{.COMPOSER_BIN_DIR}}/drush {{.CLI_ARGS}}'
+    cmd: '{{.COMPOSER_BIN_DIR}}/drush {{.CLI_ARGS}} --ansi'
     silent: true
 
   phpcs:
