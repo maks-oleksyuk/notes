@@ -4,7 +4,7 @@
   "import": [
     "../../web/core/.cspell.json"
   ],
-  "dictionaries": ["project"],
+  "dictionaries": ["project", "npm"],
   "dictionaryDefinitions": [
     {
       "name": "project",
@@ -19,12 +19,12 @@
     "../../local/**",
     "../../private/**",
     "../../public/**",
-    "../../var/**",
     "../../vendor/**",
     "../../web/**",
     "../../taskfile.yml",
     "node_modules",
     "**/*.sql",
+    "**/*/var/**",
     "**/*/composer.json",
     "**/*/composer.lock",
     "**/*/package.json",

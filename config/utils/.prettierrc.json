@@ -4,5 +4,13 @@
   "singleQuote": true,
   "trailingComma": "all",
   "bracketSameLine": true,
-  "proseWrap": "always"
+  "proseWrap": "always",
+  "overrides": [
+    {
+      "files": ["*.yml", "*.yaml"],
+      "options": {
+        "printWidth": 120
+      }
+    }
+  ]
 }

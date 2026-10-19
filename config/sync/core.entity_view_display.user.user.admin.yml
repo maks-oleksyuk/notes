@@ -1,0 +1,15 @@
+uuid: 2c857deb-7a51-4197-9bdc-bf0a7a6397fa
+langcode: en
+status: false
+dependencies:
+  config:
+    - core.entity_view_mode.user.admin
+  module:
+    - user
+id: user.user.admin
+targetEntityType: user
+bundle: user
+mode: admin
+content: {}
+hidden:
+  member_for: true
