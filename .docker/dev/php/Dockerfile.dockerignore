@@ -24,6 +24,7 @@ recipes
 
 # QA & lint tooling config
 config/utils
+app/**/tests
 package.json
 pnpm-lock.yaml
 

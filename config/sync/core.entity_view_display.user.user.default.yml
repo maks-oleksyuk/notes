@@ -10,4 +10,5 @@ bundle: user
 mode: default
 content: {}
 hidden:
+  created: true
   member_for: true

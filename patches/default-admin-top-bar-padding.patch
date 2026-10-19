@@ -1,0 +1,53 @@
+diff --git a/core/themes/default_admin/css/layout/top-bar.css b/core/themes/default_admin/css/layout/top-bar.css
+--- a/core/themes/default_admin/css/layout/top-bar.css
++++ b/core/themes/default_admin/css/layout/top-bar.css
+@@ -23,9 +23,17 @@
+   border-block-end: 1px solid var(--admin-color-border-soft);
+   background: color-mix(in lch, var(--admin-color-bg-surface) 80%, transparent);
+   box-shadow: none;
+-  padding-inline: calc(var(--admin-toolbar-sidebar-width) + var(--admin-space-m)) var(--admin-space-m);
++  padding-inline: var(--admin-space-m);
+   padding-block: var(--admin-space-3xs);
+   backdrop-filter: blur(0.75rem);
++
++  @media (min-width: 64em) {
++    /* :dir(rtl) beats the navigation module's [dir="rtl"] override. */
++    &,
++    &:dir(rtl) {
++      padding-inline: calc(var(--admin-toolbar-sidebar-width) + var(--admin-space-m)) var(--admin-space-m);
++    }
++  }
+ 
+   .high-contrast-mode & {
+     background: var(--admin-color-bg-surface);
+diff --git a/core/themes/default_admin/css/layout/top-bar.pcss.css b/core/themes/default_admin/css/layout/top-bar.pcss.css
+--- a/core/themes/default_admin/css/layout/top-bar.pcss.css
++++ b/core/themes/default_admin/css/layout/top-bar.pcss.css
+@@ -3,6 +3,8 @@
+  * Navigation top bar layout styles.
+  */
+ 
++@import "../base/media-queries.pcss.css";
++
+ /* cspell:ignore xxxs */
+ :root {
+   --drupal-displace-offset-top: 64px;
+@@ -16,9 +18,17 @@
+   border-block-end: 1px solid var(--admin-color-border-soft);
+   background: color-mix(in lch, var(--admin-color-bg-surface) 80%, transparent);
+   box-shadow: none;
+-  padding-inline: calc(var(--admin-toolbar-sidebar-width) + var(--admin-space-m)) var(--admin-space-m);
++  padding-inline: var(--admin-space-m);
+   padding-block: var(--admin-space-3xs);
+   backdrop-filter: blur(12px);
++
++  @media (--admin-large) {
++    /* :dir(rtl) beats the navigation module's [dir="rtl"] override. */
++    &,
++    &:dir(rtl) {
++      padding-inline: calc(var(--admin-toolbar-sidebar-width) + var(--admin-space-m)) var(--admin-space-m);
++    }
++  }
+ 
+   .high-contrast-mode & {
+     background: var(--admin-color-bg-surface);

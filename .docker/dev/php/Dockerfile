@@ -13,19 +13,18 @@ COPY app/themes/theme/ ./
 
 RUN FORCE_COLOR=1 pnpm build
 
-FROM serversideup/php:8.5-fpm-nginx
+FROM serversideup/php:8.5-fpm-nginx-alpine
 
 ENV NGINX_WEBROOT=/var/www/html/web \
     PHP_OPCACHE_ENABLE=1
 
 USER root
 
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update \
- && apt-get install -y --no-install-recommends git \
+RUN docker-php-serversideup-dep-install-alpine git mariadb-client \
  && install-php-extensions gd intl \
  && curl -fsSL https://taskfile.dev/install.sh | sh -s -- -b /usr/local/bin
+
+COPY --chmod=755 .docker/dev/php/entrypoint.d/ /etc/entrypoint.d/
 
 USER www-data
 
@@ -41,5 +40,3 @@ COPY --chown=www-data:www-data --from=theme /theme/dist app/themes/theme/dist
 RUN mkdir -p web/sites/default/files private \
  && chmod 444 web/sites/default/settings.php \
  && chmod 555 web/sites/default
-
-COPY --chown=www-data:www-data --chmod=755 .docker/dev/php/entrypoint.d/70-post-start.sh /etc/entrypoint.d/70-post-start.sh

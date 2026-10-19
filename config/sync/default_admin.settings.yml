@@ -10,7 +10,7 @@ features:
 logo:
   use_default: true
 preset_accent_color: green
-preset_focus_color: gin
+preset_focus_color: default
 enable_dark_mode: '1'
 high_contrast_mode: false
 accent_color: ''

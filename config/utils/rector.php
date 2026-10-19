@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use DrupalFinder\DrupalFinderComposerRuntime;
-use DrupalRector\Set\DrupalSetProvider;
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\ValueObject\PhpVersion;
@@ -25,9 +24,9 @@ return RectorConfig::configure()
   ])
   ->withPhpVersion(PhpVersion::PHP_85)
   ->withPhpSets(php85: true)
-  ->withSetProviders(DrupalSetProvider::class)
   ->withComposerBased(
     twig: true,
+    phpunit: true,
     drupal: true,
   )
   ->withImportNames(

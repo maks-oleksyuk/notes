@@ -4,7 +4,7 @@
          xsi:noNamespaceSchemaLocation="../../vendor/squizlabs/php_codesniffer/phpcs.xsd">
   <description>PHP Code Sniffer configuration for Notes site.</description>
   <arg name="extensions" value="php,inc,install,module,theme"/>
-  <arg name="cache" value="../../var/cache/.phpcs-cache"/>
+  <arg name="cache" value="../../var/cache/phpcs/.phpcs-cache"/>
   <arg name="parallel" value="80"/>
   <arg name="colors"/>
 

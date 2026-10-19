@@ -12,4 +12,5 @@ bundle: user
 mode: admin
 content: {}
 hidden:
+  created: true
   member_for: true
