@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 covers(ApiExceptionHandler::class);
 
 beforeEach(function (): void {
+    config(['app.debug' => false]);
     $this->responseFactory = App::make(ResponseFactory::class);
     $this->handler = App::make(ApiExceptionHandler::class);
 });
@@ -115,8 +116,6 @@ describe('API | ExceptionHandler', function (): void {
     });
 
     it('falls back to 500 when the exception code is not an HTTP status', function (): void {
-        config(['app.debug' => false]);
-
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('expectsJson')->andReturn(true);
         $request->shouldReceive('is')->andReturn(true);
@@ -179,8 +178,6 @@ describe('API | ExceptionHandler', function (): void {
     });
 
     it('handles default exception properly', function (): void {
-        config(['app.debug' => false]);
-
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('expectsJson')->andReturn(true);
         $request->shouldReceive('is')->andReturn(true);
@@ -203,8 +200,6 @@ describe('API | ExceptionHandler', function (): void {
     });
 
     it('scrubs the model name from a route-model-binding 404', function (): void {
-        config(['app.debug' => false]);
-
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('expectsJson')->andReturn(true);
         $request->shouldReceive('is')->andReturn(true);

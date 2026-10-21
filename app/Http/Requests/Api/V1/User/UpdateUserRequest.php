@@ -32,4 +32,25 @@ final class UpdateUserRequest extends FormRequest
             'password' => ['sometimes', Password::defaults()],
         ];
     }
+
+    /**
+     * @return array<string, array{description: string, example: mixed}>
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'name' => [
+                'description' => 'Full name.',
+                'example' => 'Jane Doe',
+            ],
+            'email' => [
+                'description' => 'Unique email address.',
+                'example' => 'jane@example.com',
+            ],
+            'password' => [
+                'description' => 'New password that meets the default password rules.',
+                'example' => 'Secret-Password!123',
+            ],
+        ];
+    }
 }

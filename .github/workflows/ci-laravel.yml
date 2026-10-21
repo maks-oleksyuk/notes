@@ -124,6 +124,62 @@ jobs:
           DB_USERNAME: db
           DB_PASSWORD: db
 
+  docs:
+    name: '📚 Docs | Scribe'
+    runs-on: ubuntu-latest
+    permissions: {}
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: db
+          POSTGRES_PASSWORD: db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      APP_ENV: testing
+      DB_HOST: 127.0.0.1
+      DB_DATABASE: testing
+      DB_USERNAME: db
+      DB_PASSWORD: db
+      CACHE_STORE: array
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: array
+      BROADCAST_CONNECTION: 'null'
+      MAIL_MAILER: array
+      PULSE_ENABLED: false
+      TELESCOPE_ENABLED: false
+      NIGHTWATCH_ENABLED: false
+
+    steps:
+      - name: '🛎 Checkout'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: '⚙️ Prepare environment'
+        uses: $/.github/actions/setup-testing
+
+      - name: '🗄 Migrate database'
+        run: task artisan -- migrate --force
+
+      # Scribe exits with 0 even when extraction fails, so its output is checked too.
+      - name: '📚 Generate docs'
+        run: |
+          task docs:generate 2>&1 | tee docs.log
+          if grep -Eiq 'WARN|ERROR|exception|⚠' docs.log; then
+            echo '::error::Scribe reported warnings or errors.'
+            exit 1
+          fi
+
   test:
     name: '♻️ Test | ${{ matrix.command.name }}'
     runs-on: ubuntu-latest

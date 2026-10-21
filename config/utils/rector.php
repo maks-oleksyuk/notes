@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Pest\Rector\Set\PestSetList;
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
+use Rector\DeadCode\Rector\ClassMethod\RemoveEmptyClassMethodRector;
 use Rector\Transform\Rector\StaticCall\StaticCallToMethodCallRector;
 use Rector\ValueObject\PhpVersion;
 use RectorLaravel\Rector\Class_\RemoveModelPropertyFromFactoriesRector;
@@ -15,7 +16,6 @@ use RectorLaravel\Rector\FuncCall\RemoveDumpDataDeadCodeRector;
 use RectorLaravel\Rector\MethodCall\ResponseHelperCallToJsonResponseRector;
 use RectorLaravel\Rector\MethodCall\UseComponentPropertyWithinCommandsRector;
 use RectorLaravel\Rector\MethodCall\WhereToWhereLikeRector;
-use RectorLaravel\Rector\StaticCall\RequestStaticValidateToInjectRector;
 use RectorLaravel\Rector\StaticCall\RouteActionCallableRector;
 use RectorLaravel\Set\LaravelSetList;
 
@@ -83,6 +83,8 @@ return RectorConfig::configure()
         EmptyToBlankAndFilledFuncRector::class,
     ])
     ->withSkip([
+        // The fixture tests a fully qualified docblock class name, which name importing would rewrite.
+        __DIR__.'/../../tests/Fixtures/Scribe/FullyQualifiedModelResource.php',
         ArgumentFuncCallToMethodCallRector::class => [
             // Service providers are a poor fit for constructor injection — keep facades.
             __DIR__.'/../../app/Providers/Filament',
@@ -95,9 +97,9 @@ return RectorConfig::configure()
             // Factories have a complex multi-param constructor; Hash:: is idiomatic in seeders/factories.
             __DIR__.'/../../database',
         ],
-        // @see https://github.com/driftingly/rector-laravel/issues/496
-        RequestStaticValidateToInjectRector::class => [
-            __DIR__.'/../../app/Providers/AppServiceProvider.php',
+        RemoveEmptyClassMethodRector::class => [
+            // Fixture methods exist only to carry attributes.
+            __DIR__.'/../../tests/Fixtures',
         ],
     ])
     ->withParallel()
