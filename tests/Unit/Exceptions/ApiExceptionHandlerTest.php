@@ -179,6 +179,8 @@ describe('API | ExceptionHandler', function (): void {
     });
 
     it('handles default exception properly', function (): void {
+        config(['app.debug' => false]);
+
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('expectsJson')->andReturn(true);
         $request->shouldReceive('is')->andReturn(true);
