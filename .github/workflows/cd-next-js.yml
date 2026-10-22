@@ -20,8 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions: {}
     outputs:
-      tag:         ${{ steps.out.outputs.tag }}
-      dockerfile:  ${{ steps.out.outputs.dockerfile }}
+      tag: ${{ steps.out.outputs.tag }}
+      dockerfile: ${{ steps.out.outputs.dockerfile }}
       environment: ${{ steps.out.outputs.environment }}
       deploy_name: ${{ steps.out.outputs.deploy_name }}
 
@@ -131,10 +131,10 @@ jobs:
       - name: '🌐 Demo Deploy Step'
         run: echo "Trigger deploy here (demo mode)"
 
-      # - name: '🌐 Dokploy | ${{ needs.resolve.outputs.deploy_name }}'
-      #  uses: benbristow/dokploy-deploy-action@0.2.2
-      #  with:
-      #    dokploy_url: ${{ secrets.DOKPLOY_URL }}
-      #    api_token: ${{ secrets.DOKPLOY_TOKEN }}
-      #    application_id: ${{ secrets.DOKPLOY_COMPOSE_ID }}
-      #    service_type: compose
+        # - name: '🌐 Dokploy | ${{ needs.resolve.outputs.deploy_name }}'
+        #  uses: benbristow/dokploy-deploy-action@0.2.2
+        #  with:
+        #    dokploy_url: ${{ secrets.DOKPLOY_URL }}
+        #    api_token: ${{ secrets.DOKPLOY_TOKEN }}
+        #    application_id: ${{ secrets.DOKPLOY_COMPOSE_ID }}
+        #    service_type: compose

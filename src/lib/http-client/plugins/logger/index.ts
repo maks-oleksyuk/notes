@@ -118,8 +118,11 @@ export function logger({
 
   // Correlates the three lines of one request when logs from parallel requests interleave.
   // Empty when the request has no id.
-  const tag = (id?: string) =>
-    id ? `${paint(`[${id}]`, 'gray', isColorEnabled)} ` : '';
+  const tag = (id?: string) => {
+    if (!id) return '';
+    const label = `[${id}]`;
+    return `${paint(label, 'gray', isColorEnabled)} `;
+  };
 
   return {
     name: 'logger',

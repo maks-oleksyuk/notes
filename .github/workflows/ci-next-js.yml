@@ -50,8 +50,8 @@ jobs:
       matrix:
         command:
           - { name: '🗜 TS Types', command: 'lint:type' }
-          - { name: '🫐 Biome',    command: 'lint:biome -- --reporter=github' }
-          - { name: '✂️ Knip',     command: 'lint:knip  -- --reporter github-actions' }
+          - { name: '🫐 Biome', command: 'lint:biome -- --reporter=github' }
+          - { name: '✂️ Knip', command: 'lint:knip  -- --reporter github-actions' }
 
     steps:
       - name: '🛎 Checkout'
@@ -76,9 +76,9 @@ jobs:
       fail-fast: false
       matrix:
         command:
-          - { name: '🔬 Unit',    command: 'test:unit',    report: true }
+          - { name: '🔬 Unit', command: 'test:unit', report: true }
           - { name: '🖥 Browser', command: 'test:browser', report: true }
-          - { name: '🌐 E2E',     command: 'test:e2e',     report: false }
+          - { name: '🌐 E2E', command: 'test:e2e', report: false }
 
     steps:
       - name: '🛎 Checkout'
