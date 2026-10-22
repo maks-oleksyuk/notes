@@ -44,6 +44,44 @@ const sleep = (ms: number, signal?: AbortSignal) =>
     signal?.addEventListener('abort', onAbort, { once: true });
   });
 
+// Normalizes whatever an abort rejected with into an Error (a string reason is wrapped, anything else
+// keeps the original as `cause`).
+function toAbortError(reason: unknown): Error {
+  if (reason instanceof Error) return reason;
+  if (typeof reason === 'string') return new Error(reason);
+  return new Error('Request aborted', { cause: reason });
+}
+
+// Per-attempt timeout combined with the caller's own signal (either may be absent).
+function withTimeout(
+  signal: AbortSignal | null | undefined,
+  timeoutMs: number | undefined,
+): AbortSignal | null | undefined {
+  if (!timeoutMs) return signal;
+  const timeout = AbortSignal.timeout(timeoutMs);
+  return signal ? AbortSignal.any([signal, timeout]) : timeout;
+}
+
+// Errors reaching here are already typed at their source (TimeoutError/AbortError/
+// NetworkError from attempt(), ApiError/ParseError thrown typed, ValidationError from the
+// validation plugin). A user hook's own error passes through unwrapped — wrapping it in
+// NetworkError would misclassify a request whose network part already succeeded. Only
+//  guarantee is enforced here: non-Error throws become an Error.
+function normalizeError(err: unknown): Error {
+  return err instanceof Error ? err : new Error(String(err));
+}
+
+// Backs the dedup gate in request(). Identity can arrive via the `auth` plugin, an
+// explicit Authorization/Cookie header, or `credentials: 'include'`.
+function hasAuthIdentity(options: ResolvedOptions): boolean {
+  if (options.plugins.some((plugin) => plugin.name === 'auth')) return true;
+  if (options.credentials === 'include') return true;
+  return Object.keys(headersToRecord(options.headers)).some((key) => {
+    const lower = key.toLowerCase();
+    return lower === 'authorization' || lower === 'cookie';
+  });
+}
+
 // Concatenates default + request-level plugins, deduped by `name` (first wins) — see mergeOptions().
 function mergePlugins(
   defaults: ApiRequestOptions['plugins'],
@@ -58,7 +96,7 @@ function mergePlugins(
   });
 }
 
-// mergeOptions() always sets these — required here so callers skip the non-null assertion.
+// mergeOptions() always sets these — required here, so callers skip the non-null assertion.
 type ResolvedOptions = ApiRequestOptions & {
   method: HttpMethod;
   path: string;
@@ -95,7 +133,7 @@ export class HttpClient {
       // Dedup steps aside for any per-user identity — on the server this client is a
       // singleton shared across requests, so a URL-only key can't tell two users apart
       // and would leak user A's response to user B.
-      !this.hasAuthIdentity(mergedOptions)
+      !hasAuthIdentity(mergedOptions)
     ) {
       const key = buildUrl(
         mergedOptions.baseUrl ?? this.#baseUrl,
@@ -103,6 +141,7 @@ export class HttpClient {
         mergedOptions.params,
       );
       const existing = this.#inFlightGets.get(key);
+      // biome-ignore lint/nursery/noMisusedPromises: checking Map.get()'s `Promise<T> | undefined` for a dedup cache hit, not truthiness of a resolved value
       if (existing) return existing as Promise<ApiResponse<T>>;
 
       const promise = this.executeWithRetries<T>(path, mergedOptions).finally(
@@ -133,7 +172,7 @@ export class HttpClient {
         // biome-ignore lint/performance/noAwaitInLoops: each attempt only happens after the previous one failed and backed off — parallel attempts would defeat retry semantics.
         return await this.attempt<T>(path, mergedOptions, plugins);
       } catch (err) {
-        let finalError = this.normalizeError(err);
+        let finalError = normalizeError(err);
 
         // Phase 1 — recovery: a plugin (e.g., auth) may fix the cause and return a response.
         // The first that returns short-circuits the rest.
@@ -142,7 +181,7 @@ export class HttpClient {
           try {
             // biome-ignore lint/performance/noAwaitInLoops: first-match-wins — must stop at the first plugin that recovers, not fire every plugin's recovery attempt concurrently.
             const result = await plugin.onError(finalError, {
-              // `mergedOptions`, not the original `options` — a recovery plugin (e.g. auth)
+              // `mergedOptions`, not the original `options` — a recovery plugin (e.g., auth)
               // mutates it to mark the replay (the `authRetried` guard), and that mark must
               // survive into the replay below.
               options: mergedOptions,
@@ -194,12 +233,7 @@ export class HttpClient {
               // Caller canceled during the backoff wait. Fall through to Phase 3 with the
               // abort as the final error, so observers (logger) still see the request end
               // — same path a mid-fetch abort takes.
-              finalError =
-                abortErr instanceof Error
-                  ? abortErr
-                  : typeof abortErr === 'string'
-                    ? new Error(abortErr)
-                    : new Error('Request aborted', { cause: abortErr });
+              finalError = toAbortError(abortErr);
             }
           }
         }
@@ -226,7 +260,7 @@ export class HttpClient {
     plugins: NonNullable<ApiRequestOptions['plugins']>,
   ): Promise<ApiResponse<T>> {
     for (const plugin of plugins) {
-      // biome-ignore lint/performance/noAwaitInLoops: plugins share (and mutate) `mergedOptions` — e.g. auth attaches a header a later plugin may read — order must be preserved.
+      // biome-ignore lint/performance/noAwaitInLoops: plugins share (and mutate) `mergedOptions` — e.g., auth attaches a header a later plugin may read — order must be preserved.
       if (plugin.onRequest) await plugin.onRequest(mergedOptions);
     }
     if (mergedOptions.onRequest) await mergedOptions.onRequest(mergedOptions);
@@ -250,14 +284,7 @@ export class HttpClient {
     // (never stored on mergedOptions, which is shared across retries) — an abort here must
     // not poison later attempts.
     const timeoutMs = mergedOptions.timeout;
-    const signal = timeoutMs
-      ? mergedOptions.signal
-        ? AbortSignal.any([
-            mergedOptions.signal,
-            AbortSignal.timeout(timeoutMs),
-          ])
-        : AbortSignal.timeout(timeoutMs)
-      : mergedOptions.signal;
+    const signal = withTimeout(mergedOptions.signal, timeoutMs);
 
     const start = performance.now();
     let response: Response;
@@ -323,7 +350,7 @@ export class HttpClient {
 
     for (const plugin of plugins) {
       if (plugin.onResponse) {
-        // biome-ignore lint/performance/noAwaitInLoops: plugins share (and mutate) `apiResponse.data` — e.g. validation replaces it with the parsed value before a later plugin (logger) reads it — order must be preserved.
+        // biome-ignore lint/performance/noAwaitInLoops: plugins share (and mutate) `apiResponse.data` — e.g., validation replaces it with the parsed value before a later plugin (logger) reads it — order must be preserved.
         await plugin.onResponse(apiResponse, mergedOptions);
       }
     }
@@ -332,15 +359,6 @@ export class HttpClient {
     }
 
     return apiResponse;
-  }
-
-  // Errors reaching here are already typed at their source (TimeoutError/AbortError/
-  // NetworkError from attempt(), ApiError/ParseError thrown typed, ValidationError from the
-  // validation plugin). A user hook's own error passes through unwrapped — wrapping it in
-  // NetworkError would misclassify a request whose network part already succeeded. Only
-  // guarantee enforced here: non-Error throws become an Error.
-  private normalizeError(err: unknown): Error {
-    return err instanceof Error ? err : new Error(String(err));
   }
 
   // --- Convenience Methods ---
@@ -435,7 +453,7 @@ export class HttpClient {
   }
 
   // `{ data, error }` sugar over get/post/put/patch/delete — see safe() in ./safe. A getter,
-  // not a constructor field, so it stays bound to `this`; new object per access is fine
+  // not a constructor field, so it stays bound to `this`; a new object per access is fine
   // since it's called per-request, not in a hot loop.
   get safe() {
     return {
@@ -506,17 +524,6 @@ export class HttpClient {
 
   // --- Private Helpers ---
 
-  // Backs the dedup gate in request(). Identity can arrive via the `auth` plugin, an
-  // explicit Authorization/Cookie header, or `credentials: 'include'`.
-  private hasAuthIdentity(options: ResolvedOptions): boolean {
-    if (options.plugins.some((plugin) => plugin.name === 'auth')) return true;
-    if (options.credentials === 'include') return true;
-    return Object.keys(headersToRecord(options.headers)).some((key) => {
-      const lower = key.toLowerCase();
-      return lower === 'authorization' || lower === 'cookie';
-    });
-  }
-
   private mergeOptions(
     path: string,
     options: ApiRequestOptions,
@@ -540,7 +547,7 @@ export class HttpClient {
         ...headersToRecord(options.headers),
       },
       // Concatenated, not replaced, so a per-request `plugins` array doesn't drop the
-      // client's defaults (e.g. logger). Deduped by name — the auth recovery replay calls
+      // client's defaults (e.g., logger). Deduped by name — the auth recovery replay calls
       // back in with the already-merged list, and without dedup that doubles every plugin.
       plugins: mergePlugins(this.#defaultOptions.plugins, options.plugins),
     };

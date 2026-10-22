@@ -7,7 +7,7 @@ Fetch wrapper with retries, timeout, and plugins (`auth`, `logger`,
 
 Template to copy — `src/lib/api/dummyjson/`:
 
-```
+```text
 src/lib/api/<name>/
   base-url.ts      server: real backend; browser: your own proxy
   server-client.ts HttpClient that actually talks to the backend (server-only)
@@ -19,47 +19,47 @@ src/app/api/<name>/[...path]/route.ts   Route Handler proxy
 
 ```ts
 export function getMyApiBaseUrl(): string {
-    return typeof window === 'undefined'
-        ? 'https://real-backend.example.com' // server — direct
-        : '/api/my-api'; // browser — through your own proxy (no CORS, no leaked token)
+  return typeof window === 'undefined'
+    ? 'https://real-backend.example.com' // server — direct
+    : '/api/my-api'; // browser — through your own proxy (no CORS, no leaked token)
 }
 ```
 
 ### 2. `server-client.ts` — the only thing that actually hits the backend
 
 ```ts
-import {HttpClient} from '@/lib/http-client/core';
+import { HttpClient } from '@/lib/http-client/core';
 
-import {getMyApiBaseUrl} from './base-url';
+import { getMyApiBaseUrl } from './base-url';
 
 export const myApiServer = new HttpClient(getMyApiBaseUrl(), {
-    timeout: 10_000,
-    retry: {limit: 3},
+  timeout: 10_000,
+  retry: { limit: 3 },
 });
 ```
 
 ### 3. `route.ts` — the proxy
 
 ```ts
-import {myApiServer} from '@/lib/api/my-api/server-client';
-import {toNextJsProxyHandler} from '@/lib/http-client/next-proxy';
+import { myApiServer } from '@/lib/api/my-api/server-client';
+import { toNextJsProxyHandler } from '@/lib/http-client/next-proxy';
 
 export const dynamic = 'force-dynamic';
 
-export const {GET, POST, PATCH, PUT, DELETE} =
-    toNextJsProxyHandler(myApiServer);
+export const { GET, POST, PATCH, PUT, DELETE } =
+  toNextJsProxyHandler(myApiServer);
 ```
 
 ### 4. `client.ts` — the browser-side client
 
 ```ts
-import {HttpClient} from '@/lib/http-client/core';
+import { HttpClient } from '@/lib/http-client/core';
 
-import {getMyApiBaseUrl} from './base-url';
+import { getMyApiBaseUrl } from './base-url';
 
 export const myApi = new HttpClient(getMyApiBaseUrl(), {
-    timeout: 10_000,
-    retry: {limit: 3},
+  timeout: 10_000,
+  retry: { limit: 3 },
 });
 ```
 
@@ -69,11 +69,11 @@ backend.
 ## Plugins (optional)
 
 ```ts
-import {HttpClient} from '@/lib/http-client/core';
-import {auth, logger, sentry, validation} from '@/lib/http-client/plugins';
+import { HttpClient } from '@/lib/http-client/core';
+import { auth, logger, sentry, validation } from '@/lib/http-client/plugins';
 
 const api = new HttpClient(baseUrl, {
-    plugins: [logger({level: 'info'}), validation(), sentry()],
+  plugins: [logger({ level: 'info' }), validation(), sentry()],
 });
 ```
 

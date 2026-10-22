@@ -21,13 +21,8 @@ export function buildUrl(
   const cleanPath = path?.replace(/^\/+/u, '') || '';
   const pathIsAbsolute = ABSOLUTE_URL_RE.test(cleanPath);
   const isAbsolute = pathIsAbsolute || ABSOLUTE_URL_RE.test(cleanBase);
-
-  const urlStr = pathIsAbsolute
-    ? cleanPath
-    : cleanBase
-      ? `${cleanBase}/${cleanPath}`
-      : cleanPath;
-
+  const urlStr =
+    !pathIsAbsolute && cleanBase ? `${cleanBase}/${cleanPath}` : cleanPath;
   const urlObj = new URL(urlStr, 'http://localhost');
 
   if (params) {

@@ -564,7 +564,9 @@ describe('HttpClient', () => {
       let onRequestCalls = 0;
       const recovery: ApiPlugin = {
         name: 'recovery',
-        onRequest: () => void onRequestCalls++,
+        onRequest: () => {
+          onRequestCalls++;
+        },
         onError: (_err, { retry }) => {
           if (calls > 1) return;
           return retry();
