@@ -45,6 +45,25 @@ abstract class PaginatedRequest extends FormRequest
     }
 
     /**
+     * Scribe: documents the pagination fields as query parameters. Final so subclasses can't drop them.
+     *
+     * @return array<string, array{description: string, example: mixed}>
+     */
+    final public function queryParameters(): array
+    {
+        return [
+            'page' => [
+                'description' => 'Page number.',
+                'example' => static::DEFAULT_PAGE,
+            ],
+            'per_page' => [
+                'description' => 'Items per page.',
+                'example' => static::DEFAULT_PER_PAGE,
+            ],
+        ];
+    }
+
+    /**
      * @return array<string, array<int, mixed>>
      */
     private function paginationRules(): array

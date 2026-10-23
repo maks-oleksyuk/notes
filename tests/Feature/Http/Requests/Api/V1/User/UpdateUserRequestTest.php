@@ -53,4 +53,12 @@ describe('API | V1 | User | UpdateUserRequest', function (): void {
         'password without uppercase' => ['password1!', false],
         'password without lowercase' => ['PASSW0RD!', false],
     ]);
+
+    it('documents every validated field for Scribe', function (): void {
+        $request = new UpdateUserRequest;
+
+        expect($request->bodyParameters())->toHaveKeys(array_keys($request->rules()))
+            ->toHaveSameSize($request->rules())
+            ->each->toHaveKeys(['description', 'example']);
+    });
 });
