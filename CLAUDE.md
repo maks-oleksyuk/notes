@@ -59,7 +59,7 @@ ddev t f:prettier   # Fix formatting
 ddev t t:f          # Feature tests
 ddev t t:u          # Unit tests
 ddev t t:m          # Mutation tests
-ddev t t:c          # Coverage
+ddev t t:t          # Type coverage
 
 # Database
 ddev t db:fresh     # Drop + migrate

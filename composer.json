@@ -10,7 +10,7 @@
         "grazulex/laravel-apiroute": "^2.3.0",
         "knuckleswtf/scribe": "^5.11",
         "laravel/framework": "^13.38.0",
-        "laravel/nightwatch": "^1.30.4",
+        "laravel/nightwatch": "^1.30.5",
         "laravel/octane": "^2.22.0",
         "laravel/pulse": "^1.8.1",
         "laravel/sanctum": "^4.3.3",

@@ -204,7 +204,7 @@ jobs:
       fail-fast: false
       matrix:
         command:
-          - { name: '🧮 Coverage', command: 'test:coverage -- --ci', report: false }
+          - { name: '🔤 Types', command: 'test:types -- --ci', report: false }
           - { name: '🧬 Feature', command: 'test:feature  -- --ci', report: true }
           - { name: '🔬 Unit', command: 'test:unit -- --ci', report: true }
           - { name: '🦠 Mutate', command: 'test:mutate -- --ci', report: false }

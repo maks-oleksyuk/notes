@@ -10,7 +10,7 @@
         "prettier-plugin-tailwindcss": "^0.8.1",
         "validate-branch-name": "1.3.2"
     },
-    "packageManager": "pnpm@12.14.0",
+    "packageManager": "pnpm@12.15.0",
     "engines": {
         "pnpm": ">=12",
         "node": ">=26"
