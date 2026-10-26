@@ -55,4 +55,13 @@ describe('Http | Requests | PaginatedRequest', function (): void {
         'invalid exceeds max' => [101, false],
         'invalid string' => ['abc', false],
     ]);
+
+    it('documents the pagination fields as Scribe query parameters', function (): void {
+        $parameters = new IndexUserRequest()->queryParameters();
+
+        expect($parameters)->toHaveKeys(['page', 'per_page'])->toHaveCount(2)
+            ->each->toHaveKeys(['description', 'example'])
+            ->and($parameters['page']['example'])->toBe(PaginatedRequest::DEFAULT_PAGE)
+            ->and($parameters['per_page']['example'])->toBe(PaginatedRequest::DEFAULT_PER_PAGE);
+    });
 });

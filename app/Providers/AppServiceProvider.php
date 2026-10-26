@@ -72,7 +72,7 @@ final class AppServiceProvider extends ServiceProvider
     {
         if (class_exists(Scribe::class)) {
             Scribe::beforeResponseCall(function (Request $request, ExtractedEndpointData $endpointData): void {
-                $user = User::factory()->create();
+                $user = User::factory()->superAdmin()->create();
                 $token = $user->createToken('api_docs')->plainTextToken;
                 $request->headers->add(['Authorization' => 'Bearer '.$token]);
             });

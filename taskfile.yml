@@ -369,16 +369,16 @@ tasks:
       - defer: { task: test:mutate }
       - defer: { task: test:unit }
       - defer: { task: test:feature }
-      - defer: { task: test:coverage }
+      - defer: { task: test:types }
 
-  test:coverage:
+  test:types:
     desc: 'Ensure all methods and properties have type declarations.'
     aliases:
-      - t:c
-      - t:coverage
-      - qa:c
-      - qa:coverage
-      - test:c
+      - t:t
+      - t:types
+      - qa:t
+      - qa:types
+      - test:t
     cmds:
       - task: pest
         vars: { CLI_ARGS: '--version' }

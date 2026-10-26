@@ -6,7 +6,7 @@ includes:
   - ../../vendor/phpstan/phpstan-mockery/extension.neon
 
 parameters:
-  level: 10
+  level: max
   paths:
     - ../../app
     - ../../database
@@ -16,6 +16,11 @@ parameters:
     - ../../_ide_helper_models.php
   # Larastan parameters:
   checkOctaneCompatibility: true
+  noImplicitQueryBuilderCall: true
+  noUnnecessaryEnumerableToArrayCalls: true
+  databaseMigrationsPath:
+    - %currentWorkingDirectory%/database/migrations
+    - %currentWorkingDirectory%/vendor/filament/actions/database/migrations
   checkModelProperties: true
   # checkUnusedViews: true
   # checkMissingTranslations: true
@@ -24,3 +29,10 @@ parameters:
   checkConfigTypes: true
   checkAuthCallsWhenInRequestScope: true
   parseModelCastsMethod: true
+  checkUniqueJobUniqueFor: true
+  checkUniqueJobUniqueId: true
+  noBatchedUniqueJob: true
+  checkJobSerializesModels: true
+  checkBatchedJobIsBatchable: true
+  checkBatchableJobChecksCancellation: true
+  checkDispatchInTransactionAfterCommit: true

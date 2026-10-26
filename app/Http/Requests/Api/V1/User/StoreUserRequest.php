@@ -25,4 +25,25 @@ final class StoreUserRequest extends FormRequest
             'password' => ['required', Password::defaults()],
         ];
     }
+
+    /**
+     * @return array<string, array{description: string, example: mixed}>
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'name' => [
+                'description' => 'Full name.',
+                'example' => 'Jane Doe',
+            ],
+            'email' => [
+                'description' => 'Unique email address.',
+                'example' => 'jane@example.com',
+            ],
+            'password' => [
+                'description' => 'Password that meets the default password rules.',
+                'example' => 'Secret-Password!123',
+            ],
+        ];
+    }
 }
