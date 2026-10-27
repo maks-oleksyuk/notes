@@ -17,7 +17,9 @@ let tokens: AuthTokens | null = null;
  * in `@/lib/http-client`.)
  */
 async function refreshDummyJsonToken(): Promise<string> {
-  if (!tokens?.refreshToken) throw new Error('No refresh token available');
+  if (!tokens?.refreshToken) {
+    throw new Error('No refresh token available');
+  }
   const res = await fetch(
     `${getDummyJsonBaseUrl()}${dummyJsonUrls.auth.refresh()}`,
     {

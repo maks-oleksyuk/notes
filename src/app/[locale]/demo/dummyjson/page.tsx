@@ -1,3 +1,4 @@
+// biome-ignore-all lint/style/noJsxLiterals: dev-only, English-only demo page for the http-client — not user-facing UI, so not worth translating.
 'use client';
 
 import {
@@ -95,7 +96,9 @@ export default function DummyJsonDemoPage() {
 
   async function handleWhoAmI() {
     const res = await meQuery.refetch();
-    if (res.data) pushLog(`GET /auth/me succeeded as ${res.data.username}.`);
+    if (res.data !== undefined) {
+      pushLog(`GET /auth/me succeeded as ${res.data.username}.`);
+    }
   }
 
   /**
@@ -107,7 +110,9 @@ export default function DummyJsonDemoPage() {
    * surface) purely to stage the demo.
    */
   async function handleForceRefresh() {
-    if (!refreshToken) return;
+    if (typeof refreshToken !== 'string' || refreshToken === '') {
+      return;
+    }
     // Only the access token is broken — the real refresh token stays, so
     // the refresh call the auth plugin makes underneath still succeeds.
     setDummyJsonTokens({
@@ -117,7 +122,7 @@ export default function DummyJsonDemoPage() {
     pushLog('Corrupted the access token on purpose…');
 
     const res = await meQuery.refetch();
-    if (res.data) {
+    if (res.data !== undefined) {
       pushLog(
         'Backend returned a live 401 → auth plugin refreshed → request replayed and succeeded.',
       );

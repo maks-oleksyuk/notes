@@ -3,7 +3,7 @@ import path from 'node:path';
 import { defineConfig } from '@playwright/test';
 
 const rootDir = path.resolve(import.meta.dirname, '../..');
-const isCI = !!process.env.CI;
+const isCI = Boolean(process.env.CI);
 // E2E_BASE_URL points the suite at an already deployed environment (staging, preview, prod).
 // Without it, a local production build is built and served on its own port (not the dev server's 3000).
 const externalURL = process.env.E2E_BASE_URL;

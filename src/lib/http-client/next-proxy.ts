@@ -5,7 +5,21 @@ import { ApiError, TimeoutError } from './core';
 import type { NextRequest } from 'next/server';
 import type { HttpClient, HttpMethod } from './core';
 
-const BODY_METHODS = new Set(['POST', 'PUT', 'PATCH']);
+const HTTP_METHODS: readonly string[] = [
+  'GET',
+  'POST',
+  'PUT',
+  'PATCH',
+  'DELETE',
+  'HEAD',
+  'QUERY',
+];
+
+function isHttpMethod(method: string): method is HttpMethod {
+  return HTTP_METHODS.includes(method);
+}
+
+const BODY_METHODS = new Set(['POST', 'PUT', 'PATCH', 'QUERY']);
 
 // Statuses the HTTP spec forbids a body on — `new Response(body, ...)` throws
 // for them, and `NextResponse.json` always produces a body (even `null`
@@ -56,17 +70,27 @@ export function toNextJsProxyHandler(
     req: NextRequest,
     { params }: { params: Promise<{ path: string[] }> },
   ) {
+    if (!isHttpMethod(req.method)) {
+      return NextResponse.json(
+        { message: 'Method not allowed' },
+        { status: 405 },
+      );
+    }
+
     const { path } = await params;
     const targetPath = `/${path.join('/')}`;
 
     let body: unknown;
     if (BODY_METHODS.has(req.method)) {
       const contentType = req.headers.get('content-type') ?? '';
-      if (supportsFiles && contentType.includes('multipart/form-data')) {
+      if (
+        supportsFiles === true &&
+        contentType.includes('multipart/form-data')
+      ) {
         body = await req.formData();
       } else {
         const text = await req.text();
-        if (text) {
+        if (text !== '') {
           try {
             body = JSON.parse(text);
           } catch {
@@ -80,11 +104,11 @@ export function toNextJsProxyHandler(
     }
 
     const wantsRaw =
-      supportsFiles && req.headers.get('x-proxy-response') === 'raw';
+      supportsFiles === true && req.headers.get('x-proxy-response') === 'raw';
 
     try {
-      const response = await api.request(targetPath, {
-        method: req.method as HttpMethod,
+      const response = await api.request<Blob>(targetPath, {
+        method: req.method,
         params: collectSearchParams(req),
         headers: buildHeaders(req),
         body,
@@ -100,11 +124,13 @@ export function toNextJsProxyHandler(
         const headers = new Headers();
         const contentType = response.headers.get('content-type');
         const contentDisposition = response.headers.get('content-disposition');
-        if (contentType) headers.set('Content-Type', contentType);
+        if (contentType !== null) {
+          headers.set('Content-Type', contentType);
+        }
         if (contentDisposition) {
           headers.set('Content-Disposition', contentDisposition);
         }
-        return new NextResponse(response.data as Blob, {
+        return new NextResponse(response.data, {
           status: response.status,
           headers,
         });
@@ -118,10 +144,11 @@ export function toNextJsProxyHandler(
             : { message: err.message };
         const headers = new Headers();
         // `Retry-After` is the one upstream header the browser side acts on
-        // (its retry policy honors it on 429/503) — everything else stays
-        // behind the proxy on purpose.
+        // (its retry policy honors it on 429/503) — everything else stays behind the proxy on purpose.
         const retryAfter = err.headers?.get('retry-after');
-        if (retryAfter) headers.set('Retry-After', retryAfter);
+        if (retryAfter) {
+          headers.set('Retry-After', retryAfter);
+        }
         return NextResponse.json(errorBody, { status: err.status, headers });
       }
       // The browser aborted (see `signal` above) — nobody is listening for

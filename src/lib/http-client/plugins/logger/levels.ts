@@ -6,6 +6,10 @@ const RANK: Record<LogLevel, number> = {
   debug: 4,
 };
 
+function isLogLevel(value: unknown): value is LogLevel {
+  return typeof value === 'string' && Object.hasOwn(RANK, value);
+}
+
 export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug';
 
 // Falls back to `fallback` when the value is not a known level (e.g., a typo in
@@ -16,9 +20,7 @@ export function resolveLevel<F extends LogLevel | undefined = undefined>(
   value: unknown,
   fallback?: F,
 ): LogLevel | F {
-  return typeof value === 'string' && Object.hasOwn(RANK, value)
-    ? (value as LogLevel)
-    : (fallback as F);
+  return isLogLevel(value) ? value : (fallback as F);
 }
 
 // Returns a predicate: a message at `level` is emitted when it is at least as

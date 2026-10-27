@@ -10,9 +10,15 @@ const getBrowserLogging: () => boolean | 'warn' | 'error' = ():
   | 'warn'
   | 'error' => {
   const env = process.env.NEXT_LOGGING_BROWSER;
-  if (env === 'true') return true;
-  if (env === 'false') return false;
-  if (env === 'warn' || env === 'error') return env;
+  if (env === 'true') {
+    return true;
+  }
+  if (env === 'false') {
+    return false;
+  }
+  if (env === 'warn' || env === 'error') {
+    return env;
+  }
   return 'error';
 };
 

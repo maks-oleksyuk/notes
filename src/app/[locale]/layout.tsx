@@ -47,6 +47,7 @@ export default async function RootLayout({
       </head>
       <body
         suppressHydrationWarning
+        // biome-ignore lint/nursery/useTailwindStaticClassStrings: `next/font` variable class names, not Tailwind utilities.
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers locale={locale} messages={messages}>

@@ -5,7 +5,7 @@ import { defineConfig } from 'vitest/config';
 // Mirrors tsconfig.json's "@/*" -> "./src/*" path alias, since vitest resolves
 // modules through Vite, not tsc — the tsconfig mapping alone doesn't apply here.
 const rootDir = path.resolve(import.meta.dirname, '../..');
-const isCI = !!process.env.CI;
+const isCI = Boolean(process.env.CI);
 
 export default defineConfig({
   root: rootDir,
