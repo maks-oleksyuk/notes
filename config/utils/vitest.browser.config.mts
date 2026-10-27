@@ -5,8 +5,10 @@ import { playwright } from '@vitest/browser-playwright';
 import { msw } from 'msw/vite';
 import { defineConfig } from 'vitest/config';
 
+const API_PREFIX_RE = /^\/api\/dummyjson/u;
+
 const rootDir = path.resolve(import.meta.dirname, '../..');
-const isCI = !!process.env.CI;
+const isCI = Boolean(process.env.CI);
 
 export default defineConfig({
   root: rootDir,
@@ -23,7 +25,7 @@ export default defineConfig({
       '/api/dummyjson': {
         target: 'https://dummyjson.com',
         changeOrigin: true,
-        rewrite: (requestPath) => requestPath.replace(/^\/api\/dummyjson/u, ''),
+        rewrite: (requestPath) => requestPath.replace(API_PREFIX_RE, ''),
       },
     },
     allowedHosts: isCI ? true : ['next-js.ddev.site'],

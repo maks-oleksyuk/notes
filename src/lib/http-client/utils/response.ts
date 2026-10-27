@@ -45,6 +45,7 @@ export async function parseResponseData<T>(
         if (err instanceof Error && err.name === 'AbortError') {
           throw err;
         }
+        // biome-ignore lint/style/useErrorCause: `ParseError` forwards its third arg as `cause`.
         throw new ParseError(
           response.url,
           err instanceof Error ? err.message : 'invalid JSON',

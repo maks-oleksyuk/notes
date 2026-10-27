@@ -21,6 +21,8 @@ import type {
   InferSchema,
 } from './types';
 
+const TRAILING_SLASHES_RE = /\/+$/u;
+
 // Backoff wait that the caller's AbortSignal can interrupt — otherwise a canceled request
 // sits out the full backoff (Retry-After can ask for minutes) before one more doomed attempt.
 const sleep = (ms: number, signal?: AbortSignal) =>
@@ -47,8 +49,12 @@ const sleep = (ms: number, signal?: AbortSignal) =>
 // Normalizes whatever an abort rejected with into an Error (a string reason is wrapped, anything else
 // keeps the original as `cause`).
 function toAbortError(reason: unknown): Error {
-  if (reason instanceof Error) return reason;
-  if (typeof reason === 'string') return new Error(reason);
+  if (reason instanceof Error) {
+    return reason;
+  }
+  if (typeof reason === 'string') {
+    return new Error(reason);
+  }
   return new Error('Request aborted', { cause: reason });
 }
 
@@ -57,7 +63,9 @@ function withTimeout(
   signal: AbortSignal | null | undefined,
   timeoutMs: number | undefined,
 ): AbortSignal | null | undefined {
-  if (!timeoutMs) return signal;
+  if (timeoutMs === undefined || timeoutMs === 0) {
+    return signal;
+  }
   const timeout = AbortSignal.timeout(timeoutMs);
   return signal ? AbortSignal.any([signal, timeout]) : timeout;
 }
@@ -74,8 +82,12 @@ function normalizeError(err: unknown): Error {
 // Backs the dedup gate in request(). Identity can arrive via the `auth` plugin, an
 // explicit Authorization/Cookie header, or `credentials: 'include'`.
 function hasAuthIdentity(options: ResolvedOptions): boolean {
-  if (options.plugins.some((plugin) => plugin.name === 'auth')) return true;
-  if (options.credentials === 'include') return true;
+  if (options.plugins.some((plugin) => plugin.name === 'auth')) {
+    return true;
+  }
+  if (options.credentials === 'include') {
+    return true;
+  }
   return Object.keys(headersToRecord(options.headers)).some((key) => {
     const lower = key.toLowerCase();
     return lower === 'authorization' || lower === 'cookie';
@@ -90,7 +102,9 @@ function mergePlugins(
   const combined = [...(defaults ?? []), ...(requested ?? [])];
   const seen = new Set<string>();
   return combined.filter((plugin) => {
-    if (seen.has(plugin.name)) return false;
+    if (seen.has(plugin.name)) {
+      return false;
+    }
     seen.add(plugin.name);
     return true;
   });
@@ -113,7 +127,7 @@ export class HttpClient {
   readonly #inFlightGets = new Map<string, Promise<ApiResponse>>();
 
   constructor(baseUrl = '', defaultOptions: ApiRequestOptions = {}) {
-    this.#baseUrl = baseUrl.replace(/\/+$/u, '');
+    this.#baseUrl = baseUrl.replace(TRAILING_SLASHES_RE, '');
     this.#defaultOptions = {
       responseType: 'json',
       ...defaultOptions,
@@ -129,7 +143,7 @@ export class HttpClient {
 
     if (
       mergedOptions.method === 'GET' &&
-      mergedOptions.dedupe &&
+      mergedOptions.dedupe === true &&
       // Dedup steps aside for any per-user identity — on the server this client is a
       // singleton shared across requests, so a URL-only key can't tell two users apart
       // and would leak user A's response to user B.
@@ -142,7 +156,9 @@ export class HttpClient {
       );
       const existing = this.#inFlightGets.get(key);
       // biome-ignore lint/nursery/noMisusedPromises: checking Map.get()'s `Promise<T> | undefined` for a dedup cache hit, not truthiness of a resolved value
-      if (existing) return existing as Promise<ApiResponse<T>>;
+      if (existing) {
+        return existing as Promise<ApiResponse<T>>;
+      }
 
       const promise = this.executeWithRetries<T>(path, mergedOptions).finally(
         () => this.#inFlightGets.delete(key),
@@ -177,7 +193,9 @@ export class HttpClient {
         // Phase 1 — recovery: a plugin (e.g., auth) may fix the cause and return a response.
         // The first that returns short-circuits the rest.
         for (const plugin of plugins) {
-          if (!plugin.onError) continue;
+          if (!plugin.onError) {
+            continue;
+          }
           try {
             // biome-ignore lint/performance/noAwaitInLoops: first-match-wins — must stop at the first plugin that recovers, not fire every plugin's recovery attempt concurrently.
             const result = await plugin.onError(finalError, {
@@ -194,9 +212,13 @@ export class HttpClient {
                   retry: false,
                 }),
             });
-            if (result) return result as ApiResponse<T>;
+            if (result) {
+              return result as ApiResponse<T>;
+            }
           } catch (pluginError) {
-            if (pluginError instanceof Error) finalError = pluginError;
+            if (pluginError instanceof Error) {
+              finalError = pluginError;
+            }
           }
         }
 
@@ -260,10 +282,14 @@ export class HttpClient {
     plugins: NonNullable<ApiRequestOptions['plugins']>,
   ): Promise<ApiResponse<T>> {
     for (const plugin of plugins) {
-      // biome-ignore lint/performance/noAwaitInLoops: plugins share (and mutate) `mergedOptions` — e.g., auth attaches a header a later plugin may read — order must be preserved.
-      if (plugin.onRequest) await plugin.onRequest(mergedOptions);
+      if (plugin.onRequest) {
+        // biome-ignore lint/performance/noAwaitInLoops: plugins share (and mutate) `mergedOptions` — e.g., auth attaches a header a later plugin may read — order must be preserved.
+        await plugin.onRequest(mergedOptions);
+      }
     }
-    if (mergedOptions.onRequest) await mergedOptions.onRequest(mergedOptions);
+    if (mergedOptions.onRequest) {
+      await mergedOptions.onRequest(mergedOptions);
+    }
 
     // mergeOptions() always sets path/method — no fallback needed here.
     const url = buildUrl(
@@ -303,6 +329,7 @@ export class HttpClient {
       // already a DOMException named 'TimeoutError', distinguishing "our timer fired"
       // (retryable) from "the caller canceled" (must propagate as-is).
       if (err instanceof Error && err.name === 'TimeoutError') {
+        // biome-ignore lint/style/useErrorCause: `TimeoutError` forwards its third arg as `cause`.
         throw new TimeoutError(url, timeoutMs as number, err);
       }
       // `name` check, not `instanceof DOMException` — some runtimes reject with a plain Error.
@@ -311,6 +338,7 @@ export class HttpClient {
       }
       // Classified here (not a catch-all around the whole attempt) so a throwing user hook
       // downstream can't get mislabeled as a retryable network failure.
+      // biome-ignore lint/style/useErrorCause: `NetworkError` forwards its third arg as `cause`.
       throw new NetworkError(
         err instanceof Error ? err.message : 'Unknown network error',
         url,

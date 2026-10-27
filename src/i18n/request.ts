@@ -21,7 +21,9 @@ export async function loadLocaleMessages(locale: Locale) {
 
 export default getRequestConfig(async () => {
   const paramValue = await getRootLocale();
-  if (!hasLocale(routing.locales, paramValue)) notFound();
+  if (!hasLocale(routing.locales, paramValue)) {
+    notFound();
+  }
 
   return {
     locale: paramValue,

@@ -1,10 +1,11 @@
 // Import from `@/lib/http-client/core` directly — a root barrel re-exporting both
-// `clients/*` (which construct `HttpClient` at module load) and this plugin
+// `clients/*` (which construct `HttpClient` at a module load) and this plugin
 // created a real circular import (root -> clients -> core -> back here) that
 // threw "HttpClient is not a constructor" depending on load order (review.md
 // A4; caught live by this file's own test suite). The root barrel was removed
 // for exactly that reason — import subpackages, never re-add a root index.
 import { ApiError } from '@/lib/http-client/core';
+import { headersToRecord } from '@/lib/http-client/utils/headers';
 
 import type { ApiPlugin } from '@/lib/http-client/core';
 import type { TokenProvider } from './types';
@@ -17,8 +18,7 @@ export type { TokenProvider } from './types';
  *
  * A pure **recovery** plugin (`onError`), the same phase auth-recovery was designed
  * for in the core loop. It never retries transient errors itself — that's the core's
- * job (Phase 2) — it only fixes the *cause* of a 401 and hands back a replayed
- * response.
+ * job (Phase 2) — it only fixes the *cause* of a 401 and hands back a replayed response.
  */
 export function auth(provider: TokenProvider): ApiPlugin {
   // Lives in the closure of this call, not module scope: two `auth(provider)`
@@ -37,22 +37,25 @@ export function auth(provider: TokenProvider): ApiPlugin {
     name: 'auth',
 
     async onRequest(options) {
-      // Prefer a token a just-completed refresh (this same call chain) handed
-      // us directly over calling `provider.getToken()` again — see
-      // `refreshedToken`'s doc in `core/types.ts` for why re-reading isn't
-      // reliable here.
+      // Prefer a token a just-completed refresh (this same call chain) handed us
+      // directly over calling `provider.getToken()` again — see `refreshedToken`'s doc
+      // in `core/types.ts` for why re-reading isn't reliable here.
       const token = options.refreshedToken ?? (await provider.getToken());
-      if (!token) return;
+      if (!token) {
+        return;
+      }
       // `options.headers` is already a plain Record<string, string> by the time
       // onRequest hooks run — `mergeOptions` normalizes it before the attempt loop.
       options.headers = {
-        ...(options.headers as Record<string, string> | undefined),
+        ...headersToRecord(options.headers),
         Authorization: `Bearer ${token}`,
       };
     },
 
     async onError(error, context) {
-      if (!(error instanceof ApiError) || error.status !== 401) return;
+      if (!(error instanceof ApiError) || error.status !== 401) {
+        return;
+      }
 
       // No refresh configured (static-token provider): the 401 is final.
       // Report the dead session, but return undefined so the original
@@ -87,7 +90,11 @@ export function auth(provider: TokenProvider): ApiPlugin {
         newToken = await singleFlightRefresh(refreshToken);
       } catch (refreshError) {
         try {
-          await provider.onAuthFailure?.(refreshError as Error);
+          await provider.onAuthFailure?.(
+            refreshError instanceof Error
+              ? refreshError
+              : new Error(String(refreshError)),
+          );
         } catch {
           // onAuthFailure must never break the error path it's reporting on.
         }

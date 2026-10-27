@@ -46,7 +46,7 @@ export function logger({
   prefix: rawPrefix = '',
   cacheHitThresholdMs = 10,
 }: LoggerOptions = {}): ApiPlugin {
-  const prefix = rawPrefix ? `${rawPrefix} ` : '';
+  const prefix = rawPrefix === '' ? '' : `${rawPrefix} `;
 
   const defaultLevel: LogLevel =
     // biome-ignore lint/style/noProcessEnv: standard NODE_ENV, not a project var.
@@ -62,7 +62,9 @@ export function logger({
   // Firefox/Safari show the escapes as garbage) — convert at this boundary so
   // the message-building code above stays sink-agnostic.
   function toConsoleArgs(msg: string): [string, ...string[]] {
-    if (!isBrowser) return [msg];
+    if (!isBrowser) {
+      return [msg];
+    }
     const { text, styles } = ansiToConsoleFormat(msg);
     return [text, ...styles];
   }
@@ -101,8 +103,11 @@ export function logger({
       // `console.error` (not `groupCollapsed`) so the line renders red with
       // devtools' error styling/icon — a `groupCollapsed` header prints as a
       // plain log line, which reads as "just a log" for real failures.
-      if (isBrowser) console.error(...toConsoleArgs(msg), cleanMeta);
-      else console.error(msg, cleanMeta);
+      if (isBrowser) {
+        console.error(...toConsoleArgs(msg), cleanMeta);
+      } else {
+        console.error(msg, cleanMeta);
+      }
     },
   };
 
@@ -119,7 +124,9 @@ export function logger({
   // Correlates the three lines of one request when logs from parallel requests interleave.
   // Empty when the request has no id.
   const tag = (id?: string) => {
-    if (!id) return '';
+    if (id === undefined || id === '') {
+      return '';
+    }
     const label = `[${id}]`;
     return `${paint(label, 'gray', isColorEnabled)} `;
   };
@@ -128,10 +135,14 @@ export function logger({
     name: 'logger',
 
     onRequest(options) {
-      if (!allow('info')) return;
+      if (!allow('info')) {
+        return;
+      }
 
       // Retried attempts are already announced by onRetry — skip the duplicate line.
-      if ((options.retryAttempt ?? 0) > 0) return;
+      if ((options.retryAttempt ?? 0) > 0) {
+        return;
+      }
 
       const method = options.method || 'GET';
       const path = options.path || '/';
@@ -151,7 +162,9 @@ export function logger({
     },
 
     onResponse(response, options) {
-      if (!allow('info')) return;
+      if (!allow('info')) {
+        return;
+      }
 
       const method = options.method || 'GET';
       const path = options.path || '/';
@@ -181,7 +194,9 @@ export function logger({
     },
 
     onRetry(info) {
-      if (!allow('info')) return;
+      if (!allow('info')) {
+        return;
+      }
 
       // A retry is expected and recoverable — log level, not warn/error, so the
       // browser console doesn't attach an alarm icon and a stack trace.
@@ -214,7 +229,9 @@ export function logger({
       // muted line at info level — otherwise its `-->` line has no matching
       // terminus and looks like it silently vanished.
       if (error.name === 'AbortError') {
-        if (!allow('info')) return;
+        if (!allow('info')) {
+          return;
+        }
         const marker = paint('✕', 'gray', isColorEnabled);
         const label = paint('cancelled', 'gray', isColorEnabled);
         logFn(
@@ -229,7 +246,9 @@ export function logger({
         error instanceof ApiError &&
         options.expectedStatuses?.includes(error.status)
       ) {
-        if (!allow('info')) return;
+        if (!allow('info')) {
+          return;
+        }
         const arrow = paint('<--', 'gray', isColorEnabled);
         const status = colorizeStatus(error.status, isColorEnabled);
         const label = paint('(expected)', 'gray', isColorEnabled);
@@ -239,7 +258,9 @@ export function logger({
         return;
       }
 
-      if (!allow('error')) return;
+      if (!allow('error')) {
+        return;
+      }
 
       // `ApiError.data` is the server's actual response body (e.g., a Laravel
       // 422's `{message, errors: {field: [msg,...]}}`) — without it, a

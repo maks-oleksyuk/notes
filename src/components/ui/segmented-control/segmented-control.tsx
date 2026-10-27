@@ -5,14 +5,19 @@ import {
 
 import { segmentedControlVariants } from './segmented-control.styles';
 
-import type { SegmentedControlProps as MantineSegmentedControlProps } from '@mantine/core';
+import type {
+  SegmentedControlProps as MantineSegmentedControlProps,
+  SegmentedControlStylesNames,
+} from '@mantine/core';
 import type { SegmentedControlVariants } from './segmented-control.styles';
 
 type SegmentedControlProps = Omit<
   MantineSegmentedControlProps,
-  keyof SegmentedControlVariants
+  keyof SegmentedControlVariants | 'classNames'
 > &
-  SegmentedControlVariants;
+  SegmentedControlVariants & {
+    classNames?: Partial<Record<SegmentedControlStylesNames, string>>;
+  };
 
 export function SegmentedControl(props: SegmentedControlProps) {
   const classNames = segmentedControlVariants(props);
@@ -23,11 +28,15 @@ export function SegmentedControl(props: SegmentedControlProps) {
         {...props}
         className={classNames.root({ className: props.className })}
         classNames={{
-          control: classNames.control(),
-          input: classNames.input(),
-          label: classNames.label(),
-          indicator: classNames.indicator(),
-          innerLabel: classNames.innerLabel(),
+          control: classNames.control({ className: props.classNames?.control }),
+          input: classNames.input({ className: props.classNames?.input }),
+          label: classNames.label({ className: props.classNames?.label }),
+          indicator: classNames.indicator({
+            className: props.classNames?.indicator,
+          }),
+          innerLabel: classNames.innerLabel({
+            className: props.classNames?.innerLabel,
+          }),
         }}
       />
     </HeadlessMantineProvider>

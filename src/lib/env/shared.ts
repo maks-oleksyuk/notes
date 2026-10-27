@@ -10,7 +10,7 @@ const schema = z.object({
     .default('development'),
   NEXT_PHASE: z.string().optional(),
   NEXT_RUNTIME: z.preprocess(
-    (v) => v || undefined,
+    (v) => (v === '' ? undefined : v),
     z.enum(['nodejs', 'edge']).optional(),
   ),
   DUMMYJSON_API_LOG_LEVEL: z.string().optional(),

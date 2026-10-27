@@ -1,6 +1,13 @@
 import type { ZodType } from 'zod';
 
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD';
+export type HttpMethod =
+  | 'GET'
+  | 'POST'
+  | 'PUT'
+  | 'PATCH'
+  | 'DELETE'
+  | 'HEAD'
+  | 'QUERY';
 
 export type ResponseType = 'json' | 'text' | 'blob' | 'arraybuffer' | 'stream';
 
