@@ -6,7 +6,7 @@ it('browses products, signs in, refreshes a corrupted token and signs out', asyn
 }) => {
   await page.goto('/en/demo/dummyjson');
 
-  await expect(page.locator('table tbody tr').first()).toBeVisible();
+  await expect(page.locator('table tbody tr')).not.toHaveCount(0);
   await page.getByRole('button', { name: 'Next →' }).click();
   await expect(page.getByRole('button', { name: '← Prev' })).toBeEnabled();
 

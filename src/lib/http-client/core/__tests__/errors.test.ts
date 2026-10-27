@@ -8,7 +8,7 @@ import {
   ValidationError,
 } from '@/lib/http-client/core';
 
-describe('ApiError', () => {
+describe('apiError', () => {
   it('carries the response info and serializes it via toJSON', () => {
     const headers = new Headers({ 'x-a': '1' });
     const err = new ApiError('HTTP 500', {
@@ -34,7 +34,7 @@ describe('ApiError', () => {
   });
 });
 
-describe('NetworkError', () => {
+describe('networkError', () => {
   it('carries the url', () => {
     const err = new NetworkError('DNS lookup failed', 'https://api.test/x');
     expect(err.name).toBe('NetworkError');
@@ -42,7 +42,7 @@ describe('NetworkError', () => {
   });
 });
 
-describe('TimeoutError', () => {
+describe('timeoutError', () => {
   it('builds a message from the url and timeout', () => {
     const err = new TimeoutError('https://api.test/x', 2000);
     expect(err.name).toBe('TimeoutError');
@@ -52,7 +52,7 @@ describe('TimeoutError', () => {
   });
 });
 
-describe('ValidationError', () => {
+describe('validationError', () => {
   it('carries the schema failure details', () => {
     const err = new ValidationError('bad shape', {
       url: 'https://api.test/x',
@@ -64,7 +64,7 @@ describe('ValidationError', () => {
   });
 });
 
-describe('ParseError', () => {
+describe('parseError', () => {
   it('builds a message from the url and reason', () => {
     const err = new ParseError('https://api.test/x', 'unexpected token');
     expect(err.name).toBe('ParseError');

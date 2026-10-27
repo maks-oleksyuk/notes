@@ -1,6 +1,8 @@
 // `startsWith('http')` would also match `httpfoo://...` or a path that just happens
 // to start with the letters "http" — an actual scheme needs `://` after it.
 const ABSOLUTE_URL_RE = /^https?:\/\//iu;
+const TRAILING_SLASHES_RE = /\/+$/u;
+const LEADING_SLASHES_RE = /^\/+/u;
 
 export function buildUrl(
   baseUrl: string,
@@ -17,8 +19,8 @@ export function buildUrl(
     | Array<string | number | boolean>
   >,
 ): string {
-  const cleanBase = baseUrl.replace(/\/+$/u, '');
-  const cleanPath = path?.replace(/^\/+/u, '') || '';
+  const cleanBase = baseUrl.replace(TRAILING_SLASHES_RE, '');
+  const cleanPath = path?.replace(LEADING_SLASHES_RE, '') || '';
   const pathIsAbsolute = ABSOLUTE_URL_RE.test(cleanPath);
   const isAbsolute = pathIsAbsolute || ABSOLUTE_URL_RE.test(cleanBase);
   const urlStr =
@@ -27,9 +29,13 @@ export function buildUrl(
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {
-      if (value === undefined || value === null) continue;
+      if (value === undefined || value === null) {
+        continue;
+      }
       if (Array.isArray(value)) {
-        for (const item of value) urlObj.searchParams.append(key, String(item));
+        for (const item of value) {
+          urlObj.searchParams.append(key, String(item));
+        }
       } else {
         urlObj.searchParams.set(key, String(value));
       }

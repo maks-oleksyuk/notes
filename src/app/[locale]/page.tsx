@@ -1,3 +1,4 @@
+// biome-ignore-all lint/style/noJsxLiterals: untouched `create-next-app` starter page, to be replaced by the real home page.
 import Image from 'next/image';
 // biome-ignore lint/correctness/noUnresolvedImports: false positive resolving the "react-server" export condition for Server Component files (no upstream issue found yet, similar to closed biomejs/biome#9143 and #9626)
 import { Suspense } from 'react';

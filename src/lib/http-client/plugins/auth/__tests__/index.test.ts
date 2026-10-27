@@ -143,7 +143,9 @@ describe('auth plugin', () => {
     const results = await requests;
 
     expect(results).toHaveLength(5);
-    for (const res of results) expect(res.data).toEqual({ ok: true });
+    for (const res of results) {
+      expect(res.data).toEqual({ ok: true });
+    }
     // The whole point: 5 concurrent 401s, but only one real network refresh.
     expect(getRefreshCalls()).toBe(1);
   });
@@ -179,6 +181,22 @@ describe('auth plugin', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1); // no replay — refresh never succeeded
     expect(getRefreshCalls()).toBe(1);
     expect(provider.onAuthFailure).toHaveBeenCalledTimes(1);
+  });
+
+  it('hands onAuthFailure an Error even when the refresh rejects with a non-Error', async () => {
+    fetchMock.mockResolvedValue(jsonResponse({}, 401));
+    const { provider } = createTestProvider(() =>
+      Promise.reject('refresh endpoint down'),
+    );
+    const client = new HttpClient('https://api.test', {
+      plugins: [auth(provider)],
+    });
+
+    await expect(client.get('/me')).rejects.toMatchObject({ status: 401 });
+
+    expect(provider.onAuthFailure).toHaveBeenCalledWith(
+      new Error('refresh endpoint down'),
+    );
   });
 
   it('does not attach Authorization when the provider has no token', async () => {
