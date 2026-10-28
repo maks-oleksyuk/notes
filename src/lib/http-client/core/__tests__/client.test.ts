@@ -435,8 +435,12 @@ describe('HttpClient', () => {
       const recovery: ApiPlugin = {
         name: 'recovery',
         onError(error, context) {
-          if (!(error instanceof ApiError) || error.status !== 401) return;
-          if (context.options.authRetried) return;
+          if (!(error instanceof ApiError) || error.status !== 401) {
+            return;
+          }
+          if (context.options.authRetried) {
+            return;
+          }
           context.options.authRetried = true;
           return context.retry();
         },
@@ -564,9 +568,13 @@ describe('HttpClient', () => {
       let onRequestCalls = 0;
       const recovery: ApiPlugin = {
         name: 'recovery',
-        onRequest: () => void onRequestCalls++,
+        onRequest: () => {
+          onRequestCalls++;
+        },
         onError: (_err, { retry }) => {
-          if (calls > 1) return;
+          if (calls > 1) {
+            return;
+          }
           return retry();
         },
       };

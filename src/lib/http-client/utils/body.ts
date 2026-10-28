@@ -20,9 +20,13 @@ export function isRawBody(body: unknown): body is BodyInit {
 export function buildBody(body: unknown): BodyInit | null {
   // `== null` (not falsy) — `0`, `''`, `false` are legitimate bodies (e.g. a raw
   // JSON-encoded primitive), not `no body`. Only `null`/`undefined` mean "no body".
-  if (body == null) return null;
+  if (body == null) {
+    return null;
+  }
 
-  if (isRawBody(body)) return body;
+  if (isRawBody(body)) {
+    return body;
+  }
 
   if (typeof body === 'object') {
     return JSON.stringify(body);

@@ -1,6 +1,13 @@
 import type { ZodType } from 'zod';
 
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD';
+export type HttpMethod =
+  | 'GET'
+  | 'POST'
+  | 'PUT'
+  | 'PATCH'
+  | 'DELETE'
+  | 'HEAD'
+  | 'QUERY';
 
 export type ResponseType = 'json' | 'text' | 'blob' | 'arraybuffer' | 'stream';
 
@@ -63,6 +70,13 @@ export interface ApiRequestOptions
    * replay would fail with the same 401 forever. Typed field, not `(options as any)`.
    */
   refreshedToken?: string;
+
+  /**
+   * HTTP statuses the caller treats as a normal answer (e.g., 404 = "no report yet") and
+   * handles itself. They still throw, but the logger records them as a muted info line
+   * instead of a red error, so the browser console / Next dev overlay isn't flooded.
+   */
+  expectedStatuses?: number[];
 
   /**
    * Retry policy for transient failures. Omit or set `false` to disable.

@@ -107,6 +107,34 @@ describe('toNextJsProxyHandler', () => {
     expect(headers.has('Authorization')).toBe(false);
   });
 
+  it('forwards the QUERY method together with its body', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse({ ok: true }));
+    const { POST } = toNextJsProxyHandler(api);
+
+    const { req: request, params } = req('http://localhost/proxy/x', {
+      method: 'QUERY',
+      body: JSON.stringify({ q: 'phone' }),
+    });
+    await POST(request, { params });
+
+    const [, init] = fetchMock.mock.calls[0];
+    expect(init.method).toBe('QUERY');
+    expect(JSON.parse(init.body as string)).toEqual({ q: 'phone' });
+  });
+
+  it('answers 405 for an unsupported method without calling fetch', async () => {
+    const { GET } = toNextJsProxyHandler(api);
+
+    const { req: request, params } = req('http://localhost/proxy/x', {
+      method: 'OPTIONS',
+    });
+    const response = await GET(request, { params });
+
+    expect(response.status).toBe(405);
+    expect(await response.json()).toEqual({ message: 'Method not allowed' });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('forwards a JSON body on POST', async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse({ id: 1 }));
     const { POST } = toNextJsProxyHandler(api);

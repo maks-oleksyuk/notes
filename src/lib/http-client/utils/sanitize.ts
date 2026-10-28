@@ -26,18 +26,23 @@ function isEntriesLike(
   return (
     typeof value === 'object' &&
     value !== null &&
-    typeof (value as { entries?: unknown }).entries === 'function'
+    'entries' in value &&
+    typeof value.entries === 'function'
   );
 }
 
 // Recursively replaces values of sensitive keys with REDACTED.
 function sanitize(value: unknown, seen: WeakSet<object>): unknown {
-  if (typeof value !== 'object' || value === null) return value;
+  if (typeof value !== 'object' || value === null) {
+    return value;
+  }
 
   // Cycle guard — metadata is arbitrary caller data, and recursing into a
   // circular structure would blow the stack *inside the logger*, killing the
   // very request it was only supposed to observe.
-  if (seen.has(value)) return '[Circular]';
+  if (seen.has(value)) {
+    return '[Circular]';
+  }
   seen.add(value);
 
   try {
@@ -49,7 +54,9 @@ function sanitize(value: unknown, seen: WeakSet<object>): unknown {
       return value.map((item) => sanitize(item, seen));
     }
 
-    if (value instanceof Date) return value.toISOString();
+    if (value instanceof Date) {
+      return value.toISOString();
+    }
 
     if (isEntriesLike(value)) {
       return sanitize(Object.fromEntries(value.entries()), seen);
@@ -83,14 +90,18 @@ export function cleanMetadata(
 ): Record<string, unknown> {
   const clean: Record<string, unknown> = {};
   for (const [key, rawValue] of Object.entries(meta)) {
-    if (rawValue === undefined || rawValue === null) continue;
+    if (rawValue === undefined || rawValue === null) {
+      continue;
+    }
 
     const value = isSensitiveKey(key)
       ? REDACTED
       : sanitize(rawValue, new WeakSet());
 
-    if (typeof value === 'object') {
-      if (Object.keys(value as object).length > 0) clean[key] = value;
+    if (typeof value === 'object' && value !== null) {
+      if (Object.keys(value).length > 0) {
+        clean[key] = value;
+      }
       continue;
     }
 

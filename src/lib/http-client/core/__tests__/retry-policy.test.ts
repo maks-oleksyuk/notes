@@ -10,8 +10,9 @@ import { nextRetry, resolveRetry } from '@/lib/http-client/core/retry-policy';
 
 /** Unwraps a resolveRetry() result, failing loudly instead of using `!`. */
 function must<T>(value: T | null): T {
-  if (value === null)
+  if (value === null) {
     throw new Error('expected resolveRetry() to return a value');
+  }
   return value;
 }
 

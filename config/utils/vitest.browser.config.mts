@@ -2,14 +2,17 @@ import path from 'node:path';
 
 import react from '@vitejs/plugin-react';
 import { playwright } from '@vitest/browser-playwright';
+import { msw } from 'msw/vite';
 import { defineConfig } from 'vitest/config';
 
+const API_PREFIX_RE = /^\/api\/dummyjson/u;
+
 const rootDir = path.resolve(import.meta.dirname, '../..');
-const isCI = !!process.env.CI;
+const isCI = Boolean(process.env.CI);
 
 export default defineConfig({
   root: rootDir,
-  plugins: [react()],
+  plugins: [react(), msw({ mode: 'worker-only' })],
   resolve: {
     alias: {
       '@': path.resolve(rootDir, './src'),
@@ -22,7 +25,7 @@ export default defineConfig({
       '/api/dummyjson': {
         target: 'https://dummyjson.com',
         changeOrigin: true,
-        rewrite: (requestPath) => requestPath.replace(/^\/api\/dummyjson/u, ''),
+        rewrite: (requestPath) => requestPath.replace(API_PREFIX_RE, ''),
       },
     },
     allowedHosts: isCI ? true : ['next-js.ddev.site'],
@@ -30,6 +33,7 @@ export default defineConfig({
   test: {
     include: ['src/**/__tests__/**/*.browser.test.tsx'],
     silent: 'passed-only',
+    fsModuleCache: true,
     setupFiles: [path.resolve(rootDir, 'config/utils/vitest.browser.setup.ts')],
     attachmentsDir: path.resolve(rootDir, 'var/report/vitest-attachments'),
     outputFile: {
@@ -39,7 +43,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
       reportsDirectory: path.resolve(rootDir, 'var/report/coverage'),
-      include: ['src/app/demo/dummyjson/page.tsx'],
+      include: ['src/app/\\[locale\\]/demo/dummyjson/page.tsx'],
       thresholds: { 100: true },
     },
     browser: {
@@ -52,7 +56,7 @@ export default defineConfig({
     },
     api: {
       host: '0.0.0.0',
-      port: 51204,
+      port: 51_204,
       allowWrite: true,
       allowExec: true,
     },

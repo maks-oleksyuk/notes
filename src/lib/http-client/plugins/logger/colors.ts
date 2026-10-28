@@ -1,5 +1,3 @@
-import { sharedEnv } from '@/lib/env/shared';
-
 const codes = {
   red: '\x1b[31m',
   green: '\x1b[32m',
@@ -38,7 +36,8 @@ const ANSI_RE = /\x1b\[(?<code>\d+)m/gu;
 export function supportsColor(): boolean {
   return (
     typeof process !== 'undefined' &&
-    !sharedEnv().NO_COLOR &&
+    // biome-ignore lint/style/noProcessEnv: NO_COLOR is a generic convention, not a project var.
+    !process.env.NO_COLOR &&
     Boolean(process.stdout?.isTTY)
   );
 }
@@ -48,18 +47,32 @@ export function paint(text: string, color: Color, on: boolean): string {
 }
 
 export function colorizeStatus(status: number, on: boolean): string {
-  if (status >= 200 && status < 300) return paint(String(status), 'green', on);
-  if (status >= 300 && status < 400) return paint(String(status), 'cyan', on);
-  if (status >= 400 && status < 500) return paint(String(status), 'yellow', on);
+  if (status >= 200 && status < 300) {
+    return paint(String(status), 'green', on);
+  }
+  if (status >= 300 && status < 400) {
+    return paint(String(status), 'cyan', on);
+  }
+  if (status >= 400 && status < 500) {
+    return paint(String(status), 'yellow', on);
+  }
   return paint(String(status), 'red', on);
 }
 
 export function colorizeMethod(method: string, on: boolean): string {
   const m = method.toUpperCase();
-  if (m === 'POST') return paint(m, 'green', on);
-  if (m === 'GET') return paint(m, 'cyan', on);
-  if (m === 'PUT' || m === 'PATCH') return paint(m, 'yellow', on);
-  if (m === 'DELETE') return paint(m, 'red', on);
+  if (m === 'POST') {
+    return paint(m, 'green', on);
+  }
+  if (m === 'GET') {
+    return paint(m, 'cyan', on);
+  }
+  if (m === 'PUT' || m === 'PATCH') {
+    return paint(m, 'yellow', on);
+  }
+  if (m === 'DELETE') {
+    return paint(m, 'red', on);
+  }
   return m;
 }
 
@@ -73,7 +86,9 @@ export function ansiToConsoleFormat(message: string): {
   text: string;
   styles: string[];
 } {
-  if (!message.includes('\x1b[')) return { text: message, styles: [] };
+  if (!message.includes('\x1b[')) {
+    return { text: message, styles: [] };
+  }
 
   const styles: string[] = [];
   // Escape literal `%` first (a path like /search?q=%20 would otherwise eat

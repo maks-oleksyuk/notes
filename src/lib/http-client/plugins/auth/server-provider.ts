@@ -40,13 +40,17 @@ export function createServerTokenProvider(
     async refreshToken() {
       const jar = await cookies();
       const refreshToken = jar.get(config.refreshCookieName)?.value;
-      if (!refreshToken) throw new Error('no refresh token cookie');
+      if (refreshToken === undefined || refreshToken === '') {
+        throw new Error('no refresh token cookie');
+      }
 
       const res = await fetch(config.refreshUrl, {
         method: 'POST',
         headers: { Cookie: `${config.refreshCookieName}=${refreshToken}` },
       });
-      if (!res.ok) throw new Error(`refresh failed: ${res.status}`);
+      if (!res.ok) {
+        throw new Error(`refresh failed: ${res.status}`);
+      }
       const data: { accessToken: string; refreshToken?: string } =
         await res.json();
 
@@ -56,7 +60,7 @@ export function createServerTokenProvider(
         httpOnly: true,
         path: '/',
       });
-      if (data.refreshToken) {
+      if (data.refreshToken !== undefined) {
         jar.set(config.refreshCookieName, data.refreshToken, {
           httpOnly: true,
           path: '/',
