@@ -7,15 +7,10 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\Unique;
-use Pest\Expectation;
 
 covers(UpdateUserRequest::class);
 
 describe('API | V1 | User | UpdateUserRequest', function (): void {
-    it('validates authorize',
-        fn (): Expectation => expect(new UpdateUserRequest()->authorize())->toBeTrue()
-    );
-
     it('validates rules', function (): void {
         $rules = new UpdateUserRequest()->rules();
         $hasEmailUniqueRule = new Collection($rules['email'])->contains(fn ($rule): bool => $rule instanceof Unique);

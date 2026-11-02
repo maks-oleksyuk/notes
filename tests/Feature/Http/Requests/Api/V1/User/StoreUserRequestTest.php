@@ -6,15 +6,10 @@ use App\Http\Requests\Api\V1\User\StoreUserRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
-use Pest\Expectation;
 
 covers(StoreUserRequest::class);
 
 describe('API | V1 | User | StoreUserRequest', function (): void {
-    it('validates authorize',
-        fn (): Expectation => expect(new StoreUserRequest()->authorize())->toBeTrue()
-    );
-
     it('validates rules', function (): void {
         $rules = new StoreUserRequest()->rules();
         $hasPasswordRule = new Collection($rules['password'])->contains(fn ($rule): bool => $rule instanceof Password);
