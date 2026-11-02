@@ -24,14 +24,14 @@ final class UserImporter extends SpreadsheetImporter implements ShouldQueue
                 ->requiredMapping()
                 ->rules(['required', 'max:255'])
                 ->example('John Doe')
-                ->guess(['full_name', 'fullname']),
+                ->guesses(['full_name', 'fullname']),
 
             ImportColumn::make('email')
                 ->label('Email')
                 ->requiredMapping()
                 ->rules(['required', 'email:strict'])
                 ->example('john@example.com')
-                ->guess(['e-mail', 'mail', 'email address']),
+                ->guesses(['e-mail', 'mail', 'email address']),
         ];
     }
 

@@ -165,7 +165,7 @@ final class AppResponseAttributes extends UseResponseAttributes
                 $name,
             ),
             $type instanceof ArrayTypeNode => [$this->exampleFromType($type->type, $name)],
-            $type instanceof GenericTypeNode && in_array($type->type->name, self::LIST_TYPES, true) => [
+            $type instanceof GenericTypeNode && in_array((string) $type->type, self::LIST_TYPES, true) => [
                 $this->exampleFromType(Arr::last($type->genericTypes) ?? $type->type, $name),
             ],
             Str::endsWith($name, '_at') => $this->getFaker()->dateTime()->format(DATE_ATOM),
