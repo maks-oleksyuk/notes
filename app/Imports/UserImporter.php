@@ -57,7 +57,7 @@ final class UserImporter extends SpreadsheetImporter implements ShouldQueue
     {
         $user = User::query()->firstOrNew(['email' => $row['email']]);
 
-        if ($user->exists() && $this->option('skipExisting', false) === true) {
+        if ($user->exists && $this->option('skipExisting', false) === true) {
             return null;
         }
 

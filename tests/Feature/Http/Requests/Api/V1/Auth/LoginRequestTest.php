@@ -42,4 +42,12 @@ describe('API | V1 | User | LoginRequest', function (): void {
         'password without uppercase' => ['password0!', false],
         'password without lowercase' => ['PASSW0RD!', false],
     ]);
+
+    it('documents every validated field for Scribe', function (): void {
+        $request = new LoginRequest;
+
+        expect($request->bodyParameters())->toHaveKeys(array_keys($request->rules()))
+            ->toHaveSameSize($request->rules())
+            ->each->toHaveKeys(['description', 'example']);
+    });
 });

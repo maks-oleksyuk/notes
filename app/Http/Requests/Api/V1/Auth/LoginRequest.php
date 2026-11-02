@@ -19,4 +19,21 @@ final class LoginRequest extends FormRequest
             'password' => ['required', Password::defaults()],
         ];
     }
+
+    /**
+     * @return array<string, array{description: string, example: mixed}>
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'email' => [
+                'description' => 'User email.',
+                'example' => 'user@example.com',
+            ],
+            'password' => [
+                'description' => 'User password.',
+                'example' => 'Secret-Password!123',
+            ],
+        ];
+    }
 }

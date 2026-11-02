@@ -7,17 +7,20 @@ use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 covers(ApiExceptionHandler::class);
 
 beforeEach(function (): void {
+    config(['app.debug' => false]);
     $this->responseFactory = App::make(ResponseFactory::class);
     $this->handler = App::make(ApiExceptionHandler::class);
 });
@@ -115,8 +118,6 @@ describe('API | ExceptionHandler', function (): void {
     });
 
     it('falls back to 500 when the exception code is not an HTTP status', function (): void {
-        config(['app.debug' => false]);
-
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('expectsJson')->andReturn(true);
         $request->shouldReceive('is')->andReturn(true);
@@ -200,9 +201,47 @@ describe('API | ExceptionHandler', function (): void {
             ->and($data)->not->toHaveKey('errors');
     });
 
-    it('scrubs the model name from a route-model-binding 404', function (): void {
-        config(['app.debug' => false]);
+    it('leaves HttpResponseException to the framework so its own response is sent', function (): void {
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('expectsJson')->andReturn(true);
+        $request->shouldReceive('is')->andReturn(true);
+        $request->shouldReceive('getRequestUri')->andReturn('/api/v1/test');
 
+        $exception = new HttpResponseException(new JsonResponse(['ok' => false], HttpFoundationResponse::HTTP_CONFLICT));
+
+        expect(($this->handler)($exception, $request))->toBeNull();
+    });
+
+    it('keeps a custom ValidationException status', function (): void {
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('expectsJson')->andReturn(true);
+        $request->shouldReceive('is')->andReturn(true);
+        $request->shouldReceive('getRequestUri')->andReturn('/api/v1/test');
+
+        $exception = ValidationException::withMessages(['field' => ['taken']])->status(HttpFoundationResponse::HTTP_CONFLICT);
+
+        $response = ($this->handler)($exception, $request);
+        assert($response instanceof JsonResponse);
+
+        expect($response->getStatusCode())->toBe(HttpFoundationResponse::HTTP_CONFLICT);
+    });
+
+    it('forwards headers carried by HTTP exceptions', function (): void {
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('expectsJson')->andReturn(true);
+        $request->shouldReceive('is')->andReturn(true);
+        $request->shouldReceive('getRequestUri')->andReturn('/api/v1/test');
+
+        $exception = new MethodNotAllowedHttpException(['GET', 'HEAD']);
+
+        $response = ($this->handler)($exception, $request);
+        assert($response instanceof JsonResponse);
+
+        expect($response->headers->get('Allow'))->toBe('GET, HEAD')
+            ->and($response->headers->get('Content-Type'))->toBe('application/problem+json');
+    });
+
+    it('scrubs the model name from a route-model-binding 404', function (): void {
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('expectsJson')->andReturn(true);
         $request->shouldReceive('is')->andReturn(true);

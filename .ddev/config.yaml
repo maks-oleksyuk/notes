@@ -28,6 +28,8 @@ web_extra_daemons:
   - name: 'pulse'
     command: 'php artisan pulse:check'
     directory: /var/www/html
+webimage_extra_packages:
+  - chromium
 hooks:
   pre-start:
     # Add frankenphp, redis, pnpm and task to ddev if not already installed.

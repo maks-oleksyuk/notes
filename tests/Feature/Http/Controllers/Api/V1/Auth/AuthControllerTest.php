@@ -66,6 +66,11 @@ describe('API | V1 | Actions | Auth', function (): void {
             $this->postJson('/api/v1/login', $payload)->assertUnprocessable();
         }
 
-        $this->postJson('/api/v1/login', $payload)->assertTooManyRequests();
+        $this->postJson('/api/v1/login', $payload)
+            ->assertTooManyRequests()
+            ->assertHeader('Content-Type', 'application/problem+json')
+            ->assertHeader('Retry-After')
+            ->assertHeader('X-RateLimit-Limit', '5')
+            ->assertHeader('X-RateLimit-Remaining', '0');
     });
 });

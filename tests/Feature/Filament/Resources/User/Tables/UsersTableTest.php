@@ -32,7 +32,7 @@ describe('Filament | User Table', function (): void {
             ->assertTableFilterExists('email')
             ->assertActionExists(TestAction::make(ViewAction::class)->table($user))
             ->assertActionExists(TestAction::make(DeleteAction::class)->table($user))
-            ->selectTableRecords($user->pluck('id')->toArray())
+            ->selectTableRecords([$user->getKey()])
             ->callAction(TestAction::make(DeleteBulkAction::class)->table()->bulk())
             ->assertActionVisible(TestAction::make(DeleteBulkAction::class)->table()->bulk())
             ->assertActionExists(TestAction::make(DeleteBulkAction::class)->table()->bulk());

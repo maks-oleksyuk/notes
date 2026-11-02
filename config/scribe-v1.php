@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 use App\Support\Scribe\Extracting\Strategies\Responses\AppDefaultResponses;
+use App\Support\Scribe\Extracting\Strategies\Responses\AppResponseAttributes;
 use App\Support\Scribe\Writing\OpenApiSpecGenerators\ScalarOpenApiGenerator;
 use Knuckles\Scribe\Config\AuthIn;
 use Knuckles\Scribe\Config\Defaults;
 use Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls;
+use Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseAttributes;
 use Knuckles\Scribe\Extracting\Strategies\StaticData;
 
 use function Knuckles\Scribe\Config\configureStrategy;
@@ -62,7 +64,7 @@ return [
     'static' => [
         // HTML documentation, assets and Postman collection will be generated to this folder.
         // Source Markdown will still be in resources/docs.
-        'output_path' => 'var/scribe/v1',
+        'output_path' => 'public/docs',
     ],
 
     'laravel' => [
@@ -91,31 +93,36 @@ return [
                     'httpclient',
                     'restsharp',
                     'clj_http',
+                    'dart/http',
                     'http',
                     'http1.1',
                     'asynchttp',
                     'nethttp',
                     'okhttp',
                     'unirest',
-                    'xhr',
                     'ofetch',
                     'jquery',
+                    'xhr',
+                    'julia/http',
                     'undici',
                     'nsurlsession',
                     'cohttp',
                     'curl',
                     'guzzle',
+                    'laravel',
                     'webrequest',
                     'restmethod',
                     'python3',
                     'requests',
+                    'aiohttp',
                     'httpx_sync',
                     'httpx_async',
                     'httr',
+                    'httr2',
                     'native',
                     'reqwest',
-                    'httpie',
                     'wget',
+                    'httpie',
                 ],
             ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES),
         ],
@@ -266,7 +273,8 @@ return [
             ...Defaults::BODY_PARAMETERS_STRATEGIES,
         ],
         'responses' => configureStrategy([
-            ...Defaults::RESPONSES_STRATEGIES,
+            AppResponseAttributes::class,
+            ...array_diff(Defaults::RESPONSES_STRATEGIES, [UseResponseAttributes::class]),
             AppDefaultResponses::class,
         ], ResponseCalls::withSettings(
             // Recommended: disable debug mode in response calls to avoid error stack traces in responses

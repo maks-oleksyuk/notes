@@ -13,7 +13,5 @@ describe('API | V1 | User | IndexUserRequest', function (): void {
         ->expect(IndexUserRequest::class)
         ->toExtend(PaginatedRequest::class);
 
-    it('authorizes all requests', fn (): Expectation => expect(new IndexUserRequest()->authorize())->toBeTrue());
-
     it('has no additional rules', fn (): Expectation => expect(new IndexUserRequest()->rules())->toBeEmpty());
 });

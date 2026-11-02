@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 use App\Support\Scribe\Extracting\Strategies\Responses\AppDefaultResponses;
+use App\Support\Scribe\Extracting\Strategies\Responses\AppResponseAttributes;
 use App\Support\Scribe\Writing\OpenApiSpecGenerators\ScalarOpenApiGenerator;
 use Knuckles\Scribe\Config\AuthIn;
 use Knuckles\Scribe\Config\Defaults;
 use Knuckles\Scribe\Extracting\Strategies\Responses\ResponseCalls;
+use Knuckles\Scribe\Extracting\Strategies\Responses\UseResponseAttributes;
 use Knuckles\Scribe\Extracting\Strategies\StaticData;
 
 use function Knuckles\Scribe\Config\configureStrategy;
@@ -231,7 +233,8 @@ return [
             ...Defaults::BODY_PARAMETERS_STRATEGIES,
         ],
         'responses' => configureStrategy([
-            ...Defaults::RESPONSES_STRATEGIES,
+            AppResponseAttributes::class,
+            ...array_diff(Defaults::RESPONSES_STRATEGIES, [UseResponseAttributes::class]),
             AppDefaultResponses::class,
         ], ResponseCalls::withSettings(
             // Recommended: disable debug mode in response calls to avoid error stack traces in responses

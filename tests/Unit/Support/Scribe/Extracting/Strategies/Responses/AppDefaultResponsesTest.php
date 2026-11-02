@@ -25,9 +25,9 @@ beforeEach(function (): void {
 });
 
 describe('Scribe | AppDefaultResponses', function (): void {
-    it('assigns descriptions for standard successful responses', function (): void {
+    it('assigns descriptions for responses without one', function (): void {
         $endpointData = ExtractedEndpointData::fromRoute($this->route);
-        $statuses = [HttpFoundationResponse::HTTP_OK, HttpFoundationResponse::HTTP_CREATED, HttpFoundationResponse::HTTP_NO_CONTENT];
+        $statuses = [HttpFoundationResponse::HTTP_OK, HttpFoundationResponse::HTTP_CREATED, HttpFoundationResponse::HTTP_NO_CONTENT, HttpFoundationResponse::HTTP_FORBIDDEN];
 
         $endpointData->responses = new ScribeResponseCollection(array_map(
             fn (int $status): ScribeResponse => new ScribeResponse(['status' => $status]),
@@ -44,13 +44,40 @@ describe('Scribe | AppDefaultResponses', function (): void {
         }
     });
 
-    it('adds unauthorized error response for authenticated endpoints', function (): void {
+    it('leaves the description empty for a non-standard status', function (): void {
+        $endpointData = ExtractedEndpointData::fromRoute($this->route);
+        $endpointData->responses = new ScribeResponseCollection([
+            new ScribeResponse(['status' => 299]),
+        ]);
+
+        $this->scribeStrategy->__invoke($endpointData);
+        $response = $endpointData->responses->first();
+        assert($response instanceof ScribeResponse);
+
+        expect($response->description)->toBe('');
+    });
+
+    it('keeps existing response descriptions', function (): void {
+        $endpointData = ExtractedEndpointData::fromRoute($this->route);
+        $endpointData->responses = new ScribeResponseCollection([
+            new ScribeResponse(['status' => HttpFoundationResponse::HTTP_OK, 'description' => 'Custom']),
+        ]);
+
+        $this->scribeStrategy->__invoke($endpointData);
+        $response = $endpointData->responses->first();
+        assert($response instanceof ScribeResponse);
+
+        expect($response->description)->toBe('Custom');
+    });
+
+    it('adds unauthorized and forbidden error responses for authenticated endpoints', function (): void {
         $endpointData = ExtractedEndpointData::fromRoute($this->route);
         $endpointData->metadata->authenticated = true;
 
         $responses = $this->scribeStrategy->__invoke($endpointData);
 
         assertErrorResponseStructure($responses, HttpFoundationResponse::HTTP_UNAUTHORIZED);
+        assertErrorResponseStructure($responses, HttpFoundationResponse::HTTP_FORBIDDEN);
     });
 
     it('adds not found error response when url parameters exist', function (): void {
