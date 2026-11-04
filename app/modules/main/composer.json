@@ -1,0 +1,6 @@
+{
+    "name": "app/main",
+    "license": "GPL-3.0-or-later",
+    "type": "drupal-custom-module",
+    "version": "1.0-dev"
+}
