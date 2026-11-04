@@ -8,8 +8,12 @@ export function sentry(): ApiPlugin {
   return {
     name: 'sentry',
     onFinalError(error, options) {
-      if (error.name === 'AbortError') return;
-      if (error instanceof ApiError && error.status < 500) return;
+      if (error.name === 'AbortError') {
+        return;
+      }
+      if (error instanceof ApiError && error.status < 500) {
+        return;
+      }
 
       captureException(error, {
         contexts: {

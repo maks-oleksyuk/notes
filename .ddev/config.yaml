@@ -39,8 +39,8 @@ hooks:
   pre-start:
     # Add pnpm and task to ddev if not already installed.
     - exec-host: |
-        ddev add-on list --installed | grep -q 'ddev/ddev-pnpm' || ddev add-on get ddev/ddev-pnpm > /dev/null
-        ddev add-on list --installed | grep -q 'gebruederheitz/ddev-taskfile' || ddev add-on get gebruederheitz/ddev-taskfile > /dev/null
+        ddev add-on list --installed | grep -q 'ddev-pnpm'     || ddev add-on get ddev/ddev-pnpm > /dev/null
+        ddev add-on list --installed | grep -q 'ddev-taskfile' || ddev add-on get gebruederheitz/ddev-taskfile > /dev/null
   post-start:
-    - exec: pnpm install
+    - exec: pnpm install --color=always
     - exec: pnpm exec playwright install chromium

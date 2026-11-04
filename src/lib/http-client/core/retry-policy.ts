@@ -17,13 +17,19 @@ function defaultMaxRetryAfter(): number {
 // Returns ms, or null when absent/unparseable.
 function parseRetryAfter(headers?: Headers): number | null {
   const value = headers?.get('retry-after');
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
 
   const seconds = Number(value);
-  if (!Number.isNaN(seconds)) return seconds * 1000;
+  if (!Number.isNaN(seconds)) {
+    return seconds * 1000;
+  }
 
   const date = Date.parse(value);
-  if (!Number.isNaN(date)) return Math.max(0, date - Date.now());
+  if (!Number.isNaN(date)) {
+    return Math.max(0, date - Date.now());
+  }
 
   return null;
 }
@@ -54,7 +60,9 @@ export interface RetryDecision {
 export function resolveRetry(
   input?: RetryOptions | false,
 ): ResolvedRetry | null {
-  if (!input) return null;
+  if (input === undefined || input === false) {
+    return null;
+  }
   return {
     limit: input.limit ?? 3,
     delay: input.delay ?? 1000,
@@ -73,23 +81,31 @@ export function nextRetry(
   cfg: ResolvedRetry,
   method?: HttpMethod,
 ): RetryDecision | null {
-  if (attempt >= cfg.limit) return null;
+  if (attempt >= cfg.limit) {
+    return null;
+  }
   // Non-idempotent methods (POST by default) never retry, regardless of the error — a
   // duplicate side effect is worse than a failed request.
-  if (method && !cfg.methods.includes(method)) return null;
+  if (method && !cfg.methods.includes(method)) {
+    return null;
+  }
 
   const retryable =
     error instanceof ApiError
       ? cfg.statusCodes.includes(error.status)
       : error instanceof NetworkError || error instanceof TimeoutError;
-  if (!retryable) return null;
+  if (!retryable) {
+    return null;
+  }
 
   // A server Retry-After (429/503) overrides local backoff, but if it asks for longer than we're willing to wait,
   // give up — retrying sooner would just get rejected again and waste an attempt.
   if (cfg.respectRetryAfter && error instanceof ApiError) {
     const retryAfter = parseRetryAfter(error.headers);
     if (retryAfter != null) {
-      if (retryAfter > cfg.maxRetryAfter) return null;
+      if (retryAfter > cfg.maxRetryAfter) {
+        return null;
+      }
       return { wait: retryAfter, fromRetryAfter: true };
     }
   }

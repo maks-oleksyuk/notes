@@ -46,7 +46,9 @@ describe('dummyjson proxy route', () => {
         return handler(request, { params });
       }),
     );
-    for (const res of responses) expect(res.status).toBe(200);
+    for (const res of responses) {
+      expect(res.status).toBe(200);
+    }
 
     const [url] = fetchMock.mock.calls[0];
     expect(String(url)).toMatch(/^https:\/\/.*\/products\?limit=2$/u);
