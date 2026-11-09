@@ -91,7 +91,7 @@ jobs:
           persist-credentials: false
 
       - name: '⚙️ Prepare environment'
-        uses: ./.github/actions/setup-validation
+        uses: $/.github/actions/setup-validation
         with:
           use-php: ${{ matrix.command.use-php }}
           use-node: ${{ matrix.command.use-node }}
@@ -134,13 +134,13 @@ jobs:
           persist-credentials: false
 
       - name: '⚙️ Prepare environment'
-        uses: ./.github/actions/setup-testing
+        uses: $/.github/actions/setup-testing
 
       - name: '${{ matrix.command.name }} tests'
         run: task ${{ matrix.command.command }}
 
       - name: '☂️ Upload results to Codecov'
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: maks-oleksyuk/notes
@@ -148,7 +148,7 @@ jobs:
           directory: ./var/report
 
       - name: '☂️ Upload test results to Codecov'
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: ${{ matrix.command.name }}
