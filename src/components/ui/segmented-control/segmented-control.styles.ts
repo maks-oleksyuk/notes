@@ -1,6 +1,10 @@
 import { tv } from 'tailwind-variants';
 
-import type { VariantProps } from 'tailwind-variants';
+import type { MantineSize, SegmentedControlStylesNames } from '@mantine/core';
+import type { ClassValue, VariantProps } from 'tailwind-variants';
+
+// Classes per component slot: { label: '…', indicator: ['…', '…'] }
+type Slots = Partial<Record<SegmentedControlStylesNames, ClassValue>>;
 
 export const segmentedControlVariants = tv({
   slots: {
@@ -36,7 +40,7 @@ export const segmentedControlVariants = tv({
       md: { label: 'h-8 px-3 text-sm' },
       lg: { label: 'h-9 px-4 text-base' },
       xl: { label: 'h-10 px-5 text-lg' },
-    },
+    } satisfies Record<MantineSize, Slots>,
     radius: {
       xs: { root: 'rounded-sm', label: 'rounded-xs', indicator: 'rounded-xs' },
       sm: { root: 'rounded-md', label: 'rounded-sm', indicator: 'rounded-sm' },
@@ -47,7 +51,7 @@ export const segmentedControlVariants = tv({
         label: 'rounded-full',
         indicator: 'rounded-full',
       },
-    },
+    } satisfies Record<MantineSize, Slots>,
   },
   defaultVariants: {
     size: 'md',

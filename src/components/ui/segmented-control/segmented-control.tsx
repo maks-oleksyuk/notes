@@ -19,25 +19,29 @@ type SegmentedControlProps = Omit<
     classNames?: Partial<Record<SegmentedControlStylesNames, string>>;
   };
 
-export function SegmentedControl(props: SegmentedControlProps) {
-  const classNames = segmentedControlVariants(props);
+export function SegmentedControl({
+  size,
+  radius,
+  className,
+  classNames,
+  ...props
+}: SegmentedControlProps) {
+  const styles = segmentedControlVariants({ size, radius });
+  const rootClassName = styles.root({ className });
+  const slotClassNames = {
+    control: styles.control({ className: classNames?.control }),
+    input: styles.input({ className: classNames?.input }),
+    label: styles.label({ className: classNames?.label }),
+    indicator: styles.indicator({ className: classNames?.indicator }),
+    innerLabel: styles.innerLabel({ className: classNames?.innerLabel }),
+  };
 
   return (
     <HeadlessMantineProvider>
       <MantineSegmentedControl
         {...props}
-        className={classNames.root({ className: props.className })}
-        classNames={{
-          control: classNames.control({ className: props.classNames?.control }),
-          input: classNames.input({ className: props.classNames?.input }),
-          label: classNames.label({ className: props.classNames?.label }),
-          indicator: classNames.indicator({
-            className: props.classNames?.indicator,
-          }),
-          innerLabel: classNames.innerLabel({
-            className: props.classNames?.innerLabel,
-          }),
-        }}
+        className={rootClassName}
+        classNames={slotClassNames}
       />
     </HeadlessMantineProvider>
   );
