@@ -1,0 +1,41 @@
+services:
+  app:
+    image: ghcr.io/maks-oleksyuk/notes-drupal:dev
+    pull_policy: always
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+    expose:
+      - 8080
+      - 8443
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - files:/var/www/html/web/sites/default/files
+      - private:/var/www/html/private
+
+  db:
+    image: mariadb:12.3
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${DB_DATABASE}
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_RANDOM_ROOT_PASSWORD: 'true'
+    expose:
+      - 3306
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+      interval: 5s
+      timeout: 10s
+      retries: 20
+
+volumes:
+  db_data: {}
+  files: {}
+  private: {}

@@ -11,6 +11,25 @@ if (getenv('IS_DDEV_PROJECT') == 'true' && is_readable($ddev_settings)) {
   require $ddev_settings;
 }
 
+// Docker (Dokploy) environment.
+if (getenv('DB_HOST')) {
+  $databases['default']['default'] = [
+    'driver' => 'mysql',
+    'host' => getenv('DB_HOST'),
+    'port' => getenv('DB_PORT') ?: '3306',
+    'database' => getenv('DB_DATABASE'),
+    'username' => getenv('DB_USERNAME'),
+    'password' => getenv('DB_PASSWORD'),
+    'prefix' => '',
+    'isolation_level' => 'READ COMMITTED',
+  ];
+  $settings['hash_salt'] = getenv('DRUPAL_HASH_SALT');
+  $settings['trusted_host_patterns'] = ['^' . preg_quote(getenv('DRUPAL_HOST')) . '$'];
+  // App is reachable only through the Dokploy (Traefik) proxy.
+  $settings['reverse_proxy'] = TRUE;
+  $settings['reverse_proxy_addresses'] = [$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'];
+}
+
 $settings['config_sync_directory'] = '../config/sync';
 $settings['file_private_path'] = '../private';
 $settings['skip_permissions_hardening'] = TRUE;

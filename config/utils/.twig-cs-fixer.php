@@ -11,5 +11,5 @@ return new Config()
     ->in('app')
     ->exclude('tests'),
   )
-  ->setCacheFile('var/cache/twig-cs-fixer.cache')
+  ->setCacheFile('var/cache/twig/twig-cs-fixer.cache')
   ->addTokenParser(new TwigTransTokenParser());

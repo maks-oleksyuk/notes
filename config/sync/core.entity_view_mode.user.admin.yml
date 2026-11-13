@@ -1,0 +1,11 @@
+uuid: bf4f7d92-bc65-46eb-bb38-03f360032871
+langcode: en
+status: true
+dependencies:
+  module:
+    - user
+id: user.admin
+label: Admin
+description: 'Table-style read-only view for admin pages.'
+targetEntityType: user
+cache: true

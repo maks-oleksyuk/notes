@@ -1,0 +1,5 @@
+{
+    "name": "app/main",
+    "type": "drupal-custom-module",
+    "version": "1.0-dev"
+}
