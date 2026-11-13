@@ -65,11 +65,13 @@ export interface NextProxyOptions {
  */
 export function toNextJsProxyHandler(
   api: HttpClient,
-  {
-    headers: buildHeaders = defaultHeaders,
-    supportsFiles = false,
-  }: NextProxyOptions = {},
+  options: NextProxyOptions = {},
 ) {
+  // Not destructuring defaults: Biome's useStrictBooleanExpressions ignores them
+  // and still types `supportsFiles` as `boolean | undefined` (biomejs/biome#12335).
+  const buildHeaders = options.headers ?? defaultHeaders;
+  const supportsFiles = options.supportsFiles ?? false;
+
   async function handle(
     req: NextRequest,
     { params }: { params: Promise<{ path: string[] }> },
@@ -87,10 +89,7 @@ export function toNextJsProxyHandler(
     let body: unknown;
     if (BODY_METHODS.has(req.method)) {
       const contentType = req.headers.get('content-type') ?? '';
-      if (
-        supportsFiles === true &&
-        contentType.includes('multipart/form-data')
-      ) {
+      if (supportsFiles && contentType.includes('multipart/form-data')) {
         body = await req.formData();
       } else {
         const text = await req.text();
@@ -107,8 +106,8 @@ export function toNextJsProxyHandler(
       }
     }
 
-    const wantsRaw =
-      supportsFiles === true && req.headers.get('x-proxy-response') === 'raw';
+    const shouldReturnRaw =
+      supportsFiles && req.headers.get('x-proxy-response') === 'raw';
 
     try {
       const response = await api.request<Blob>(targetPath, {
@@ -116,7 +115,7 @@ export function toNextJsProxyHandler(
         params: collectSearchParams(req),
         headers: buildHeaders(req),
         body,
-        responseType: wantsRaw ? 'blob' : 'json',
+        responseType: shouldReturnRaw ? 'blob' : 'json',
         // Tie the upstream call to the browser's own lifetime: tab closed /
         // TanStack aborting an unmounted query cancels it too.
         signal: req.signal,
@@ -124,7 +123,7 @@ export function toNextJsProxyHandler(
       if (NULL_BODY_STATUSES.has(response.status) || response.data === null) {
         return new NextResponse(null, { status: response.status });
       }
-      if (wantsRaw) {
+      if (shouldReturnRaw) {
         const headers = new Headers();
         const contentType = response.headers.get('content-type');
         const contentDisposition = response.headers.get('content-disposition');
@@ -140,27 +139,27 @@ export function toNextJsProxyHandler(
         });
       }
       return NextResponse.json(response.data, { status: response.status });
-    } catch (err) {
-      if (err instanceof ApiError) {
+    } catch (error) {
+      if (error instanceof ApiError) {
         const errorBody =
-          err.data !== null && typeof err.data === 'object'
-            ? err.data
-            : { message: err.message };
+          error.data !== null && typeof error.data === 'object'
+            ? error.data
+            : { message: error.message };
         const headers = new Headers();
         // `Retry-After` is the one upstream header the browser side acts on
         // (its retry policy honors it on 429/503) — everything else stays behind the proxy on purpose.
-        const retryAfter = err.headers?.get('retry-after');
+        const retryAfter = error.headers?.get('retry-after');
         if (retryAfter) {
           headers.set('Retry-After', retryAfter);
         }
-        return NextResponse.json(errorBody, { status: err.status, headers });
+        return NextResponse.json(errorBody, { status: error.status, headers });
       }
-      // The browser aborted (see `signal` above) — nobody is listening for
-      // this response. 499 is nginx's "client closed request" convention.
-      if (err instanceof Error && err.name === 'AbortError') {
+      // The browser aborted (see `signal` above) — nobody is listening for this response.
+      // 499 is nginx's "client closed request" convention.
+      if (error instanceof Error && error.name === 'AbortError') {
         return new NextResponse(null, { status: 499 });
       }
-      if (err instanceof TimeoutError) {
+      if (error instanceof TimeoutError) {
         return NextResponse.json(
           { message: 'Upstream timeout' },
           { status: 504 },

@@ -44,8 +44,8 @@ describe('validation plugin', () => {
     let caught: unknown;
     try {
       await plugin.onResponse?.(res, { schema: PostSchema });
-    } catch (e) {
-      caught = e;
+    } catch (error) {
+      caught = error;
     }
 
     expect(caught).toBeInstanceOf(ValidationError);
@@ -71,8 +71,8 @@ describe('validation plugin', () => {
     let caught: unknown;
     try {
       await plugin.onResponse?.(res, { schema: unionSchema });
-    } catch (e) {
-      caught = e;
+    } catch (error) {
+      caught = error;
     }
 
     const err = caught as ValidationError;

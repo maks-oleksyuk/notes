@@ -17,7 +17,8 @@ let tokens: AuthTokens | null = null;
  * in `@/lib/http-client`.)
  */
 async function refreshDummyJsonToken(): Promise<string> {
-  if (!tokens?.refreshToken) {
+  const current = tokens;
+  if (!current?.refreshToken) {
     throw new Error('No refresh token available');
   }
   const res = await fetch(
@@ -25,15 +26,24 @@ async function refreshDummyJsonToken(): Promise<string> {
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken: tokens.refreshToken }),
+      body: JSON.stringify({ refreshToken: current.refreshToken }),
     },
   );
+  // The session can change while the request is in flight (logout, a new
+  // login). Only touch `tokens` if it's still the pair this refresh started
+  // from — otherwise a late response would revive a logged-out session.
+  if (tokens !== current) {
+    throw new Error('Session changed during refresh');
+  }
   if (!res.ok) {
     clearDummyJsonTokens();
     throw new Error(`Refresh failed: ${res.status}`);
   }
 
   const next: AuthTokens = await res.json();
+  if (tokens !== current) {
+    throw new Error('Session changed during refresh');
+  }
   tokens = next;
   return next.accessToken;
 }

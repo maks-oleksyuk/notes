@@ -4,8 +4,8 @@ import {
   ansiToConsoleFormat,
   colorizeMethod,
   colorizeStatus,
+  isColorSupported,
   paint,
-  supportsColor,
 } from '@/lib/http-client/plugins/logger/colors';
 
 describe('paint', () => {
@@ -95,7 +95,7 @@ describe('colorizeMethod', () => {
   });
 });
 
-describe('supportsColor', () => {
+describe('isColorSupported', () => {
   afterEach(() => {
     vi.unstubAllEnvs();
     vi.unstubAllGlobals();
@@ -103,7 +103,7 @@ describe('supportsColor', () => {
 
   it('is false when NO_COLOR is set', () => {
     vi.stubEnv('NO_COLOR', '1');
-    expect(supportsColor()).toBe(false);
+    expect(isColorSupported()).toBe(false);
   });
 
   it('is false when stdout is not a TTY', () => {
@@ -113,7 +113,7 @@ describe('supportsColor', () => {
       value: false,
       configurable: true,
     });
-    expect(supportsColor()).toBe(false);
+    expect(isColorSupported()).toBe(false);
     Object.defineProperty(process.stdout, 'isTTY', {
       value: original,
       configurable: true,
@@ -127,7 +127,7 @@ describe('supportsColor', () => {
       value: true,
       configurable: true,
     });
-    expect(supportsColor()).toBe(true);
+    expect(isColorSupported()).toBe(true);
     Object.defineProperty(process.stdout, 'isTTY', {
       value: original,
       configurable: true,

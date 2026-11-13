@@ -33,7 +33,7 @@ const ANSI_RE = /\x1b\[(?<code>\d+)m/gu;
 
 // ANSI escapes only make sense in a real terminal. Non-TTY sinks (Docker, CI, browser devtools) render them as garbage,
 // so colors are off unless stdout is a TTY and NO_COLOR is unset.
-export function supportsColor(): boolean {
+export function isColorSupported(): boolean {
   return (
     typeof process !== 'undefined' &&
     // biome-ignore lint/style/noProcessEnv: NO_COLOR is a generic convention, not a project var.
@@ -42,36 +42,46 @@ export function supportsColor(): boolean {
   );
 }
 
-export function paint(text: string, color: Color, on: boolean): string {
-  return on ? `${codes[color]}${text}${codes.reset}` : text;
+export function paint(
+  text: string,
+  color: Color,
+  isColorEnabled: boolean,
+): string {
+  return isColorEnabled ? `${codes[color]}${text}${codes.reset}` : text;
 }
 
-export function colorizeStatus(status: number, on: boolean): string {
+export function colorizeStatus(
+  status: number,
+  isColorEnabled: boolean,
+): string {
   if (status >= 200 && status < 300) {
-    return paint(String(status), 'green', on);
+    return paint(String(status), 'green', isColorEnabled);
   }
   if (status >= 300 && status < 400) {
-    return paint(String(status), 'cyan', on);
+    return paint(String(status), 'cyan', isColorEnabled);
   }
   if (status >= 400 && status < 500) {
-    return paint(String(status), 'yellow', on);
+    return paint(String(status), 'yellow', isColorEnabled);
   }
-  return paint(String(status), 'red', on);
+  return paint(String(status), 'red', isColorEnabled);
 }
 
-export function colorizeMethod(method: string, on: boolean): string {
+export function colorizeMethod(
+  method: string,
+  isColorEnabled: boolean,
+): string {
   const m = method.toUpperCase();
   if (m === 'POST') {
-    return paint(m, 'green', on);
+    return paint(m, 'green', isColorEnabled);
   }
   if (m === 'GET') {
-    return paint(m, 'cyan', on);
+    return paint(m, 'cyan', isColorEnabled);
   }
   if (m === 'PUT' || m === 'PATCH') {
-    return paint(m, 'yellow', on);
+    return paint(m, 'yellow', isColorEnabled);
   }
   if (m === 'DELETE') {
-    return paint(m, 'red', on);
+    return paint(m, 'red', isColorEnabled);
   }
   return m;
 }

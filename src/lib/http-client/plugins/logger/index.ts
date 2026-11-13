@@ -6,8 +6,8 @@ import {
   ansiToConsoleFormat,
   colorizeMethod,
   colorizeStatus,
+  isColorSupported,
   paint,
-  supportsColor,
 } from './colors';
 import { createLevelFilter, resolveLevel } from './levels';
 
@@ -119,7 +119,7 @@ export function logger({
   // real TTY on the server, or browser devtools (where the ANSI is converted
   // to %c CSS in `toConsoleArgs`; the TTY check alone would leave browser logs
   // colorless, since a browser has no process.stdout).
-  const isColorEnabled = !customLogger && (isBrowser || supportsColor());
+  const isColorEnabled = !customLogger && (isBrowser || isColorSupported());
 
   // Correlates the three lines of one request when logs from parallel requests interleave.
   // Empty when the request has no id.

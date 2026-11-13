@@ -187,8 +187,8 @@ export class HttpClient {
       try {
         // biome-ignore lint/performance/noAwaitInLoops: each attempt only happens after the previous one failed and backed off — parallel attempts would defeat retry semantics.
         return await this.attempt<T>(path, mergedOptions, plugins);
-      } catch (err) {
-        let finalError = normalizeError(err);
+      } catch (error) {
+        let finalError = normalizeError(error);
 
         // Phase 1 — recovery: a plugin (e.g., auth) may fix the cause and return a response.
         // The first that returns short-circuits the rest.
@@ -251,11 +251,11 @@ export class HttpClient {
               // `?? undefined`: RequestInit types `signal` as possibly null.
               await sleep(decision.wait, mergedOptions.signal ?? undefined);
               continue;
-            } catch (abortErr) {
+            } catch (abortError) {
               // Caller canceled during the backoff wait. Fall through to Phase 3 with the
               // abort as the final error, so observers (logger) still see the request end
               // — same path a mid-fetch abort takes.
-              finalError = toAbortError(abortErr);
+              finalError = toAbortError(abortError);
             }
           }
         }
@@ -324,25 +324,25 @@ export class HttpClient {
           signal,
         }),
       );
-    } catch (err) {
+    } catch (error) {
       // fetch rejects with the signal's abort reason — AbortSignal.timeout()'s reason is
       // already a DOMException named 'TimeoutError', distinguishing "our timer fired"
       // (retryable) from "the caller canceled" (must propagate as-is).
-      if (err instanceof Error && err.name === 'TimeoutError') {
+      if (error instanceof Error && error.name === 'TimeoutError') {
         // biome-ignore lint/style/useErrorCause: `TimeoutError` forwards its third arg as `cause`.
-        throw new TimeoutError(url, timeoutMs as number, err);
+        throw new TimeoutError(url, timeoutMs as number, error);
       }
       // `name` check, not `instanceof DOMException` — some runtimes reject with a plain Error.
-      if (err instanceof Error && err.name === 'AbortError') {
-        throw err;
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw error;
       }
       // Classified here (not a catch-all around the whole attempt) so a throwing user hook
       // downstream can't get mislabeled as a retryable network failure.
       // biome-ignore lint/style/useErrorCause: `NetworkError` forwards its third arg as `cause`.
       throw new NetworkError(
-        err instanceof Error ? err.message : 'Unknown network error',
+        error instanceof Error ? error.message : 'Unknown network error',
         url,
-        err,
+        error,
       );
     }
     const duration = Math.round(performance.now() - start);

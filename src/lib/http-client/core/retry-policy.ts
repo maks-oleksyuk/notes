@@ -90,11 +90,11 @@ export function nextRetry(
     return null;
   }
 
-  const retryable =
+  const isRetryable =
     error instanceof ApiError
       ? cfg.statusCodes.includes(error.status)
       : error instanceof NetworkError || error instanceof TimeoutError;
-  if (!retryable) {
+  if (!isRetryable) {
     return null;
   }
 
