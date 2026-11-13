@@ -66,7 +66,7 @@ describe('safe()', () => {
   });
 });
 
-describe('HttpClient.safe', () => {
+describe('httpClient.safe', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {

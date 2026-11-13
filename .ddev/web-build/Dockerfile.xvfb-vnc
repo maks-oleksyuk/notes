@@ -1,0 +1,19 @@
+#ddev-silent-no-warn
+
+# Virtual display + web VNC client, so `headless: false` in vitest.config.ts
+# has somewhere to open a real Chromium window and we can actually watch it.
+# The container has no display otherwise.
+#
+# novnc pulls in Debian's system nodejs as a hard dependency, which overwrites
+# /usr/bin/node and shadows the `n`-managed Node version the rest of this image
+# expects. Capture the active version first and re-pin it afterward.
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt,sharing=locked \
+  NODE_VERSION_BEFORE=$(node -v) && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    xvfb \
+    x11vnc \
+    fluxbox \
+    novnc \
+    websockify \
+    && n "${NODE_VERSION_BEFORE#v}"

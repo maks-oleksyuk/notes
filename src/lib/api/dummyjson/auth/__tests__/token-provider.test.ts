@@ -70,6 +70,23 @@ describe('dummyJsonTokenProvider', () => {
     expect(getDummyJsonAccessToken()).toBeNull();
   });
 
+  it('refreshToken does not revive a session that logged out mid-refresh', async () => {
+    setDummyJsonTokens({ accessToken: 'stale', refreshToken: 'r1' });
+    let respond: (response: Response) => void = () => {};
+    fetchMock.mockReturnValueOnce(
+      new Promise<Response>((resolve) => {
+        respond = resolve;
+      }),
+    );
+
+    const refresh = dummyJsonTokenProvider.refreshToken?.();
+    clearDummyJsonTokens();
+    respond(jsonResponse({ accessToken: 'fresh', refreshToken: 'r2' }));
+
+    await expect(refresh).rejects.toThrow('Session changed during refresh');
+    expect(getDummyJsonAccessToken()).toBeNull();
+  });
+
   it('onAuthFailure clears the token pair', async () => {
     setDummyJsonTokens({ accessToken: 'a1', refreshToken: 'r1' });
     await dummyJsonTokenProvider.onAuthFailure?.(new Error('dead session'));

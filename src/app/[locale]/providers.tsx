@@ -6,7 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { NextIntlClientProvider } from 'next-intl';
 import { useState } from 'react';
 
-import { defaultLocale } from '@/i18n/config';
+import { defaultLocale, timeZone } from '@/i18n/config';
 import { makeQueryClient } from '@/lib/http-client/query-client';
 
 import type { QueryClient } from '@tanstack/react-query';
@@ -33,10 +33,12 @@ function getQueryClient(): QueryClient {
   return browserQueryClient;
 }
 
+const noMessages: AbstractIntlMessages = {};
+
 export function Providers({
   children,
   locale = defaultLocale,
-  messages = {},
+  messages = noMessages,
 }: {
   children: React.ReactNode;
   locale?: string;
@@ -45,7 +47,11 @@ export function Providers({
   const [queryClient] = useState(getQueryClient);
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+    <NextIntlClientProvider
+      locale={locale}
+      messages={messages}
+      timeZone={timeZone}
+    >
       <MantineProvider defaultColorScheme='auto'>
         <QueryClientProvider client={queryClient}>
           {children}

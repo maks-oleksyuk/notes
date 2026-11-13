@@ -18,7 +18,7 @@ describe('resolveLevel', () => {
     expect(resolveLevel(undefined, 'warn')).toBe('warn');
   });
 
-  it('falls back for inherited object keys (C1 — e.g. API_LOG_LEVEL=toString)', () => {
+  it('falls back for inherited object keys (C1 — e.g. an invalid level string such as "toString")', () => {
     expect(resolveLevel('toString', 'info')).toBe('info');
     expect(resolveLevel('hasOwnProperty', 'info')).toBe('info');
   });

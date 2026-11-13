@@ -3,11 +3,9 @@ import { ValidationError } from '@/lib/http-client/core';
 import type { ZodError } from 'zod';
 import type { ApiPlugin } from '@/lib/http-client/core';
 
-type ZodIssue = ZodError['issues'][number];
-// A union issue nests the per-arm failures under `.errors` — not on the base
-// `ZodIssue` type, so widen locally to reach them.
-type UnionIssue = ZodIssue & { errors?: ZodIssue[][] };
+const INVALID_INPUT_PREFIX_RE = /^Invalid input:\s*/iu;
 
+type ZodIssue = ZodError['issues'][number];
 const MAX_ISSUES = 5;
 
 // Union failures wrap the real problems (one set per arm) under `.errors`;
@@ -16,9 +14,13 @@ const MAX_ISSUES = 5;
 function flattenIssues(issues: readonly ZodIssue[]): ZodIssue[] {
   const out: ZodIssue[] = [];
   for (const issue of issues) {
-    const nested = (issue as UnionIssue).errors;
-    if (Array.isArray(nested)) out.push(...flattenIssues(nested.flat()));
-    else out.push(issue);
+    // A union issue nests the per-arm failures under `.errors` — not on the base `ZodIssue` type, so probe for it.
+    const nested = 'errors' in issue ? issue.errors : undefined;
+    if (Array.isArray(nested)) {
+      out.push(...flattenIssues(nested.flat()));
+    } else {
+      out.push(issue);
+    }
   }
   return out;
 }
@@ -30,7 +32,7 @@ function formatIssue(issue: ZodIssue): string {
       : '(root)';
   // Zod prefixes every type error with "Invalid input: " — drop it, the path
   // already says which input.
-  const reason = issue.message.replace(/^Invalid input:\s*/iu, '');
+  const reason = issue.message.replace(INVALID_INPUT_PREFIX_RE, '');
   return `${path}: ${reason}`;
 }
 
@@ -45,7 +47,9 @@ export function summarizeIssues(issues: readonly ZodIssue[]): string {
   const lines: string[] = [];
   for (const issue of flattenIssues(issues)) {
     const line = formatIssue(issue);
-    if (seen.has(line)) continue;
+    if (seen.has(line)) {
+      continue;
+    }
     seen.add(line);
     lines.push(line);
   }

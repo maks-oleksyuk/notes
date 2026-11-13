@@ -17,7 +17,7 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
-describe('HttpClient', () => {
+describe('httpClient', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
@@ -179,7 +179,7 @@ describe('HttpClient', () => {
     const recovery: ApiPlugin = {
       name: 'flaky-recovery',
       onError() {
-        throw 'not an Error instance'; // eslint-disable-line no-throw-literal
+        throw 'not an Error instance';
       },
     };
     const client = new HttpClient('https://api.test', {
@@ -435,8 +435,12 @@ describe('HttpClient', () => {
       const recovery: ApiPlugin = {
         name: 'recovery',
         onError(error, context) {
-          if (!(error instanceof ApiError) || error.status !== 401) return;
-          if (context.options.authRetried) return;
+          if (!(error instanceof ApiError) || error.status !== 401) {
+            return;
+          }
+          if (context.options.authRetried) {
+            return;
+          }
           context.options.authRetried = true;
           return context.retry();
         },
@@ -564,9 +568,13 @@ describe('HttpClient', () => {
       let onRequestCalls = 0;
       const recovery: ApiPlugin = {
         name: 'recovery',
-        onRequest: () => void onRequestCalls++,
+        onRequest: () => {
+          onRequestCalls++;
+        },
         onError: (_err, { retry }) => {
-          if (calls > 1) return;
+          if (calls > 1) {
+            return;
+          }
           return retry();
         },
       };
@@ -583,7 +591,7 @@ describe('HttpClient', () => {
     });
   });
 
-  describe('GET dedup (CP-8, opt-in)', () => {
+  describe('get dedup (CP-8, opt-in)', () => {
     it('is off by default: concurrent identical GETs each hit the network', async () => {
       fetchMock.mockImplementation(async () => jsonResponse({ ok: true }));
       const client = new HttpClient('https://api.test');
@@ -767,7 +775,6 @@ describe('HttpClient', () => {
       await expect(
         client.get('/x', {
           onRequest: () => {
-            // eslint-disable-next-line no-throw-literal
             throw 'string-boom';
           },
         }),

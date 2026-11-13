@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
@@ -15,23 +15,21 @@ import { describe, expect, it } from 'vitest';
 // the cycle entirely — this test fails loudly if that discipline slips.
 const utilsDir = path.resolve(import.meta.dirname, '..', 'utils');
 
-function listTsFiles(dir: string): string[] {
-  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      return entry.name === '__tests__' ? [] : listTsFiles(full);
-    }
-    return entry.name.endsWith('.ts') ? [full] : [];
-  });
-}
-
 describe('http-client utils/ does not import the core/ barrel', () => {
-  it('imports core/* deep, never the bare @/lib/http-client/core barrel', () => {
-    const offenders = listTsFiles(utilsDir)
-      .filter((file) =>
-        fs.readFileSync(file, 'utf8').includes(`from '@/lib/http-client/core'`),
-      )
-      .map((file) => path.relative(utilsDir, file));
+  it('imports core/* deep, never the bare @/lib/http-client/core barrel', async () => {
+    const files = (await readdir(utilsDir, { recursive: true })).filter(
+      (file) =>
+        file.endsWith('.ts') && !file.split(path.sep).includes('__tests__'),
+    );
+    const sources = await Promise.all(
+      files.map(async (file) => ({
+        file,
+        source: await readFile(path.join(utilsDir, file), 'utf8'),
+      })),
+    );
+    const offenders = sources
+      .filter(({ source }) => source.includes(`from '@/lib/http-client/core'`))
+      .map(({ file }) => file);
 
     expect(offenders).toEqual([]);
   });

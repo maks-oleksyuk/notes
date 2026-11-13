@@ -35,8 +35,10 @@ export async function safe<T>(
   try {
     const response = await promise;
     return { data: response.data, error: null };
-  } catch (err) {
-    const error = err instanceof Error ? err : new Error(String(err));
-    return { data: null, error };
+  } catch (error) {
+    return {
+      data: null,
+      error: error instanceof Error ? error : new Error(String(error)),
+    };
   }
 }

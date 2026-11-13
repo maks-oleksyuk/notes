@@ -12,26 +12,38 @@ let tokens: AuthTokens | null = null;
  * Raw `fetch`, not `dummyJsonApi.post(...)` — `client.ts` imports this file
  * to build the `auth` plugin, so calling back into `dummyJsonApi` from here
  * would import `client.ts` back, closing a `client.ts -> token-provider.ts ->
- * client.ts` cycle (the "HttpClient is not a constructor" class of bug the
+ * client.ts` cycle. (The "HttpClient is not a constructor" class of bug the
  * http-client library guards against — see `no-cross-barrel-imports.test.ts`
- * in `@/lib/http-client`).
+ * in `@/lib/http-client`.)
  */
 async function refreshDummyJsonToken(): Promise<string> {
-  if (!tokens?.refreshToken) throw new Error('No refresh token available');
+  const current = tokens;
+  if (!current?.refreshToken) {
+    throw new Error('No refresh token available');
+  }
   const res = await fetch(
     `${getDummyJsonBaseUrl()}${dummyJsonUrls.auth.refresh()}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken: tokens.refreshToken }),
+      body: JSON.stringify({ refreshToken: current.refreshToken }),
     },
   );
+  // The session can change while the request is in flight (logout, a new
+  // login). Only touch `tokens` if it's still the pair this refresh started
+  // from — otherwise a late response would revive a logged-out session.
+  if (tokens !== current) {
+    throw new Error('Session changed during refresh');
+  }
   if (!res.ok) {
     clearDummyJsonTokens();
     throw new Error(`Refresh failed: ${res.status}`);
   }
 
   const next: AuthTokens = await res.json();
+  if (tokens !== current) {
+    throw new Error('Session changed during refresh');
+  }
   tokens = next;
   return next.accessToken;
 }

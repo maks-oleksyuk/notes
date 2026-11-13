@@ -5,11 +5,24 @@ import { ApiError, TimeoutError } from './core';
 import type { NextRequest } from 'next/server';
 import type { HttpClient, HttpMethod } from './core';
 
-const BODY_METHODS = new Set(['POST', 'PUT', 'PATCH']);
+const HTTP_METHODS: readonly string[] = [
+  'HEAD',
+  'QUERY',
+  'GET',
+  'POST',
+  'PUT',
+  'PATCH',
+  'DELETE',
+];
 
-// Statuses the HTTP spec forbids a body on — `new Response(body, ...)` throws
-// for them, and `NextResponse.json` always produces a body (even `null`
-// serializes to the string "null").
+function isHttpMethod(method: string): method is HttpMethod {
+  return HTTP_METHODS.includes(method);
+}
+
+const BODY_METHODS = new Set(['POST', 'PUT', 'PATCH', 'QUERY']);
+
+// Statuses the HTTP spec forbids a body on — `new Response(body, ...)` throws for them,
+// and `NextResponse.json` always produces a body (even `null` serializes to the string "null").
 const NULL_BODY_STATUSES = new Set([204, 205, 304]);
 
 /** Repeated query keys (`?tag=a&tag=b`) forward as arrays — a plain
@@ -17,9 +30,11 @@ const NULL_BODY_STATUSES = new Set([204, 205, 304]);
 function collectSearchParams(
   req: NextRequest,
 ): Record<string, string | string[]> {
+  const params = req.nextUrl.searchParams;
+  const keys = new Set(params.keys());
   const out: Record<string, string | string[]> = {};
-  for (const key of new Set(req.nextUrl.searchParams.keys())) {
-    const values = req.nextUrl.searchParams.getAll(key);
+  for (const key of keys) {
+    const values = params.getAll(key);
     out[key] = values.length > 1 ? values : values[0];
   }
   return out;
@@ -31,12 +46,15 @@ function defaultHeaders(req: NextRequest): Record<string, string> {
 }
 
 export interface NextProxyOptions {
-  /** Headers to forward upstream. Defaults to relaying the browser's own
-   * `Authorization` header as-is. */
+  /**
+   * Headers to forward upstream.
+   * Defaults to relaying the browser's own `Authorization` header as-is.
+   */
   headers?: (req: NextRequest) => Record<string, string>;
-  /** Accept `multipart/form-data` bodies and an `x-proxy-response: raw`
-   * request header that returns the upstream body as a Blob instead of JSON
-   * (file uploads/downloads). Default false. */
+  /**
+   * Accept `multipart/form-data` bodies and an `x-proxy-response: raw` request header
+   * that returns the upstream body as a Blob instead of JSON (file uploads/downloads). Default false.
+   */
   supportsFiles?: boolean;
 }
 
@@ -47,15 +65,24 @@ export interface NextProxyOptions {
  */
 export function toNextJsProxyHandler(
   api: HttpClient,
-  {
-    headers: buildHeaders = defaultHeaders,
-    supportsFiles = false,
-  }: NextProxyOptions = {},
+  options: NextProxyOptions = {},
 ) {
+  // Not destructuring defaults: Biome's useStrictBooleanExpressions ignores them
+  // and still types `supportsFiles` as `boolean | undefined` (biomejs/biome#12335).
+  const buildHeaders = options.headers ?? defaultHeaders;
+  const supportsFiles = options.supportsFiles ?? false;
+
   async function handle(
     req: NextRequest,
     { params }: { params: Promise<{ path: string[] }> },
   ) {
+    if (!isHttpMethod(req.method)) {
+      return NextResponse.json(
+        { message: 'Method not allowed' },
+        { status: 405 },
+      );
+    }
+
     const { path } = await params;
     const targetPath = `/${path.join('/')}`;
 
@@ -66,7 +93,7 @@ export function toNextJsProxyHandler(
         body = await req.formData();
       } else {
         const text = await req.text();
-        if (text) {
+        if (text !== '') {
           try {
             body = JSON.parse(text);
           } catch {
@@ -79,16 +106,16 @@ export function toNextJsProxyHandler(
       }
     }
 
-    const wantsRaw =
+    const shouldReturnRaw =
       supportsFiles && req.headers.get('x-proxy-response') === 'raw';
 
     try {
-      const response = await api.request(targetPath, {
-        method: req.method as HttpMethod,
+      const response = await api.request<Blob>(targetPath, {
+        method: req.method,
         params: collectSearchParams(req),
         headers: buildHeaders(req),
         body,
-        responseType: wantsRaw ? 'blob' : 'json',
+        responseType: shouldReturnRaw ? 'blob' : 'json',
         // Tie the upstream call to the browser's own lifetime: tab closed /
         // TanStack aborting an unmounted query cancels it too.
         signal: req.signal,
@@ -96,40 +123,43 @@ export function toNextJsProxyHandler(
       if (NULL_BODY_STATUSES.has(response.status) || response.data === null) {
         return new NextResponse(null, { status: response.status });
       }
-      if (wantsRaw) {
+      if (shouldReturnRaw) {
         const headers = new Headers();
         const contentType = response.headers.get('content-type');
         const contentDisposition = response.headers.get('content-disposition');
-        if (contentType) headers.set('Content-Type', contentType);
+        if (contentType !== null) {
+          headers.set('Content-Type', contentType);
+        }
         if (contentDisposition) {
           headers.set('Content-Disposition', contentDisposition);
         }
-        return new NextResponse(response.data as Blob, {
+        return new NextResponse(response.data, {
           status: response.status,
           headers,
         });
       }
       return NextResponse.json(response.data, { status: response.status });
-    } catch (err) {
-      if (err instanceof ApiError) {
+    } catch (error) {
+      if (error instanceof ApiError) {
         const errorBody =
-          err.data !== null && typeof err.data === 'object'
-            ? err.data
-            : { message: err.message };
+          error.data !== null && typeof error.data === 'object'
+            ? error.data
+            : { message: error.message };
         const headers = new Headers();
         // `Retry-After` is the one upstream header the browser side acts on
-        // (its retry policy honors it on 429/503) — everything else stays
-        // behind the proxy on purpose.
-        const retryAfter = err.headers?.get('retry-after');
-        if (retryAfter) headers.set('Retry-After', retryAfter);
-        return NextResponse.json(errorBody, { status: err.status, headers });
+        // (its retry policy honors it on 429/503) — everything else stays behind the proxy on purpose.
+        const retryAfter = error.headers?.get('retry-after');
+        if (retryAfter) {
+          headers.set('Retry-After', retryAfter);
+        }
+        return NextResponse.json(errorBody, { status: error.status, headers });
       }
-      // The browser aborted (see `signal` above) — nobody is listening for
-      // this response. 499 is nginx's "client closed request" convention.
-      if (err instanceof Error && err.name === 'AbortError') {
+      // The browser aborted (see `signal` above) — nobody is listening for this response.
+      // 499 is nginx's "client closed request" convention.
+      if (error instanceof Error && error.name === 'AbortError') {
         return new NextResponse(null, { status: 499 });
       }
-      if (err instanceof TimeoutError) {
+      if (error instanceof TimeoutError) {
         return NextResponse.json(
           { message: 'Upstream timeout' },
           { status: 504 },

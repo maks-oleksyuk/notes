@@ -39,16 +39,17 @@ export async function parseResponseData<T>(
     default:
       try {
         return (await response.json()) as T;
-      } catch (err) {
+      } catch (error) {
         // A mid-stream abort rejects response.json() with 'AbortError', not a
         // syntax error — rethrow as-is so callers see the cancel, not ParseError.
-        if (err instanceof Error && err.name === 'AbortError') {
-          throw err;
+        if (error instanceof Error && error.name === 'AbortError') {
+          throw error;
         }
+        // biome-ignore lint/style/useErrorCause: `ParseError` forwards its third arg as `cause`.
         throw new ParseError(
           response.url,
-          err instanceof Error ? err.message : 'invalid JSON',
-          err,
+          error instanceof Error ? error.message : 'invalid JSON',
+          error,
         );
       }
   }

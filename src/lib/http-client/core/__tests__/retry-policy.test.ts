@@ -10,8 +10,9 @@ import { nextRetry, resolveRetry } from '@/lib/http-client/core/retry-policy';
 
 /** Unwraps a resolveRetry() result, failing loudly instead of using `!`. */
 function must<T>(value: T | null): T {
-  if (value === null)
+  if (value === null) {
     throw new Error('expected resolveRetry() to return a value');
+  }
   return value;
 }
 
@@ -124,7 +125,7 @@ describe('nextRetry', () => {
     expect(nextRetry(apiError(503), 0, cfg, undefined)).not.toBeNull();
   });
 
-  describe('Retry-After', () => {
+  describe('retry-after', () => {
     it('honors a numeric (seconds) Retry-After over local backoff', () => {
       const headers = new Headers({ 'retry-after': '2' });
       const decision = nextRetry(apiError(503, headers), 0, cfg, 'GET');
