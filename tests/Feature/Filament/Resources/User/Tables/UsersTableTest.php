@@ -41,7 +41,7 @@ describe('Filament | User Table', function (): void {
     it('has correct filters configuration', function (): void {
         livewire(ListUsers::class)
             ->assertTableFilterExists('name', function (BaseFilter $filter): bool {
-                $field = $filter->getSchemaComponents()[0];
+                $field = $filter->getFormSchema()[0];
                 assert($field instanceof TextInput);
 
                 expect($field)
@@ -51,7 +51,7 @@ describe('Filament | User Table', function (): void {
                 return true;
             })
             ->assertTableFilterExists('email', function (BaseFilter $filter): bool {
-                $field = $filter->getSchemaComponents()[0];
+                $field = $filter->getFormSchema()[0];
                 assert($field instanceof TextInput);
 
                 expect($field)

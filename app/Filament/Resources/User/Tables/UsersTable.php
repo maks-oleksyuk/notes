@@ -26,7 +26,7 @@ final readonly class UsersTable
             ])
             ->filters([
                 Filter::make('name')
-                    ->schema([
+                    ->form([
                         TextInput::make('name')
                             ->placeholder('Enter name to filter')
                             ->label('Name'),
@@ -37,7 +37,7 @@ final readonly class UsersTable
                             : $query
                     ),
                 Filter::make('email')
-                    ->schema([
+                    ->form([
                         TextInput::make('email')
                             ->placeholder('Enter email to filter')
                             ->label('Email'),
