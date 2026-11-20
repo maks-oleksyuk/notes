@@ -1,13 +1,21 @@
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: '3'
+
 x-app-base: &app-base
   image: ghcr.io/maks-oleksyuk/notes-laravel:dev
-  pull_policy: always
   restart: unless-stopped
+  logging: *logging
   env_file:
     - .env
   environment:
     APP_ENV: dev
   depends_on:
     db:
+      condition: service_healthy
+    valkey:
       condition: service_healthy
   volumes:
     - ../../files/storage/app:/var/www/html/storage/app
@@ -16,6 +24,7 @@ x-app-base: &app-base
 services:
   app:
     <<: *app-base
+    pull_policy: always
     command: ['php', 'artisan', 'octane:start', '--host=0.0.0.0', '--port=8080']
     expose:
       - 8080
@@ -39,14 +48,29 @@ services:
 
   queue:
     <<: *app-base
-    command: ['php', 'artisan', 'queue:work', '--sleep=3', '--tries=3']
+    depends_on:
+      app:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    command: ['php', 'artisan', 'queue:work', '--sleep=3', '--tries=3', '--max-time=3600']
     stop_signal: SIGTERM
+    stop_grace_period: 60s
     healthcheck:
       test: ['CMD', 'healthcheck-queue']
       start_period: 10s
 
   scheduler:
     <<: *app-base
+    depends_on:
+      app:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
     command: ['php', 'artisan', 'schedule:work']
     healthcheck:
       test: ['CMD', 'healthcheck-schedule']
@@ -55,6 +79,7 @@ services:
   db:
     image: postgres:18-alpine
     restart: unless-stopped
+    logging: *logging
     environment:
       POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_USER: ${DB_USERNAME}
@@ -72,6 +97,7 @@ services:
   valkey:
     image: valkey/valkey:9-alpine
     restart: unless-stopped
+    logging: *logging
     command: valkey-server --requirepass ${REDIS_PASSWORD}
     expose:
       - 6379
@@ -84,8 +110,9 @@ services:
       retries: 3
 
   mailpit:
-    image: axllent/mailpit:latest
+    image: axllent/mailpit:v1.33.1
     restart: unless-stopped
+    logging: *logging
     environment:
       MP_UI_AUTH: ${MP_UI_AUTH}
     expose:

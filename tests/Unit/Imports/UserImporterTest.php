@@ -23,11 +23,14 @@ describe('Import | User', function (): void {
     });
 
     it('imports a valid row', function (): void {
-        $importer = new UserImporter;
+        User::factory()->create();
+
+        $importer = new UserImporter(options: ['skipExisting' => true]);
 
         $importer->model(['name' => 'Jane', 'email' => 'jane@example.com']);
 
         expect($importer->importedRows)->toBe(1)
+            ->and($importer->skippedRows)->toBe(0)
             ->and($importer->failedRows)->toBeEmpty();
 
         $this->assertDatabaseHas(User::class, ['email' => 'jane@example.com', 'name' => 'Jane']);

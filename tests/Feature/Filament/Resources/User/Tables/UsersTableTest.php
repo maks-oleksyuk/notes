@@ -32,7 +32,7 @@ describe('Filament | User Table', function (): void {
             ->assertTableFilterExists('email')
             ->assertActionExists(TestAction::make(ViewAction::class)->table($user))
             ->assertActionExists(TestAction::make(DeleteAction::class)->table($user))
-            ->selectTableRecords($user->pluck('id')->toArray())
+            ->selectTableRecords([$user->getKey()])
             ->callAction(TestAction::make(DeleteBulkAction::class)->table()->bulk())
             ->assertActionVisible(TestAction::make(DeleteBulkAction::class)->table()->bulk())
             ->assertActionExists(TestAction::make(DeleteBulkAction::class)->table()->bulk());
@@ -41,7 +41,7 @@ describe('Filament | User Table', function (): void {
     it('has correct filters configuration', function (): void {
         livewire(ListUsers::class)
             ->assertTableFilterExists('name', function (BaseFilter $filter): bool {
-                $field = $filter->getSchemaComponents()[0];
+                $field = $filter->getFormSchema()[0];
                 assert($field instanceof TextInput);
 
                 expect($field)
@@ -51,7 +51,7 @@ describe('Filament | User Table', function (): void {
                 return true;
             })
             ->assertTableFilterExists('email', function (BaseFilter $filter): bool {
-                $field = $filter->getSchemaComponents()[0];
+                $field = $filter->getFormSchema()[0];
                 assert($field instanceof TextInput);
 
                 expect($field)

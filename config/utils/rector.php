@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Pest\Rector\Set\PestSetList;
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
-use Rector\Transform\Rector\StaticCall\StaticCallToMethodCallRector;
+use Rector\DeadCode\Rector\ClassMethod\RemoveEmptyClassMethodRector;
 use Rector\ValueObject\PhpVersion;
 use RectorLaravel\Rector\Class_\RemoveModelPropertyFromFactoriesRector;
 use RectorLaravel\Rector\Class_\UseForwardsCallsTraitRector;
@@ -15,8 +15,8 @@ use RectorLaravel\Rector\FuncCall\RemoveDumpDataDeadCodeRector;
 use RectorLaravel\Rector\MethodCall\ResponseHelperCallToJsonResponseRector;
 use RectorLaravel\Rector\MethodCall\UseComponentPropertyWithinCommandsRector;
 use RectorLaravel\Rector\MethodCall\WhereToWhereLikeRector;
-use RectorLaravel\Rector\StaticCall\RequestStaticValidateToInjectRector;
 use RectorLaravel\Rector\StaticCall\RouteActionCallableRector;
+use RectorLaravel\Rector\StaticCall\StaticFacadeToServiceMethodCallRector;
 use RectorLaravel\Set\LaravelSetList;
 
 if (defined('ARTISAN_BINARY') || ! class_exists(RectorConfig::class)) {
@@ -48,7 +48,6 @@ return RectorConfig::configure()
         typeDeclarations: true,
         typeDeclarationDocblocks: true,
         privatization: true,
-        // naming: true,
         // namedArgs: true,
         instanceOf: true,
         earlyReturn: true,
@@ -83,21 +82,27 @@ return RectorConfig::configure()
         EmptyToBlankAndFilledFuncRector::class,
     ])
     ->withSkip([
+        // The fixture tests a fully qualified docblock class name, which name importing would rewrite.
+        __DIR__.'/../../tests/Fixtures/Scribe/FullyQualifiedModelResource.php',
         ArgumentFuncCallToMethodCallRector::class => [
             // Service providers are a poor fit for constructor injection — keep facades.
             __DIR__.'/../../app/Providers/Filament',
+            // Rule mistakes Filament's `$get(...)` closure argument for the `get()` route helper.
+            __DIR__.'/../../app/Filament',
         ],
-        StaticCallToMethodCallRector::class => [
+        StaticFacadeToServiceMethodCallRector::class => [
             // Service providers use boot()/register(), not constructor injection.
             __DIR__.'/../../app/Providers',
+            // Filament components are built via static make(), not resolved from the container.
+            __DIR__.'/../../app/Filament',
             // Application and Factory are not serializable — injecting them would break queue chunk jobs.
             __DIR__.'/../../app/Imports/Filament/SpreadsheetImporter.php',
             // Factories have a complex multi-param constructor; Hash:: is idiomatic in seeders/factories.
             __DIR__.'/../../database',
         ],
-        // @see https://github.com/driftingly/rector-laravel/issues/496
-        RequestStaticValidateToInjectRector::class => [
-            __DIR__.'/../../app/Providers/AppServiceProvider.php',
+        RemoveEmptyClassMethodRector::class => [
+            // Fixture methods exist only to carry attributes.
+            __DIR__.'/../../tests/Fixtures',
         ],
     ])
     ->withParallel()

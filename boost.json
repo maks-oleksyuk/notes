@@ -7,7 +7,9 @@
     "packages": [
         "filament/filament",
         "maatwebsite/excel",
-        "fruitcake/laravel-debugbar"
+        "fruitcake/laravel-debugbar",
+        "spatie/laravel-pdf",
+        "spatie/laravel-permission"
     ],
     "sail": false,
     "skills": [
@@ -18,7 +20,10 @@
         "octane-development",
         "pulse-development",
         "socialite-development",
+        "filament-development",
         "laravel-excel",
+        "laravel-pdf",
+        "laravel-permission-development",
         "debug-using-debugbar"
     ]
 }

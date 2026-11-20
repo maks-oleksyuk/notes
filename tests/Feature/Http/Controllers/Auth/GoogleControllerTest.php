@@ -6,6 +6,7 @@ use App\Actions\Auth\AuthenticateWithGoogleAction;
 use App\Exceptions\GoogleSignInException;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Models\User;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Contracts\Provider;
 use Laravel\Socialite\Facades\Socialite;
@@ -101,8 +102,9 @@ describe('Http | Controllers | Auth | Google', function (): void {
         mockSocialiteCallback('ghost@example.com', 'Ghost', 'google-x');
 
         $this->get(route('auth.google.callback'))
-            ->assertRedirect(route('filament.admin.auth.login'))
-            ->assertSessionHas('filament.notifications');
+            ->assertRedirect(route('filament.admin.auth.login'));
+
+        Notification::assertNotified(__('auth/google.no_account'));
 
         $this->assertGuest();
         $this->assertDatabaseCount(User::class, 0);
@@ -117,8 +119,9 @@ describe('Http | Controllers | Auth | Google', function (): void {
         mockSocialiteCallback('member@example.com', 'Impostor', 'google-impostor');
 
         $this->get(route('auth.google.callback'))
-            ->assertRedirect(route('filament.admin.auth.login'))
-            ->assertSessionHas('filament.notifications');
+            ->assertRedirect(route('filament.admin.auth.login'));
+
+        Notification::assertNotified(__('auth/google.identity_mismatch'));
 
         $this->assertGuest();
         $this->assertDatabaseHas(User::class, [
@@ -142,8 +145,9 @@ describe('Http | Controllers | Auth | Google', function (): void {
         Socialite::shouldReceive('driver')->with('google')->once()->andReturn($driver);
 
         $this->get(route('auth.google.callback'))
-            ->assertRedirect(route('filament.admin.auth.login'))
-            ->assertSessionHas('filament.notifications');
+            ->assertRedirect(route('filament.admin.auth.login'));
+
+        Notification::assertNotified(__('auth/google.unverified_email'));
 
         $this->assertGuest();
         $this->assertDatabaseHas(User::class, [
@@ -161,8 +165,9 @@ describe('Http | Controllers | Auth | Google', function (): void {
         mockSocialiteCallback('member@example.com', 'Attacker', 'google-evil', emailVerified: false);
 
         $this->get(route('auth.google.callback'))
-            ->assertRedirect(route('filament.admin.auth.login'))
-            ->assertSessionHas('filament.notifications');
+            ->assertRedirect(route('filament.admin.auth.login'));
+
+        Notification::assertNotified(__('auth/google.unverified_email'));
 
         $this->assertGuest();
         $this->assertDatabaseHas(User::class, [
@@ -178,8 +183,9 @@ describe('Http | Controllers | Auth | Google', function (): void {
         Socialite::shouldReceive('driver')->with('google')->once()->andReturn($driver);
 
         $this->get(route('auth.google.callback'))
-            ->assertRedirect(route('filament.admin.auth.login'))
-            ->assertSessionHas('filament.notifications');
+            ->assertRedirect(route('filament.admin.auth.login'));
+
+        Notification::assertNotified(__('auth/google.failed'));
 
         $this->assertGuest();
     });
@@ -218,8 +224,9 @@ describe('Http | Controllers | Auth | Google', function (): void {
         Socialite::shouldReceive('driver')->with('google')->once()->andReturn($driver);
 
         $this->get(route('auth.google.callback'))
-            ->assertRedirect(route('filament.admin.auth.login'))
-            ->assertSessionHas('filament.notifications');
+            ->assertRedirect(route('filament.admin.auth.login'));
+
+        Notification::assertNotified(__('auth/google.failed'));
 
         $this->assertGuest();
         $this->assertDatabaseMissing(User::class, ['email' => 'minimal@example.com']);

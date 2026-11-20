@@ -8,6 +8,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -23,14 +24,14 @@ final readonly class ApiExceptionHandler
 
     public function __invoke(\Throwable $e, Request $request): ?JsonResponse
     {
-        if (! $request->expectsJson() || ! $request->is('api/v*')) {
+        if (! $request->expectsJson() || ! $request->is('api/v*') || $e instanceof HttpResponseException) {
             return null;
         }
 
         $status = match (true) {
             $e instanceof HttpExceptionInterface => $e->getStatusCode(),
             $e instanceof AuthenticationException => HttpFoundationResponse::HTTP_UNAUTHORIZED,
-            $e instanceof ValidationException => HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY,
+            $e instanceof ValidationException => $e->status,
             default => $this->statusFromCode($e->getCode()),
         };
 
@@ -56,6 +57,7 @@ final readonly class ApiExceptionHandler
         }
 
         return $this->responseFactory->json($problem, $status, [
+            ...($e instanceof HttpExceptionInterface ? $e->getHeaders() : []),
             'Content-Type' => 'application/problem+json',
         ]);
     }

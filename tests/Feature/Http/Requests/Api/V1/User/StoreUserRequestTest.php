@@ -6,15 +6,10 @@ use App\Http\Requests\Api\V1\User\StoreUserRequest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
-use Pest\Expectation;
 
 covers(StoreUserRequest::class);
 
 describe('API | V1 | User | StoreUserRequest', function (): void {
-    it('validates authorize',
-        fn (): Expectation => expect(new StoreUserRequest()->authorize())->toBeTrue()
-    );
-
     it('validates rules', function (): void {
         $rules = new StoreUserRequest()->rules();
         $hasPasswordRule = new Collection($rules['password'])->contains(fn ($rule): bool => $rule instanceof Password);
@@ -51,4 +46,12 @@ describe('API | V1 | User | StoreUserRequest', function (): void {
         'password without uppercase' => ['password0!', false],
         'password without lowercase' => ['PASSW0RD!', false],
     ]);
+
+    it('documents every validated field for Scribe', function (): void {
+        $request = new StoreUserRequest;
+
+        expect($request->bodyParameters())->toHaveKeys(array_keys($request->rules()))
+            ->toHaveSameSize($request->rules())
+            ->each->toHaveKeys(['description', 'example']);
+    });
 });

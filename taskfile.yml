@@ -301,6 +301,7 @@ tasks:
     cmds:
       - defer: { task: fix:prettier }
       - defer: { task: fix:pint }
+      - defer: { task: fix:phpstan }
       - defer: { task: fix:rector }
       - defer: { task: fix:composer }
 
@@ -317,6 +318,22 @@ tasks:
         vars: { CLI_ARGS: 'u --lock --no-scripts --no-plugins --no-autoloader' }
       - task: composer
         vars: { CLI_ARGS: 'bump' }
+
+  fix:phpstan:
+    desc: 'Apply PHPStan auto-fixes.'
+    aliases:
+      - f:s
+      - f:stan
+      - f:phpstan
+      - fix:s
+      - fix:stan
+    cmds:
+      - task: phpstan
+        vars: { CLI_ARGS: '-V' }
+      - task: phpstan
+        vars: { CLI_ARGS: 'analyze --fix {{.CLI_ARGS}}' }
+        # phpstan exits 1 on "No fixable errors found"; lint:phpstan reports real errors.
+        ignore_error: true
 
   fix:pint:
     desc: 'Fix php format issues.'
@@ -369,16 +386,16 @@ tasks:
       - defer: { task: test:mutate }
       - defer: { task: test:unit }
       - defer: { task: test:feature }
-      - defer: { task: test:coverage }
+      - defer: { task: test:types }
 
-  test:coverage:
+  test:types:
     desc: 'Ensure all methods and properties have type declarations.'
     aliases:
-      - t:c
-      - t:coverage
-      - qa:c
-      - qa:coverage
-      - test:c
+      - t:t
+      - t:types
+      - qa:t
+      - qa:types
+      - test:t
     cmds:
       - task: pest
         vars: { CLI_ARGS: '--version' }

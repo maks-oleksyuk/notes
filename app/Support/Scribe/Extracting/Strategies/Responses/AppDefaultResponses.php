@@ -24,12 +24,14 @@ final class AppDefaultResponses extends Strategy
     {
         $responses = [];
 
-        $this->setDescriptionForStatus($endpointData, HttpFoundationResponse::HTTP_OK);
-        $this->setDescriptionForStatus($endpointData, HttpFoundationResponse::HTTP_CREATED);
-        $this->setDescriptionForStatus($endpointData, HttpFoundationResponse::HTTP_NO_CONTENT);
+        foreach ($endpointData->responses as $response) {
+            /** @var ScribeResponse $response */
+            $response->description = $response->description ?: (HttpFoundationResponse::$statusTexts[$response->status] ?? '');
+        }
 
         if ($endpointData->metadata->authenticated) {
             $responses[] = $this->makeSimpleErrorResponse($endpointData, HttpFoundationResponse::HTTP_UNAUTHORIZED);
+            $responses[] = $this->makeSimpleErrorResponse($endpointData, HttpFoundationResponse::HTTP_FORBIDDEN);
         }
 
         if (array_key_exists('id', $endpointData->urlParameters)) {
@@ -44,14 +46,6 @@ final class AppDefaultResponses extends Strategy
         $responses[] = $this->makeSimpleErrorResponse($endpointData, HttpFoundationResponse::HTTP_SERVICE_UNAVAILABLE);
 
         return $responses;
-    }
-
-    private function setDescriptionForStatus(ExtractedEndpointData $endpointData, int $status): void
-    {
-        if ($response = $endpointData->responses->firstWhere('status', $status)) {
-            /** @var ScribeResponse $response */
-            $response->description = HttpFoundationResponse::$statusTexts[$status];
-        }
     }
 
     /**
